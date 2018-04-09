@@ -1,0 +1,18 @@
+group 'co.funnychain.app'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'net.eikehirsch.react:gradle-react-plugin:0.4.1'
+    }
+}
+
+apply plugin: 'net.eikehirsch.react'
+
+jsx {
+    sourcesDir = 'src'
+    destDir    = 'out'
+}

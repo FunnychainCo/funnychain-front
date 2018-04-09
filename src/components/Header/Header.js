@@ -5,6 +5,7 @@ const Header = () => (
   <AppBar
     title="FunnyChain"
     iconClassNameRight="muidocs-icon-navigation-expand-more"
+    showMenuIconButton={false}
   />
 );
 
