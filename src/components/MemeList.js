@@ -42,7 +42,7 @@ export default class MemeList extends Component {
                 {
                     Object.keys(this.state.memes).map((key) => {
                         return <Card>
-                                <CardHeader title={this.state.memes[key].user.email}/>
+                                <CardHeader title={this.state.memes[key].user.info.email}/>
                                 <CardMedia overlay={<CardTitle title={this.state.memes[key].title}/>}>
                                     <img src={this.state.memes[key].image.url} alt="" />
                                 </CardMedia>
