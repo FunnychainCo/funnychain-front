@@ -1,4 +1,4 @@
-import { ref, firebaseAuth } from '../config/constants'
+import { ref, firebaseAuth } from './firebase'
 import React, {Component} from "react";
 import {Route, BrowserRouter, Link, Redirect, Switch} from 'react-router-dom'
 

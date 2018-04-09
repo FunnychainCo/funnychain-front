@@ -8,10 +8,10 @@ import { Route, BrowserRouter, Link, Redirect, Switch } from 'react-router-dom'
 import Divider from "material-ui/Divider";
 import ActionInfo from "material-ui/svg-icons/action/info";
 
-import { logout } from '../helpers/auth'
-import { firebaseAuth } from '../config/constants'
-import Login from './Login'
-import Register from './Register'
+import { logout } from '../service/auth'
+import { firebaseAuth } from '../service/firebase'
+import Login from '../containers/Login'
+import Register from '../containers/Register'
 
 export default class LeftNav extends Component {
   state = {
@@ -39,7 +39,8 @@ export default class LeftNav extends Component {
   render () {
     return (
         <List style={{width: '260px'}} >
-            <Link to="/home"><ListItem primaryText="Home" leftIcon={<ActionInfo />} /></Link>
+            <Link to="/"><ListItem primaryText="Home" leftIcon={<ActionInfo />} /></Link>
+            <Link to="/create"><ListItem primaryText="Create" leftIcon={<ActionInfo />} /></Link>
             {this.state.authed &&
                 <ListItem
                     primaryText="Logout" leftIcon={<ContentInbox />}
