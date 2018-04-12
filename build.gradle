@@ -4,15 +4,88 @@ version '1.0-SNAPSHOT'
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
-        classpath 'net.eikehirsch.react:gradle-react-plugin:0.4.1'
+        classpath "com.moowork.gradle:gradle-node-plugin:1.2.0"
+        classpath 'com.bmuschko:gradle-docker-plugin:3.2.4'
     }
 }
 
-apply plugin: 'net.eikehirsch.react'
+apply plugin: 'com.moowork.node'
+apply plugin: 'com.bmuschko.docker-remote-api'
 
-jsx {
-    sourcesDir = 'src'
-    destDir    = 'out'
+import com.bmuschko.gradle.docker.tasks.container.*
+import com.bmuschko.gradle.docker.tasks.image.*
+
+task appBuild(type: NpmTask) {
+    // install the express package only
+    args = ['run', 'build']
 }
+
+task dockerClean() {
+    delete "${buildDir}"
+    println "${buildDir}"
+}
+
+task dockerCopyRessource(type: Copy) {
+    from('build') {
+        include '**/*'
+    }
+    into 'build/docker/www'
+}
+
+task dockerCopyRessourceDockerConfig(type: Copy) {
+    from('docker') {
+        include '**/*'
+    }
+    into 'build/docker'
+}
+
+
+task dockerBuildImage(type: DockerBuildImage) {
+    inputDir = project.file('build/docker/')
+    tag = 'funnychain:latest'
+}
+
+task dockerCreateContainer(type: DockerCreateContainer) {
+    targetImageId { 'funnychain:latest' }
+    containerName "docker_auto_jungle-js"
+    portBindings = ['8156:80']
+}
+
+task dockerStartContainer(type: DockerStartContainer, dependsOn: dockerCreateContainer) {
+    targetContainerId { dockerCreateContainer.getContainerId() }
+}
+
+
+
+/*task startMyAppContainer(type: DockerStartContainer) {
+  dependsOn createMyAppContainer
+  targetContainerId { createMyAppContainer.getContainerId() }
+}*/
+
+task dockerSaveImage(type: DockerSaveImage) {
+    tag = 'latest'
+    repository = 'jungle-js'
+    destFile = project.file('build/docker/funnychain-latest.docker_image')
+}
+
+task dockerBuildRelease(){
+    dependsOn 'appBuild'
+    dependsOn 'dockerClean'
+    dependsOn 'dockerCopyRessourceDockerConfig'
+    dependsOn 'dockerCopyRessource'
+    dependsOn 'dockerBuildImage'
+    dependsOn 'dockerSaveImage'
+    tasks.findByName('dockerClean').mustRunAfter 'appBuild'
+    tasks.findByName('dockerBuildImage').mustRunAfter 'dockerCopyRessource'
+    tasks.findByName('dockerBuildImage').mustRunAfter 'dockerCopyRessourceDockerConfig'
+    tasks.findByName('dockerCopyRessource').mustRunAfter 'dockerClean'
+    tasks.findByName('dockerCopyRessourceDockerConfig').mustRunAfter 'dockerClean'
+    tasks.findByName('dockerSaveImage').mustRunAfter 'dockerBuildImage'
+}
+
