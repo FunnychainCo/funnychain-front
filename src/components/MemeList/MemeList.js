@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import firebase from 'firebase';
 import {Card, CardHeader, CardMedia, CardTitle} from "material-ui";
+import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 
 export default class MemeList extends Component {
     memeDataBase = "memes"
@@ -13,7 +14,7 @@ export default class MemeList extends Component {
     componentDidMount() {
         var ref = firebase.database().ref(this.memeDataBase);
         ref.on("value", (memes) => {
-            var memesValue = memes.val();
+            var memesValue = memes.val() || {};
             var itemsKeys = Object.keys(memesValue);
             itemsKeys.forEach((key) => {
                 var meme = memesValue[key];
@@ -41,7 +42,7 @@ export default class MemeList extends Component {
             <div>
                 {
                     Object.keys(this.state.memes).map((key) => {
-                        return <Card>
+                        return <Card key={key}>
                                 <CardHeader title={this.state.memes[key].user.info.email}/>
                                 <CardMedia overlay={<CardTitle title={this.state.memes[key].title}/>}>
                                     <img src={this.state.memes[key].image.url} alt="" />
@@ -49,6 +50,7 @@ export default class MemeList extends Component {
                             </Card>
                     })
                 }
+                <CreateMemeDialogFab />
             </div>);
     }
 }

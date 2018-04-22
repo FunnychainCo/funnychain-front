@@ -1,17 +1,12 @@
 import React, { Component } from 'react'
 import { List, ListItem } from "material-ui/List";
 import ContentInbox from "material-ui/svg-icons/content/inbox";
-import ActionGrade from "material-ui/svg-icons/action/grade";
-import ContentSend from "material-ui/svg-icons/content/send";
-import ContentDrafts from "material-ui/svg-icons/content/drafts";
-import { Route, BrowserRouter, Link, Redirect, Switch } from 'react-router-dom'
-import Divider from "material-ui/Divider";
+import {Link } from 'react-router-dom'
 import ActionInfo from "material-ui/svg-icons/action/info";
 
-import { logout } from '../service/auth'
-import { firebaseAuth } from '../service/firebase'
-import Login from '../containers/Login'
-import Register from '../containers/Register'
+import { logout } from '../../service/auth'
+import { firebaseAuth } from '../../service/firebase'
+import Popup from "react-popup";
 
 export default class LeftNav extends Component {
   state = {
@@ -40,7 +35,6 @@ export default class LeftNav extends Component {
     return (
         <List style={{width: '260px'}} >
             <Link to="/"><ListItem primaryText="Home" leftIcon={<ActionInfo />} /></Link>
-            <Link to="/create"><ListItem primaryText="Create" leftIcon={<ActionInfo />} /></Link>
             {this.state.authed &&
                 <ListItem
                     primaryText="Logout" leftIcon={<ContentInbox />}

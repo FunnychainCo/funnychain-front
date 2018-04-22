@@ -30,6 +30,7 @@ function cellRenderer({ index, key, parent, style }) {
       <div className="cell" style={{ ...style }}>
         <img
           src={tile.img}
+          alt=""
           style={{ width: tile.width, height: tile.height }}
         />
       </div>
