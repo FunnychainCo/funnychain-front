@@ -1,20 +1,25 @@
 import React, { Component } from 'react'
-import { List, ListItem } from "material-ui/List";
+import { ListItem } from "material-ui/List";
 import ContentInbox from "material-ui/svg-icons/content/inbox";
 import {Link } from 'react-router-dom'
 import ActionInfo from "material-ui/svg-icons/action/info";
-
-import { logout } from '../../service/auth'
-import { firebaseAuth } from '../../service/firebase'
-import Popup from "react-popup";
+import {Drawer, MenuItem} from "material-ui";
+import {leftMenuService} from "../../service/LeftMenuService";
+import {firebaseAuthService} from "../../service/FirebaseAuthService";
+import {authService} from "../../service/AuthService";
 
 export default class LeftNav extends Component {
   state = {
       authed: false,
       loading: true,
+      open:false
   }
+  removeListener=null;
   componentDidMount () {
-      this.removeListener = firebaseAuth().onAuthStateChanged((user) => {
+      leftMenuService.registerOpeningCallBack(()=>{
+          this.setState({open: true})
+      })
+      this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
           if (user) {
               this.setState({
                   authed: true,
@@ -29,16 +34,28 @@ export default class LeftNav extends Component {
       })
   }
   componentWillUnmount () {
-      this.removeListener()
+      this.removeListener();
   }
+
+  handleToggle = () => this.setState({open: !this.state.open});
+
+  handleClose = () => this.setState({open: false});
+
   render () {
     return (
-        <List style={{width: '260px'}} >
+
+        <Drawer
+            docked={false}
+            width={200}
+            open={this.state.open}
+            onRequestChange={(open) => this.setState({open})}
+        >
+            <MenuItem onClick={this.handleClose}>Menu Item</MenuItem>
             <Link to="/"><ListItem primaryText="Home" leftIcon={<ActionInfo />} /></Link>
             {this.state.authed &&
                 <ListItem
                     primaryText="Logout" leftIcon={<ContentInbox />}
-                onClick={() => {logout()}}>
+                onClick={() => {authService.logout()}}>
                 </ListItem>
             }
 
@@ -49,8 +66,7 @@ export default class LeftNav extends Component {
             {!this.state.authed &&
                 <Link to="/register"><ListItem primaryText="Register" leftIcon={<ContentInbox />} /></Link>
             }
-
-        </List>
+        </Drawer>
     )
   }
 }

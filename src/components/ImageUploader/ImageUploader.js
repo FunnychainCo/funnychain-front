@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import firebase from 'firebase';
 import FileUploader from 'react-firebase-file-uploader';
-import {makeid} from "../../service/idService";
+import {makeid} from "../../service/IdService";
 import {CircularProgress} from "material-ui";
 import ImagesLoaded from 'react-images-loaded';
 

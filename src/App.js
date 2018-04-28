@@ -3,21 +3,21 @@ import React, {Component} from "react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import Header from "./components/Header/Header";
 import LeftNav from "./components/LeftNav/LeftNav";
-import {firebaseAuth} from "./service/firebase";
 import {Route, BrowserRouter, Switch} from 'react-router-dom'
-import Login from "./containers/Login";
-import Register from "./containers/Register";
+import Login from "./components/Login/Login";
+import Register from "./components/Register/Register";
 import Home from "./containers/Home";
-import {PublicRoute} from "./service/auth.js"
-import Popup from 'react-popup';
+import {PublicRoute} from "./service/AuthService.js"
+import {firebaseAuthService} from "./service/FirebaseAuthService";
 
 class App extends Component {
     state = {
         authed: false,
         loading: true,
     }
+    removeListener=null;
     componentDidMount () {
-        this.removeListener = firebaseAuth().onAuthStateChanged((user) => {
+        this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
             if (user) {
                 this.setState({
                     authed: true,
@@ -32,7 +32,7 @@ class App extends Component {
         })
     }
     componentWillUnmount () {
-        this.removeListener()
+        this.removeListener();
     }
     render() {
         return (

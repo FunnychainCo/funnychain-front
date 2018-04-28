@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { auth } from '../service/auth'
+import {authService} from "../../service/AuthService";
 
 function setErrorMsg(error) {
   return {
@@ -11,7 +11,11 @@ export default class Register extends Component {
   state = { registerError: null }
   handleSubmit = (e) => {
     e.preventDefault()
-    auth(this.email.value, this.pw.value)
+    authService.auth(this.email.value, this.pw.value)
+        .then(() => {
+            this.props.onCompleted();
+            console.log("register ok");
+        })
       .catch(e => this.setState(setErrorMsg(e)))
   }
   render () {

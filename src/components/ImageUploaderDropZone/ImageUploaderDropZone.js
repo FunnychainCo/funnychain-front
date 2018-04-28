@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import firebase from 'firebase';
-import FileUploader from 'react-firebase-file-uploader';
-import {makeid} from "../../service/idService";
+import {idService} from "../../service/IdService";
 import {CircularProgress, Snackbar} from "material-ui";
 import ImagesLoaded from 'react-images-loaded';
 import Dropzone from 'react-dropzone'
@@ -55,7 +54,7 @@ export default class ImageUploaderDropZone extends Component {
     };
 
     onDrop(files) {
-        if(files.length!=1){
+        if(files.length!==1){
             this.setState({
                 openSnackBar: true,
                 errorMessage: 'Cannot upload more than 1 item.',
@@ -68,7 +67,7 @@ export default class ImageUploaderDropZone extends Component {
         };
         var user = firebase.auth().currentUser;
         var ref = firebase.storage().ref(this.storageBase);
-        var filename = makeid();
+        var filename = idService.makeid();
         ref.child(filename).put(file,metadata).then(()=>{
             ref.child(filename).getDownloadURL().then((url) =>{
                 var fileId = filename.replace(/\.[^/.]+$/, "");

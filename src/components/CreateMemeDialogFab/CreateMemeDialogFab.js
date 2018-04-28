@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {makeid} from "../../service/idService";
+import {idService} from "../../service/IdService";
 import firebase from 'firebase';
 import {Dialog, FlatButton, FloatingActionButton, TextField} from "material-ui";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
@@ -17,7 +17,7 @@ export default class CreateMemeDialogFab extends Component {
         console.log(this.state.imageURL);
         console.log(this.state.title);
         var user = firebase.auth().currentUser;
-        firebase.database().ref(this.dataBase+'/' + makeid()).set({
+        firebase.database().ref(this.dataBase+'/' + idService.makeid()).set({
             iid: this.state.iid,
             uid: user.uid,
             title:this.state.title

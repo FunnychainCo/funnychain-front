@@ -38,10 +38,14 @@ export default class MemeList extends Component {
     }
 
     render() {
+        const styleChild = {
+            flexBasis:"auto",
+            maxWidth:"50%"
+        };
         return (
-            <div>
+            <div style={styleChild}>
                 {
-                    Object.keys(this.state.memes).map((key) => {
+                    Object.keys(this.state.memes).reverse().map((key) => {
                         return <Card key={key}>
                                 <CardHeader title={this.state.memes[key].user.info.email}/>
                                 <CardMedia overlay={<CardTitle title={this.state.memes[key].title}/>}>

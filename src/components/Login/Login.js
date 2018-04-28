@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { login, resetPassword } from '../service/auth'
+import {authService} from "../../service/AuthService";
 
 function setErrorMsg(error) {
   return {
@@ -11,17 +11,18 @@ export default class Login extends Component {
   state = { loginMessage: null }
   handleSubmit = (e) => {
     e.preventDefault()
-    login(this.email.value, this.pw.value)
+    authService.login(this.email.value, this.pw.value)
         .then(()=>{
-            this.props.history.push('/')
-            console.log(this.email.value + "logged");
+            this.props.onLoginCompleted();
+            console.log(this.email.value + " logged");
         })
       .catch((error) => {
+          console.log(error);
           this.setState(setErrorMsg('Invalid username/password.'))
         })
   }
   resetPassword = () => {
-    resetPassword(this.email.value)
+    authService.resetPassword(this.email.value)
       .then(() => this.setState(setErrorMsg(`Password reset email sent to ${this.email.value}.`)))
       .catch((error) => this.setState(setErrorMsg(`Email address not found.`)))
   }
@@ -46,7 +47,7 @@ export default class Login extends Component {
               &nbsp;{this.state.loginMessage} <a href="#" onClick={this.resetPassword} className="alert-link">Forgot Password?</a>
             </div>
           }
-          <button type="submit" className="btn btn-primary">Login</button>
+            <button type="submit" className="btn btn-primary">Login</button>
         </form>
       </div>
     )
