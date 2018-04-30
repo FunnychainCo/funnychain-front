@@ -1,0 +1,25 @@
+.memes{
+    max-width:50%;
+}
+
+@media (orientation: landscape) {
+    .memes{
+        max-width:50%;
+    }
+}
+
+@media (orientation: portrait){
+    .memes{
+        max-width:100%;
+    }
+}
+
+.fcContainerScroll{
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.fcContentScroll{
+    flex: 1 0 auto;
+}

@@ -33,6 +33,7 @@ export class AuthService{
 
 export var authService = new AuthService();
 
+//TODO refactore this as a Private Route component
 export function PrivateRoute ({component: Component, authed, ...rest}) {
     return (
         <Route

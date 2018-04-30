@@ -41,15 +41,9 @@ export default class Header extends Component {
     }
     componentDidMount () {
         this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
-            if (user) {
-                this.setState({
-                    logged: true
-                })
-            } else {
-                this.setState({
-                    logged: false
-                })
-            }
+            this.setState({
+                logged: user?true:false
+            });
         })
     }
 

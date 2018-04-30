@@ -6,6 +6,7 @@ import ImagesLoaded from 'react-images-loaded';
 import Dropzone from 'react-dropzone'
 import CloudUploadIcon from 'material-ui/svg-icons/file/cloud-upload';
 import './ImageUploaderDropZone.css';
+import MobileDetect from 'mobile-detect'
 
 export default class ImageUploaderDropZone extends Component {
     storageBase = "images"
@@ -23,6 +24,12 @@ export default class ImageUploaderDropZone extends Component {
         acceptedFiles: this.props.acceptedFiles || ['image/jpeg', 'image/png']
     };
 
+    mobile = null;
+
+    componentDidMount(){
+        this.md = new MobileDetect(window.navigator.userAgent);
+        this.mobile = this.md.mobile();
+    }
     handleUploadStart = () => this.setState({isUploading: true, progress: 0});
     handleProgress = (progress) => this.setState({progress});
     handleUploadError = (error) => {
@@ -123,7 +130,8 @@ export default class ImageUploaderDropZone extends Component {
                             maxSize={fileSizeLimit}
                         >
                             <div className={'dropzoneTextStyle'}>
-                                <p className={'dropzoneParagraph'}>{'Drag and drop an image file here or click'}</p>
+                                {!this.mobile && <p className={'dropzoneParagraph'}>{'Drag and drop an image file here or click'}</p>}
+                                {this.mobile && <p className={'dropzoneParagraph'}>{'Drag and drop an image file here or click'}</p>}
                                 <br/>
                                 <CloudUploadIcon className={'uploadIconSize'}/>
                             </div>

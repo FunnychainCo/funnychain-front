@@ -12,11 +12,13 @@
     "lodash": "^4.17.4",
     "material-ui": "^0.20.0",
     "material-ui-dropzone": "^1.0.3",
+    "mobile-detect": "^1.4.1",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
     "react-dropzone": "^4.2.9",
     "react-firebase-file-uploader": "^2.4.1",
     "react-images-loaded": "^2.0.0",
+    "react-perfect-scrollbar": "^1.1.1",
     "react-router-dom": "^4.2.2",
     "react-virtualized": "^9.17.3"
   },
