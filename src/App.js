@@ -48,9 +48,9 @@ class App extends Component {
                             <LeftNav/>
                             <Switch className="fullSpace">
                                 <Route className="fullSpace" path='/' exact component={Home} />
-                                <PrivateRoute authed={this.state.authed} path='/account' component={Account} />
-                                <PublicRoute authed={this.state.authed} path='/login' component={Login} />
-                                <PublicRoute authed={this.state.authed} path='/register' component={Register} />
+                                <Route className="fullSpace" path='/account' exact component={Account} />
+                                <Route className="fullSpace" path='/login' exact component={Login} />
+                                <Route className="fullSpace" path='/register' exact component={Register} />
                                 <Route render={() => <h3>No Match</h3>} />
                             </Switch>
                         </div>

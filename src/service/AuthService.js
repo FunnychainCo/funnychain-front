@@ -32,24 +32,3 @@ export class AuthService{
 }
 
 export var authService = new AuthService();
-
-//TODO refactore this as a Private Route component
-export function PrivateRoute ({component: Component, authed, ...rest}) {
-    return (
-        <Route
-            {...rest}
-            render={(props) => authed === true
-                ? <Component {...props} />
-                : <Redirect to={{pathname: '/login', state: {from: props.location}}} />}
-        />
-    )
-}
-
-export function PublicRoute ({component: Component, authed, ...rest}) {
-    return (
-        <Route
-            {...rest}
-            render={(props) => <Component {...props} />}
-        />
-    )
-}

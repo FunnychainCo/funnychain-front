@@ -21,14 +21,15 @@ export default class ImageUploaderDropZone extends Component {
         imageStatus:'',
         openSnackBar: false,
         errorMessage: '',
-        acceptedFiles: this.props.acceptedFiles || ['image/jpeg', 'image/png']
+        acceptedFiles: this.props.acceptedFiles || ['image/jpeg', 'image/png'],
+        mobile:null
     };
 
-    mobile = null;
 
     componentDidMount(){
-        this.md = new MobileDetect(window.navigator.userAgent);
-        this.mobile = this.md.mobile();
+        var md = new MobileDetect(window.navigator.userAgent);
+        this.setState({mobile:md.mobile()});
+        console.log(md.mobile());
     }
     handleUploadStart = () => this.setState({isUploading: true, progress: 0});
     handleProgress = (progress) => this.setState({progress});
@@ -66,6 +67,7 @@ export default class ImageUploaderDropZone extends Component {
                 openSnackBar: true,
                 errorMessage: 'Cannot upload more than 1 item.',
             });
+            return;
         }
         this.setState({isUploading: true, progress: 0});
         var file = files[0];
@@ -103,20 +105,21 @@ export default class ImageUploaderDropZone extends Component {
     render () {
         const fileSizeLimit = this.props.maxSize || 3000000;
         return (
-            <div>
-                <form>
+            <div className="fcImageContainerStyle">
+                <form className="fcImageContainerStyle">
                     {this.state.isUploading &&
                         <CircularProgress size={200} thickness={10} />
                     }
                     {this.state.fileURL &&
                         <ImagesLoaded
+                            className="fcImageContainerStyle"
                             onAlways={this.handleOnAlways}
                             onProgress={this.handleOnProgress}
                             onFail={this.handleOnFail}
                             done={this.handleDone}
                             background=".image" // true or child selector
                         >
-                            <img src={this.state.fileURL} alt="" />
+                            <img className="fcImageContainerStyle" src={this.state.fileURL} alt="" />
                         </ImagesLoaded>
                     }
                     {(!this.state.fileURL && !this.state.isUploading) &&
@@ -130,8 +133,7 @@ export default class ImageUploaderDropZone extends Component {
                             maxSize={fileSizeLimit}
                         >
                             <div className={'dropzoneTextStyle'}>
-                                {!this.mobile && <p className={'dropzoneParagraph'}>{'Drag and drop an image file here or click'}</p>}
-                                {this.mobile && <p className={'dropzoneParagraph'}>{'Drag and drop an image file here or click'}</p>}
+                                {(this.state.mobile==null) && <p className={'dropzoneParagraph'}>{'Drag and drop an image file here or click'}</p>}
                                 <br/>
                                 <CloudUploadIcon className={'uploadIconSize'}/>
                             </div>

@@ -71,7 +71,9 @@ export default class Meme extends Component {
                 </ImagesLoaded>
                 }
                 {!this.state.fullyLoaded &&
-                <CircularProgress size={80} thickness={5}/>
+                <div>
+                    <CircularProgress size={120} thickness={5}/>
+                </div>
                 }
             </div>
     }
