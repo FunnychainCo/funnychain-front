@@ -5,7 +5,6 @@ import {Link } from 'react-router-dom'
 import ActionInfo from "material-ui/svg-icons/action/info";
 import {Drawer, MenuItem} from "material-ui";
 import {leftMenuService} from "../../service/LeftMenuService";
-import {firebaseAuthService} from "../../service/FirebaseAuthService";
 import {authService} from "../../service/AuthService";
 
 export default class LeftNav extends Component {
@@ -19,7 +18,7 @@ export default class LeftNav extends Component {
       leftMenuService.registerOpeningCallBack(()=>{
           this.setState({open: true})
       })
-      this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
+      this.removeListener = authService.onAuthStateChanged((user) => {
           if (user) {
               this.setState({
                   authed: true,

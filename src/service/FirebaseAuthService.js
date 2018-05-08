@@ -1,6 +1,6 @@
 import firebase from 'firebase'
 
-export class FirebaseAuthService{
+export class FirebaseAuthService {
     config = {
         apiKey: "AIzaSyClb51m-dOtbsZ4xlzQrGu6xMhLlfxilCg",
         authDomain: "funnychain-b2243.firebaseapp.com",
@@ -21,6 +21,7 @@ export class FirebaseAuthService{
 }
 
 export var firebaseAuthService = new FirebaseAuthService();
-export function getFirebaseAuthService(){
+
+export function getFirebaseAuthService() {
     return firebaseAuthService;
 }

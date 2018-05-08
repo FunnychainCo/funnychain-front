@@ -1,10 +1,11 @@
-
-export class LeftMenuService{
+export class LeftMenuService {
     callback = null;
-    registerOpeningCallBack(callback){
+
+    registerOpeningCallBack(callback) {
         this.callback = callback;
     }
-    requestOpening(){
+
+    requestOpening() {
         this.callback();
     }
 }

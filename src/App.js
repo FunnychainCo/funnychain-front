@@ -7,37 +7,54 @@ import {Route, BrowserRouter, Switch} from 'react-router-dom'
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import Home from "./containers/Home";
-import {PublicRoute} from "./service/AuthService.js"
 import {firebaseAuthService} from "./service/FirebaseAuthService";
 import Version from "./components/Version/Version";
-import {PrivateRoute} from "./service/AuthService";
-import Account from "./containers/Account";
+import Account from "./components/Account/Account";
 import "./App.css"
+import {Snackbar} from "material-ui";
+import {userNotificationService} from "./service/UserNotificationService";
 
 class App extends Component {
     state = {
         authed: false,
         loading: true,
+        userMessage: {
+            display: false,
+            message: ""
+        }
     }
-    removeListener=null;
-    componentDidMount () {
+    removeListener = null;
+
+    componentDidMount() {
         this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
-            if (user) {
-                this.setState({
-                    authed: true,
-                    loading: false,
-                })
-            } else {
-                this.setState({
-                    authed: false,
-                    loading: false
-                })
-            }
+            this.setState({
+                authed: user ? true : false,
+                loading: false,
+            });
+        });
+        userNotificationService.registerCallBack((message) => {
+            this.setState({
+                userMessage: {
+                    display: true,
+                    message: message
+                }
+            })
         })
     }
-    componentWillUnmount () {
+
+    componentWillUnmount() {
         this.removeListener();
     }
+
+    handleRequestClose = () => {
+        this.setState({
+            userMessage: {
+                display: false,
+                message: ""
+            }
+        })
+    };
+
     render() {
         return (
             <BrowserRouter>
@@ -47,14 +64,20 @@ class App extends Component {
                         <div className="fullSpace">
                             <LeftNav/>
                             <Switch className="fullSpace">
-                                <Route className="fullSpace" path='/' exact component={Home} />
-                                <Route className="fullSpace" path='/account' exact component={Account} />
-                                <Route className="fullSpace" path='/login' exact component={Login} />
-                                <Route className="fullSpace" path='/register' exact component={Register} />
-                                <Route render={() => <h3>No Match</h3>} />
+                                <Route className="fullSpace" path='/' exact component={Home}/>
+                                <Route className="fullSpace" path='/account' exact component={Account}/>
+                                <Route className="fullSpace" path='/login' exact component={Login}/>
+                                <Route className="fullSpace" path='/register' exact component={Register}/>
+                                <Route render={() => <h3>No Match</h3>}/>
                             </Switch>
                         </div>
                         <Version/>
+                        <Snackbar
+                            open={this.state.userMessage.display}
+                            message={this.state.userMessage.message}
+                            autoHideDuration={4000}
+                            onRequestClose={this.handleRequestClose}
+                        />
                     </div>
                 </MuiThemeProvider>
             </BrowserRouter>

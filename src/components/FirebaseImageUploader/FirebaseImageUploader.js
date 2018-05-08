@@ -5,7 +5,7 @@ import {makeid} from "../../service/IdService";
 import {CircularProgress} from "material-ui";
 import ImagesLoaded from 'react-images-loaded';
 
-export default class ImageUploader extends Component {
+export default class FirebaseImageUploader extends Component {
     storageBase = "images"
     dataBase = "images"
     state = {

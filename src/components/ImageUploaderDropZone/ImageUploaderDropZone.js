@@ -1,60 +1,64 @@
-import React, { Component } from 'react'
-import firebase from 'firebase';
-import {idService} from "../../service/IdService";
+import React, {Component} from 'react'
 import {CircularProgress, Snackbar} from "material-ui";
 import ImagesLoaded from 'react-images-loaded';
 import Dropzone from 'react-dropzone'
 import CloudUploadIcon from 'material-ui/svg-icons/file/cloud-upload';
 import './ImageUploaderDropZone.css';
 import MobileDetect from 'mobile-detect'
+import {authService} from "../../service/AuthService";
+import {uploadService} from "../../service/UploadService";
 
 export default class ImageUploaderDropZone extends Component {
     storageBase = "images"
     dataBase = "images"
     state = {
-        files:[],
+        files: [],
         filename: '',
         isUploading: false,
         progress: 0,
         fileURL: '',
-        iid:'',
-        imageStatus:'',
+        iid: '',
+        imageStatus: '',
         openSnackBar: false,
         errorMessage: '',
         acceptedFiles: this.props.acceptedFiles || ['image/jpeg', 'image/png'],
-        mobile:null
+        mobile: null
     };
 
+    uid = null;
 
-    componentDidMount(){
+    componentDidMount() {
         var md = new MobileDetect(window.navigator.userAgent);
-        this.setState({mobile:md.mobile()});
-        console.log(md.mobile());
+        this.setState({mobile: md.mobile()});
+        console.log("device type (null = web browser) :" + md.mobile());
+        this.removeListener = authService.onAuthStateChanged((user) => {
+            if(user){
+                this.uid = user.uid
+            }else {
+                this.uid = null;
+            }
+        });
     }
+
+    componentWillUnmount() {
+        this.removeListener();
+    }
+
     handleUploadStart = () => this.setState({isUploading: true, progress: 0});
     handleProgress = (progress) => this.setState({progress});
     handleUploadError = (error) => {
         this.setState({isUploading: false});
         console.error(error);
     }
-    handleUploadSuccess = (filename) => {
-        this.setState({filename: filename, progress: 100});
-        var user = firebase.auth().currentUser;
-        firebase.storage().ref(this.storageBase).child(filename).getDownloadURL().then((url) =>{
-            var fileId = filename.replace(/\.[^/.]+$/, "");
-            this.setState({fileURL: url,iid:fileId});
-            firebase.database().ref(this.dataBase+'/' + fileId).set({
-                url: url,
-                uid: user.uid
-            });
-        });
+
+    handleOnAlways = (instance) => {
     };
 
-    handleOnAlways = (instance) => {};
+    handleOnProgress = (instance, image) => {
+    };
 
-    handleOnProgress = (instance, image) => {};
-
-    handleOnFail = (instance) => {};
+    handleOnFail = (instance) => {
+    };
 
     handleDone = (instance) => {
         this.setState({isUploading: false});
@@ -62,7 +66,7 @@ export default class ImageUploaderDropZone extends Component {
     };
 
     onDrop(files) {
-        if(files.length!==1){
+        if (files.length !== 1) {
             this.setState({
                 openSnackBar: true,
                 errorMessage: 'Cannot upload more than 1 item.',
@@ -74,19 +78,9 @@ export default class ImageUploaderDropZone extends Component {
         var metadata = {
             contentType: file.type,
         };
-        var user = firebase.auth().currentUser;
-        var ref = firebase.storage().ref(this.storageBase);
-        var filename = idService.makeid();
-        ref.child(filename).put(file,metadata).then(()=>{
-            ref.child(filename).getDownloadURL().then((url) =>{
-                var fileId = filename.replace(/\.[^/.]+$/, "");
-                this.setState({fileURL: url,iid:fileId});
-                firebase.database().ref(this.dataBase+'/' + fileId).set({
-                    url: url,
-                    uid: user.uid
-                });
-            });
-        })
+        uploadService.uploadFile(file,metadata).then((data)=>{
+            this.setState({fileURL: data.fileURL, iid: data.iid});
+        });
     }
 
     onDropRejected() {
@@ -102,42 +96,43 @@ export default class ImageUploaderDropZone extends Component {
         });
     };
 
-    render () {
+    render() {
         const fileSizeLimit = this.props.maxSize || 3000000;
         return (
             <div className="fcImageContainerStyle">
                 <form className="fcImageContainerStyle">
                     {this.state.isUploading &&
-                        <CircularProgress size={200} thickness={10} />
+                    <CircularProgress size={200} thickness={10}/>
                     }
                     {this.state.fileURL &&
-                        <ImagesLoaded
-                            className="fcImageContainerStyle"
-                            onAlways={this.handleOnAlways}
-                            onProgress={this.handleOnProgress}
-                            onFail={this.handleOnFail}
-                            done={this.handleDone}
-                            background=".image" // true or child selector
-                        >
-                            <img className="fcImageContainerStyle" src={this.state.fileURL} alt="" />
-                        </ImagesLoaded>
+                    <ImagesLoaded
+                        className="fcImageContainerStyle"
+                        onAlways={this.handleOnAlways}
+                        onProgress={this.handleOnProgress}
+                        onFail={this.handleOnFail}
+                        done={this.handleDone}
+                        background=".image" // true or child selector
+                    >
+                        <img className="fcImageContainerStyle" src={this.state.fileURL} alt=""/>
+                    </ImagesLoaded>
                     }
                     {(!this.state.fileURL && !this.state.isUploading) &&
-                        <Dropzone
-                            accept={this.state.acceptedFiles.join(',')}
-                            onDrop={this.onDrop.bind(this)}
-                            className={'dropZone'}
-                            acceptClassName={'stripes'}
-                            rejectClassName={'rejectStripes'}
-                            onDropRejected={this.onDropRejected.bind(this)}
-                            maxSize={fileSizeLimit}
-                        >
-                            <div className={'dropzoneTextStyle'}>
-                                {(this.state.mobile==null) && <p className={'dropzoneParagraph'}>{'Drag and drop an image file here or click'}</p>}
-                                <br/>
-                                <CloudUploadIcon className={'uploadIconSize'}/>
-                            </div>
-                        </Dropzone>
+                    <Dropzone
+                        accept={this.state.acceptedFiles.join(',')}
+                        onDrop={this.onDrop.bind(this)}
+                        className={'dropZone'}
+                        acceptClassName={'stripes'}
+                        rejectClassName={'rejectStripes'}
+                        onDropRejected={this.onDropRejected.bind(this)}
+                        maxSize={fileSizeLimit}
+                    >
+                        <div className={'dropzoneTextStyle'}>
+                            {(this.state.mobile == null) &&
+                            <p className={'dropzoneParagraph'}>{'Drag and drop an image file here or click'}</p>}
+                            <br/>
+                            <CloudUploadIcon className={'uploadIconSize'}/>
+                        </div>
+                    </Dropzone>
                     }
                     <Snackbar
                         open={this.state.openSnackBar}

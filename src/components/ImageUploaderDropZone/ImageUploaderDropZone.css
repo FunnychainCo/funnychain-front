@@ -16,7 +16,7 @@
 
 .fcImageContainerStyle{
     max-width: 100%;
-    max-height: -webkit-fill-available;
+    max-height: stretch;
 }
 
 .dropZone {

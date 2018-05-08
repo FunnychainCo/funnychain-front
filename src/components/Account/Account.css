@@ -1,0 +1,40 @@
+.accountPaperWidth{
+    max-width:50%;
+    width: stretch;
+}
+
+.accountPaper{
+    margin: 20px;
+}
+
+@media (orientation: landscape) {
+    .accountPaperWidth{
+        max-width:50%;
+    }
+}
+
+@media (orientation: portrait){
+    .accountPaperWidth{
+        max-width:100%;
+    }
+}
+
+.fcCenteredContainer{
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.fcAvatarContent{
+    margin: 20px;
+}
+
+.fcContent{
+    flex: 0 1 auto;
+    overflow: hidden;
+}
+
+.fcEditButton{
+    width: auto !important;
+    height: auto !important;
+}

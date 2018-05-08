@@ -1,63 +1,121 @@
-import React, { Component } from 'react'
-import {idService} from "../../service/IdService";
-import firebase from 'firebase';
+import React, {Component} from 'react'
 import {Dialog, FlatButton, FloatingActionButton, TextField} from "material-ui";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import {firebaseAuthService} from "../../service/FirebaseAuthService";
+import {memeService} from "../../service/MemeService";
+import {userNotificationService} from "../../service/UserNotificationService";
+import {authService} from "../../service/AuthService";
 
-export default class CreateMemeDialogFab extends Component {
-    dataBase = "memes"
+
+export class CreateMemeDialog extends Component {
+
     state = {
         title: "",
-        open: false,
-        iid: null,
-        logged:false
+        iid: null
+    };
+
+    titleValid = false;
+    imageValid = false;
+
+    componentDidMount() {
+        console.log("create meme did mount");
+        this.props.onRef(this);
     }
 
-    componentDidMount () {
-        this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
+    componentWillUnmount() {
+        this.props.onRef(null);
+    }
+
+    post = () => { //use this form to have acces to this
+        if (this.state.imageURL === null || this.state.imageURL === "") {
+            userNotificationService.notifyUser("A image is required");
+        }
+        if (this.state.title === null || this.state.title.replace(" ", "") === "") {
+            userNotificationService.notifyUser("A title is required");
+        }
+        var memeToCreate = {
+            iid: this.state.iid,
+            uid: null,//will be filled later
+            title: this.state.title,
+            created: null //will be filled later
+        };
+        memeService.createMeme(memeToCreate);
+        this.props.handleClose();
+    }
+
+    handleChange = (event) => {
+        var newTitle = event.target.value;
+        this.setState({
+            title: newTitle,
+        });
+        if (newTitle === null || newTitle.replace(" ", "") === "") {
+            this.titleValid = false;
+        } else {
+            this.titleValid = true;
+        }
+        this.props.onChange(this);
+    };
+
+    onImageLoaded = (image) => {
+        this.setState({iid: image.iid});
+        if (this.state.imageURL === null || this.state.imageURL === "") {
+            this.imageValid = false;
+        } else {
+            this.imageValid = true;
+        }
+        this.props.onChange(this);
+    };
+
+    render() {
+        return (
+            <div>
+                <TextField
+                    id="text-field-controlled"
+                    value={this.state.title}
+                    hintText="Title"
+                    onChange={this.handleChange}
+                    fullWidth={true}
+                />
+                <ImageUploaderDropZone onImageLoaded={this.onImageLoaded}/>
+            </div>
+        )
+    }
+}
+
+export default class CreateMemeDialogFab extends Component {
+    state = {
+        open: false,
+        logged: false,
+        valid: false
+    }
+
+    memeCreateRer = null;
+
+    componentDidMount() {
+        this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({
-                logged: user?true:false
+                logged: user ? true : false
             });
         })
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
         this.removeListener();
     }
-
-    post = () => { //use this form to have acces to this
-        console.log(this.state.imageURL);
-        console.log(this.state.title);
-        var user = firebase.auth().currentUser;
-        firebase.database().ref(this.dataBase+'/' + idService.makeid()).set({
-            iid: this.state.iid,
-            uid: user.uid,
-            title:this.state.title
-        });
-        this.handleClose();
-    }
-    popupCreateMeme = () => {
-        this.setState({open: true});
-    }
-    handleChange = (event) => {
-        this.setState({
-            title: event.target.value,
-        });
-    };
-    handleOpen = () => {
-        this.setState({open: true});
-    };
 
     handleClose = () => {
         this.setState({open: false});
     };
 
-    onImageLoaded = (image) => {
-        this.setState({iid: image.iid});
+    handleChange = (ref) => {
+        this.setState({valid: ref.imageValid && ref.titleValid});
     };
-    render () {
+
+    popupCreateMeme = () => {
+        this.setState({open: true});
+    };
+
+    render() {
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -67,7 +125,10 @@ export default class CreateMemeDialogFab extends Component {
             <FlatButton
                 label="Submit"
                 primary={true}
-                onClick={this.post}
+                onClick={() => {
+                    this.memeCreateRer.post();
+                }}
+                disabled={!this.state.valid}
             />,
         ];
         const style = {
@@ -87,21 +148,16 @@ export default class CreateMemeDialogFab extends Component {
                     open={this.state.open}
                     onRequestClose={this.handleClose}
                 >
-                    <TextField
-                        id="text-field-controlled"
-                        value={this.state.title}
-                        hintText="Title"
-                        onChange={this.handleChange}
-                    />
-                    <ImageUploaderDropZone onImageLoaded={this.onImageLoaded} />
+                    <CreateMemeDialog onRef={(ref) => this.memeCreateRer = ref} handleClose={this.handleClose}
+                                      onChange={this.handleChange}/>
                 </Dialog>
 
                 {this.state.logged &&
-                    <FloatingActionButton
-                        onClick={this.popupCreateMeme}
-                        style={style}>
-                        <ContentAdd/>
-                    </FloatingActionButton>
+                <FloatingActionButton
+                    onClick={this.popupCreateMeme}
+                    style={style}>
+                    <ContentAdd/>
+                </FloatingActionButton>
                 }
             </div>
         )
