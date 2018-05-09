@@ -2,7 +2,6 @@ import 'bootstrap/dist/css/bootstrap.css'
 import React, {Component} from "react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import Header from "./components/Header/Header";
-import LeftNav from "./components/LeftNav/LeftNav";
 import {Route, BrowserRouter, Switch} from 'react-router-dom'
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
@@ -13,6 +12,7 @@ import Account from "./components/Account/Account";
 import "./App.css"
 import {Snackbar} from "material-ui";
 import {userNotificationService} from "./service/UserNotificationService";
+import createMuiTheme from "material-ui/es/styles/createMuiTheme";
 
 class App extends Component {
     state = {
@@ -56,13 +56,13 @@ class App extends Component {
     };
 
     render() {
+        const theme = createMuiTheme();
         return (
             <BrowserRouter>
-                <MuiThemeProvider>
+                <MuiThemeProvider theme={theme}>
                     <div className="fullSpace">
                         <Header/>
                         <div className="fullSpace">
-                            <LeftNav/>
                             <Switch className="fullSpace">
                                 <Route className="fullSpace" path='/' exact component={Home}/>
                                 <Route className="fullSpace" path='/account' exact component={Account}/>

@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {CircularProgress, Snackbar} from "material-ui";
 import ImagesLoaded from 'react-images-loaded';
 import Dropzone from 'react-dropzone'
-import CloudUploadIcon from 'material-ui/svg-icons/file/cloud-upload';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './ImageUploaderDropZone.css';
 import MobileDetect from 'mobile-detect'
 import {authService} from "../../service/AuthService";

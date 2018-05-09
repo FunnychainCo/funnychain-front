@@ -1,61 +1,36 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import AppBar from 'material-ui/AppBar';
 import {leftMenuService} from "../../service/LeftMenuService";
-import {Avatar, IconButton, IconMenu, MenuItem} from "material-ui";
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import {authService} from "../../service/AuthService";
 import LoginDialog from "../LoginDialog/LoginDialog";
 import RegisterDialog from "../RegisterDialog/RegisterDialog";
-import Link from "react-router-dom/es/Link";
+import Logged from "./Logged";
+import NotLogged from "./NotLogged";
+import AccountDrawer from "../Account/AccountDrawer";
+import Toolbar from "material-ui/es/Toolbar/Toolbar";
+import Typography from "material-ui/es/Typography/Typography";
+import withStyles from "material-ui/es/styles/withStyles";
 
-class NotLogged extends Component {
-    render() {
-        return (
-            <IconMenu
-                iconButtonElement={
-                    <IconButton><MoreVertIcon/></IconButton>
-                }
-                targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-            >
-                <MenuItem primaryText="Login" onClick={() => {
-                    this.props.onDialogLogin();
-                }}/>
-                <MenuItem primaryText="Register" onClick={() => {
-                    this.props.onDialogRegister();
-                }}/>
-            </IconMenu>
-        )
-    }
-}
+const styles = {
+    root: {
+        flexGrow: 1,
+    },
+    flex: {
+        flex: 1,
+    },
+    menuButton: {
+        marginLeft: -12,
+        marginRight: 20,
+    },
+};
 
-class Logged extends Component {
-    state={
-        user:null
-    }
-    componentDidMount() {
-        this.removeListener = authService.onAuthStateChanged((user) => {
-            this.setState({user: user});
-        })
-    }
-
-    componentWillUnmount() {
-        this.removeListener();
-    }
-
-    render() {
-
-        return <div>{(this.state.user!==null) && <Link to="/account"><Avatar src={this.state.user.avatar.url}/></Link>}
-        </div>
-    }
-}
-
-
-export default class Header extends Component {
+class Header extends Component {
     state = {
         logged: false,
         dialogLogin: false,
-        dialogRegister: false
+        dialogRegister: false,
+        drawerOpen:false
     }
 
     componentDidMount() {
@@ -83,23 +58,34 @@ export default class Header extends Component {
     }
 
     render() {
+        const { classes } = this.props;
         return (
-            <div>
-                <AppBar
-                    title="FunnyChain"
-                    showMenuIconButton={false}
-                    onLeftIconButtonClick={this.onLeftIconButtonClick}
-                    iconElementRight={this.state.logged ?
-                        <Logged/> :
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="title" color="inherit" className={classes.flex}>
+                        FunnyChain
+                    </Typography>
+                    <div>
+                    {this.state.logged ?
+                        <Logged onAccountClick={()=>{this.setState({drawerOpen:true})}}/> :
                         <NotLogged
                             onDialogLogin={this.openDialogLogin}
                             onDialogRegister={this.openDialogRegister}
                         />}
-                />
+                    </div>
+                </Toolbar>
                 <LoginDialog open={this.state.dialogLogin} onRequestClose={() => this.setState({dialogLogin: false})}/>
                 <RegisterDialog open={this.state.dialogRegister}
                                 onRequestClose={() => this.setState({dialogRegister: false})}/>
-            </div>
+                <AccountDrawer open={this.state.drawerOpen}
+                               onRequestChange={(open)=>{this.setState({drawerOpen:open})}}/>
+            </AppBar>
         )
     }
 }
+
+Header.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(Header);

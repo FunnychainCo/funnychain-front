@@ -1,10 +1,14 @@
 import React, {Component} from 'react'
-import {Dialog, FlatButton, FloatingActionButton, TextField} from "material-ui";
+import {Dialog, Button, TextField} from "material-ui";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
-import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentAdd from '@material-ui/icons/Add';
 import {memeService} from "../../service/MemeService";
 import {userNotificationService} from "../../service/UserNotificationService";
 import {authService} from "../../service/AuthService";
+import DialogContent from "material-ui/es/Dialog/DialogContent";
+import DialogActions from "material-ui/es/Dialog/DialogActions";
+import DialogTitle from "material-ui/es/Dialog/DialogTitle";
+import ModalPage from "../ModalPage/ModalPage";
 
 
 export class CreateMemeDialog extends Component {
@@ -72,9 +76,9 @@ export class CreateMemeDialog extends Component {
                 <TextField
                     id="text-field-controlled"
                     value={this.state.title}
-                    hintText="Title"
+                    label="Title"
                     onChange={this.handleChange}
-                    fullWidth={true}
+                    fullWidth
                 />
                 <ImageUploaderDropZone onImageLoaded={this.onImageLoaded}/>
             </div>
@@ -116,21 +120,6 @@ export default class CreateMemeDialogFab extends Component {
     };
 
     render() {
-        const actions = [
-            <FlatButton
-                label="Cancel"
-                primary={true}
-                onClick={this.handleClose}
-            />,
-            <FlatButton
-                label="Submit"
-                primary={true}
-                onClick={() => {
-                    this.memeCreateRer.post();
-                }}
-                disabled={!this.state.valid}
-            />,
-        ];
         const style = {
             margin: 0,
             top: 'auto',
@@ -141,23 +130,33 @@ export default class CreateMemeDialogFab extends Component {
         };
         return (
             <div>
-                <Dialog
-                    title="Post"
-                    actions={actions}
-                    modal={false}
+                <ModalPage
                     open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    onClose={this.handleClose}
                 >
+                    <DialogTitle>Post</DialogTitle>
+                    <DialogContent>
                     <CreateMemeDialog onRef={(ref) => this.memeCreateRer = ref} handleClose={this.handleClose}
                                       onChange={this.handleChange}/>
-                </Dialog>
+                    </DialogContent>
+
+                    <DialogActions>
+                        <Button onClick={this.handleClose}>Cancel</Button>
+                        <Button onClick={() => {
+                                this.memeCreateRer.post();
+                            }}
+                            disabled={!this.state.valid}
+                        >Submit</Button>
+                    </DialogActions>
+                </ModalPage>
 
                 {this.state.logged &&
-                <FloatingActionButton
+                <Button
+                    variant="fab"
                     onClick={this.popupCreateMeme}
                     style={style}>
                     <ContentAdd/>
-                </FloatingActionButton>
+                </Button>
                 }
             </div>
         )

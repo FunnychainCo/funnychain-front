@@ -3,6 +3,7 @@ import axios from 'axios'
 import {mediaService} from "./MediaService";
 import firebase from "firebase/index";
 import PropTypes from "prop-types";
+import EventEmitter from 'eventemitter3'
 
 const suggestUsername = require('suggest-username');
 
@@ -20,7 +21,20 @@ export class AuthService {
         uid: PropTypes.string,
         avatar: PropTypes.any
     };
+    eventEmitter = new EventEmitter();
+    currentUserUid = null;
 
+    constructor() {
+        var removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
+            if(user==null){
+                this.currentUserUid=null;
+                this.eventEmitter.emit('AuthStateChanged',null);
+            }else {
+                this.currentUserUid=user.uid;
+                this.eventEmitter.emit('AuthStateChanged',user.uid);
+            }
+        });
+    }
 
     changeEmail(newEmail) {
         return new Promise((resolve, reject) => {
@@ -28,7 +42,10 @@ export class AuthService {
             user.updateEmail(newEmail).then(() => {
                 firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/email')
                     .set(newEmail)
-                    .then(() => resolve("ok"));
+                    .then(() =>{
+                        this.eventEmitter.emit('AuthStateChanged',user.uid);
+                        resolve("ok")
+                    });
             }).catch((error) => {
                 console.error(error);
             });
@@ -51,7 +68,10 @@ export class AuthService {
             var user = firebase.auth().currentUser;
             firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/displayName')
                 .set(newDisplayName)
-                .then(() => resolve("ok"));
+                .then(() =>{
+                    this.eventEmitter.emit('AuthStateChanged',user.uid);
+                    resolve("ok");
+                });
         });
     }
 
@@ -60,7 +80,10 @@ export class AuthService {
             var user = firebase.auth().currentUser;
             firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid+'/avatarIid')
                 .set(newAvatarIid)
-                .then(() => resolve("ok"));
+                .then(() => {
+                    this.eventEmitter.emit('AuthStateChanged',user.uid);
+                    resolve("ok");
+                });
         });
     }
 
@@ -72,16 +95,18 @@ export class AuthService {
     }
 
     onAuthStateChanged(callback){
-        var removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
-            if(user==null){
+        var wrapedCallback = (uid)=>{
+            if(uid==null){
                 callback(null);
-            }else {
-                this.loadUserData(user.uid).then((data) => {
-                    callback(data);
-                });
+                return;
             }
-        });
-        return removeListener;
+            this.loadUserData(uid).then((data) => {
+                callback(data);
+            });
+        };
+        this.eventEmitter.on('AuthStateChanged',wrapedCallback);
+        wrapedCallback(this.currentUserUid);//initial call
+        return ()=>{this.eventEmitter.off('AuthStateChanged',callback)};
     }
 
     loadUserData(uid) {

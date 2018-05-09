@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import {Dialog} from "material-ui";
 import Register from "../Register/Register";
+import DialogContent from "material-ui/es/Dialog/DialogContent";
+import ModalPage from "../ModalPage/ModalPage";
 
 export default class LoginDialog extends Component {
     handleClose = () => {
@@ -9,13 +11,14 @@ export default class LoginDialog extends Component {
 
     render () {
         return (
-            <Dialog
-                modal={false}
+            <ModalPage
                 open={this.props.open}
-                onRequestClose={this.handleClose}
+                onClose={this.handleClose}
             >
+                <DialogContent>
                 <Register onCompleted={this.handleClose}/>
-            </Dialog>
+                </DialogContent>
+            </ModalPage>
         )
     }
 }

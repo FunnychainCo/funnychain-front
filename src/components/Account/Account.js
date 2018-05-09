@@ -1,12 +1,15 @@
 import React, {Component} from 'react'
 import {authService} from "../../service/AuthService";
-import {Avatar, CircularProgress, Dialog, FlatButton, IconButton, Paper, TextField} from "material-ui";
-import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
-import VpnKey from 'material-ui/svg-icons/communication/vpn-key';
+import {Avatar, CircularProgress, Dialog, Button, IconButton, Paper, TextField} from "material-ui";
+import ModeEdit from '@material-ui/icons/ModeEdit';
+import VpnKey from '@material-ui/icons/VpnKey';
 
 import "./Account.css";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
-import Link from "react-router-dom/es/Link";
+import ModalPage from "../ModalPage/ModalPage";
+import DialogTitle from "material-ui/es/Dialog/DialogTitle";
+import DialogContent from "material-ui/es/Dialog/DialogContent";
+import DialogActions from "material-ui/es/Dialog/DialogActions";
 
 export default class Account extends Component {
     state = {
@@ -27,14 +30,14 @@ export default class Account extends Component {
 
     componentDidMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
-            if(!user){
+            if (!user) {
                 this.setState({
                     dialog: {
                         user: null,
-                        loading:true
+                        loading: true
                     }
                 });
-            }else {
+            } else {
                 this.userId = user.uid;
                 this.updateUser();
             }
@@ -168,89 +171,73 @@ export default class Account extends Component {
     render() {
         return (
             <div className="fcCenteredContainer">
-                {!this.state.loading && <Paper className="accountPaper accountPaperWidth fcContent" zDepth={2}>
+                {!this.state.loading && <div className="accountPaper accountPaperWidth fcContent">
                     <div className="fcCenteredContainer">
                         <Avatar
                             onClick={this.openChangeAvatar}
                             className="fcContent fcAvatarContent"
                             src={this.state.user.avatar.url}
-                            size={200}/>
+                        />
                     </div>
-                    <div className="fcCenteredContainer">
+                    <div className="fcLeftAlignContainer">
                         <div className="fcContent">
-                            <IconButton onClick={this.openChangeDisplayName} className="fcEditButton"
-                                        tooltip="Edit"><ModeEdit/></IconButton>{this.state.user.displayName}
-                        </div>
-                    </div>
-                    <div className="fcCenteredContainer">
-                        <div className="fcContent">
-                            <IconButton onClick={this.openChangeEmail} className="fcEditButton"
-                                        tooltip="Edit"><ModeEdit/></IconButton>{this.state.user.email}
-                        </div>
-                    </div>
-                    <div className="fcCenteredContainer">
-                        <div className="fcContent">
-                            <FlatButton
-                                onClick={this.openChangePassword}
-                                label="Change password"
-                                icon={<VpnKey/>}
-                            />
-                        </div>
-                    </div>
-                    <div className="fcCenteredContainer">
-                        <div className="fcContent">
-                            <Link to="/"><FlatButton
-                                onClick={()=>{setTimeout(()=>{authService.logout();},500)}} //aplly link then logout
-                                label="Logout"
-                                icon={<VpnKey/>}
-                            /></Link>
+                            <Button onClick={this.openChangeDisplayName}
+                            ><ModeEdit/>{this.state.user.displayName}</Button><br/>
+                            <Button onClick={this.openChangeEmail}
+                            ><ModeEdit/>{this.state.user.email}</Button><br/>
+                            <Button onClick={this.openChangePassword}
+                            ><VpnKey/>Change password</Button><br/>
+                            <Button onClick={() => {
+                                setTimeout(() => {
+                                    authService.logout();
+                                }, 500);
+                                this.props.onLogout();
+                            }}
+                            ><VpnKey/>Logout</Button><br/>
                         </div>
                     </div>
 
-                    <Dialog
-                        title={this.state.dialog.title}
-                        actions={[
-                            <FlatButton
-                                label="Cancel"
-                                primary={true}
-                                onClick={this.handleClose}
-                            />,
-                            <FlatButton
-                                label="Change"
-                                primary={true}
-                                onClick={this.handleSaveAndClose}
-                                disabled={!this.state.dialog.valid}
-                            />,
-                        ]}
-                        modal={false}
+                    <ModalPage
                         open={this.state.dialog.open}
                         onRequestClose={this.handleClose}
                     >
-                        {this.state.dialog.type === "password" &&
-                        <TextField
-                            onChange={(obj, newString) => {
-                                this.dialogValueCurrentPassword = newString;
-                                this.checkValidity();
-                            }}
-                            type="password"
-                            floatingLabelText="Current password"
-                            fullWidth={true}/>
-                        }
-                        {this.state.dialog.type !== "avatar" &&
-                        <TextField
-                            onChange={(obj, newString) => {
-                                this.dialogValue = newString;
-                                this.checkValidity();
-                            }}
-                            type={this.state.dialog.type === "password" ? "password" : "text"}
-                            floatingLabelText={this.state.dialog.title}
-                            fullWidth={true}/>
-                        }
-                        {this.state.dialog.type === "avatar" &&
-                        <ImageUploaderDropZone onImageLoaded={this.onImageLoaded}/>
-                        }
-                    </Dialog>
-                </Paper>}
+                        <DialogTitle>{this.state.dialog.title}</DialogTitle>
+                        <DialogContent>
+                            {this.state.dialog.type === "password" &&
+                            <TextField
+                                onChange={(event) => {
+                                    this.dialogValueCurrentPassword = event.target.value;
+                                    this.checkValidity();
+                                }}
+                                type="password"
+                                label="Current password"
+                                fullWidth={true}/>
+                            }
+                            {this.state.dialog.type !== "avatar" &&
+                            <TextField
+                                onChange={(event) => {
+                                    this.dialogValue = event.target.value;
+                                    this.checkValidity();
+                                }}
+                                type={this.state.dialog.type === "password" ? "password" : "text"}
+                                label={this.state.dialog.title}
+                                fullWidth={true}/>
+                            }
+                            {this.state.dialog.type === "avatar" &&
+                            <ImageUploaderDropZone onImageLoaded={this.onImageLoaded}/>
+                            }
+                        </DialogContent>
+                        <DialogActions>
+                            <Button
+                                onClick={this.handleClose}
+                            >Cancel</Button>
+                            <Button
+                                onClick={this.handleSaveAndClose}
+                                disabled={!this.state.dialog.valid}
+                            >Change</Button>
+                        </DialogActions>
+                    </ModalPage>
+                </div>}
                 {this.state.loading && <CircularProgress size={80} thickness={5}/>}
             </div>
         )

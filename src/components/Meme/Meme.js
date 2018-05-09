@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
-import {Card, CardHeader, CardMedia, CardTitle, CircularProgress} from "material-ui";
+import {Card, CardHeader, CardMedia, CircularProgress} from "material-ui";
 import ImagesLoaded from 'react-images-loaded';
 import "./Meme.css"
 import {authService} from "../../service/AuthService";
 import {mediaService} from "../../service/MediaService";
+import {Avatar} from "material-ui";
 
 
 /**
@@ -53,10 +54,13 @@ export default class Meme extends Component {
         return <div>
             {this.state.fullyLoaded &&
             <Card>
-                <CardHeader title={this.state.user.displayName} avatar={this.state.user.avatar.url}/>
-                <CardMedia overlay={<CardTitle title={this.state.meme.title}/>}>
-                    <img src={this.state.image.url} alt=""/>
-                </CardMedia>
+                <CardHeader
+                    title={this.state.user.displayName}
+                    avatar={
+                        <Avatar alt={this.state.user.displayName} src={this.state.user.avatar.url} />
+                    }
+                />
+                <img className="memeImage" src={this.state.image.url} alt=""/>
             </Card>
             }
             {(!this.state.imageLoaded && this.state.image) &&
