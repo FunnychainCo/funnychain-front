@@ -31,7 +31,7 @@ export default class Account extends Component {
     iid = "";
 
     componentDidMount() {
-        this.removeListenerPWA = pwaService.getEmitter().on(pwaService.installPromptChange, (callback) => {
+        this.removeListenerPWA = pwaService.on((callback) => {
             this.setState({displayAddToHomeButton: callback == null ? false : true});
         });
 

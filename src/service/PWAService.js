@@ -46,8 +46,11 @@ export class PWAService {
         this.pwaAddToScreenCallBack();
     }
 
-    getEmitter(){
-        return this.eventEmitter;
+    on(callback){
+        this.eventEmitter.on(pwaService.installPromptChange,callback);
+        return ()=>{
+            this.eventEmitter.off(pwaService.installPromptChange,callback);
+        };
     }
 
 }
