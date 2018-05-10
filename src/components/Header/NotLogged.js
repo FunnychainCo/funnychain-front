@@ -31,8 +31,8 @@ export default class NotLogged extends Component {
                     open={Boolean(this.state.anchorEl)}
                     onClose={this.handleClose}
                 >
-                    <MenuItem onClick={this.props.onDialogLogin}>Login</MenuItem>
-                    <MenuItem onClick={this.props.onDialogRegister}>Register</MenuItem>
+                    <MenuItem onClick={()=>{this.handleClose();this.props.onDialogLogin();}}>Login</MenuItem>
+                    <MenuItem onClick={()=>{this.handleClose();this.props.onDialogRegister();}}>Register</MenuItem>
                 </Menu>
             </div>
         )

@@ -15,7 +15,9 @@ class ModalPage extends Component {
                 onClose={this.props.onRequestClose}
                 actions={this.props.actions}
             >
+                <div>{/*add div to have the button right after the text field*/}
                 {this.props.children}
+                </div>
             </Dialog>
         )
     }

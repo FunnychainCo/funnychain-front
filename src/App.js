@@ -3,12 +3,9 @@ import React, {Component} from "react";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import Header from "./components/Header/Header";
 import {Route, BrowserRouter, Switch} from 'react-router-dom'
-import Login from "./components/Login/Login";
-import Register from "./components/Register/Register";
 import Home from "./containers/Home";
 import {firebaseAuthService} from "./service/FirebaseAuthService";
 import Version from "./components/Version/Version";
-import Account from "./components/Account/Account";
 import "./App.css"
 import {Snackbar} from "material-ui";
 import {userNotificationService} from "./service/UserNotificationService";
@@ -66,9 +63,6 @@ class App extends Component {
                             <Switch className="fullSpace">
                                 <Route className="fullSpace" path='/index.html' exact component={Home}/>
                                 <Route className="fullSpace" path='/' exact component={Home}/>
-                                <Route className="fullSpace" path='/account' exact component={Account}/>
-                                <Route className="fullSpace" path='/login' exact component={Login}/>
-                                <Route className="fullSpace" path='/register' exact component={Register}/>
                                 <Route className="fullSpace" component={Home}/>
                             </Switch>
                         </div>
