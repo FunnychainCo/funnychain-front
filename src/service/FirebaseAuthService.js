@@ -1,20 +1,19 @@
 import firebase from 'firebase'
+import {backEndPropetiesProvider} from "./BackEndPropetiesProvider";
 
 export class FirebaseAuthService {
-    config = {
-        apiKey: "AIzaSyClb51m-dOtbsZ4xlzQrGu6xMhLlfxilCg",
-        authDomain: "funnychain-b2243.firebaseapp.com",
-        databaseURL: "https://funnychain-b2243.firebaseio.com",
-        projectId: "funnychain-b2243",
-        storageBucket: "funnychain-b2243.appspot.com",
-        messagingSenderId: "428682484079"
-    };
-
     ref = null;
     firebaseAuth = null;
 
     constructor() {
-        firebase.initializeApp(this.config);
+        var config = {};
+        config.apiKey = backEndPropetiesProvider.getProperty('apiKey');
+        config.authDomain = backEndPropetiesProvider.getProperty('authDomain');
+        config.databaseURL = backEndPropetiesProvider.getProperty('databaseURL');
+        config.projectId = backEndPropetiesProvider.getProperty('projectId');
+        config.storageBucket = backEndPropetiesProvider.getProperty('storageBucket');
+        config.messagingSenderId = backEndPropetiesProvider.getProperty('messagingSenderId');
+        firebase.initializeApp(config);
         this.ref = firebase.database().ref();
         this.firebaseAuth = firebase.auth;
     }

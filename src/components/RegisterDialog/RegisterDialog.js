@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import {Dialog} from "material-ui";
 import Register from "../Register/Register";
-import DialogContent from "material-ui/es/Dialog/DialogContent";
+import {DialogContent} from "material-ui";
 import ModalPage from "../ModalPage/ModalPage";
 
 export default class LoginDialog extends Component {

@@ -4,8 +4,8 @@ import {mediaService} from "./MediaService";
 import firebase from "firebase/index";
 import PropTypes from "prop-types";
 import EventEmitter from 'eventemitter3'
-
-const suggestUsername = require('suggest-username');
+import suggestUsername from '../lib/suggest-username'
+import {backEndPropetiesProvider} from "./BackEndPropetiesProvider";
 
 export class AuthService {
     userDataBaseName = "users";
@@ -25,13 +25,13 @@ export class AuthService {
     currentUserUid = null;
 
     constructor() {
-        var removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
-            if(user==null){
-                this.currentUserUid=null;
-                this.eventEmitter.emit('AuthStateChanged',null);
-            }else {
-                this.currentUserUid=user.uid;
-                this.eventEmitter.emit('AuthStateChanged',user.uid);
+        firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
+            if (user == null) {
+                this.currentUserUid = null;
+                this.eventEmitter.emit('AuthStateChanged', null);
+            } else {
+                this.currentUserUid = user.uid;
+                this.eventEmitter.emit('AuthStateChanged', user.uid);
             }
         });
     }
@@ -42,8 +42,8 @@ export class AuthService {
             user.updateEmail(newEmail).then(() => {
                 firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/email')
                     .set(newEmail)
-                    .then(() =>{
-                        this.eventEmitter.emit('AuthStateChanged',user.uid);
+                    .then(() => {
+                        this.eventEmitter.emit('AuthStateChanged', user.uid);
                         resolve("ok")
                     });
             }).catch((error) => {
@@ -68,8 +68,8 @@ export class AuthService {
             var user = firebase.auth().currentUser;
             firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/displayName')
                 .set(newDisplayName)
-                .then(() =>{
-                    this.eventEmitter.emit('AuthStateChanged',user.uid);
+                .then(() => {
+                    this.eventEmitter.emit('AuthStateChanged', user.uid);
                     resolve("ok");
                 });
         });
@@ -78,25 +78,30 @@ export class AuthService {
     changeAvatar(newAvatarIid) {
         return new Promise((resolve, reject) => {
             var user = firebase.auth().currentUser;
-            firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid+'/avatarIid')
+            firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
                 .set(newAvatarIid)
                 .then(() => {
-                    this.eventEmitter.emit('AuthStateChanged',user.uid);
+                    this.eventEmitter.emit('AuthStateChanged', user.uid);
                     resolve("ok");
                 });
         });
     }
 
-    auth(email, pw) {
-        return firebaseAuthService.firebaseAuth().createUserWithEmailAndPassword(email, pw)
-            .then((user) => {
-                this.saveUser(user);
-            })
+    register(email, pw) {
+        return new Promise((resolve, reject) => {
+            firebaseAuthService.firebaseAuth().createUserWithEmailAndPassword(email, pw)
+                .then((user) => {
+                    this.saveUser(user).then(() => {
+                        this.eventEmitter.emit('AuthStateChanged', user.uid);
+                        resolve("ok");
+                    });
+                })
+        });
     }
 
-    onAuthStateChanged(callback){
-        var wrapedCallback = (uid)=>{
-            if(uid==null){
+    onAuthStateChanged(callback) {
+        var wrapedCallback = (uid) => {
+            if (uid == null) {
                 callback(null);
                 return;
             }
@@ -104,15 +109,21 @@ export class AuthService {
                 callback(data);
             });
         };
-        this.eventEmitter.on('AuthStateChanged',wrapedCallback);
+        this.eventEmitter.on('AuthStateChanged', wrapedCallback);
         wrapedCallback(this.currentUserUid);//initial call
-        return ()=>{this.eventEmitter.off('AuthStateChanged',callback)};
+        return () => {
+            this.eventEmitter.off('AuthStateChanged', callback)
+        };
     }
 
     loadUserData(uid) {
         return new Promise((resolve, reject) => {
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
                 var userData = user.val();
+                if (userData == null) {
+                    resolve(null);
+                    return;
+                }
                 PropTypes.checkPropTypes(this.propTypes, userData, 'prop', 'User');
                 mediaService.loadMediaEntry(userData.avatarIid).then((avatar) => {
                     userData.avatar = avatar;
@@ -166,7 +177,7 @@ export class AuthService {
                 });
             } else {
                 iidPromised = new Promise((resolve, reject) => {
-                    axios.get('http://avatar.admin.rphstudio.net/').then(response => {
+                    axios.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
                         var url = response.data;
                         mediaService.createMediaEntry(url, user.uid).then((fileId) => {
                             resolve(fileId);
@@ -178,7 +189,7 @@ export class AuthService {
                 iidPromised.then(iid => {
                     firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid)
                         .set({
-                            uid:user.uid,
+                            uid: user.uid,
                             email: user.email,
                             displayName: username,
                             avatarIid: iid

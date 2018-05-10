@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Card, CardHeader, CardMedia, CircularProgress} from "material-ui";
+import {Card, CardHeader, CircularProgress} from "material-ui";
 import ImagesLoaded from 'react-images-loaded';
 import "./Meme.css"
 import {authService} from "../../service/AuthService";
@@ -21,7 +21,8 @@ export default class Meme extends Component {
         fullyLoaded: false,
         image: null,
         user: null,
-        meme: null
+        meme: null,
+        insecure : false
     }
 
     computeFullyLoaded() {
@@ -35,6 +36,10 @@ export default class Meme extends Component {
         this.setState({meme: meme});
         //load image data
         mediaService.loadMediaEntry(meme.iid).then(imageValue => {
+            if(!imageValue.url.startsWith("https://")){
+                //do not display insecure meme it breaks the https of app
+                this.setState({insecure: true});
+            }
             this.setState({image: imageValue});
             this.computeFullyLoaded();
             //load user data
@@ -52,7 +57,7 @@ export default class Meme extends Component {
 
     render() {
         return <div>
-            {this.state.fullyLoaded &&
+            {(this.state.fullyLoaded && ! this.state.insecure) &&
             <Card>
                 <CardHeader
                     title={this.state.user.displayName}
@@ -72,7 +77,7 @@ export default class Meme extends Component {
                 <img className="memeImage" src={this.state.image.url} alt=""/>
             </ImagesLoaded>
             }
-            {!this.state.fullyLoaded &&
+            {(!this.state.fullyLoaded && ! this.state.insecure) &&
             <div>
                 <CircularProgress size={120} thickness={5}/>
             </div>

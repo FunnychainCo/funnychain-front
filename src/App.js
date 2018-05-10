@@ -12,7 +12,7 @@ import Account from "./components/Account/Account";
 import "./App.css"
 import {Snackbar} from "material-ui";
 import {userNotificationService} from "./service/UserNotificationService";
-import createMuiTheme from "material-ui/es/styles/createMuiTheme";
+import {createMuiTheme} from "material-ui";
 
 class App extends Component {
     state = {

@@ -1,15 +1,15 @@
 import React, {Component} from 'react'
 import {authService} from "../../service/AuthService";
-import {Avatar, CircularProgress, Dialog, Button, IconButton, Paper, TextField} from "material-ui";
+import {Avatar, CircularProgress, Button, TextField} from "material-ui";
 import ModeEdit from '@material-ui/icons/ModeEdit';
 import VpnKey from '@material-ui/icons/VpnKey';
 
 import "./Account.css";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import ModalPage from "../ModalPage/ModalPage";
-import DialogTitle from "material-ui/es/Dialog/DialogTitle";
-import DialogContent from "material-ui/es/Dialog/DialogContent";
-import DialogActions from "material-ui/es/Dialog/DialogActions";
+import {DialogTitle} from "material-ui";
+import {DialogContent} from "material-ui";
+import {DialogActions} from "material-ui";
 
 export default class Account extends Component {
     state = {

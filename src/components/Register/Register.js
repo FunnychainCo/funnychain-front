@@ -11,7 +11,7 @@ export default class Register extends Component {
   state = { registerError: null }
   handleSubmit = (e) => {
     e.preventDefault()
-    authService.auth(this.email.value, this.pw.value)
+    authService.register(this.email.value, this.pw.value)
         .then(() => {
             this.props.onCompleted();
             console.log("register ok");

@@ -1,13 +1,13 @@
 import React, {Component} from 'react'
-import {Dialog, Button, TextField} from "material-ui";
+import {Button, TextField} from "material-ui";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import ContentAdd from '@material-ui/icons/Add';
 import {memeService} from "../../service/MemeService";
 import {userNotificationService} from "../../service/UserNotificationService";
 import {authService} from "../../service/AuthService";
-import DialogContent from "material-ui/es/Dialog/DialogContent";
-import DialogActions from "material-ui/es/Dialog/DialogActions";
-import DialogTitle from "material-ui/es/Dialog/DialogTitle";
+import {DialogContent} from "material-ui";
+import {DialogActions} from "material-ui";
+import {DialogTitle} from "material-ui";
 import ModalPage from "../ModalPage/ModalPage";
 
 

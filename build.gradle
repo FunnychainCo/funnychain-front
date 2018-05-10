@@ -21,6 +21,11 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 import com.bmuschko.gradle.docker.tasks.container.*
 import com.bmuschko.gradle.docker.tasks.image.*
 
+task appInstall(type: NpmTask) {
+    // install the express package only
+    args = ['install']
+}
+
 task appBuild(type: NpmTask) {
     // install the express package only
     args = ['run', 'build']
@@ -75,12 +80,14 @@ task dockerSaveImage(type: DockerSaveImage) {
 }
 
 task dockerBuildRelease(){
+    dependsOn 'appInstall'
     dependsOn 'appBuild'
     dependsOn 'dockerClean'
     dependsOn 'dockerCopyRessourceDockerConfig'
     dependsOn 'dockerCopyRessource'
     dependsOn 'dockerBuildImage'
     dependsOn 'dockerSaveImage'
+    tasks.findByName('appBuild').mustRunAfter 'appInstall'
     tasks.findByName('dockerClean').mustRunAfter 'appBuild'
     tasks.findByName('dockerBuildImage').mustRunAfter 'dockerCopyRessource'
     tasks.findByName('dockerBuildImage').mustRunAfter 'dockerCopyRessourceDockerConfig'

@@ -8,9 +8,9 @@ import RegisterDialog from "../RegisterDialog/RegisterDialog";
 import Logged from "./Logged";
 import NotLogged from "./NotLogged";
 import AccountDrawer from "../Account/AccountDrawer";
-import Toolbar from "material-ui/es/Toolbar/Toolbar";
-import Typography from "material-ui/es/Typography/Typography";
-import withStyles from "material-ui/es/styles/withStyles";
+import {Toolbar} from "material-ui";
+import {Typography} from "material-ui";
+import {withStyles} from "material-ui";
 
 const styles = {
     root: {

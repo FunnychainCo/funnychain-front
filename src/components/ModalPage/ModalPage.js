@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types';
 import {Dialog} from "material-ui";
 import "./ModalPage.css";
-import withMobileDialog from "material-ui/es/Dialog/withMobileDialog";
+import {withMobileDialog} from "material-ui";
 
 class ModalPage extends Component {
     render() {
