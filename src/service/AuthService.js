@@ -141,16 +141,23 @@ export class AuthService {
     }
 
     login(email, pw) {
-        return firebaseAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
+        return new Promise((resolve, reject) => {
+        firebaseAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
             firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
                 var userValue = userData.val();
                 if (userValue === null) {
                     console.warn("user recreated : ", user);
-                    this.saveUser(user);
+                    this.saveUser(user).then(() => {
+                        this.eventEmitter.emit('AuthStateChanged', user.uid);
+                        resolve("ok");
+                    });
+                }else{
+                    resolve("ok");
                 }
             });
             console.log("logged : ", user);
-        })
+        });
+        });
     }
 
     resetPassword(email) {

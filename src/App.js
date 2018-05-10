@@ -64,11 +64,12 @@ class App extends Component {
                         <Header/>
                         <div className="fullSpace">
                             <Switch className="fullSpace">
+                                <Route className="fullSpace" path='/index.html' exact component={Home}/>
                                 <Route className="fullSpace" path='/' exact component={Home}/>
                                 <Route className="fullSpace" path='/account' exact component={Account}/>
                                 <Route className="fullSpace" path='/login' exact component={Login}/>
                                 <Route className="fullSpace" path='/register' exact component={Register}/>
-                                <Route render={() => <h3>No Match</h3>}/>
+                                <Route className="fullSpace" component={Home}/>
                             </Switch>
                         </div>
                         <Version/>
