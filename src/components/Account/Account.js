@@ -10,11 +10,13 @@ import ModalPage from "../ModalPage/ModalPage";
 import {DialogTitle} from "material-ui";
 import {DialogContent} from "material-ui";
 import {DialogActions} from "material-ui";
+import {pwaService} from "../../service/PWAService";
 
 export default class Account extends Component {
     state = {
         user: null,
         loading: true,
+        displayAddToHomeButton: false,
         dialog: {
             open: false,
             title: "",
@@ -29,6 +31,10 @@ export default class Account extends Component {
     iid = "";
 
     componentDidMount() {
+        this.removeListenerPWA = pwaService.getEmitter().on(pwaService.installPromptChange, (callback) => {
+            this.setState({displayAddToHomeButton: callback == null ? false : true});
+        });
+
         this.removeListener = authService.onAuthStateChanged((user) => {
             if (!user) {
                 this.setState({
@@ -42,10 +48,12 @@ export default class Account extends Component {
                 this.updateUser();
             }
         });
+
     }
 
     componentWillUnmount() {
         this.removeListener();
+        this.removeListenerPWA();
     }
 
     handleClose = () => {
@@ -194,6 +202,10 @@ export default class Account extends Component {
                                 this.props.onLogout();
                             }}
                             ><VpnKey/>Logout</Button><br/>
+                            {this.state.displayAddToHomeButton &&
+                            <Button onClick={() => {
+                                pwaService.triggerAddToHomeScreen();
+                            }}><VpnKey/>Add application to screen</Button>}
                         </div>
                     </div>
 

@@ -10,6 +10,7 @@ import "./App.css"
 import {Snackbar} from "material-ui";
 import {userNotificationService} from "./service/UserNotificationService";
 import {createMuiTheme} from "material-ui";
+import {pwaService} from "./service/PWAService";
 
 class App extends Component {
     state = {
@@ -23,6 +24,7 @@ class App extends Component {
     removeListener = null;
 
     componentDidMount() {
+        pwaService.start();
         this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
             this.setState({
                 authed: user ? true : false,
