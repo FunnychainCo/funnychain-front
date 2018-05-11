@@ -3,7 +3,8 @@ export class BackEndPropetiesProvider {
 
     properties={
         PROD_HOST:"beta.funnychain.co",
-        AVATAR_GENERATION_SERVICE:"https://avatar.admin.rphstudio.net/get_secure_link.php"
+        AVATAR_GENERATION_SERVICE:"https://avatar.admin.rphstudio.net/avatar/get_secure_link.php",
+        USERNAME_GENERATION_SERVICE:"https://avatar.admin.rphstudio.net/username"
     };
     prodProperties={};
     devProperties={};

@@ -4,7 +4,6 @@ import {mediaService} from "./MediaService";
 import firebase from "firebase/index";
 import PropTypes from "prop-types";
 import EventEmitter from 'eventemitter3'
-import suggestUsername from '../lib/suggest-username'
 import {backEndPropetiesProvider} from "./BackEndPropetiesProvider";
 
 export class AuthService {
@@ -177,7 +176,12 @@ export class AuthService {
                     resolve(user.displayName);
                 });
             } else {
-                userNamePromised = suggestUsername();
+                userNamePromised = new Promise((resolve, reject) => {
+                    axios.get(backEndPropetiesProvider.getProperty('USERNAME_GENERATION_SERVICE')).then(response => {
+                        var username = response.data;
+                        resolve(username);
+                    });
+                });
             }
             if (user.photoURL !== null) {
                 //TODO implement this case

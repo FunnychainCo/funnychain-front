@@ -32,6 +32,14 @@
     <meta name="msapplication-TileColor" content="#00aba9">
     <meta name="theme-color" content="#ffffff">
     <title>FunnyChain</title>
+    <script>
+        window._promptEventForPWA = null;
+        window.addEventListener("beforeinstallprompt", function(ev){
+            console.log("early beforeinstallprompt received");
+            ev.preventDefault();// Stop Chrome from asking _now_
+            window._promptEventForPWA = ev;
+        });
+    </script>
 </head>
 <body>
 <noscript>
