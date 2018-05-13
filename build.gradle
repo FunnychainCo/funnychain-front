@@ -75,7 +75,7 @@ task dockerStartContainer(type: DockerStartContainer, dependsOn: dockerCreateCon
 
 task dockerSaveImage(type: DockerSaveImage) {
     tag = 'latest'
-    repository = 'jungle-js'
+    repository = 'funnychain'
     destFile = project.file('build/docker/funnychain-latest.docker_image')
 }
 

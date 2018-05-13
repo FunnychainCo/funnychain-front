@@ -23,6 +23,8 @@ export class AuthService {
     eventEmitter = new EventEmitter();
     currentUserUid = null;
 
+    userCache = {};//{uid:userobj}
+
     constructor() {
         firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
             if (user == null) {
@@ -38,6 +40,7 @@ export class AuthService {
     changeEmail(newEmail) {
         return new Promise((resolve, reject) => {
             var user = firebase.auth().currentUser;
+            this.userCache[user.uid]=null;//invalidate cache
             user.updateEmail(newEmail).then(() => {
                 firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/email')
                     .set(newEmail)
@@ -65,6 +68,7 @@ export class AuthService {
     changeDisplayName(newDisplayName) {
         return new Promise((resolve, reject) => {
             var user = firebase.auth().currentUser;
+            this.userCache[user.uid]=null;//invalidate cache
             firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/displayName')
                 .set(newDisplayName)
                 .then(() => {
@@ -74,9 +78,10 @@ export class AuthService {
         });
     }
 
-    changeAvatar(newAvatarIid) {
+    changeAvatar(newAvatarIid) { 
         return new Promise((resolve, reject) => {
             var user = firebase.auth().currentUser;
+            this.userCache[user.uid]=null;//invalidate cache
             firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
                 .set(newAvatarIid)
                 .then(() => {
@@ -94,9 +99,10 @@ export class AuthService {
                         this.eventEmitter.emit('AuthStateChanged', user.uid);
                         resolve("ok");
                     });
-                }).catch(error => {
-                reject(error);
-            });
+                })
+                .catch(error => {
+                    reject(error);
+                });
         });
     }
 
@@ -119,6 +125,9 @@ export class AuthService {
 
     loadUserData(uid) {
         return new Promise((resolve, reject) => {
+            if(this.userCache[uid]!=null&&this.userCache[uid]!=undefined){
+                resolve(this.userCache[uid]);//continue to update user
+            }
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
                 var userData = user.val();
                 if (userData == null) {
@@ -128,6 +137,7 @@ export class AuthService {
                 PropTypes.checkPropTypes(this.propTypes, userData, 'prop', 'User');
                 mediaService.loadMediaEntry(userData.avatarIid).then((avatar) => {
                     userData.avatar = avatar;
+                    this.userCache[uid]=userData;
                     resolve(userData);
                 });
             }).catch((error) => {
@@ -168,7 +178,7 @@ export class AuthService {
     }
 
     saveUser(user) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject)  => {
             var userNamePromised;
             var iidPromised;
             if (user.displayName !== null) {

@@ -30,11 +30,7 @@ export default class Account extends Component {
     userId = null;
     iid = "";
 
-    componentDidMount() {
-        this.removeListenerPWA = pwaService.on((callback) => {
-            this.setState({displayAddToHomeButton: callback == null ? false : true});
-        });
-
+    componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
             if (!user) {
                 this.setState({
@@ -45,10 +41,17 @@ export default class Account extends Component {
                 });
             } else {
                 this.userId = user.uid;
-                this.updateUser();
+                console.log(user);
+                this.setState({
+                    user: user,
+                    loading: false
+                });
             }
         });
 
+        this.removeListenerPWA = pwaService.on((callback) => {
+            this.setState({displayAddToHomeButton: callback == null ? false : true});
+        });
     }
 
     componentWillUnmount() {
