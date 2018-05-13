@@ -40,7 +40,7 @@ export class AuthService {
     changeEmail(newEmail) {
         return new Promise((resolve, reject) => {
             var user = firebase.auth().currentUser;
-            this.userCache[user.uid]=null;//invalidate cache
+            this.userCache[user.uid] = null;//invalidate cache
             user.updateEmail(newEmail).then(() => {
                 firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/email')
                     .set(newEmail)
@@ -68,7 +68,7 @@ export class AuthService {
     changeDisplayName(newDisplayName) {
         return new Promise((resolve, reject) => {
             var user = firebase.auth().currentUser;
-            this.userCache[user.uid]=null;//invalidate cache
+            this.userCache[user.uid] = null;//invalidate cache
             firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/displayName')
                 .set(newDisplayName)
                 .then(() => {
@@ -78,10 +78,10 @@ export class AuthService {
         });
     }
 
-    changeAvatar(newAvatarIid) { 
+    changeAvatar(newAvatarIid) {
         return new Promise((resolve, reject) => {
             var user = firebase.auth().currentUser;
-            this.userCache[user.uid]=null;//invalidate cache
+            this.userCache[user.uid] = null;//invalidate cache
             firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
                 .set(newAvatarIid)
                 .then(() => {
@@ -95,10 +95,14 @@ export class AuthService {
         return new Promise((resolve, reject) => {
             firebaseAuthService.firebaseAuth().createUserWithEmailAndPassword(email, pw)
                 .then((user) => {
-                    this.saveUser(user).then(() => {
-                        this.eventEmitter.emit('AuthStateChanged', user.uid);
-                        resolve("ok");
-                    });
+                    this.saveUser(user)
+                        .then(() => {
+                            this.eventEmitter.emit('AuthStateChanged', user.uid);
+                            resolve("ok");
+                        })
+                        .catch(error => {
+                            reject(error);
+                        });
                 })
                 .catch(error => {
                     reject(error);
@@ -125,7 +129,7 @@ export class AuthService {
 
     loadUserData(uid) {
         return new Promise((resolve, reject) => {
-            if(this.userCache[uid]!=null&&this.userCache[uid]!=undefined){
+            if (this.userCache[uid] != null && this.userCache[uid] != undefined) {
                 resolve(this.userCache[uid]);//continue to update user
             }
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
@@ -137,7 +141,7 @@ export class AuthService {
                 PropTypes.checkPropTypes(this.propTypes, userData, 'prop', 'User');
                 mediaService.loadMediaEntry(userData.avatarIid).then((avatar) => {
                     userData.avatar = avatar;
-                    this.userCache[uid]=userData;
+                    this.userCache[uid] = userData;
                     resolve(userData);
                 });
             }).catch((error) => {
@@ -178,18 +182,24 @@ export class AuthService {
     }
 
     saveUser(user) {
-        return new Promise((resolve, reject)  => {
-            var userNamePromised;
-            var iidPromised;
+        return new Promise((resolve, reject) => {
+            var userNamePromised = null;
+            var iidPromised = null;
             if (user.displayName !== null) {
                 userNamePromised = new Promise((resolve, reject) => {
                     resolve(user.displayName);
                 });
             } else {
                 userNamePromised = new Promise((resolve, reject) => {
-                    axios.get(backEndPropetiesProvider.getProperty('USERNAME_GENERATION_SERVICE')).then(response => {
+                    //configure default HTTP timeout
+                    const httpClient = axios.create();
+                    httpClient.defaults.timeout = 20000;//ms
+                    httpClient.get(backEndPropetiesProvider.getProperty('USERNAME_GENERATION_SERVICE')).then(response => {
                         var username = response.data;
                         resolve(username);
+                    }).catch(error => {
+                        console.error("fail to generate user name");
+                        resolve("Toto");
                     });
                 });
             }
@@ -202,11 +212,16 @@ export class AuthService {
                 });
             } else {
                 iidPromised = new Promise((resolve, reject) => {
-                    axios.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
+                    const httpClient = axios.create();
+                    httpClient.defaults.timeout = 20000;//ms
+                    httpClient.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
                         var url = response.data;
                         mediaService.createMediaEntry(url, user.uid).then((fileId) => {
                             resolve(fileId);
                         });
+                    }).catch(error => {
+                        console.error("fail to generate user name");
+                        reject("fail to generate user name");//TODO default avatar in this case
                     });
                 });
             }
@@ -218,8 +233,16 @@ export class AuthService {
                             email: user.email,
                             displayName: username,
                             avatarIid: iid
-                        }).then(() => resolve(user));
+                        })
+                        .then(() => resolve(user))
+                        .catch(error => {
+                            reject(error);
+                        });
+                }).catch(error => {
+                    reject(error);
                 });
+            }).catch(error => {
+                reject(error);
             });
         });
     }

@@ -11,6 +11,7 @@ import {Snackbar} from "material-ui";
 import {userNotificationService} from "./service/UserNotificationService";
 import {createMuiTheme} from "material-ui";
 import {pwaService} from "./service/PWAService";
+import axios from "axios";
 
 class App extends Component {
     state = {
@@ -38,7 +39,7 @@ class App extends Component {
                     message: message
                 }
             })
-        })
+        });
     }
 
     componentWillUnmount() {

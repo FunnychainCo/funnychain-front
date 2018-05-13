@@ -3,7 +3,7 @@ import {Button, CircularProgress, DialogActions, DialogContent, TextField} from 
 import ModalPage from "../ModalPage/ModalPage";
 import {authService} from "../../service/AuthService";
 
-export default class LoginDialog extends Component {
+export default class RegisterDialog extends Component {
     state = {
         errorMessage: null,
         displayButton: false,
@@ -32,9 +32,13 @@ export default class LoginDialog extends Component {
             .catch((error) => {
                 this.setState({loading: false});
                 console.log(error);
-                this.setErrorMsg(error.message);
+                if(error['message']!=undefined) {
+                    this.setErrorMsg(error.message);
+                }else{
+                    this.setErrorMsg(error);
+                }
             });
-    }
+    };
 
     resetPassword = () => {
         authService.resetPassword(this.email)
