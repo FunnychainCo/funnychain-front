@@ -1,5 +1,9 @@
 import * as firebase from 'firebase';
 import {idService} from "../IdService";
+import {Meme, MemeServiceInterface} from "../generic/MemeService";
+import {authService, UserEntry} from "../generic/AuthService";
+import * as Q from 'q';
+import {firebaseMediaService} from "./FirebaseMediaService";
 
 interface FirebaseMeme{
     title:string,
@@ -12,10 +16,10 @@ interface FirebaseUser{
     uid:string
 }
 
-export class FireBaseMemeService {
+export class FireBaseMemeService implements MemeServiceInterface{
     dataBase = "memes"
 
-    on(callback:(memes:{[id:string] : FirebaseMeme}) => void) : () => void {
+    onFirebaseItemOnly(callback:(memes:{[id:string] : FirebaseMeme}) => void) : () => void {
         let ref = firebase.database().ref(this.dataBase);
         let toremove = ref.on("value", (memes) => {
             if(memes==null){
@@ -31,6 +35,39 @@ export class FireBaseMemeService {
         return () => {
             ref.off("value",toremove);
         };
+    }
+
+    on(callback:(memes:Meme[]) => void):()=>void {
+        return fireBaseMemeService.onFirebaseItemOnly(memes => {
+            let memesPromise:Promise<Meme>[] = [];
+            Object.keys(memes).forEach(key => {
+                memesPromise.push(new Promise<Meme>((resolve, reject) => {
+                    let meme = memes[key];
+                    firebaseMediaService.loadMediaEntry(meme.iid).then(imageValue => {
+                        if(!imageValue.url.startsWith("https://")){
+                            //do not display insecure meme it breaks the https of app
+                            console.error(imageValue.url);
+                            return;//just ignore the meme
+                        }
+                        authService.loadUserData(meme.uid).then((userValue:UserEntry) => {
+                            resolve({
+                                id:key,
+                                title : meme.title,
+                                user:{
+                                    avatarUrl:userValue.avatarIid,
+                                    displayName:userValue.displayName
+                                },
+                                imageUrl:imageValue.url,
+                                created:new Date(meme.created)
+                            });
+                        });
+                    });
+                }));
+            });
+            Q.all(memesPromise).then(memes => {
+                callback(memes);
+            });
+        });
     }
 
     createMeme(meme:FirebaseMeme) {

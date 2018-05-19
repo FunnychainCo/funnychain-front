@@ -1,15 +1,15 @@
 import sc2 from 'sc2-sdk';
-import EventEmitter from "eventemitter3/index";
-import steem from 'steem';
+import * as EventEmitter from "eventemitter3";
+
+export interface SteemToken {
+    access_token?:string,
+    expires_in?:string,
+    username?:string
+}
 
 export class SC2AuthService {
-    sc2Api = null;
-    /**
-     access_token
-     expires_in
-     username
-     */
-    steemToken={};
+    sc2Api:any = null;
+    steemToken:SteemToken={};
 
     eventEmitter = new EventEmitter();
 
@@ -18,7 +18,7 @@ export class SC2AuthService {
         //https://www.npmjs.com/package/sc2-sdk
         //https://www.npmjs.com/package/steem
         //https://steemit.com/steemconnect/@noisy/how-to-configure-steemconnect-v2-and-use-it-with-your-application-how-it-works-and-how-it-is-different-from-v1
-        var init = {
+        let init:any = {
             app: 'funnychain.app',
             callbackURL: 'http://localhost:3000/steem/connect',
             //accessToken: 'access_token',
@@ -30,10 +30,6 @@ export class SC2AuthService {
         }
         this.sc2Api = sc2.Initialize(init);
         this.eventEmitter.emit('ready', null);
-        //https://steemit.com/steemjs/@morning/steem-api-guide-how-to-get-recent-posts-getdiscussionsbycreated-load-more-and-pagination
-        steem.api.getDiscussionsByTrending({"tag": "dmania", "limit": 10}, (err, result) => {
-            console.log(err, result);
-        });
     }
 
     comment(){
@@ -46,7 +42,7 @@ export class SC2AuthService {
 
     notifyConnexionURL(href) {
         //TODO maybe there is a better way to do that.
-        var urlElements = href.split("?");
+        let urlElements = href.split("?");
         urlElements = urlElements[1];
         urlElements = urlElements.split("&");
         //decodeURIComponent
@@ -63,5 +59,5 @@ export class SC2AuthService {
     }
 }
 
-export var steemAuthService = new SC2AuthService();
+export let steemAuthService = new SC2AuthService();
 

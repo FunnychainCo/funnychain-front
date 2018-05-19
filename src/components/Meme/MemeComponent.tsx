@@ -21,11 +21,8 @@ export default class MemeComponent extends Component<PropsType,StateType> {
             id:"",
             uid:"",
             user:{
-                uid: "",
-                avatarIid: "",
-                displayName: "",
-                email: "",
-                avatar: {}
+                displayName:"",
+                avatarUrl:""
             },
             title:"",
             imageUrl:"",
