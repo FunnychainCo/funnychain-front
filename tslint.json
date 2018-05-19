@@ -5,7 +5,8 @@
       "config/**/*.js",
       "src/**/*.js",
       "node_modules/**/*.ts",
-      "src/**/*.tsx"
+      "src/**/*.tsx",
+      "src/**/*.ts"
     ]
   }
 }

@@ -1,23 +1,33 @@
-import React, {Component} from 'react'
-import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
-import Meme from "../Meme/Meme";
-import "./MemeList.css"
-import {fireBaseMemeService} from "../../service/FireBaseMemeService";
 
-export default class MemeList extends Component {
-    state = {
+import "./MemeList.css"
+import {Meme, memeProvider} from "../../service/generic/MemeService";
+import MemeComponent from '../Meme/MemeComponent';
+import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
+import * as React from "react";
+import {Component} from "react";
+
+interface State {
+    memes:{[id:string]:Meme}
+}
+
+export default class MemeListV2 extends Component {
+    state:State = {
         memes: {}
     };
+    private removeCallback:()=>void = () => {console.error("no callback to remove")};
 
     componentDidMount() {
-        fireBaseMemeService.on((memesValue) => {
-            var itemsKeys = Object.keys(memesValue);
-            itemsKeys.forEach((key) => {
-                var meme = memesValue[key];
-                this.state.memes[key] = meme;
-                this.forceUpdate();
+        this.removeCallback = memeProvider.on(
+            (memes:Meme[]) => {
+                memes.forEach((meme:Meme) => {
+                    this.state.memes[meme.id] = meme;
+                    this.forceUpdate();
+                });
             });
-        });
+    }
+
+    componentWillUnmount(){
+        this.removeCallback();
     }
 
     getKeyList() {
@@ -39,10 +49,10 @@ export default class MemeList extends Component {
                             if (this.state.memes[key].title === null || this.state.memes[key].title === "") {
                                 return <div key={key}></div>
                             }
-                            if (this.state.memes[key].iid === null || this.state.memes[key].iid === "") {
+                            if (this.state.memes[key].imageUrl === null || this.state.memes[key].imageUrl === "") {
                                 return <div key={key}></div>
                             }
-                            return <Meme key={key} meme={this.state.memes[key]}/>
+                            return <MemeComponent key={key} meme={this.state.memes[key]}/>
                         })
                     }
                     <CreateMemeDialogFab/>

@@ -63,5 +63,5 @@ export class SC2AuthService {
     }
 }
 
-export var sc2AuthService = new SC2AuthService();
+export var steemAuthService = new SC2AuthService();
 

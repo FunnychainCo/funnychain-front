@@ -2,9 +2,9 @@ import React, {Component} from 'react'
 import {Button, TextField} from "material-ui";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import ContentAdd from '@material-ui/icons/Add';
-import {fireBaseMemeService} from "../../service/FireBaseMemeService";
+import {fireBaseMemeService} from "../../service/firebase/FireBaseMemeService";
 import {userNotificationService} from "../../service/UserNotificationService";
-import {authService} from "../../service/AuthService";
+import {authService} from "../../service/generic/AuthService";
 import {DialogContent} from "material-ui";
 import {DialogActions} from "material-ui";
 import {DialogTitle} from "material-ui";

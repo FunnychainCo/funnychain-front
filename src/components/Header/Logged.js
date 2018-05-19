@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Avatar} from "material-ui";
-import {authService} from "../../service/AuthService";
+import {authService} from "../../service/generic/AuthService";
 
 export default class Logged extends Component {
     state={

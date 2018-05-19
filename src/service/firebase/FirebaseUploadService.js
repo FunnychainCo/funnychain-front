@@ -1,8 +1,8 @@
 import firebase from 'firebase';
-import {mediaService} from "./MediaService";
-import {idService} from "./IdService";
+import {firebaseMediaService} from "./FirebaseMediaService";
+import {idService} from "../IdService";
 
-export class UploadService {
+export class FirebaseUploadService {
     storageBase = "images"
 
     uploadFile(file,metadata){
@@ -12,7 +12,7 @@ export class UploadService {
             var ref = firebase.storage().ref(this.storageBase);
             ref.child(filename).put(file, metadata).then(() => {
                 ref.child(filename).getDownloadURL().then((url) => {
-                    mediaService.createMediaEntry(url, user.uid).then((fileId) => {
+                    firebaseMediaService.createMediaEntry(url, user.uid).then((fileId) => {
                         resolve({fileURL: url, iid: fileId});
                     });
                 });
@@ -22,4 +22,4 @@ export class UploadService {
 
 }
 
-export var uploadService = new UploadService();
+export var uploadService = new FirebaseUploadService();

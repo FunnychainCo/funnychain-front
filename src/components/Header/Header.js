@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import AppBar from 'material-ui/AppBar';
 import {leftMenuService} from "../../service/LeftMenuService";
-import {authService} from "../../service/AuthService";
+import {authService} from "../../service/generic/AuthService";
 import LoginDialog from "../LoginDialog/LoginDialog";
 import RegisterDialog from "../RegisterDialog/RegisterDialog";
 import Logged from "./Logged";

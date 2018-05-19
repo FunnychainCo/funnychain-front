@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
-import MemeList from "../components/MemeList/MemeList";
+import MemeListV2 from "../components/MemeList/MemeListV2";
 
 export default class Home extends Component {
     render() {
         return (
             <div className="fullSpace">
-                <MemeList/>
+                <MemeListV2/>
             </div>
         )
     }

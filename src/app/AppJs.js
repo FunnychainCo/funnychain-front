@@ -9,11 +9,11 @@ import "./App.css"
 
 import Header from "../components/Header/Header";
 import Home from "../containers/Home";
-import {firebaseAuthService} from "../service/FirebaseAuthService";
+import {firebaseAuthService} from "../service/firebase/FirebaseAuthService";
 import Version from "../components/Version/Version";
 import {userNotificationService} from "../service/UserNotificationService";
 import {pwaService} from "../service/PWAService";
-import {sc2AuthService} from "../service/SC2AuthService";
+import {steemAuthService} from "../service/steem/SteemAuthService";
 import Connect from "../components/Steem/Connect"
 
 
@@ -30,7 +30,7 @@ class AppJs extends Component {
 
     componentDidMount() {
         pwaService.start();
-        sc2AuthService.start();
+        steemAuthService.start();
         this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
             this.setState({
                 authed: user ? true : false,

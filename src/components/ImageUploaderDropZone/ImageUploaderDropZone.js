@@ -5,8 +5,8 @@ import Dropzone from 'react-dropzone'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './ImageUploaderDropZone.css';
 import MobileDetect from 'mobile-detect'
-import {authService} from "../../service/AuthService";
-import {uploadService} from "../../service/UploadService";
+import {authService} from "../../service/generic/AuthService";
+import {uploadService} from "../../service/firebase/FirebaseUploadService";
 
 export default class ImageUploaderDropZone extends Component {
     storageBase = "images"

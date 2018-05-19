@@ -1,44 +1,39 @@
-import {firebaseAuthService} from "./FirebaseAuthService";
+import {firebaseAuthService} from "../firebase/FirebaseAuthService";
 import axios from 'axios'
-import {mediaService} from "./MediaService";
-import firebase from "firebase/index";
-import PropTypes from "prop-types";
-import EventEmitter from 'eventemitter3'
-import {backEndPropetiesProvider} from "./BackEndPropetiesProvider";
+import {firebaseMediaService} from "../firebase/FirebaseMediaService";
+import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
+import * as firebase from "firebase";
+import * as EventEmitter from "eventemitter3";
+
+export interface UserEntry {
+    uid: string,
+    avatarIid: string,
+    displayName: string,
+    email: string,
+    avatar: any
+}
+
+export interface FireBaseUser {
+    uid: string;
+    photoURL: string;
+    avatarIid: string,
+    displayName: string,
+    email: string,
+    avatar: any
+}
 
 export class AuthService {
     userDataBaseName = "users";
-    propTypes = {
-        avatarIid: PropTypes.string,
-        displayName: PropTypes.string,
-        email: PropTypes.string
-    };
-    propTypesAvatar = {
-        uid: PropTypes.string,
-        avatarIid: PropTypes.string,
-        displayName: PropTypes.string,
-        email: PropTypes.string,
-        avatar: PropTypes.any
-    };
 
-    propTypesUser = {
-        avatarIid: PropTypes.string,
-        displayName: PropTypes.string,
-        email: PropTypes.string,
-        uid: PropTypes.string,
-        avatar: PropTypes.any
-    };
-
-
-    eventEmitter = new EventEmitter();
-    currentUserUid = null;
+    eventEmitter = new EventEmitter<string>();
+    currentUserUid:string = "";
 
     userCache = {};//{uid:userobj}
 
     constructor() {
         firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
             if (user == null) {
-                this.currentUserUid = null;
+                this.currentUserUid = "";
                 this.eventEmitter.emit('AuthStateChanged', null);
             } else {
                 this.currentUserUid = user.uid;
@@ -47,9 +42,13 @@ export class AuthService {
         });
     }
 
-    changeEmail(newEmail) {
-        return new Promise((resolve, reject) => {
-            var user = firebase.auth().currentUser;
+    changeEmail(newEmail:string):Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            let user:any = firebase.auth().currentUser;
+            if(user==null){
+                reject("user is null");
+                return;
+            }
             this.userCache[user.uid] = null;//invalidate cache
             user.updateEmail(newEmail).then(() => {
                 firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/email')
@@ -64,9 +63,13 @@ export class AuthService {
         });
     }
 
-    changePassword(currentPassword, newTextValue) {
+    changePassword(currentPassword:string, newTextValue:string):Promise<string> {
         return new Promise((resolve, reject) => {
-            var user = firebase.auth().currentUser;
+            let user:any = firebase.auth().currentUser;
+            if(user==null){
+                reject("user is null");
+                return;
+            }
             return firebaseAuthService.firebaseAuth().signInWithEmailAndPassword(user.email, currentPassword).then((user) => {
                 user.updatePassword(newTextValue).then(function () {
                     resolve("ok");
@@ -75,9 +78,9 @@ export class AuthService {
         });
     }
 
-    changeDisplayName(newDisplayName) {
+    changeDisplayName(newDisplayName:string):Promise<string> {
         return new Promise((resolve, reject) => {
-            var user = firebase.auth().currentUser;
+            let user:any = firebase.auth().currentUser;
             this.userCache[user.uid] = null;//invalidate cache
             firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/displayName')
                 .set(newDisplayName)
@@ -88,9 +91,9 @@ export class AuthService {
         });
     }
 
-    changeAvatar(newAvatarIid) {
+    changeAvatar(newAvatarIid:string):Promise<string> {
         return new Promise((resolve, reject) => {
-            var user = firebase.auth().currentUser;
+            let user:any = firebase.auth().currentUser;
             this.userCache[user.uid] = null;//invalidate cache
             firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
                 .set(newAvatarIid)
@@ -101,7 +104,7 @@ export class AuthService {
         });
     }
 
-    register(email, pw) {
+    register(email:string, pw:string):Promise<string> {
         return new Promise((resolve, reject) => {
             firebaseAuthService.firebaseAuth().createUserWithEmailAndPassword(email, pw)
                 .then((user) => {
@@ -120,14 +123,16 @@ export class AuthService {
         });
     }
 
-    onAuthStateChanged(callback) {
-        var wrapedCallback = (uid) => {
-            if (uid == null) {
-                callback(null);
+    onAuthStateChanged(callback:(userData:UserEntry)=>void):()=>void {
+        let wrapedCallback = (uid:string) => {
+            if(uid=="" || uid==null){
+                console.warn("invalid uid");
                 return;
             }
             this.loadUserData(uid).then((data) => {
                 callback(data);
+            }).catch(reason => {
+                console.error(reason);
             });
         };
         this.eventEmitter.on('AuthStateChanged', wrapedCallback);
@@ -137,19 +142,18 @@ export class AuthService {
         };
     }
 
-    loadUserData(uid) {
-        return new Promise((resolve, reject) => {
+    loadUserData(uid:string):Promise<UserEntry> {
+        return new Promise<UserEntry>((resolve, reject) => {
             if (this.userCache[uid] != null && this.userCache[uid] != undefined) {
                 resolve(this.userCache[uid]);//continue to update user
             }
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
-                var userData = user.val();
+                let userData = user.val();
                 if (userData == null) {
-                    resolve(null);
+                    reject("");
                     return;
                 }
-                PropTypes.checkPropTypes(this.propTypes, userData, 'prop', 'User');
-                mediaService.loadMediaEntry(userData.avatarIid).then((avatar) => {
+                firebaseMediaService.loadMediaEntry(userData.avatarIid).then((avatar) => {
                     userData.avatar = avatar;
                     this.userCache[uid] = userData;
                     resolve(userData);
@@ -161,15 +165,15 @@ export class AuthService {
         });
     }
 
-    logout() {
+    logout():Promise<string> {
         return firebaseAuthService.firebaseAuth().signOut()
     }
 
-    login(email, pw) {
-        return new Promise((resolve, reject) => {
+    login(email:string, pw:string):Promise<string>{
+        return new Promise<string>((resolve, reject) => {
             firebaseAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
                 firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
-                    var userValue = userData.val();
+                    let userValue = userData.val();
                     if (userValue === null) {
                         console.warn("user recreated : ", user);
                         this.saveUser(user).then(() => {
@@ -187,14 +191,14 @@ export class AuthService {
         });
     }
 
-    resetPassword(email) {
+    resetPassword(email:string):Promise<string> {
         return firebaseAuthService.firebaseAuth().sendPasswordResetEmail(email)
     }
 
-    saveUser(user) {
+    saveUser(user:FireBaseUser):Promise<string> {
         return new Promise((resolve, reject) => {
-            var userNamePromised = null;
-            var iidPromised = null;
+            let userNamePromised;
+            let iidPromised;
             if (user.displayName !== null) {
                 userNamePromised = new Promise((resolve, reject) => {
                     resolve(user.displayName);
@@ -205,7 +209,7 @@ export class AuthService {
                     const httpClient = axios.create();
                     httpClient.defaults.timeout = 20000;//ms
                     httpClient.get(backEndPropetiesProvider.getProperty('USERNAME_GENERATION_SERVICE')).then(response => {
-                        var username = response.data;
+                        let username = response.data;
                         resolve(username);
                     }).catch(error => {
                         console.error("fail to generate user name");
@@ -216,7 +220,7 @@ export class AuthService {
             if (user.photoURL !== null) {
                 //TODO implement this case
                 iidPromised = new Promise((resolve, reject) => {
-                    mediaService.createMediaEntry(user.photoURL, user.uid).then((fileId) => {
+                    firebaseMediaService.createMediaEntry(user.photoURL, user.uid).then((fileId) => {
                         resolve(fileId);
                     });
                 });
@@ -225,8 +229,8 @@ export class AuthService {
                     const httpClient = axios.create();
                     httpClient.defaults.timeout = 20000;//ms
                     httpClient.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
-                        var url = response.data;
-                        mediaService.createMediaEntry(url, user.uid).then((fileId) => {
+                        let url = response.data;
+                        firebaseMediaService.createMediaEntry(url, user.uid).then((fileId) => {
                             resolve(fileId);
                         });
                     }).catch(error => {
@@ -244,7 +248,7 @@ export class AuthService {
                             displayName: username,
                             avatarIid: iid
                         })
-                        .then(() => resolve(user))
+                        .then(() => resolve("ok"))
                         .catch(error => {
                             reject(error);
                         });
@@ -259,4 +263,4 @@ export class AuthService {
 
 }
 
-export var authService = new AuthService();
+export let authService = new AuthService();

@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Button, CircularProgress, DialogActions, DialogContent, TextField} from "material-ui";
 import ModalPage from "../ModalPage/ModalPage";
 import {Redirect} from "react-router-dom";
-import {sc2AuthService} from "../../service/SC2AuthService";
+import {steemAuthService} from "../../service/steem/SteemAuthService";
 
 export default class SteemLoginDialog extends Component {
     state = {
@@ -18,7 +18,7 @@ export default class SteemLoginDialog extends Component {
     };
 
     handleSubmit = () => {
-        window.location.href = sc2AuthService.getLoginURL();
+        window.location.href = steemAuthService.getLoginURL();
     };
 
     render() {

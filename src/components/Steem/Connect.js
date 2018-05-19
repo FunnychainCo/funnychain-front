@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {sc2AuthService} from "../../service/SC2AuthService";
+import {steemAuthService} from "../../service/steem/SteemAuthService";
 import {Redirect} from "react-router-dom";
 
 export default class Connect extends Component {
@@ -10,7 +10,7 @@ export default class Connect extends Component {
 
     componentDidMount(){
         console.log(window.location.href);
-        sc2AuthService.notifyConnexionURL(window.location.href);
+        steemAuthService.notifyConnexionURL(window.location.href);
         this.setState({loading:false});
     }
 

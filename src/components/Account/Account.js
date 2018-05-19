@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {authService} from "../../service/AuthService";
+import {authService} from "../../service/generic/AuthService";
 import {Avatar, CircularProgress, Button, TextField} from "material-ui";
 import ModeEdit from '@material-ui/icons/ModeEdit';
 import VpnKey from '@material-ui/icons/VpnKey';

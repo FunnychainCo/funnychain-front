@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {Button, CircularProgress, DialogActions, DialogContent, TextField} from "material-ui";
 import ModalPage from "../ModalPage/ModalPage";
-import {authService} from "../../service/AuthService";
+import {authService} from "../../service/generic/AuthService";
 
 export default class RegisterDialog extends Component {
     state = {
