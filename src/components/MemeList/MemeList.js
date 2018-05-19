@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import Meme from "../Meme/Meme";
 import "./MemeList.css"
-import {memeService} from "../../service/MemeService";
+import {fireBaseMemeService} from "../../service/FireBaseMemeService";
 
 export default class MemeList extends Component {
     state = {
@@ -10,7 +10,7 @@ export default class MemeList extends Component {
     };
 
     componentDidMount() {
-        memeService.on((memesValue) => {
+        fireBaseMemeService.on((memesValue) => {
             var itemsKeys = Object.keys(memesValue);
             itemsKeys.forEach((key) => {
                 var meme = memesValue[key];

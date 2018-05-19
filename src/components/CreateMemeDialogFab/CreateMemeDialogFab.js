@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Button, TextField} from "material-ui";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import ContentAdd from '@material-ui/icons/Add';
-import {memeService} from "../../service/MemeService";
+import {fireBaseMemeService} from "../../service/FireBaseMemeService";
 import {userNotificationService} from "../../service/UserNotificationService";
 import {authService} from "../../service/AuthService";
 import {DialogContent} from "material-ui";
@@ -43,7 +43,7 @@ export class CreateMemeDialog extends Component {
             title: this.state.title,
             created: null //will be filled later
         };
-        memeService.createMeme(memeToCreate);
+        fireBaseMemeService.createMeme(memeToCreate);
         this.props.handleClose();
     }
 

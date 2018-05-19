@@ -14,12 +14,22 @@ export class AuthService {
         email: PropTypes.string
     };
     propTypesAvatar = {
+        uid: PropTypes.string,
+        avatarIid: PropTypes.string,
+        displayName: PropTypes.string,
+        email: PropTypes.string,
+        avatar: PropTypes.any
+    };
+
+    propTypesUser = {
         avatarIid: PropTypes.string,
         displayName: PropTypes.string,
         email: PropTypes.string,
         uid: PropTypes.string,
         avatar: PropTypes.any
     };
+
+
     eventEmitter = new EventEmitter();
     currentUserUid = null;
 

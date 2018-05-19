@@ -1,39 +1,28 @@
-.fullSpace {
-    display: flex;
-    flex-flow: column;
-    flex: 1 1 auto;
+.App {
+  text-align: center;
 }
 
-html, body {
-    height: 100%;
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
 }
 
-#root {
-    height: 100%;
-    display: flex;
-    flex-flow: column;
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
 }
 
-/*
-SCROLLBAR
- */
-/*.scrollbar {
-    overflow: auto;
+.App-title {
+  font-size: 1.5em;
 }
 
-.scrollbar::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    background-color: #F5F5F5;
+.App-intro {
+  font-size: large;
 }
 
-.scrollbar::-webkit-scrollbar {
-    width: 12px;
-    background-color: #F5F5F5;
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
-
-.scrollbar::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
-    background-color: #555;
-}*/

@@ -11,6 +11,7 @@ import AccountDrawer from "../Account/AccountDrawer";
 import {Toolbar} from "material-ui";
 import {Typography} from "material-ui";
 import {withStyles} from "material-ui";
+import SteemLoginDialog from "../SteemLoginDialog/SteemLoginDialog";
 
 const styles = {
     root: {
@@ -74,7 +75,7 @@ class Header extends Component {
                         />}
                     </div>
                 </Toolbar>
-                <LoginDialog open={this.state.dialogLogin} onRequestClose={() => this.setState({dialogLogin: false})}/>
+                <SteemLoginDialog open={this.state.dialogLogin} onRequestClose={() => this.setState({dialogLogin: false})}/>
                 <RegisterDialog open={this.state.dialogRegister}
                                 onRequestClose={() => this.setState({dialogRegister: false})}/>
                 <AccountDrawer open={this.state.drawerOpen}

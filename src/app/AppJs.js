@@ -1,19 +1,23 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import React, {Component} from "react";
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import Header from "./components/Header/Header";
 import {Route, BrowserRouter, Switch} from 'react-router-dom'
-import Home from "./containers/Home";
-import {firebaseAuthService} from "./service/FirebaseAuthService";
-import Version from "./components/Version/Version";
-import "./App.css"
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import {Snackbar} from "material-ui";
-import {userNotificationService} from "./service/UserNotificationService";
 import {createMuiTheme} from "material-ui";
-import {pwaService} from "./service/PWAService";
-import axios from "axios";
 
-class App extends Component {
+import "./App.css"
+
+import Header from "../components/Header/Header";
+import Home from "../containers/Home";
+import {firebaseAuthService} from "../service/FirebaseAuthService";
+import Version from "../components/Version/Version";
+import {userNotificationService} from "../service/UserNotificationService";
+import {pwaService} from "../service/PWAService";
+import {sc2AuthService} from "../service/SC2AuthService";
+import Connect from "../components/Steem/Connect"
+
+
+class AppJs extends Component {
     state = {
         authed: false,
         loading: true,
@@ -26,6 +30,7 @@ class App extends Component {
 
     componentDidMount() {
         pwaService.start();
+        sc2AuthService.start();
         this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
             this.setState({
                 authed: user ? true : false,
@@ -66,6 +71,7 @@ class App extends Component {
                             <Switch className="fullSpace">
                                 <Route className="fullSpace" path='/index.html' exact component={Home}/>
                                 <Route className="fullSpace" path='/' exact component={Home}/>
+                                <Route className="fullSpace" path='/steem/connect' component={Connect}/>
                                 <Route className="fullSpace" component={Home}/>
                             </Switch>
                         </div>
@@ -84,4 +90,4 @@ class App extends Component {
 
 }
 
-export default App;
+export default AppJs;

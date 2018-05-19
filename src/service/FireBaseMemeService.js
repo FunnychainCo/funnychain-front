@@ -2,7 +2,7 @@ import firebase from 'firebase';
 import {idService} from "./IdService";
 import PropTypes from 'prop-types'; // ES6
 
-export class MemeService {
+export class FireBaseMemeService {
     dataBase = "memes"
     propTypes = {
         iid: PropTypes.string,
@@ -38,4 +38,4 @@ export class MemeService {
 
 }
 
-export var memeService = new MemeService();
+export var fireBaseMemeService = new FireBaseMemeService();
