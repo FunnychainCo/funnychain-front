@@ -1,10 +1,11 @@
 
 import "./MemeList.css"
-import {Meme, memeProvider} from "../../service/generic/MemeService";
+import {Meme, memeService} from "../../service/generic/MemeService";
 import MemeComponent from '../Meme/MemeComponent';
 import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import * as React from "react";
 import {Component} from "react";
+import Divider from "@material-ui/core/Divider/Divider";
 
 interface State {
     memes:{[id:string]:Meme}
@@ -17,7 +18,7 @@ export default class MemeListV2 extends Component {
     private removeCallback:()=>void = () => {console.error("no callback to remove")};
 
     componentDidMount() {
-        this.removeCallback = memeProvider.on(
+        this.removeCallback = memeService.on(
             (memes:Meme[]) => {
                 memes.forEach((meme:Meme) => {
                     this.state.memes[meme.id] = meme;
@@ -52,7 +53,10 @@ export default class MemeListV2 extends Component {
                             if (this.state.memes[key].imageUrl === null || this.state.memes[key].imageUrl === "") {
                                 return <div key={key}></div>
                             }
-                            return <MemeComponent key={key} meme={this.state.memes[key]}/>
+                            return <div key={key}>
+                                <MemeComponent key={key} meme={this.state.memes[key]}/>
+                                <Divider />
+                            </div>
                         })
                     }
                     <CreateMemeDialogFab/>

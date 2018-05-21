@@ -138,7 +138,7 @@ export class AuthService {
         this.eventEmitter.on('AuthStateChanged', wrapedCallback);
         wrapedCallback(this.currentUserUid);//initial call
         return () => {
-            this.eventEmitter.off('AuthStateChanged', callback)
+            this.eventEmitter.off('AuthStateChanged', wrapedCallback)
         };
     }
 

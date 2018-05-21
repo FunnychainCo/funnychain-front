@@ -1,5 +1,6 @@
 import * as firebase from 'firebase';
 import {idService} from "../IdService";
+import {preLoadImage} from "../ImageUtil";
 
 interface MediaEntry {
     uid:string,
@@ -22,20 +23,6 @@ export default class MediaService {
         });
     }
 
-    preLoadImage(src:string):Promise<string> {
-        return new Promise<string>((resolve,reject) =>{
-            let image = new Image();
-            image.src = src;
-            image.onload = () => {
-                //console.log("loaded image: "+src);
-                resolve(src);
-            };
-            image.onerror = (e) => {
-                reject(e);
-            };
-        })
-    }
-
     loadMediaEntry(iid:string):Promise<MediaEntry> {
         return new Promise<MediaEntry>((resolve,reject) => {
             firebase.database().ref(this.imageDataBase + "/" + iid).on("value", (image) => {
@@ -48,7 +35,7 @@ export default class MediaService {
                     reject(iid);
                     return;
                 }
-                this.preLoadImage(imageValue.url).then(()=>{
+                preLoadImage(imageValue.url).then(()=>{
                     resolve(imageValue);
                 });
             });

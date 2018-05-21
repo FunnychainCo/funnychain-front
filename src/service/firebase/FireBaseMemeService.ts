@@ -1,6 +1,6 @@
 import * as firebase from 'firebase';
 import {idService} from "../IdService";
-import {Meme, MemeServiceInterface} from "../generic/MemeService";
+import {CommentsVisitor, Meme, MemeServiceInterface} from "../generic/MemeService";
 import {authService, UserEntry} from "../generic/AuthService";
 import * as Q from 'q';
 import {firebaseMediaService} from "./FirebaseMediaService";
@@ -53,12 +53,15 @@ export class FireBaseMemeService implements MemeServiceInterface{
                             resolve({
                                 id:key,
                                 title : meme.title,
+                                imageUrl:imageValue.url,
+                                created:new Date(meme.created),
                                 user:{
                                     avatarUrl:userValue.avatarIid,
                                     displayName:userValue.displayName
                                 },
-                                imageUrl:imageValue.url,
-                                created:new Date(meme.created)
+                                dolarValue:0,
+                                commentNumber:0,
+                                voteNumber:0
                             });
                         });
                     });
@@ -83,6 +86,15 @@ export class FireBaseMemeService implements MemeServiceInterface{
             console.log(meme);
             firebase.database().ref(this.dataBase + '/' + idService.makeid()).set(meme);
         });
+    }
+
+    getCommentVisitor(id): CommentsVisitor {
+        return {
+            loadMore(limit){},
+            on(callback){
+                return ()=>{};
+            }
+        };
     }
 
 }

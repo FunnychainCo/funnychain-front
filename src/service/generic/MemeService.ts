@@ -6,7 +6,22 @@ export interface Meme{
     title:string,
     user:MemeUserData,
     imageUrl:string,
-    created:Date
+    created:Date,
+    dolarValue: number,
+    voteNumber: number,
+    commentNumber: number
+}
+
+export interface MemeComment{
+    id:string,
+    parentId:string,
+    author:MemeUserData,
+    text:string
+}
+
+export interface CommentsVisitor{
+    on(callback: (comments: MemeComment[]) => void): () => void,
+    loadMore(limit:number);
 }
 
 export interface MemeUserData{
@@ -15,7 +30,8 @@ export interface MemeUserData{
 }
 
 export interface MemeServiceInterface {
-    on(callback:(memes:Meme[]) => void):()=>void
+    on(callback:(memes:Meme[]) => void):()=>void,
+    getCommentVisitor(id):CommentsVisitor
 }
 
 export class MemeService implements MemeServiceInterface{
@@ -28,6 +44,10 @@ export class MemeService implements MemeServiceInterface{
             callback(memes);
         });
     }
+
+    getCommentVisitor(id): CommentsVisitor {
+        return steemMemeService.getCommentVisitor(id);
+    }
 }
 
-export let memeProvider = new MemeService();
+export let memeService = new MemeService();

@@ -3,3 +3,19 @@
     max-height: 100%;
     min-width: 100%;
 }
+
+
+.memeElementStyleDivContainer{
+    display: flex;
+    align-items:center;
+}
+
+.memeElementStyleDiv{
+    flex: 0 1 auto;
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+    text-align: center;
+
+    display: flex;
+    align-items:center;
+}

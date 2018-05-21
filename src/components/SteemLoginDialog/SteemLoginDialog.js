@@ -28,14 +28,14 @@ export default class SteemLoginDialog extends Component {
                 onClose={this.handleClose}
             >
                 {!this.state.loading && <DialogContent>
-
+                    <Button onClick={this.handleSubmit} variant="raised" color="primary" fullWidth>
+                        <img src="/static/steem/steemit-logo.png" alt="steem" style={{width:"40px",height:"40px"}}/>
+                        &nbsp;&nbsp;Login with Steem.it account
+                    </Button>
                 </DialogContent>}
                 {!this.state.loading && <DialogActions>
                     <Button onClick={this.handleClose} color="primary">
                         Cancel
-                    </Button>
-                    <Button onClick={this.handleSubmit} color="primary">
-                        Login
                     </Button>
                 </DialogActions>}
                 {this.state.loading && <CircularProgress/>}

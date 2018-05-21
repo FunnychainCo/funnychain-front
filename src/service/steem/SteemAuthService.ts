@@ -1,5 +1,6 @@
 import sc2 from 'sc2-sdk';
 import * as EventEmitter from "eventemitter3";
+import * as store from 'store';
 
 export interface SteemToken {
     access_token?:string,
@@ -16,7 +17,6 @@ export class SC2AuthService {
     start(){
 
         //https://www.npmjs.com/package/sc2-sdk
-        //https://www.npmjs.com/package/steem
         //https://steemit.com/steemconnect/@noisy/how-to-configure-steemconnect-v2-and-use-it-with-your-application-how-it-works-and-how-it-is-different-from-v1
         let init:any = {
             app: 'funnychain.app',
@@ -25,9 +25,11 @@ export class SC2AuthService {
             scope: ['vote', 'comment']
         };
         //TODO load steemToken from NVM
+        this.steemToken = store.get('steem.token') || {};
         if(this.steemToken.access_token!==undefined){
             init.accessToken = this.steemToken.access_token;
         }
+        console.log("steem token from NVM",this.steemToken);
         this.sc2Api = sc2.Initialize(init);
         this.eventEmitter.emit('ready', null);
     }
@@ -50,7 +52,8 @@ export class SC2AuthService {
             element = element.split("=");
             this.steemToken[element[0]]=decodeURIComponent(element[1]);
         });
-        console.log(this.steemToken);
+        console.log("steem token stored to NVM",this.steemToken);
+        store.set('steem.token', this.steemToken);
     }
 
     getLoginURL(){
