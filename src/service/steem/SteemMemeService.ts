@@ -1,28 +1,89 @@
-import {Meme, MemeServiceInterface} from "../generic/ApplicationInterface";
+import {Meme, MemeLoaderInterface, MemeServiceInterface} from "../generic/ApplicationInterface";
 import steem from 'steem';
 import * as Q from "q";
 import {SteemPost, SteemVote} from "./SteemType";
 import {getAuthorAndPermalink, loadUserAvatar} from "./SteemUtils";
 import {steemAuthService} from "./SteemAuthService";
+import * as EventEmitter from "eventemitter3";
 
-export class SteemBaseMemeService implements MemeServiceInterface {
-    //id is url
+export class SteemMemeService implements MemeServiceInterface {
+    getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
+        return new MemeLoader(type,tags);
+    }
+
+    vote(url: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            let voter = steemAuthService.currentUser.uid;
+            let authorAndPermalink = getAuthorAndPermalink(url);
+            steemAuthService.sc2Api.vote(voter, authorAndPermalink.author, authorAndPermalink.permalink, 10000,
+                (err, res) => {
+                    if (res != null) {
+                        resolve("ok");
+                    } else {
+                        console.error(err);
+                        reject(err);
+                    }
+                });
+        });
+    }
+
+}
+
+class MemeLoader implements MemeLoaderInterface{
+    lastPostUrl:string = "";
+    eventEmitter = new EventEmitter();
+    type:string;
+    tags:string[];
+    orderNumber:number = -1;//order can be negative
+
+    constructor(type: string,tags: string[]) {
+        this.type = type;
+        this.tags = tags;
+    }
+
+//id is url
     on(callback: (memes: Meme[]) => void): () => void {
-        let memesPromise: Promise<Meme>[] = [];
         //https://www.npmjs.com/package/steem
         //https://jsfiddle.net/bonustrack/84dmnoLj/3/
         //https://github.com/Stormrose/steem-js/blob/444decdd182a136d066c0e0fd9ac81be974bdc88/doc/README.md
         //https://steemit.com/steemjs/@morning/steem-api-guide-how-to-get-recent-posts-getdiscussionsbycreated-load-more-and-pagination
-        steem.api.getDiscussionsByTrending({"tag": "dmania", "limit": 10}, (err, result: SteemPost[]) => {
-            result.forEach((steemPost: SteemPost) => {
+
+        this.eventEmitter.on("onMeme",callback);
+        return () => {
+            this.eventEmitter.off("onMeme",callback);
+        };
+    }
+
+    loadMore(limit: number) {
+        let memesPromise: Promise<Meme>[] = [];
+        let params:any = {
+            tag: this.tags[0], //TODO manage multiple tags
+            limit: limit
+        };
+        if(this.lastPostUrl!=""){
+            let authorAndPermalink = getAuthorAndPermalink(this.lastPostUrl);
+            params.start_author = authorAndPermalink.author;
+            params.start_permlink = authorAndPermalink.permalink;
+            params.limit++;//for the skiped redundent post
+        }
+        steem.api.getDiscussionsByTrending(params, (err, result: SteemPost[]) => {
+            result.forEach((steemPost: SteemPost,index,array) => {
+                if(this.lastPostUrl!=""&&index==0){
+                    //skip redundent post
+                    return;
+                }
+                this.orderNumber++;
+                if(index==array.length-1){
+                    //update cursor for next loadmore
+                    this.lastPostUrl=steemPost.url;
+                }
                 if (Number(steem.formatter.reputation(steemPost.author_reputation)) < 15) {
                     return;
                 }
                 memesPromise.push(new Promise<Meme>((resolve, reject) => {
                     loadUserAvatar(steemPost.author).then((avatarUrl => {
                         let currentUserVoted = false;
-                        let sas =  steemAuthService;
-                        let currentUser = sas.currentUser.uid;
+                        let currentUser = steemAuthService.currentUser.uid;
                         steemPost.active_votes.forEach((vote: SteemVote) => {
                             if (vote.voter === currentUser) {
                                 currentUserVoted = true;
@@ -47,35 +108,22 @@ export class SteemBaseMemeService implements MemeServiceInterface {
                                 displayName: steemPost.author,
                                 avatarUrl: avatarUrl
                             },
-                            currentUserVoted: currentUserVoted
+                            currentUserVoted: currentUserVoted,
+                            order:this.orderNumber
                         };
                         resolve(newMeme);
                     }));
                 }));
             });
             Q.all(memesPromise).then(memesData => {
-                callback(memesData);
+                this.eventEmitter.emit("onMeme",memesData);
             });
         });
-        return () => {
-        };
     }
 
-    vote(url: string): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            let voter = steemAuthService.currentUser.uid;
-            let authorAndPermalink = getAuthorAndPermalink(url);
-            steemAuthService.sc2Api.vote(voter, authorAndPermalink.author, authorAndPermalink.permalink, 10000,
-                (err, res) => {
-                    if (res != null) {
-                        resolve("ok");
-                    } else {
-                        console.error(err);
-                        reject(err);
-                    }
-                });
-        });
+    refresh() {
     }
+
 }
 
-export let steemMemeService = new SteemBaseMemeService();
+export let steemMemeService = new SteemMemeService();

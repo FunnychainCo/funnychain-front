@@ -1,4 +1,3 @@
-
 import "./MemeList.css"
 import {memeService} from "../../service/generic/MemeService";
 import MemeComponent from '../Meme/MemeComponent';
@@ -6,90 +5,76 @@ import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import * as React from "react";
 import {Component} from "react";
 import Divider from "@material-ui/core/Divider/Divider";
-import {Meme} from "../../service/generic/ApplicationInterface";
-import {
-    InfiniteLoader,
-    List
-} from "react-virtualized";
+import {Meme, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
+import Waypoint from "react-waypoint";
+
 
 interface State {
-    memes:{[id:string]:Meme}
+    memes: { [id: string]: Meme },
+    displayWaypoint: boolean
 }
 
-export default class MemeListV2 extends Component {
-    state:State = {
-        memes: {}
+export default class MemeListV2 extends Component<any, State> {
+    state = {
+        memes: {},
+        displayWaypoint: true
     };
-    private removeCallback:()=>void = () => {console.error("no callback to remove")};
+
+    private removeCallback: (() => void) = () => {
+        console.error("no callback to remove")
+    };
+
+    private memeLoader: MemeLoaderInterface;
+
 
     componentDidMount() {
-        this.removeCallback = memeService.on(
-            (memes:Meme[]) => {
-                memes.forEach((meme:Meme) => {
-                    this.state.memes[meme.id] = meme;
-                    this.forceUpdate();
-                });
+        this.memeLoader = memeService.getMemeLoader("trending", ["dmania"]);
+        this.removeCallback = this.memeLoader.on((memes: Meme[]) => {
+            memes.forEach((meme: Meme) => {
+                this.state.memes[meme.id] = meme;
             });
+            this.forceUpdate();
+        });
+        this.memeLoader.loadMore(10);
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.removeCallback();
     }
 
     getKeyList() {
-        var keys = Object.keys(this.state.memes)
+        let keys = Object.keys(this.state.memes)
         keys = keys.sort((aKey, bKey) => {
-            var a = new Date(this.state.memes[aKey].created).getTime();
-            var b = new Date(this.state.memes[bKey].created).getTime();
-            return b - a;//b-a means reversed
+            /*let a = new Date(this.state.memes[aKey].created).getTime();
+            let b = new Date(this.state.memes[bKey].created).getTime();
+            return b - a;//b-a means reversed*/
+            let a = this.state.memes[aKey].order;
+            let b = this.state.memes[bKey].order;
+            return a - b;
         });
         return keys;
     }
 
-    /////
-    /////
-    /////
-    // This example assumes you have a way to know/load this information
-    remoteRowCount=0;
-
-    list:any[] = [];
-
-    isRowLoaded ({ index }) {
-        return !!this.list[index];
-    }
-
-    loadMoreRows ({ startIndex, stopIndex }) {
-        return new Promise((resolve, reject) => {
-            setTimeout(()=>{
-                for (let i = startIndex; i < stopIndex; i++) {
-                    this.list.push("txt"+i);
-                }
-            },1000);
-            resolve("ok");
-        });
-    }
-
-    rowRenderer ({ key, index, style}) {
-        return (
-            <div
-                key={key}
-                style={style}
-            >
-                {this.list[index]}
-            </div>
-        )
-    }
-
-    ////
-    ////
-    ////
+    renderWaypoint = () => {
+        if (this.state.displayWaypoint) {
+            return (
+                <Waypoint
+                    onEnter={() => {
+                        this.memeLoader.loadMore(4);
+                    }}
+                />
+            );
+        }
+        return <div></div>
+    };
 
     render() {
         return (
-            false?<div className="fcContainerScroll scrollbar">
+            <div className="fcContainerScroll scrollbar">
                 <div className="memes fcContentScroll">
                     {
-                        this.getKeyList().map((key) => {
+                        this.getKeyList().map((value, index, array) => {
+                            let key = value;
                             if (this.state.memes[key].title === null || this.state.memes[key].title === "") {
                                 return <div key={key}></div>
                             }
@@ -98,34 +83,89 @@ export default class MemeListV2 extends Component {
                             }
                             return <div key={key}>
                                 <MemeComponent key={key} meme={this.state.memes[key]}/>
-                                <Divider />
+                                <Divider/>
+                                {index == array.length - 2 &&
+                                this.renderWaypoint()
+                                }
                             </div>
                         })
                     }
                     <CreateMemeDialogFab/>
                 </div>
             </div>
-                :
-                <div>
-                    <InfiniteLoader
-                        isRowLoaded={this.isRowLoaded}
-                        loadMoreRows={this.loadMoreRows}
-                        rowCount={this.remoteRowCount}
-                    >
-                        {({ onRowsRendered, registerChild }) => (
-                            <List
-                                height={200}
-                                onRowsRendered={onRowsRendered}
-                                ref={registerChild}
-                                rowCount={this.remoteRowCount}
-                                rowHeight={20}
-                                rowRenderer={this.rowRenderer}
-                                width={300}
-                            />
-                        )}
-                    </InfiniteLoader>,
-                </div>
         )
     }
 
 }
+
+/**
+ *
+ *
+ * import {
+    InfiniteLoader,
+    List,
+    WindowScroller
+} from "react-virtualized";
+ *     /////
+ /////
+ /////
+
+ list: any = {};
+ // This example assumes you have a way to know/load this information
+ remoteRowCount = 100000;
+
+
+ isRowLoaded = ({index}) => {
+        return !!this.list[index + ""];
+    }
+
+ loadMoreRows = ({startIndex, stopIndex}) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                for (let i = startIndex; i <= stopIndex; i++) {
+                    this.list[i + ""] = "txt" + i;
+                }
+                resolve("ok");
+            }, 1000);
+        });
+    }
+
+ rowRenderer = ({key, index, style}) => {
+        return (
+            <div
+                key={key}
+                style={style}
+            >
+                {this.list[index + ""]}
+            </div>
+        )
+    }
+
+ ////
+ ////
+ ////
+ * <div>
+ <InfiniteLoader
+ isRowLoaded={this.isRowLoaded}
+ loadMoreRows={this.loadMoreRows}
+ rowCount={this.remoteRowCount}
+ >
+ {({onRowsRendered, registerChild}) => (
+     <WindowScroller ref={registerChild}>
+         {({height, isScrolling, registerChild, scrollTop}) => (
+             <List
+                 autoHeight
+                 height={height}
+                 onRowsRendered={onRowsRendered}
+                 ref={registerChild}
+                 rowCount={this.remoteRowCount}
+                 rowHeight={20}
+                 rowRenderer={this.rowRenderer}
+                 style={{width:"100%"}}
+             />
+         )}
+     </WindowScroller>
+ )}
+ </InfiniteLoader>
+ </div>
+ */

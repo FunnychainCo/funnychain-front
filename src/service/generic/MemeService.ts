@@ -1,20 +1,15 @@
 //import {firebaseMemeService} from "../firebase/FirebaseMemeService";
 import {steemMemeService} from "../steem/SteemMemeService";
-import {Meme, MemeServiceInterface} from "./ApplicationInterface";
+import {MemeLoaderInterface, MemeServiceInterface} from "./ApplicationInterface";
 
 export class MemeService implements MemeServiceInterface {
 
-    on(callback: (memes: Meme[]) => void): () => void {
-        /*return firebaseMemeService.on(memes => {
-            callback(memes);
-        });*/
-        return steemMemeService.on(memes => {
-            callback(memes);
-        });
-    }
-
     vote(url: string): Promise<string> {
         return steemMemeService.vote(url);
+    }
+
+    getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
+        return steemMemeService.getMemeLoader(type,tags);
     }
 
 }

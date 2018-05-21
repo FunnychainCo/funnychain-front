@@ -53,11 +53,15 @@ export class SteemAuthService implements AuthServiceInterface {
 
 
     get currentUser(): UserEntry {
+        if(this._currentUser==undefined) {
+            //TODO workaround for strange bug (strange bug with component dependencies)
+            this._currentUser = USER_ENTRY_NO_VALUE;
+        }
         return this._currentUser;
     }
 
     notifyChange() {
-        if (this._sc2Api != null) {
+        if (this._sc2Api != null && this.steemToken!=STEEM_TOKEN_NO_VALUE) {
             //check validity of token
             this._sc2Api.me((err, res) => {
                 console.log(res)

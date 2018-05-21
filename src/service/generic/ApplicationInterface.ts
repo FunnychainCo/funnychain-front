@@ -12,7 +12,8 @@ export interface Meme {
     dolarValue: number,
     voteNumber: number,
     commentNumber: number,
-    currentUserVoted: boolean
+    currentUserVoted: boolean,
+    order:number
 }
 
 export const MEME_ENTRY_NO_VALUE: Meme = {
@@ -24,7 +25,8 @@ export const MEME_ENTRY_NO_VALUE: Meme = {
     dolarValue: 42.10,
     voteNumber: 41,
     commentNumber: 5,
-    currentUserVoted: false
+    currentUserVoted: false,
+    order:0,
 };
 
 export interface MemeComment {
@@ -34,8 +36,14 @@ export interface MemeComment {
     text: string
 }
 
+export interface MemeLoaderInterface {
+    on(callback: (memes: Meme[]) => void): () => void,
+    loadMore(limit:number),
+    refresh()
+}
+
 export interface MemeServiceInterface {
-    on(callback: (memes: Meme[]) => void): () => void
+    getMemeLoader(type:string,tags:string[]):MemeLoaderInterface
 
     vote(url: string): Promise<string>
 }

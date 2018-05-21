@@ -1,6 +1,6 @@
 import * as firebase from 'firebase';
 import {idService} from "../IdService";
-import {CommentsVisitor, Meme, MemeServiceInterface} from "../generic/ApplicationInterface";
+import {CommentsVisitor, Meme, MemeLoaderInterface, MemeServiceInterface} from "../generic/ApplicationInterface";
 import {authService, UserEntry} from "../generic/AuthService";
 import * as Q from 'q';
 import {firebaseMediaService} from "./FirebaseMediaService";
@@ -59,7 +59,8 @@ export class FirebaseMemeService implements MemeServiceInterface {
                                 dolarValue: 0,
                                 commentNumber: 0,
                                 voteNumber: 0,
-                                currentUserVoted: false
+                                currentUserVoted: false,
+                                order:0
                             });
                         });
                     });
@@ -104,6 +105,75 @@ export class FirebaseMemeService implements MemeServiceInterface {
         return new Promise<string>((resolve, reject) => {
             resolve("ok")
         });
+    }
+
+    getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
+        return new MemeLoader();
+    }
+
+}
+
+class MemeLoader implements MemeLoaderInterface{
+    loadMore(limit: number) {
+    }
+
+    dataBase = "memes"
+
+    onFirebaseItemOnly(callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
+        let ref = firebase.database().ref(this.dataBase);
+        let toremove = ref.on("value", (memes) => {
+            if (memes == null) {
+                console.error(memes);
+                return;
+            }
+            let memesValue: { [id: string]: FirebaseMeme } = memes.val() || {};
+            callback(memesValue);
+        }, (errorObject) => {
+            console.log("The read failed: " + errorObject.code);
+        });
+        //return remove listener function
+        return () => {
+            ref.off("value", toremove);
+        };
+    }
+
+    on(callback: (memes: Meme[]) => void): () => void {
+        return firebaseMemeService.onFirebaseItemOnly(memes => {
+            let memesPromise: Promise<Meme>[] = [];
+            Object.keys(memes).forEach(key => {
+                memesPromise.push(new Promise<Meme>((resolve, reject) => {
+                    let meme = memes[key];
+                    firebaseMediaService.loadMediaEntry(meme.iid).then(imageValue => {
+                        if (!imageValue.url.startsWith("https://")) {
+                            //do not display insecure meme it breaks the https of app
+                            console.error(imageValue.url);
+                            return;//just ignore the meme
+                        }
+                        authService.loadUserData(meme.uid).then((userValue: UserEntry) => {
+                            resolve({
+                                id: key,
+                                title: meme.title,
+                                imageUrl: imageValue.url,
+                                created: new Date(meme.created),
+                                user: userValue,
+                                dolarValue: 0,
+                                commentNumber: 0,
+                                voteNumber: 0,
+                                currentUserVoted: false,
+                                order:0
+                            });
+                        });
+                    });
+                }));
+            });
+            Q.all(memesPromise).then(memes => {
+                callback(memes);
+            });
+        });
+    }
+
+
+    refresh() {
     }
 
 }
