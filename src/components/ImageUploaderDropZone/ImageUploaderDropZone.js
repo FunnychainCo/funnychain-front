@@ -5,7 +5,7 @@ import Dropzone from 'react-dropzone'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './ImageUploaderDropZone.css';
 import MobileDetect from 'mobile-detect'
-import {authService} from "../../service/generic/AuthService";
+import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
 import {uploadService} from "../../service/firebase/FirebaseUploadService";
 
 export default class ImageUploaderDropZone extends Component {
@@ -32,7 +32,7 @@ export default class ImageUploaderDropZone extends Component {
         this.setState({mobile: md.mobile()});
         console.log("device type (null = web browser) :" + md.mobile());
         this.removeListener = authService.onAuthStateChanged((user) => {
-            if(user){
+            if(user!=USER_ENTRY_NO_VALUE){
                 this.uid = user.uid
             }else {
                 this.uid = null;

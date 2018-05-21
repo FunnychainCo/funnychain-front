@@ -1,7 +1,7 @@
 import {Component} from 'react'
 //import * as ImagesLoaded from 'react-images-loaded';
 import "./Meme.css"
-import {CommentsVisitor, Meme, MemeComment, memeService} from "../../service/generic/MemeService";
+import {CommentsVisitor, Meme, MemeComment} from "../../service/generic/ApplicationInterface";
 import * as React from 'react';
 import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
@@ -15,6 +15,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import classnames from 'classnames';
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import TextField from "material-ui/TextField/TextField";
+import {commentService} from "../../service/generic/CommentService";
 
 const ReactMarkdown = require('react-markdown')
 
@@ -75,7 +76,7 @@ class MemeComponent extends Component<PropsType, StateType> {
     componentDidMount() {
         var meme = this.props.meme;
         this.setState({meme: meme});
-        this.commentVisitor = memeService.getCommentVisitor(meme.id);
+        this.commentVisitor = commentService.getCommentVisitor(meme.id);
         this.commentVisitor.on((comments: MemeComment[]) => {
             let concat = comments.concat(this.state.comments);
             this.setState({comments: concat});

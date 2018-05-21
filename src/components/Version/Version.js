@@ -12,7 +12,7 @@ export default class LoginDialog extends Component {
             position: 'fixed',
         };
         return (
-            <span style={style}>0.1.3</span>
+            <span style={style}>0.2.0</span>
         )
     }
 }

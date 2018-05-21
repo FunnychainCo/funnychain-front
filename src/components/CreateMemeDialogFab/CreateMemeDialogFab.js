@@ -2,9 +2,9 @@ import React, {Component} from 'react'
 import {Button, TextField} from "material-ui";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import ContentAdd from '@material-ui/icons/Add';
-import {fireBaseMemeService} from "../../service/firebase/FireBaseMemeService";
+import {firebaseMemeService} from "../../service/firebase/FirebaseMemeService";
 import {userNotificationService} from "../../service/UserNotificationService";
-import {authService} from "../../service/generic/AuthService";
+import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
 import {DialogContent} from "material-ui";
 import {DialogActions} from "material-ui";
 import {DialogTitle} from "material-ui";
@@ -43,7 +43,7 @@ export class CreateMemeDialog extends Component {
             title: this.state.title,
             created: null //will be filled later
         };
-        fireBaseMemeService.createMeme(memeToCreate);
+        firebaseMemeService.createMeme(memeToCreate);
         this.props.handleClose();
     }
 
@@ -79,7 +79,7 @@ export class CreateMemeDialog extends Component {
                     label="Title"
                     onChange={this.handleChange}
                     fullWidth
-                />
+                /><br/>
                 <ImageUploaderDropZone onImageLoaded={this.onImageLoaded}/>
             </div>
         )
@@ -98,7 +98,7 @@ export default class CreateMemeDialogFab extends Component {
     componentDidMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({
-                logged: user ? true : false
+                logged: user!=USER_ENTRY_NO_VALUE ? true : false
             });
         })
     }

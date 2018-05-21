@@ -1,6 +1,6 @@
 import * as firebase from 'firebase';
 import {idService} from "../IdService";
-import {CommentsVisitor, Meme, MemeServiceInterface} from "../generic/MemeService";
+import {CommentsVisitor, Meme, MemeServiceInterface} from "../generic/ApplicationInterface";
 import {authService, UserEntry} from "../generic/AuthService";
 import * as Q from 'q';
 import {firebaseMediaService} from "./FirebaseMediaService";
@@ -16,7 +16,7 @@ interface FirebaseUser{
     uid:string
 }
 
-export class FireBaseMemeService implements MemeServiceInterface{
+export class FirebaseMemeService implements MemeServiceInterface{
     dataBase = "memes"
 
     onFirebaseItemOnly(callback:(memes:{[id:string] : FirebaseMeme}) => void) : () => void {
@@ -38,7 +38,7 @@ export class FireBaseMemeService implements MemeServiceInterface{
     }
 
     on(callback:(memes:Meme[]) => void):()=>void {
-        return fireBaseMemeService.onFirebaseItemOnly(memes => {
+        return firebaseMemeService.onFirebaseItemOnly(memes => {
             let memesPromise:Promise<Meme>[] = [];
             Object.keys(memes).forEach(key => {
                 memesPromise.push(new Promise<Meme>((resolve, reject) => {
@@ -56,7 +56,7 @@ export class FireBaseMemeService implements MemeServiceInterface{
                                 imageUrl:imageValue.url,
                                 created:new Date(meme.created),
                                 user:{
-                                    avatarUrl:userValue.avatarIid,
+                                    avatarUrl:userValue.avatarUrl,
                                     displayName:userValue.displayName
                                 },
                                 dolarValue:0,
@@ -99,4 +99,4 @@ export class FireBaseMemeService implements MemeServiceInterface{
 
 }
 
-export let fireBaseMemeService = new FireBaseMemeService();
+export let firebaseMemeService = new FirebaseMemeService();

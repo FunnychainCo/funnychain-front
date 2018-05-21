@@ -1,11 +1,12 @@
 
 import "./MemeList.css"
-import {Meme, memeService} from "../../service/generic/MemeService";
+import {memeService} from "../../service/generic/MemeService";
 import MemeComponent from '../Meme/MemeComponent';
 import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import * as React from "react";
 import {Component} from "react";
 import Divider from "@material-ui/core/Divider/Divider";
+import {Meme} from "../../service/generic/ApplicationInterface";
 
 interface State {
     memes:{[id:string]:Meme}

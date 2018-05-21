@@ -1,9 +1,13 @@
-import React, {Component} from 'react'
+import {Component} from 'react';
+import * as React from 'react'
 import "./Account.css";
 import Account from "./Account";
 import {Drawer} from "material-ui";
 
-export default class AccountDrawer extends Component {
+export default class AccountDrawer extends Component<{
+    open:boolean,
+    onRequestChange: (state:boolean) => void,
+}> {
     render() {
         return (
             <Drawer open={this.props.open}

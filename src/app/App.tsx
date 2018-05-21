@@ -1,42 +1,49 @@
 import 'bootstrap/dist/css/bootstrap.css'
-import React, {Component} from "react";
+import * as React from 'react';
 import {Route, BrowserRouter, Switch} from 'react-router-dom'
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import {Snackbar} from "material-ui";
 import {createMuiTheme} from "material-ui";
 
 import "./App.css"
 
 import Header from "../components/Header/Header";
 import Home from "../containers/Home";
-import {firebaseAuthService} from "../service/firebase/FirebaseAuthService";
 import Version from "../components/Version/Version";
 import {userNotificationService} from "../service/UserNotificationService";
 import {pwaService} from "../service/PWAService";
 import {steemAuthService} from "../service/steem/SteemAuthService";
 import Connect from "../components/Steem/Connect"
+import {authService, USER_ENTRY_NO_VALUE} from "../service/generic/AuthService";
 
+interface IState {
+    logged: boolean,
+    loading: boolean,
+    userMessage: {
+        display: boolean,
+        message: string
+    }
+}
 
-class AppJs extends Component {
+class App extends React.Component<any,IState> {
     state = {
-        authed: false,
+        logged: false,
         loading: true,
         userMessage: {
             display: false,
             message: ""
         }
-    }
-    removeListener = null;
+    };
+    removeListener:any = () => {};
 
     componentDidMount() {
         pwaService.start();
         steemAuthService.start();
-        this.removeListener = firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
+        this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({
-                authed: user ? true : false,
+                logged: user==USER_ENTRY_NO_VALUE ? true : false,
                 loading: false,
             });
-        });
+        })
         userNotificationService.registerCallBack((message) => {
             this.setState({
                 userMessage: {
@@ -76,18 +83,17 @@ class AppJs extends Component {
                             </Switch>
                         </div>
                         <Version/>
-                        <Snackbar
+                        {/**<Snackbar
                             open={this.state.userMessage.display}
                             message={this.state.userMessage.message}
                             autoHideDuration={4000}
                             onRequestClose={this.handleRequestClose}
-                        />
+                        />**/}
                     </div>
                 </MuiThemeProvider>
             </BrowserRouter>
         );
     }
-
 }
 
-export default AppJs;
+export default App;

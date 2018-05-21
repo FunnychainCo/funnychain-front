@@ -1,264 +1,84 @@
+
 import {firebaseAuthService} from "../firebase/FirebaseAuthService";
-import axios from 'axios'
-import {firebaseMediaService} from "../firebase/FirebaseMediaService";
-import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
-import * as firebase from "firebase";
-import * as EventEmitter from "eventemitter3";
+import {steemAuthService} from "../steem/SteemAuthService";
+import {steemUserService} from "../steem/SteemUserService";
+
 
 export interface UserEntry {
     uid: string,
-    avatarIid: string,
     displayName: string,
-    email: string,
-    avatar: any
+    avatarUrl:string,
 }
 
-export interface FireBaseUser {
-    uid: string;
-    photoURL: string;
-    avatarIid: string,
-    displayName: string,
-    email: string,
-    avatar: any
+export const USER_ENTRY_NO_VALUE:UserEntry = {
+    uid: "",
+    displayName: "",
+    avatarUrl:"",
+};
+
+export interface MailAuthServiceInterface{
+    //specific email pasword auth
+    changeEmail(newEmail:string):Promise<string>,
+    changePassword(currentPassword:string, newTextValue:string):Promise<string>,
+    resetPassword(email:string):Promise<string>,
+
+    register(email:string, pw:string):Promise<string>,
+    login(email:string, pw:string):Promise<string>,
 }
 
-export class AuthService {
-    userDataBaseName = "users";
+export interface AccountManagementAuthServiceInterface{
+    //generic user auth
+    onAuthStateChanged(callback:(userData:UserEntry)=>void):()=>void,
+    loadUserData(uid:string):Promise<UserEntry>,
+    logout():Promise<string>,
+}
 
-    eventEmitter = new EventEmitter<string>();
-    currentUserUid:string = "";
+export interface AuthServiceInterface{
+    //generic user auth
+    onAuthStateChanged(callback:(userData:UserEntry)=>void):()=>void,
+    logout():Promise<string>,
+}
 
-    userCache = {};//{uid:userobj}
-
-    constructor() {
-        firebaseAuthService.firebaseAuth().onAuthStateChanged((user) => {
-            if (user == null) {
-                this.currentUserUid = "";
-                this.eventEmitter.emit('AuthStateChanged', null);
-            } else {
-                this.currentUserUid = user.uid;
-                this.eventEmitter.emit('AuthStateChanged', user.uid);
-            }
-        });
-    }
+export class AuthService implements AuthServiceInterface{
 
     changeEmail(newEmail:string):Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            let user:any = firebase.auth().currentUser;
-            if(user==null){
-                reject("user is null");
-                return;
-            }
-            this.userCache[user.uid] = null;//invalidate cache
-            user.updateEmail(newEmail).then(() => {
-                firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/email')
-                    .set(newEmail)
-                    .then(() => {
-                        this.eventEmitter.emit('AuthStateChanged', user.uid);
-                        resolve("ok")
-                    });
-            }).catch((error) => {
-                console.error(error);
-            });
-        });
+        return firebaseAuthService.changeEmail(newEmail);
     }
 
     changePassword(currentPassword:string, newTextValue:string):Promise<string> {
-        return new Promise((resolve, reject) => {
-            let user:any = firebase.auth().currentUser;
-            if(user==null){
-                reject("user is null");
-                return;
-            }
-            return firebaseAuthService.firebaseAuth().signInWithEmailAndPassword(user.email, currentPassword).then((user) => {
-                user.updatePassword(newTextValue).then(function () {
-                    resolve("ok");
-                });
-            });
-        });
-    }
-
-    changeDisplayName(newDisplayName:string):Promise<string> {
-        return new Promise((resolve, reject) => {
-            let user:any = firebase.auth().currentUser;
-            this.userCache[user.uid] = null;//invalidate cache
-            firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/displayName')
-                .set(newDisplayName)
-                .then(() => {
-                    this.eventEmitter.emit('AuthStateChanged', user.uid);
-                    resolve("ok");
-                });
-        });
-    }
-
-    changeAvatar(newAvatarIid:string):Promise<string> {
-        return new Promise((resolve, reject) => {
-            let user:any = firebase.auth().currentUser;
-            this.userCache[user.uid] = null;//invalidate cache
-            firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
-                .set(newAvatarIid)
-                .then(() => {
-                    this.eventEmitter.emit('AuthStateChanged', user.uid);
-                    resolve("ok");
-                });
-        });
-    }
-
-    register(email:string, pw:string):Promise<string> {
-        return new Promise((resolve, reject) => {
-            firebaseAuthService.firebaseAuth().createUserWithEmailAndPassword(email, pw)
-                .then((user) => {
-                    this.saveUser(user)
-                        .then(() => {
-                            this.eventEmitter.emit('AuthStateChanged', user.uid);
-                            resolve("ok");
-                        })
-                        .catch(error => {
-                            reject(error);
-                        });
-                })
-                .catch(error => {
-                    reject(error);
-                });
-        });
-    }
-
-    onAuthStateChanged(callback:(userData:UserEntry)=>void):()=>void {
-        let wrapedCallback = (uid:string) => {
-            if(uid=="" || uid==null){
-                console.warn("invalid uid");
-                return;
-            }
-            this.loadUserData(uid).then((data) => {
-                callback(data);
-            }).catch(reason => {
-                console.error(reason);
-            });
-        };
-        this.eventEmitter.on('AuthStateChanged', wrapedCallback);
-        wrapedCallback(this.currentUserUid);//initial call
-        return () => {
-            this.eventEmitter.off('AuthStateChanged', wrapedCallback)
-        };
-    }
-
-    loadUserData(uid:string):Promise<UserEntry> {
-        return new Promise<UserEntry>((resolve, reject) => {
-            if (this.userCache[uid] != null && this.userCache[uid] != undefined) {
-                resolve(this.userCache[uid]);//continue to update user
-            }
-            firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
-                let userData = user.val();
-                if (userData == null) {
-                    reject("");
-                    return;
-                }
-                firebaseMediaService.loadMediaEntry(userData.avatarIid).then((avatar) => {
-                    userData.avatar = avatar;
-                    this.userCache[uid] = userData;
-                    resolve(userData);
-                });
-            }).catch((error) => {
-                console.error(error);
-                reject(error);
-            });
-        });
-    }
-
-    logout():Promise<string> {
-        return firebaseAuthService.firebaseAuth().signOut()
-    }
-
-    login(email:string, pw:string):Promise<string>{
-        return new Promise<string>((resolve, reject) => {
-            firebaseAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
-                firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
-                    let userValue = userData.val();
-                    if (userValue === null) {
-                        console.warn("user recreated : ", user);
-                        this.saveUser(user).then(() => {
-                            this.eventEmitter.emit('AuthStateChanged', user.uid);
-                            resolve("ok");
-                        });
-                    } else {
-                        resolve("ok");
-                    }
-                });
-                console.log("logged : ", user);
-            }).catch(error => {
-                reject(error);
-            });
-        });
+        return firebaseAuthService.changePassword(currentPassword,newTextValue);
     }
 
     resetPassword(email:string):Promise<string> {
-        return firebaseAuthService.firebaseAuth().sendPasswordResetEmail(email)
+        return firebaseAuthService.resetPassword(email);
     }
 
-    saveUser(user:FireBaseUser):Promise<string> {
-        return new Promise((resolve, reject) => {
-            let userNamePromised;
-            let iidPromised;
-            if (user.displayName !== null) {
-                userNamePromised = new Promise((resolve, reject) => {
-                    resolve(user.displayName);
-                });
-            } else {
-                userNamePromised = new Promise((resolve, reject) => {
-                    //configure default HTTP timeout
-                    const httpClient = axios.create();
-                    httpClient.defaults.timeout = 20000;//ms
-                    httpClient.get(backEndPropetiesProvider.getProperty('USERNAME_GENERATION_SERVICE')).then(response => {
-                        let username = response.data;
-                        resolve(username);
-                    }).catch(error => {
-                        console.error("fail to generate user name");
-                        resolve("Toto");
-                    });
-                });
-            }
-            if (user.photoURL !== null) {
-                //TODO implement this case
-                iidPromised = new Promise((resolve, reject) => {
-                    firebaseMediaService.createMediaEntry(user.photoURL, user.uid).then((fileId) => {
-                        resolve(fileId);
-                    });
-                });
-            } else {
-                iidPromised = new Promise((resolve, reject) => {
-                    const httpClient = axios.create();
-                    httpClient.defaults.timeout = 20000;//ms
-                    httpClient.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
-                        let url = response.data;
-                        firebaseMediaService.createMediaEntry(url, user.uid).then((fileId) => {
-                            resolve(fileId);
-                        });
-                    }).catch(error => {
-                        console.error("fail to generate user name");
-                        reject("fail to generate user name");//TODO default avatar in this case
-                    });
-                });
-            }
-            userNamePromised.then(username => {
-                iidPromised.then(iid => {
-                    firebaseAuthService.ref.child(this.userDataBaseName + '/' + user.uid)
-                        .set({
-                            uid: user.uid,
-                            email: user.email,
-                            displayName: username,
-                            avatarIid: iid
-                        })
-                        .then(() => resolve("ok"))
-                        .catch(error => {
-                            reject(error);
-                        });
-                }).catch(error => {
-                    reject(error);
-                });
-            }).catch(error => {
-                reject(error);
-            });
-        });
+    register(email:string, pw:string):Promise<string> {
+        return firebaseAuthService.register(email, pw);
+    }
+
+    login(email:string, pw:string):Promise<string>{
+        return firebaseAuthService.login(email,pw);
+    }
+
+    changeDisplayName(newDisplayName:string):Promise<string> {
+        return firebaseAuthService.changeDisplayName(newDisplayName);
+    }
+
+    changeAvatar(newAvatarIid:string):Promise<string> {
+        return firebaseAuthService.changeAvatar(newAvatarIid);
+    }
+
+    loadUserData(uid:string):Promise<UserEntry> {
+        return steemUserService.loadUserData(uid);
+    }
+
+    onAuthStateChanged(callback:(userData:UserEntry)=>void):()=>void {
+        return steemAuthService.onAuthStateChanged(callback);
+    }
+
+    logout():Promise<string> {
+        return steemAuthService.logout();
     }
 
 }
