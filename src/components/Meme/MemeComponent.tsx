@@ -1,7 +1,7 @@
 import {Component} from 'react'
 //import * as ImagesLoaded from 'react-images-loaded';
 import "./Meme.css"
-import {CommentsVisitor, Meme, MemeComment} from "../../service/generic/ApplicationInterface";
+import {CommentsVisitor, Meme, MEME_ENTRY_NO_VALUE, MemeComment} from "../../service/generic/ApplicationInterface";
 import * as React from 'react';
 import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
@@ -16,6 +16,7 @@ import classnames from 'classnames';
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import TextField from "material-ui/TextField/TextField";
 import {commentService} from "../../service/generic/CommentService";
+import {memeService} from "../../service/generic/MemeService";
 
 const ReactMarkdown = require('react-markdown')
 
@@ -27,7 +28,6 @@ interface PropsType {
 
 interface StateType {
     meme: Meme,
-    upvoted: boolean,
     expanded: boolean,
     comments: MemeComment[],
     commentToPost:string,
@@ -51,21 +51,7 @@ const styles = theme => ({
 
 class MemeComponent extends Component<PropsType, StateType> {
     state = {
-        meme: {
-            id: "",
-            uid: "",
-            user: {
-                displayName: "",
-                avatarUrl: ""
-            },
-            title: "",
-            imageUrl: "",
-            created: new Date(),
-            dolarValue: 42.10,
-            voteNumber: 41,
-            commentNumber: 5
-        },
-        upvoted: false,
+        meme: MEME_ENTRY_NO_VALUE,
         expanded: false,
         comments: [],
         commentToPost:""
@@ -84,11 +70,16 @@ class MemeComponent extends Component<PropsType, StateType> {
     }
 
     upvote = () => {
-        console.log("upvote");
+        if(this.state.meme.currentUserVoted!=true) {
+            this.state.meme.currentUserVoted=true;
+            this.setState({meme:this.state.meme});//update ui
+            memeService.vote(this.state.meme.id);
+        };
     };
 
     post = () => {
-        console.log(this.state.commentToPost);
+        this.commentVisitor.postComment(this.state.meme.id,this.state.commentToPost);
+        this.setState({commentToPost:""});//errase old comment value
     };
 
     handleExpandClick = () => {
@@ -106,7 +97,7 @@ class MemeComponent extends Component<PropsType, StateType> {
             />
             <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
             <CardActions className="memeElementStyleDivContainer">
-                <Button variant="outlined" color={this.state.upvoted ? "secondary" : "default"} aria-label="Upvote"
+                <Button variant="outlined" color={this.state.meme.currentUserVoted ? "secondary" : "default"} aria-label="Upvote"
                         onClick={this.upvote}>
                     <ArrowUpward/>
                 </Button>

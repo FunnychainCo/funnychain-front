@@ -1,46 +1,59 @@
-import {UserEntry} from "./AuthService";
+import {USER_ENTRY_NO_VALUE, UserEntry} from "./AuthService";
 
 /**
  * MEME SERVICE
  */
-export interface Meme{
-    id:string,
-    title:string,
-    user:OtherUserData,
-    imageUrl:string,
-    created:Date,
+export interface Meme {
+    id: string,
+    title: string,
+    user: UserEntry,
+    imageUrl: string,
+    created: Date,
     dolarValue: number,
     voteNumber: number,
-    commentNumber: number
+    commentNumber: number,
+    currentUserVoted: boolean
 }
 
-export interface MemeComment{
-    id:string,
-    parentId:string,
-    author:OtherUserData,
-    text:string
-}
+export const MEME_ENTRY_NO_VALUE: Meme = {
+    id: "",
+    user: USER_ENTRY_NO_VALUE,
+    title: "",
+    imageUrl: "",
+    created: new Date(),
+    dolarValue: 42.10,
+    voteNumber: 41,
+    commentNumber: 5,
+    currentUserVoted: false
+};
 
-export interface OtherUserData{
-    displayName:string,
-    avatarUrl:string
+export interface MemeComment {
+    id: string,
+    parentId: string,
+    author: UserEntry,
+    text: string
 }
 
 export interface MemeServiceInterface {
-    on(callback:(memes:Meme[]) => void):()=>void
+    on(callback: (memes: Meme[]) => void): () => void
+
+    vote(url: string): Promise<string>
 }
 
 /**
  * COMMENT SERVICE
  */
 
-export interface CommentsVisitor{
+export interface CommentsVisitor {
     on(callback: (comments: MemeComment[]) => void): () => void,
-    loadMore(limit:number);
+
+    loadMore(limit: number);
+
+    postComment(parentPostId: string, message: string): Promise<String>;
 }
 
 export interface CommentServiceInterface {
-    getCommentVisitor(id):CommentsVisitor
+    getCommentVisitor(id): CommentsVisitor
 }
 
 /**
@@ -48,5 +61,5 @@ export interface CommentServiceInterface {
  */
 
 export interface UserServiceInterface {
-    loadUserData(uid:string):Promise<UserEntry>,
+    loadUserData(uid: string): Promise<UserEntry>,
 }

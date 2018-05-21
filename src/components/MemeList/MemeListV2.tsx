@@ -7,6 +7,10 @@ import * as React from "react";
 import {Component} from "react";
 import Divider from "@material-ui/core/Divider/Divider";
 import {Meme} from "../../service/generic/ApplicationInterface";
+import {
+    InfiniteLoader,
+    List
+} from "react-virtualized";
 
 interface State {
     memes:{[id:string]:Meme}
@@ -42,9 +46,47 @@ export default class MemeListV2 extends Component {
         return keys;
     }
 
+    /////
+    /////
+    /////
+    // This example assumes you have a way to know/load this information
+    remoteRowCount=0;
+
+    list:any[] = [];
+
+    isRowLoaded ({ index }) {
+        return !!this.list[index];
+    }
+
+    loadMoreRows ({ startIndex, stopIndex }) {
+        return new Promise((resolve, reject) => {
+            setTimeout(()=>{
+                for (let i = startIndex; i < stopIndex; i++) {
+                    this.list.push("txt"+i);
+                }
+            },1000);
+            resolve("ok");
+        });
+    }
+
+    rowRenderer ({ key, index, style}) {
+        return (
+            <div
+                key={key}
+                style={style}
+            >
+                {this.list[index]}
+            </div>
+        )
+    }
+
+    ////
+    ////
+    ////
+
     render() {
         return (
-            <div className="fcContainerScroll scrollbar">
+            false?<div className="fcContainerScroll scrollbar">
                 <div className="memes fcContentScroll">
                     {
                         this.getKeyList().map((key) => {
@@ -63,6 +105,26 @@ export default class MemeListV2 extends Component {
                     <CreateMemeDialogFab/>
                 </div>
             </div>
+                :
+                <div>
+                    <InfiniteLoader
+                        isRowLoaded={this.isRowLoaded}
+                        loadMoreRows={this.loadMoreRows}
+                        rowCount={this.remoteRowCount}
+                    >
+                        {({ onRowsRendered, registerChild }) => (
+                            <List
+                                height={200}
+                                onRowsRendered={onRowsRendered}
+                                ref={registerChild}
+                                rowCount={this.remoteRowCount}
+                                rowHeight={20}
+                                rowRenderer={this.rowRenderer}
+                                width={300}
+                            />
+                        )}
+                    </InfiniteLoader>,
+                </div>
         )
     }
 

@@ -5,7 +5,7 @@ import {idService} from "../IdService";
 export class FirebaseUploadService {
     storageBase = "images"
 
-    uploadFile(file,metadata){
+    uploadFile(file, metadata) {
         return new Promise(((resolve, reject) => {
             var filename = idService.makeid();
             var user = firebase.auth().currentUser;

@@ -19,7 +19,7 @@ export class FirebaseAuthService {
     userDataBaseName = "users";
 
     eventEmitter = new EventEmitter<string>();
-    currentUserUid:string = "";
+    currentUserUid: string = "";
 
     userCache = {};//{uid:userobj}
 
@@ -35,10 +35,10 @@ export class FirebaseAuthService {
         });
     }
 
-    changeEmail(newEmail:string):Promise<string> {
+    changeEmail(newEmail: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            let user:any = firebase.auth().currentUser;
-            if(user==null){
+            let user: any = firebase.auth().currentUser;
+            if (user == null) {
                 reject("user is null");
                 return;
             }
@@ -56,10 +56,10 @@ export class FirebaseAuthService {
         });
     }
 
-    changePassword(currentPassword:string, newTextValue:string):Promise<string> {
+    changePassword(currentPassword: string, newTextValue: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            let user:any = firebase.auth().currentUser;
-            if(user==null){
+            let user: any = firebase.auth().currentUser;
+            if (user == null) {
                 reject("user is null");
                 return;
             }
@@ -71,9 +71,9 @@ export class FirebaseAuthService {
         });
     }
 
-    changeDisplayName(newDisplayName:string):Promise<string> {
+    changeDisplayName(newDisplayName: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            let user:any = firebase.auth().currentUser;
+            let user: any = firebase.auth().currentUser;
             this.userCache[user.uid] = null;//invalidate cache
             firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/displayName')
                 .set(newDisplayName)
@@ -84,9 +84,9 @@ export class FirebaseAuthService {
         });
     }
 
-    changeAvatar(newAvatarIid:string):Promise<string> {
+    changeAvatar(newAvatarIid: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            let user:any = firebase.auth().currentUser;
+            let user: any = firebase.auth().currentUser;
             this.userCache[user.uid] = null;//invalidate cache
             firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
                 .set(newAvatarIid)
@@ -97,7 +97,7 @@ export class FirebaseAuthService {
         });
     }
 
-    register(email:string, pw:string):Promise<string> {
+    register(email: string, pw: string): Promise<string> {
         return new Promise((resolve, reject) => {
             firebaseInitAuthService.firebaseAuth().createUserWithEmailAndPassword(email, pw)
                 .then((user) => {
@@ -116,9 +116,9 @@ export class FirebaseAuthService {
         });
     }
 
-    onAuthStateChanged(callback:(userData:UserEntry)=>void):()=>void {
-        let wrapedCallback = (uid:string) => {
-            if(uid=="" || uid==null){
+    onAuthStateChanged(callback: (userData: UserEntry) => void): () => void {
+        let wrapedCallback = (uid: string) => {
+            if (uid == "" || uid == null) {
                 console.warn("invalid uid");
                 return;
             }
@@ -135,7 +135,7 @@ export class FirebaseAuthService {
         };
     }
 
-    loadUserData(uid:string):Promise<UserEntry> {
+    loadUserData(uid: string): Promise<UserEntry> {
         return new Promise<UserEntry>((resolve, reject) => {
             if (this.userCache[uid] != null && this.userCache[uid] != undefined) {
                 resolve(this.userCache[uid]);//continue to update user
@@ -158,11 +158,11 @@ export class FirebaseAuthService {
         });
     }
 
-    logout():Promise<string> {
+    logout(): Promise<string> {
         return firebaseInitAuthService.firebaseAuth().signOut()
     }
 
-    login(email:string, pw:string):Promise<string>{
+    login(email: string, pw: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             firebaseInitAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
                 firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
@@ -184,11 +184,11 @@ export class FirebaseAuthService {
         });
     }
 
-    resetPassword(email:string):Promise<string> {
+    resetPassword(email: string): Promise<string> {
         return firebaseInitAuthService.firebaseAuth().sendPasswordResetEmail(email)
     }
 
-    saveUser(user:FireBaseUser):Promise<string> {
+    saveUser(user: FireBaseUser): Promise<string> {
         return new Promise((resolve, reject) => {
             let userNamePromised;
             let iidPromised;

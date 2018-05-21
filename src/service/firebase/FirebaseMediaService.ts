@@ -3,8 +3,8 @@ import {idService} from "../IdService";
 import {preLoadImage} from "../ImageUtil";
 
 interface MediaEntry {
-    uid:string,
-    url:string
+    uid: string,
+    url: string
 }
 
 export default class MediaService {
@@ -23,19 +23,19 @@ export default class MediaService {
         });
     }
 
-    loadMediaEntry(iid:string):Promise<MediaEntry> {
-        return new Promise<MediaEntry>((resolve,reject) => {
+    loadMediaEntry(iid: string): Promise<MediaEntry> {
+        return new Promise<MediaEntry>((resolve, reject) => {
             firebase.database().ref(this.imageDataBase + "/" + iid).on("value", (image) => {
-                if(image==null){
+                if (image == null) {
                     reject("image is null");
                     return;
                 }
-                let imageValue:MediaEntry = image.val();
-                if(imageValue==null){
+                let imageValue: MediaEntry = image.val();
+                if (imageValue == null) {
                     reject(iid);
                     return;
                 }
-                preLoadImage(imageValue.url).then(()=>{
+                preLoadImage(imageValue.url).then(() => {
                     resolve(imageValue);
                 });
             });

@@ -22,7 +22,6 @@ export class CreateMemeDialog extends Component {
     imageValid = false;
 
     componentDidMount() {
-        console.log("create meme did mount");
         this.props.onRef(this);
     }
 
