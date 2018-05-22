@@ -1,16 +1,11 @@
+/* default */
 .memes{
-    max-width:50%;
+    max-width:100%;
 }
 
-@media (orientation: landscape) {
+@media (orientation: landscape) and (min-width:961px){
     .memes{
         max-width:50%;
-    }
-}
-
-@media (orientation: portrait){
-    .memes{
-        max-width:100%;
     }
 }
 

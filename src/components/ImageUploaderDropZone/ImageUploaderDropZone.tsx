@@ -1,23 +1,42 @@
-import React, {Component} from 'react'
-import {CircularProgress, Snackbar} from "material-ui";
+import {Component} from 'react'
+import * as React from 'react'
+import {Snackbar} from "material-ui";
 import ImagesLoaded from 'react-images-loaded';
 import Dropzone from 'react-dropzone'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './ImageUploaderDropZone.css';
-import MobileDetect from 'mobile-detect'
+import * as MobileDetect from 'mobile-detect'
 import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
-import {uploadService} from "../../service/firebase/FirebaseUploadService";
+import LoadingBlock from "../LoadingBlock/LoadingBlock";
+//import {fileUploadService} from "../../service/generic/FileUploadService";
 
-export default class ImageUploaderDropZone extends Component {
+export interface IState{
+    files: any[],
+        filename: string,
+    isUploading: boolean,
+    progress: number,
+    fileURL: string,
+    imageStatus: string,
+    openSnackBar: false,
+    errorMessage: string,
+    acceptedFiles: string[],
+    mobile: any
+}
+
+export default class ImageUploaderDropZone extends Component<{
+    acceptedFiles?:string[],
+    onImageLoaded:(state:string) => void,
+    maxSize?:number,
+    onFileToUpload:(file:File)=>Promise<string>
+},any> {
     storageBase = "images"
     dataBase = "images"
-    state = {
+    state:IState = {
         files: [],
         filename: '',
         isUploading: false,
         progress: 0,
         fileURL: '',
-        iid: '',
         imageStatus: '',
         openSnackBar: false,
         errorMessage: '',
@@ -25,17 +44,18 @@ export default class ImageUploaderDropZone extends Component {
         mobile: null
     };
 
-    uid = null;
+    uid:string = "";
+    private removeListener: () => void;
 
     componentDidMount() {
-        var md = new MobileDetect(window.navigator.userAgent);
+        let md = new MobileDetect(window.navigator.userAgent);
         this.setState({mobile: md.mobile()});
         console.log("device type (null = web browser) :" + md.mobile());
         this.removeListener = authService.onAuthStateChanged((user) => {
             if(user!=USER_ENTRY_NO_VALUE){
                 this.uid = user.uid
             }else {
-                this.uid = null;
+                this.uid = "";
             }
         });
     }
@@ -62,7 +82,7 @@ export default class ImageUploaderDropZone extends Component {
 
     handleDone = (instance) => {
         this.setState({isUploading: false});
-        this.props.onImageLoaded(this.state);
+        this.props.onImageLoaded(this.state.fileURL);
     };
 
     onDrop(files) {
@@ -74,13 +94,14 @@ export default class ImageUploaderDropZone extends Component {
             return;
         }
         this.setState({isUploading: true, progress: 0});
-        var file = files[0];
-        var metadata = {
-            contentType: file.type,
-        };
-        uploadService.uploadFile(file,metadata).then((data)=>{
-            this.setState({fileURL: data.fileURL, iid: data.iid});
-        });
+        let file = files[0];
+        this.props.onFileToUpload(file).then((url:string)=>{
+            this.setState({fileURL: url});
+        })
+
+        /*fileUploadService.uploadFile(file).then((data)=>{
+            this.setState({fileURL: data.fileURL});
+        });*/
     }
 
     onDropRejected() {
@@ -101,9 +122,7 @@ export default class ImageUploaderDropZone extends Component {
         return (
             <div className="fcImageContainerStyle">
                 <form className="fcImageContainerStyle">
-                    {this.state.isUploading &&
-                    <CircularProgress size={200} thickness={10}/>
-                    }
+                    {this.state.isUploading && <LoadingBlock />}
                     {this.state.fileURL &&
                     <ImagesLoaded
                         className="fcImageContainerStyle"
@@ -136,9 +155,9 @@ export default class ImageUploaderDropZone extends Component {
                     }
                     <Snackbar
                         open={this.state.openSnackBar}
-                        message={this.state.errorMessage}
+                        message={<div>{this.state.errorMessage}</div>}
                         autoHideDuration={4000}
-                        onRequestClose={this.handleRequestCloseSnackBar}
+                        onClose={this.handleRequestCloseSnackBar}
                     />
                 </form>
             </div>

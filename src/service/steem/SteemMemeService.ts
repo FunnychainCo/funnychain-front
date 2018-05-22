@@ -8,7 +8,14 @@ import * as EventEmitter from "eventemitter3";
 
 export class SteemMemeService implements MemeServiceInterface {
     getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
-        return new MemeLoader(type,tags);
+        return new MemeLoader(type, tags);
+    }
+
+    post(title: string, body: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            console.log(title + " => " + body);
+            resolve("ok");
+        });
     }
 
     vote(url: string): Promise<string> {
@@ -29,14 +36,14 @@ export class SteemMemeService implements MemeServiceInterface {
 
 }
 
-class MemeLoader implements MemeLoaderInterface{
-    lastPostUrl:string = "";
+class MemeLoader implements MemeLoaderInterface {
+    lastPostUrl: string = "";
     eventEmitter = new EventEmitter();
-    type:string;
-    tags:string[];
-    orderNumber:number = -1;//order can be negative
+    type: string;
+    tags: string[];
+    orderNumber: number = -1;//order can be negative
 
-    constructor(type: string,tags: string[]) {
+    constructor(type: string, tags: string[]) {
         this.type = type;
         this.tags = tags;
     }
@@ -48,34 +55,34 @@ class MemeLoader implements MemeLoaderInterface{
         //https://github.com/Stormrose/steem-js/blob/444decdd182a136d066c0e0fd9ac81be974bdc88/doc/README.md
         //https://steemit.com/steemjs/@morning/steem-api-guide-how-to-get-recent-posts-getdiscussionsbycreated-load-more-and-pagination
 
-        this.eventEmitter.on("onMeme",callback);
+        this.eventEmitter.on("onMeme", callback);
         return () => {
-            this.eventEmitter.off("onMeme",callback);
+            this.eventEmitter.off("onMeme", callback);
         };
     }
 
     loadMore(limit: number) {
         let memesPromise: Promise<Meme>[] = [];
-        let params:any = {
+        let params: any = {
             tag: this.tags[0], //TODO manage multiple tags
             limit: limit
         };
-        if(this.lastPostUrl!=""){
+        if (this.lastPostUrl != "") {
             let authorAndPermalink = getAuthorAndPermalink(this.lastPostUrl);
             params.start_author = authorAndPermalink.author;
             params.start_permlink = authorAndPermalink.permalink;
             params.limit++;//for the skiped redundent post
         }
         steem.api.getDiscussionsByTrending(params, (err, result: SteemPost[]) => {
-            result.forEach((steemPost: SteemPost,index,array) => {
-                if(this.lastPostUrl!=""&&index==0){
+            result.forEach((steemPost: SteemPost, index, array) => {
+                if (this.lastPostUrl != "" && index == 0) {
                     //skip redundent post
                     return;
                 }
                 this.orderNumber++;
-                if(index==array.length-1){
+                if (index == array.length - 1) {
                     //update cursor for next loadmore
-                    this.lastPostUrl=steemPost.url;
+                    this.lastPostUrl = steemPost.url;
                 }
                 if (Number(steem.formatter.reputation(steemPost.author_reputation)) < 15) {
                     return;
@@ -109,14 +116,14 @@ class MemeLoader implements MemeLoaderInterface{
                                 avatarUrl: avatarUrl
                             },
                             currentUserVoted: currentUserVoted,
-                            order:this.orderNumber
+                            order: this.orderNumber
                         };
                         resolve(newMeme);
                     }));
                 }));
             });
             Q.all(memesPromise).then(memesData => {
-                this.eventEmitter.emit("onMeme",memesData);
+                this.eventEmitter.emit("onMeme", memesData);
             });
         });
     }

@@ -7,6 +7,7 @@ import {Component} from "react";
 import Divider from "@material-ui/core/Divider/Divider";
 import {Meme, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
 import Waypoint from "react-waypoint";
+import LoadingBlock from "../LoadingBlock/LoadingBlock";
 
 
 interface State {
@@ -90,6 +91,7 @@ export default class MemeListV2 extends Component<any, State> {
                             </div>
                         })
                     }
+                    <LoadingBlock />
                     <CreateMemeDialogFab/>
                 </div>
             </div>

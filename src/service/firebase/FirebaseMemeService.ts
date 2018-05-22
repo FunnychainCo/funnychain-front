@@ -5,7 +5,7 @@ import {authService, UserEntry} from "../generic/AuthService";
 import * as Q from 'q';
 import {firebaseMediaService} from "./FirebaseMediaService";
 
-interface FirebaseMeme {
+export interface FirebaseMeme {
     title: string,
     iid: string,
     uid: string,
@@ -109,6 +109,12 @@ export class FirebaseMemeService implements MemeServiceInterface {
 
     getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
         return new MemeLoader();
+    }
+
+    post(title: string, body: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            resolve("ok");
+        });
     }
 
 }

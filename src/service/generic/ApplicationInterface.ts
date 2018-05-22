@@ -44,8 +44,8 @@ export interface MemeLoaderInterface {
 
 export interface MemeServiceInterface {
     getMemeLoader(type:string,tags:string[]):MemeLoaderInterface
-
-    vote(url: string): Promise<string>
+    vote(url: string): Promise<string>,
+    post(title:string,body:string):Promise<string>
 }
 
 /**
@@ -71,3 +71,17 @@ export interface CommentServiceInterface {
 export interface UserServiceInterface {
     loadUserData(uid: string): Promise<UserEntry>,
 }
+
+/**
+ * File Upload Interface
+ */
+
+export interface FileUploadServiceInterface{
+    uploadFile(file:File):Promise<UploadedDataInterface>
+}
+
+export interface UploadedDataInterface{
+    fileURL:string,
+    fileId:string
+}
+

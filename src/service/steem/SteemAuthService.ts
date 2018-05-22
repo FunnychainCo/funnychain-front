@@ -31,9 +31,20 @@ export class SteemAuthService implements AuthServiceInterface {
 
         //https://www.npmjs.com/package/sc2-sdk
         //https://steemit.com/steemconnect/@noisy/how-to-configure-steemconnect-v2-and-use-it-with-your-application-how-it-works-and-how-it-is-different-from-v1
+        let host = window.location.hostname;
+        let port = window.location.port;
+        if(port!="80" && port!="443"){
+            host = host+":"+port;
+        }
+        let callBackUrl = "/steem/connect"
+        if(window.location.href.startsWith("https")){
+            callBackUrl = "https://" + host + callBackUrl;
+        }else{
+            callBackUrl = "http://" + host + callBackUrl;
+        }
         let init: any = {
             app: 'funnychain.app',
-            callbackURL: 'http://localhost:3000/steem/connect',
+            callbackURL: callBackUrl,
             //accessToken: 'access_token',
             scope: ['vote', 'comment']
         };
@@ -42,7 +53,7 @@ export class SteemAuthService implements AuthServiceInterface {
             this.steemToken = tokenNVM;
             init.accessToken = this.steemToken.access_token;
         }
-        //console.log("steem token from NVM",this.steemToken);
+        console.log("steem token from NVM",this.steemToken);
         this._sc2Api = sc2.Initialize(init);
         this.notifyChange();
     }
@@ -66,7 +77,10 @@ export class SteemAuthService implements AuthServiceInterface {
             this._sc2Api.me((err, res) => {
                 console.log(res)
                 if (res) {
-                    this.eventEmitter.emit('AuthStateChanged', this.steemToken);
+                    steemUserService.loadUserData(this.steemToken.username).then((data) => {
+                        this._currentUser = data;//update cache
+                        this.eventEmitter.emit('AuthStateChanged', this.steemToken);
+                    });
                 } else {
                     //invalidate steem token
                     store.remove('steem.token');
@@ -90,6 +104,7 @@ export class SteemAuthService implements AuthServiceInterface {
             element = element.split("=");
             this.steemToken[element[0]] = decodeURIComponent(element[1]);
         });
+        this.sc2Api.sc2.setAccessToken(this.steemToken.access_token);
         console.log("steem token stored to NVM", this.steemToken);
         store.set('steem.token', this.steemToken);
         this.notifyChange();
@@ -119,14 +134,15 @@ export class SteemAuthService implements AuthServiceInterface {
             if (this.currentUser == USER_ENTRY_NO_VALUE) {
                 steemUserService.loadUserData(steemToken.username).then((data) => {
                     callback(data);
+                    this._currentUser = data;//update cache
                 }).catch(reason => {
                     console.error(reason);
                 });
             } else {
                 //update for future use
                 steemUserService.loadUserData(steemToken.username).then((data) => {
-                    if(data!==undefined) {
-                        this._currentUser = data;
+                    if(data!==undefined && data!==null) {
+                        this._currentUser = data;//update cache
                     }else{
                         console.error(data);
                     }

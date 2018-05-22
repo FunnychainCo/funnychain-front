@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-export default class LoginDialog extends Component {
+export default class Version extends Component {
 
     render () {
         const style = {
@@ -12,7 +12,7 @@ export default class LoginDialog extends Component {
             position: 'fixed',
         };
         return (
-            <span style={style}>0.2.0</span>
+            <span style={style}>0.2.1</span>
         )
     }
 }

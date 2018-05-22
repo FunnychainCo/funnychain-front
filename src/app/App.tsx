@@ -13,37 +13,23 @@ import {userNotificationService} from "../service/UserNotificationService";
 import {pwaService} from "../service/PWAService";
 import {steemAuthService} from "../service/steem/SteemAuthService";
 import Connect from "../components/Steem/Connect"
-import {authService, USER_ENTRY_NO_VALUE} from "../service/generic/AuthService";
 
-interface IState {
-    logged: boolean,
-    loading: boolean,
+class App extends React.Component<any,{
     userMessage: {
         display: boolean,
         message: string
     }
-}
-
-class App extends React.Component<any,IState> {
+}> {
     state = {
-        logged: false,
-        loading: true,
         userMessage: {
             display: false,
             message: ""
         }
     };
-    removeListener:any = () => {};
 
     componentDidMount() {
         pwaService.start();
         steemAuthService.start();
-        this.removeListener = authService.onAuthStateChanged((user) => {
-            this.setState({
-                logged: user==USER_ENTRY_NO_VALUE ? true : false,
-                loading: false,
-            });
-        })
         userNotificationService.registerCallBack((message) => {
             this.setState({
                 userMessage: {
@@ -52,10 +38,6 @@ class App extends React.Component<any,IState> {
                 }
             })
         });
-    }
-
-    componentWillUnmount() {
-        this.removeListener();
     }
 
     handleRequestClose = () => {

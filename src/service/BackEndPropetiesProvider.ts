@@ -9,6 +9,9 @@ export class BackEndPropetiesProvider {
     prodProperties={};
     devProperties={};
 
+    ///////////////////////////////////
+    /// PRODUCTION
+    ///////////////////////////////////
     configFireBaseProd = {
         apiKey: "AIzaSyClb51m-dOtbsZ4xlzQrGu6xMhLlfxilCg",
         authDomain: "funnychain-b2243.firebaseapp.com",
@@ -18,6 +21,12 @@ export class BackEndPropetiesProvider {
         messagingSenderId: "428682484079"
     };
 
+    configSteemItProd = {
+    };
+
+    ///////////////////////////////////
+    /// DEV
+    ///////////////////////////////////
     configFireBaseDev = {
         apiKey: "AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",
         authDomain: "funnychain-dev.firebaseapp.com",
@@ -27,16 +36,19 @@ export class BackEndPropetiesProvider {
         messagingSenderId: "818676897965"
     };
 
+    configSteemItDev = {
+    };
+
     constructor() {
         var hostname = window && window.location && window.location.hostname;
         if(hostname === this.getProperty("PROD_HOST")) {
-            Object.assign(this.properties,this.prodProperties,this.configFireBaseProd);
+            Object.assign(this.properties,this.prodProperties,this.configFireBaseProd,this.configSteemItProd);
         }else{
-            Object.assign(this.properties,this.devProperties,this.configFireBaseDev);
+            Object.assign(this.properties,this.devProperties,this.configFireBaseDev,this.configSteemItDev);
         }
     }
 
-    getProperty(pptName) {
+    getProperty(pptName:string):string {
         return this.properties[pptName];
     }
 }

@@ -10,13 +10,14 @@ import {DialogTitle} from "material-ui";
 import {DialogContent} from "material-ui";
 import {DialogActions} from "material-ui";
 import {pwaService} from "../../service/PWAService";
+import {fileUploadService} from "../../service/generic/FileUploadService";
 
-export default class Account extends Component<any,any> {
+export default class Account extends Component<any, any> {
     state = {
         user: {
-            uid:"",
-            displayName:"",
-            avatarUrl:""
+            uid: "",
+            displayName: "",
+            avatarUrl: ""
         },
         loading: true,
         displayAddToHomeButton: false,
@@ -28,16 +29,16 @@ export default class Account extends Component<any,any> {
         }
     };
 
-    dialogValue:string = "";
-    dialogValueCurrentPassword:string = "";
-    userId:string = "";
-    iid:string = "";
+    dialogValue: string = "";
+    dialogValueCurrentPassword: string = "";
+    userId: string = "";
+    iid: string = "";
     private removeListener: () => void;
     private removeListenerPWA: any;
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
-            if (user==USER_ENTRY_NO_VALUE) {
+            if (user == USER_ENTRY_NO_VALUE) {
                 this.setState({
                     dialog: {
                         user: null,
@@ -130,7 +131,21 @@ export default class Account extends Component<any,any> {
                 >
                     <DialogTitle>{this.state.dialog.title}</DialogTitle>
                     <DialogContent>
-                        <ImageUploaderDropZone onImageLoaded={this.onImageLoaded}/>
+                        <ImageUploaderDropZone
+                            onImageLoaded={
+                                (image: string) => {
+                                    console.log(image);
+                                }
+                                //this.onImageLoaded
+                            }
+                            onFileToUpload={(file: File) => {
+                                return new Promise<string>((resolve, reject) => {
+                                    fileUploadService.uploadFile(file).then((data) => {
+                                        resolve(data.fileURL);
+                                    });
+                                });
+                            }}
+                        />
                     </DialogContent>
                     <DialogActions>
                         <Button

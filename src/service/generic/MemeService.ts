@@ -12,6 +12,10 @@ export class MemeService implements MemeServiceInterface {
         return steemMemeService.getMemeLoader(type,tags);
     }
 
+    post(title: string, body: string):Promise<string> {
+        return steemMemeService.post(title,body);
+    }
+
 }
 
 export let memeService = new MemeService();

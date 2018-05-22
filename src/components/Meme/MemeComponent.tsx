@@ -17,21 +17,11 @@ import Avatar from "@material-ui/core/Avatar/Avatar";
 import TextField from "material-ui/TextField/TextField";
 import {commentService} from "../../service/generic/CommentService";
 import {memeService} from "../../service/generic/MemeService";
+import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
+import LoadingBlock from "../LoadingBlock/LoadingBlock";
 
 const ReactMarkdown = require('react-markdown')
 
-
-interface PropsType {
-    meme: Meme,
-    classes: any
-}
-
-interface StateType {
-    meme: Meme,
-    expanded: boolean,
-    comments: MemeComment[],
-    commentToPost:string,
-}
 
 const styles = theme => ({
     actions: {
@@ -49,24 +39,46 @@ const styles = theme => ({
     }
 });
 
-class MemeComponent extends Component<PropsType, StateType> {
+class MemeComponent extends Component<{
+    meme: Meme,
+    classes: any
+}, {
+    meme: Meme,
+    expanded: boolean,
+    comments: MemeComment[],
+    commentToPost:string,
+    logged:boolean,
+    loadingComment:boolean
+}> {
     state = {
         meme: MEME_ENTRY_NO_VALUE,
         expanded: false,
         comments: [],
-        commentToPost:""
+        commentToPost:"",
+        logged:false,
+        loadingComment:true
     };
 
     commentVisitor: CommentsVisitor;
+    private removeListener: () => void;
 
     componentDidMount() {
         var meme = this.props.meme;
+        this.removeListener = authService.onAuthStateChanged((user) => {
+            this.setState({
+                logged: user!=USER_ENTRY_NO_VALUE ? true : false
+            });
+        })
         this.setState({meme: meme});
         this.commentVisitor = commentService.getCommentVisitor(meme.id);
         this.commentVisitor.on((comments: MemeComment[]) => {
             let concat = comments.concat(this.state.comments);
-            this.setState({comments: concat});
+            this.setState({comments: concat,loadingComment:false});
         });
+    }
+
+    componentWillUnmount(){
+        this.removeListener();
     }
 
     upvote = () => {
@@ -97,7 +109,10 @@ class MemeComponent extends Component<PropsType, StateType> {
             />
             <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
             <CardActions className="memeElementStyleDivContainer">
-                <Button variant="outlined" color={this.state.meme.currentUserVoted ? "secondary" : "default"} aria-label="Upvote"
+                <Button variant="outlined"
+                        color={this.state.meme.currentUserVoted ? "secondary" : "default"}
+                        aria-label="Upvote"
+                        disabled={!this.state.logged}
                         onClick={this.upvote}>
                     <ArrowUpward/>
                 </Button>
@@ -121,6 +136,7 @@ class MemeComponent extends Component<PropsType, StateType> {
                 <CardContent>
                     <a href={"https://steemit.com" + this.state.meme.id}>SteemIt</a>
                     <TextField
+                        disabled={!this.state.logged}
                         id="multiline-flexible"
                         label="Post a comment"
                         multiline
@@ -133,7 +149,8 @@ class MemeComponent extends Component<PropsType, StateType> {
                     />
                     <Button variant="outlined" color="primary" aria-label="Post!"
                             onClick={this.post}
-                            disabled={this.state.commentToPost.replace(" ","")==""}
+                            autoFocus={true}
+                            disabled={this.state.commentToPost.replace(new RegExp(" ","g"),"")=="" || !this.state.logged}
                     >
                         <Send/>&nbsp;POST
                     </Button>
@@ -150,6 +167,7 @@ class MemeComponent extends Component<PropsType, StateType> {
                             />
                         })
                     }
+                    {this.state.loadingComment && <LoadingBlock/>}
                 </CardContent>
             </Collapse>
         </Card>
