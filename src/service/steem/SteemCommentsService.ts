@@ -36,8 +36,8 @@ export class SteemCommentsVisitor implements CommentsVisitor {
             //20180521t112532375z
             //re-marel-apartment-roomate-zg1hbmlh-hvk3j-20180521t112532375z
             //         apartment-roomate-zg1hbmlh-hvk3j
-            let formatedDate = new Date().toISOString().replace(new RegExp("-", 'g'),"").replace(new RegExp(":", 'g'),"").replace("T","t").replace("Z","z").replace(".","");
-            let commentPermalink = "re-"+parentAuthor+"-"+parentPermalink + "-" + formatedDate;
+            let formatedDate = new Date().toISOString().replace(new RegExp("-", 'g'), "").replace(new RegExp(":", 'g'), "").replace("T", "t").replace("Z", "z").replace(".", "");
+            let commentPermalink = "re-" + parentAuthor + "-" + parentPermalink + "-" + formatedDate;
             steemAuthService.sc2Api.comment(parentAuthor, parentPermalink, owner, commentPermalink, "", message, {},
                 (err, res) => {
                     if (res != null) {

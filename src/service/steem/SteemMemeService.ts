@@ -5,15 +5,62 @@ import {SteemPost, SteemVote} from "./SteemType";
 import {getAuthorAndPermalink, loadUserAvatar} from "./SteemUtils";
 import {steemAuthService} from "./SteemAuthService";
 import * as EventEmitter from "eventemitter3";
+import {idService} from "../IdService";
 
 export class SteemMemeService implements MemeServiceInterface {
     getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
         return new MemeLoader(type, tags);
     }
 
-    post(title: string, body: string): Promise<string> {
+    replaceAll(target,search, replacement) {
+        return target.replace(new RegExp(search, 'g'), replacement);
+    };
+
+    makePermalinkFromTitle(title:string):string{
+        title = title.toLowerCase();
+        title = this.replaceAll(title," " , "-");
+        title = this.replaceAll(title, "\t" , "-");
+        title = this.replaceAll(title, "\n" , "-");
+        title = this.replaceAll(title, "\r" , "-");
+        title = this.replaceAll(title, "\b" , "-");
+        title = this.replaceAll(title, "\f" , "-");
+        title = title.replace( /[^a-zA-Z]/ , "");
+        return title+idService.makeidAlpha(6).toLowerCase();
+    }
+
+    post(title: string, url: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            console.log(title + " => " + body);
+            /**
+             * If you want a post, than parentAuthor is an empty string and parentPermlink is your first tag. You might want to check out any post's jsonMetadata on steemd to see how to do that part.
+             The doc also explains the login at the top of the page.
+             */
+            let parentAuthor = "";
+            let parentPermalink = "test";//TODO change this
+            let commentPermalink = this.makePermalinkFromTitle(title);
+            let owner = steemAuthService.currentUser.uid;
+            let urlSplit = url.split("/");
+            let message = "!["+urlSplit[urlSplit.length-1]+"]("+url+")";
+            let jsonMetadata = {
+                tags:["test"],
+                //tags:["meme","funny","dmania","funnychain"],//TODO change this
+                image:url,
+                //app:"funnychain/0.1",//TODO change this
+                format:"markdown"
+            };
+            //cat meme body is image markdown => //json_metadata:"{"tags":["meme","funny","tether","cryptocurrencies","dmania"],"image":["https://steemitimages.com/DQmQxfdrfb6ucJtmRDNCYvcf8d4QXq71dcVLmZQtT3JnD77/2ar6h6.jpg"],"app":"steemit/0.1","format":"markdown"}"
+            //cat dmania body is html => // json_metadata:"{"tags":["dmania","meme","funny"],"image":["https://s3-eu-west-1.amazonaws.com/dmania-images/cyrmarket-0oh7nq4.jpg"],"app":"dmania/0.7"}"
+            console.log(parentAuthor + " => " + parentPermalink + " => " + commentPermalink + " => "+owner + " => "+message +" => "+jsonMetadata);
+            //TODO fix upload image before testing this
+            /*steemAuthService.sc2Api.comment(parentAuthor, parentPermalink, owner, commentPermalink, title, message, jsonMetadata,
+                (err, res) => {
+                    if (res != null) {
+                        console.log("message posted");
+                        resolve("ok");
+                    } else {
+                        console.error(err);
+                        reject(err);
+                    }
+                });*/
             resolve("ok");
         });
     }

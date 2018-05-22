@@ -163,7 +163,7 @@ class MemeComponent extends Component<{
                                                            src={comment.author.avatarUrl}/>
                                                }
                                                title={comment.author.displayName}
-                                               subheader={<ReactMarkdown source={comment.text}/>}
+                                               subheader={<ReactMarkdown source={comment.text} />}
                             />
                         })
                     }
