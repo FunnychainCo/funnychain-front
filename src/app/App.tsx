@@ -13,6 +13,7 @@ import {userNotificationService} from "../service/UserNotificationService";
 import {pwaService} from "../service/PWAService";
 import {steemAuthService} from "../service/steem/SteemAuthService";
 import Connect from "../components/Steem/Connect"
+import {ipfsFileUploadService} from "../service/IPFSFileUploader/IPFSFileUploadService";
 
 class App extends React.Component<any,{
     userMessage: {
@@ -30,6 +31,7 @@ class App extends React.Component<any,{
     componentDidMount() {
         pwaService.start();
         steemAuthService.start();
+        ipfsFileUploadService.start();
         userNotificationService.registerCallBack((message) => {
             this.setState({
                 userMessage: {

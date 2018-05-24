@@ -4,6 +4,9 @@
     min-width: 100%;
 }
 
+.memeExpandButton{
+    margin-left: auto !important;
+}
 
 .memeElementStyleDivContainer{
     display: flex;

@@ -12,7 +12,7 @@ import IconButton from "@material-ui/core/IconButton/IconButton";
 import Collapse from "@material-ui/core/Collapse/Collapse";
 import CardContent from "@material-ui/core/CardContent/CardContent";
 import withStyles from "@material-ui/core/styles/withStyles";
-import classnames from 'classnames';
+//import classnames from 'classnames';
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import TextField from "material-ui/TextField/TextField";
 import {commentService} from "../../service/generic/CommentService";
@@ -22,7 +22,7 @@ import LoadingBlock from "../LoadingBlock/LoadingBlock";
 
 const ReactMarkdown = require('react-markdown')
 
-
+//TODO use this for fancy expand collapse button but seems to have issue in prod
 const styles = theme => ({
     actions: {
         display: 'flex',
@@ -102,7 +102,7 @@ class MemeComponent extends Component<{
     };
 
     render() {
-        const {classes} = this.props;
+        //const {classes} = this.props;
         return <Card>
             <CardHeader
                 title={this.state.meme.title}
@@ -124,7 +124,7 @@ class MemeComponent extends Component<{
                 </div>
 
                 <IconButton
-                    className={classnames(classes.expand, {[classes.expandOpen]: this.state.expanded,})}
+                    className="memeExpandButton"
                     onClick={this.handleExpandClick}
                     aria-expanded={this.state.expanded}
                     aria-label="Show more"
@@ -175,4 +175,5 @@ class MemeComponent extends Component<{
 
 }
 
+/*className={classnames(classes.expand, {[classes.expandOpen]: this.state.expanded,})}*/
 export default withStyles(styles)(MemeComponent);

@@ -28,34 +28,35 @@ export class SteemAuthService implements AuthServiceInterface {
     }
 
     start() {
-
-        //https://www.npmjs.com/package/sc2-sdk
-        //https://steemit.com/steemconnect/@noisy/how-to-configure-steemconnect-v2-and-use-it-with-your-application-how-it-works-and-how-it-is-different-from-v1
-        let host = window.location.hostname;
-        let port = window.location.port;
-        if(port!="80" && port!="443"){
-            host = host+":"+port;
+        if(this.sc2Api==null) {
+            //https://www.npmjs.com/package/sc2-sdk
+            //https://steemit.com/steemconnect/@noisy/how-to-configure-steemconnect-v2-and-use-it-with-your-application-how-it-works-and-how-it-is-different-from-v1
+            let host = window.location.hostname;
+            let port = window.location.port;
+            if (port != "80" && port != "443") {
+                host = host + ":" + port;
+            }
+            let callBackUrl = "/steem/connect"
+            if (window.location.href.startsWith("https")) {
+                callBackUrl = "https://" + host + callBackUrl;
+            } else {
+                callBackUrl = "http://" + host + callBackUrl;
+            }
+            let init: any = {
+                app: 'funnychain.app',
+                callbackURL: callBackUrl,
+                //accessToken: 'access_token',
+                scope: ['vote', 'comment']
+            };
+            let tokenNVM: any = store.get('steem.token') || STEEM_TOKEN_NO_VALUE;
+            if (tokenNVM !== STEEM_TOKEN_NO_VALUE) {
+                this.steemToken = tokenNVM;
+                init.accessToken = this.steemToken.access_token;
+            }
+            console.log("steem token from NVM", this.steemToken);
+            this._sc2Api = sc2.Initialize(init);
+            this.notifyChange();
         }
-        let callBackUrl = "/steem/connect"
-        if(window.location.href.startsWith("https")){
-            callBackUrl = "https://" + host + callBackUrl;
-        }else{
-            callBackUrl = "http://" + host + callBackUrl;
-        }
-        let init: any = {
-            app: 'funnychain.app',
-            callbackURL: callBackUrl,
-            //accessToken: 'access_token',
-            scope: ['vote', 'comment']
-        };
-        let tokenNVM: any = store.get('steem.token') || STEEM_TOKEN_NO_VALUE;
-        if (tokenNVM !== STEEM_TOKEN_NO_VALUE) {
-            this.steemToken = tokenNVM;
-            init.accessToken = this.steemToken.access_token;
-        }
-        console.log("steem token from NVM",this.steemToken);
-        this._sc2Api = sc2.Initialize(init);
-        this.notifyChange();
     }
 
     get sc2Api(): any {
@@ -104,9 +105,10 @@ export class SteemAuthService implements AuthServiceInterface {
             element = element.split("=");
             this.steemToken[element[0]] = decodeURIComponent(element[1]);
         });
-        this.sc2Api.sc2.setAccessToken(this.steemToken.access_token);
-        console.log("steem token stored to NVM", this.steemToken);
         store.set('steem.token', this.steemToken);
+        this.start();//start service in case it is not already started
+        this.sc2Api.setAccessToken(this.steemToken.access_token);//set token anyway in case already started
+        console.log("steem token stored to NVM", this.steemToken);
         this.notifyChange();
     }
 
