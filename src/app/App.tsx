@@ -1,4 +1,4 @@
-import 'bootstrap/dist/css/bootstrap.css'
+//import 'bootstrap/dist/css/bootstrap.css'
 import * as React from 'react';
 import {Route, BrowserRouter, Switch} from 'react-router-dom'
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";

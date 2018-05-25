@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button/Button";
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import Collapse from "@material-ui/core/Collapse/Collapse";
 import CardContent from "@material-ui/core/CardContent/CardContent";
-import withStyles from "@material-ui/core/styles/withStyles";
+//import withStyles from "@material-ui/core/styles/withStyles";
 //import classnames from 'classnames';
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import TextField from "material-ui/TextField/TextField";
@@ -23,7 +23,7 @@ import LoadingBlock from "../LoadingBlock/LoadingBlock";
 const ReactMarkdown = require('react-markdown')
 
 //TODO use this for fancy expand collapse button but seems to have issue in prod
-const styles = theme => ({
+/*const styles = theme => ({
     actions: {
         display: 'flex',
     },
@@ -37,11 +37,11 @@ const styles = theme => ({
     expandOpen: {
         transform: 'rotate(180deg)',
     }
-});
+});*/
 
-class MemeComponent extends Component<{
+export default class MemeComponent extends Component<{
     meme: Meme,
-    classes: any
+//    classes: any
 }, {
     meme: Meme,
     expanded: boolean,
@@ -174,6 +174,3 @@ class MemeComponent extends Component<{
     }
 
 }
-
-/*className={classnames(classes.expand, {[classes.expandOpen]: this.state.expanded,})}*/
-export default withStyles(styles)(MemeComponent);
