@@ -1,19 +1,18 @@
-import React, {Component} from 'react'
-import PropTypes from 'prop-types';
-import {Dialog} from "material-ui";
+import {Component} from 'react';
+import * as React  from 'react';
 import "./ModalPage.css";
-import {withMobileDialog} from "material-ui";
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import withMobileDialog from "@material-ui/core/withMobileDialog/withMobileDialog";
 
-class ModalPage extends Component {
+class ModalPage extends Component<any,any> {
     render() {
-        const { fullScreen } = this.props;
+        const { fullScreen }:any = this.props;
         return (
             <Dialog
                 fullScreen={fullScreen}
                 title={this.props.title}
                 open={this.props.open}
                 onClose={this.props.onRequestClose}
-                actions={this.props.actions}
             >
                 <div>{/*add div to have the button right after the text field*/}
                 {this.props.children}
@@ -23,8 +22,5 @@ class ModalPage extends Component {
     }
 }
 
-ModalPage.propTypes = {
-    fullScreen: PropTypes.bool.isRequired,
-};
 
-export default withMobileDialog()(ModalPage);
+export default withMobileDialog<any>()(ModalPage);

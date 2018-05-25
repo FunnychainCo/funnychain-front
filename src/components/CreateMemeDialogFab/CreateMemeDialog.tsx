@@ -1,15 +1,15 @@
 import {Component} from 'react'
 import * as React from 'react'
-import {TextField} from "material-ui";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import {userNotificationService} from "../../service/UserNotificationService";
 import {fileUploadService} from "../../service/generic/FileUploadService";
-import {DialogContent} from "material-ui";
-import {DialogActions} from "material-ui";
-import {DialogTitle} from "material-ui";
 import ModalPage from "../ModalPage/ModalPage";
 import Button from "@material-ui/core/Button/Button";
 import {memeService} from "../../service/generic/MemeService";
+import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import TextField from "@material-ui/core/TextField/TextField";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 
 
 export default class CreateMemeDialog extends Component<{

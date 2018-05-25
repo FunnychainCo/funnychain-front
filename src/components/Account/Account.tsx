@@ -1,12 +1,14 @@
 import {Component} from 'react'
 import * as React from 'react'
 import {authService, USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/AuthService";
-import {Avatar, CircularProgress, Button} from "material-ui";
 import ModeEdit from '@material-ui/icons/ModeEdit';
 import VpnKey from '@material-ui/icons/VpnKey';
 
 import "./Account.css";
 import {pwaService} from "../../service/PWAService";
+import Avatar from "@material-ui/core/Avatar/Avatar";
+import Button from "@material-ui/core/Button/Button";
+import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 
 export default class Account extends Component<{
     onLogout: () => void

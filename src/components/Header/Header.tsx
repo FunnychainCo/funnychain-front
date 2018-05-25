@@ -1,16 +1,16 @@
 import {Component} from 'react';
 import * as React from 'react';
-import AppBar from 'material-ui/AppBar';
 import {leftMenuService} from "../../service/LeftMenuService";
 import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
 import RegisterDialog from "../RegisterDialog/RegisterDialog";
 import Logged from "./Logged";
 import NotLogged from "./NotLogged";
 import AccountDrawer from "../Account/AccountDrawer";
-import {Toolbar} from "material-ui";
-import {Typography} from "material-ui";
-import {withStyles} from "material-ui";
 import SteemLoginDialog from "../SteemLoginDialog/SteemLoginDialog";
+import AppBar from "@material-ui/core/AppBar/AppBar";
+import Typography from "@material-ui/core/Typography/Typography";
+import withStyles from "@material-ui/core/styles/withStyles";
+import Toolbar from "@material-ui/core/Toolbar/Toolbar";
 
 const styles = {
     root: {

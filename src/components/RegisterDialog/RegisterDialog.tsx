@@ -1,9 +1,14 @@
-import React, { Component } from 'react'
-import {Button, CircularProgress, DialogActions, DialogContent, TextField} from "material-ui";
+import { Component } from 'react';
+import * as React from 'react';
 import ModalPage from "../ModalPage/ModalPage";
 import {authService} from "../../service/generic/AuthService";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import TextField from "@material-ui/core/TextField/TextField";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import Button from "@material-ui/core/Button/Button";
+import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 
-export default class RegisterDialog extends Component {
+export default class RegisterDialog extends Component<any,any> {
     state = {
         errorMessage: null,
         displayButton: false,

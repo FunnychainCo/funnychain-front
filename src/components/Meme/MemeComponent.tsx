@@ -14,11 +14,11 @@ import CardContent from "@material-ui/core/CardContent/CardContent";
 //import withStyles from "@material-ui/core/styles/withStyles";
 //import classnames from 'classnames';
 import Avatar from "@material-ui/core/Avatar/Avatar";
-import TextField from "material-ui/TextField/TextField";
 import {commentService} from "../../service/generic/CommentService";
 import {memeService} from "../../service/generic/MemeService";
 import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
+import TextField from "@material-ui/core/TextField/TextField";
 
 const ReactMarkdown = require('react-markdown')
 

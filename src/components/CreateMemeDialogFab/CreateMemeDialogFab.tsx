@@ -1,9 +1,9 @@
 import {Component} from 'react'
 import * as React from 'react'
-import {Button} from "material-ui";
 import ContentAdd from '@material-ui/icons/Add';
 import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
 import CreateMemeDialog from "./CreateMemeDialog";
+import Button from "@material-ui/core/Button/Button";
 
 
 export default class CreateMemeDialogFab extends Component {

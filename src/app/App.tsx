@@ -1,8 +1,6 @@
 //import 'bootstrap/dist/css/bootstrap.css'
 import * as React from 'react';
 import {Route, BrowserRouter, Switch} from 'react-router-dom'
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import {createMuiTheme} from "material-ui";
 
 import "./App.css"
 
@@ -14,6 +12,8 @@ import {pwaService} from "../service/PWAService";
 import {steemAuthService} from "../service/steem/SteemAuthService";
 import Connect from "../components/Steem/Connect"
 import {ipfsFileUploadService} from "../service/IPFSFileUploader/IPFSFileUploadService";
+import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 
 class App extends React.Component<any,{
     userMessage: {

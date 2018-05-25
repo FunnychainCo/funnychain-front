@@ -1,10 +1,13 @@
-import React, {Component} from 'react'
-import {Button, CircularProgress, DialogActions, DialogContent, TextField} from "material-ui";
+import {Component} from 'react';
+import * as React from 'react';
 import ModalPage from "../ModalPage/ModalPage";
-import {Redirect} from "react-router-dom";
 import {steemAuthService} from "../../service/steem/SteemAuthService";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import Button from "@material-ui/core/Button/Button";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 
-export default class SteemLoginDialog extends Component {
+export default class SteemLoginDialog extends Component<any,any> {
     state = {
         loading: false
     };

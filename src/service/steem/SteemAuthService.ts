@@ -33,10 +33,10 @@ export class SteemAuthService implements AuthServiceInterface {
             //https://steemit.com/steemconnect/@noisy/how-to-configure-steemconnect-v2-and-use-it-with-your-application-how-it-works-and-how-it-is-different-from-v1
             let host = window.location.hostname;
             let port = window.location.port;
-            if (port != "80" && port != "443") {
+            if (port != "80" && port != "443" && port != "") {
                 host = host + ":" + port;
             }
-            let callBackUrl = "/steem/connect"
+            let callBackUrl = "/steem/connect";
             if (window.location.href.startsWith("https")) {
                 callBackUrl = "https://" + host + callBackUrl;
             } else {

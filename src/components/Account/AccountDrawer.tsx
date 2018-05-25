@@ -2,7 +2,7 @@ import {Component} from 'react';
 import * as React from 'react'
 import "./Account.css";
 import Account from "./Account";
-import {Drawer} from "material-ui";
+import Drawer from "@material-ui/core/Drawer/Drawer";
 
 export default class AccountDrawer extends Component<{
     open:boolean,
