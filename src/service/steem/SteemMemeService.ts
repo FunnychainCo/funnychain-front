@@ -1,4 +1,4 @@
-import {Meme, MemeLoaderInterface, MemeServiceInterface} from "../generic/ApplicationInterface";
+import {Meme, MEME_ENTRY_NO_VALUE, MemeLoaderInterface, MemeServiceInterface} from "../generic/ApplicationInterface";
 import steem from 'steem';
 import * as Q from "q";
 import {SteemPost, SteemVote} from "./SteemType";
@@ -28,6 +28,8 @@ export class SteemMemeService implements MemeServiceInterface {
         return title + idService.makeidAlpha(6).toLowerCase();
     }
 
+
+
     post(title: string, url: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             /**
@@ -44,9 +46,9 @@ export class SteemMemeService implements MemeServiceInterface {
             let message = "![" + urlSplit[urlSplit.length - 1] + "](" + url + ")";
             let jsonMetadata = {
                 tags: tags,
-                app: "test-meme-app/0.1",
-                //app:"funnychain/0.1",//TODO change this
-                image: url,
+                app:"funnychain/0.1",
+                image: [url],
+                links: [url],
                 format: "markdown"
             };
             //cat meme body is image markdown => //json_metadata:"{"tags":["meme","funny","tether","cryptocurrencies","dmania"],"image":["https://steemitimages.com/DQmQxfdrfb6ucJtmRDNCYvcf8d4QXq71dcVLmZQtT3JnD77/2ar6h6.jpg"],"app":"steemit/0.1","format":"markdown"}"
@@ -128,49 +130,73 @@ class MemeLoader implements MemeLoaderInterface {
                     return;
                 }
                 this.orderNumber++;
+                //update cursor for next loadmore
                 if (index == array.length - 1) {
-                    //update cursor for next loadmore
                     this.lastPostUrl = steemPost.url;
                 }
+                //filter ost with author with bad reputation
                 if (Number(steem.formatter.reputation(steemPost.author_reputation)) < 15) {
                     return;
                 }
-                memesPromise.push(new Promise<Meme>((resolve, reject) => {
-                    loadUserAvatar(steemPost.author).then((avatarUrl => {
-                        let currentUserVoted = false;
-                        let currentUser = steemAuthService.currentUser.uid;
-                        steemPost.active_votes.forEach((vote: SteemVote) => {
-                            if (vote.voter === currentUser) {
-                                currentUserVoted = true;
+                //create a promise and load
+                let promise = new Promise<Meme>((resolve, reject) => {
+                    loadUserAvatar(steemPost.author)
+                        .then((avatarUrl => {
+                            let currentUserVoted = false;
+                            let currentUser = steemAuthService.currentUser.uid;
+                            steemPost.active_votes.forEach((vote: SteemVote) => {
+                                if (vote.voter === currentUser) {
+                                    currentUserVoted = true;
+                                }
+                            });
+                            //json_metadata:"{"tags":["dmania","meme","funny","punchline","lol"],"image":["https://s3-eu-west-1.amazonaws.com/dmania-images/machine-learning-f4p3k2i.jpg"],"app":"dmania/0.7"}"
+                            let jsonMetadata: {
+                                tags: string[],
+                                image: string[],
+                                links:string[],
+                                app: string
+                            } = JSON.parse(steemPost.json_metadata);
+                            //check json format
+                            if(jsonMetadata.image == undefined){
+                                resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                                return;
                             }
+                            if(jsonMetadata.image.length!=1){
+                                resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                                return;
+                            }
+                            let newMeme: Meme = {
+                                id: steemPost.url,
+                                created: new Date(steemPost.created),
+                                title: steemPost.title,
+                                imageUrl: jsonMetadata.image[0],
+                                commentNumber: steemPost.children,
+                                voteNumber: steemPost.net_votes,
+                                dolarValue: Number(steemPost.pending_payout_value.replace(" SBD", "")),
+                                user: {
+                                    uid: steemPost.author,
+                                    displayName: steemPost.author,
+                                    avatarUrl: avatarUrl
+                                },
+                                currentUserVoted: currentUserVoted,
+                                order: this.orderNumber
+                            };
+                            resolve(newMeme);
+                        }))
+                        .catch(reason => {
+                            resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                            console.error(reason);
                         });
-                        //json_metadata:"{"tags":["dmania","meme","funny","punchline","lol"],"image":["https://s3-eu-west-1.amazonaws.com/dmania-images/machine-learning-f4p3k2i.jpg"],"app":"dmania/0.7"}"
-                        let jsonMetadata: {
-                            tags: string[],
-                            image: string[],
-                            app: string[]
-                        } = JSON.parse(steemPost.json_metadata);
-                        let newMeme: Meme = {
-                            id: steemPost.url,
-                            created: new Date(steemPost.created),
-                            title: steemPost.title,
-                            imageUrl: jsonMetadata.image[0],
-                            commentNumber: steemPost.children,
-                            voteNumber: steemPost.net_votes,
-                            dolarValue: Number(steemPost.pending_payout_value.replace(" SBD", "")),
-                            user: {
-                                uid: steemPost.author,
-                                displayName: steemPost.author,
-                                avatarUrl: avatarUrl
-                            },
-                            currentUserVoted: currentUserVoted,
-                            order: this.orderNumber
-                        };
-                        resolve(newMeme);
-                    }));
-                }));
+                });
+                promise.catch(reason => {
+                    console.error(reason);
+                });
+                memesPromise.push(promise);
             });
             Q.all(memesPromise).then(memesData => {
+                memesData = memesData.filter(value => {
+                    return value!=MEME_ENTRY_NO_VALUE;//remove invalid meme
+                });
                 this.eventEmitter.emit("onMeme", memesData);
             });
         });
