@@ -1,5 +1,5 @@
 export class DebugService {
-    private _testNetwork = true;
+    private _testNetwork = false;
 
 
     get testNetwork(): boolean {
