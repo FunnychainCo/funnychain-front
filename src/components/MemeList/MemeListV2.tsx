@@ -8,6 +8,7 @@ import Divider from "@material-ui/core/Divider/Divider";
 import {Meme, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
 import Waypoint from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
+import {memeListController} from "./MemeListController";
 
 
 interface State {
@@ -21,15 +22,21 @@ export default class MemeListV2 extends Component<any, State> {
         displayWaypoint: true
     };
 
-    private removeCallback: (() => void) = () => {
-        console.error("no callback to remove")
-    };
+    private removeCallback: (() => void) = () => {};
 
     private memeLoader: MemeLoaderInterface;
 
 
     componentDidMount() {
-        this.memeLoader = memeService.getMemeLoader("trending", ["dmania"]);
+        memeListController.registerCallBack(type => {
+            this.updateMemeLoader(type, memeService.getTags());
+        });
+    }
+
+    updateMemeLoader(type:string,tags:string[]){
+        this.memeLoader = memeService.getMemeLoader(type, tags);
+        this.removeCallback();
+        this.setState({memes:{}});//reset view
         this.removeCallback = this.memeLoader.on((memes: Meme[]) => {
             memes.forEach((meme: Meme) => {
                 this.state.memes[meme.id] = meme;

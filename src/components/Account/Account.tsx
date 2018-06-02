@@ -9,6 +9,8 @@ import {pwaService} from "../../service/PWAService";
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import Button from "@material-ui/core/Button/Button";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
+import Switch from "@material-ui/core/Switch/Switch";
+import {debugService} from "../../service/debugService";
 
 export default class Account extends Component<{
     onLogout: () => void
@@ -16,6 +18,7 @@ export default class Account extends Component<{
     user: UserEntry,
     loading: boolean,
     displayAddToHomeButton: boolean,
+    testNetwork:boolean
 }> {
     state = {
         user: {
@@ -25,6 +28,7 @@ export default class Account extends Component<{
         },
         loading: true,
         displayAddToHomeButton: false,
+        testNetwork:debugService.testNetwork
     };
 
     private removeListener: () => void;
@@ -83,6 +87,16 @@ export default class Account extends Component<{
                             <Button onClick={() => {
                                 pwaService.triggerAddToHomeScreen();
                             }}><VpnKey/>&nbsp;&nbsp;Add application to screen</Button>}
+                        </div>
+                        <div className="fcContent">
+                        <Switch
+                            checked={this.state.testNetwork}
+                            onChange={event=>{
+                                this.setState({ testNetwork: event.target.checked });
+                                debugService.testNetwork = event.target.checked;
+                            }}
+                            value="checkedA"
+                        />
                         </div>
                     </div>
                 </div>}

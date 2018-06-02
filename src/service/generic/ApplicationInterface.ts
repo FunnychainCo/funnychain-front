@@ -33,7 +33,8 @@ export interface MemeComment {
     id: string,
     parentId: string,
     author: UserEntry,
-    text: string
+    text: string,
+    flagged : boolean
 }
 
 export interface MemeLoaderInterface {

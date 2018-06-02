@@ -11,6 +11,8 @@ import AppBar from "@material-ui/core/AppBar/AppBar";
 import Typography from "@material-ui/core/Typography/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Toolbar from "@material-ui/core/Toolbar/Toolbar";
+import Button from "@material-ui/core/Button/Button";
+import {memeListController} from "../MemeList/MemeListController";
 
 const styles = {
     root: {
@@ -23,6 +25,12 @@ const styles = {
         marginLeft: -12,
         marginRight: 20,
     },
+    feedButton:{
+        color:"white"
+    },
+    headerSpacing:{
+        paddingRight:"20px"
+    }
 };
 
 class Header extends Component<any,any> {
@@ -30,7 +38,8 @@ class Header extends Component<any,any> {
         logged: false,
         dialogLogin: false,
         dialogRegister: false,
-        drawerOpen:false
+        drawerOpen:false,
+        currentSelected:"trending"
     }
     private removeListener: () => void;
 
@@ -39,7 +48,8 @@ class Header extends Component<any,any> {
             this.setState({
                 logged: user!=USER_ENTRY_NO_VALUE ? true : false
             });
-        })
+        });
+        memeListController.applyCat(this.state.currentSelected)
     }
 
     componentWillUnmount() {
@@ -52,10 +62,15 @@ class Header extends Component<any,any> {
 
     openDialogLogin = () => {
         this.setState({dialogLogin: true});
-    }
+    };
 
     openDialogRegister = () => {
         this.setState({dialogRegister: true});
+    };
+
+    handleFeedButton(feed:string){
+        this.setState({currentSelected:feed});
+        memeListController.applyCat(feed);
     }
 
     render() {
@@ -63,8 +78,28 @@ class Header extends Component<any,any> {
         return (
             <AppBar position="static">
                 <Toolbar>
+                    <img style={{maxHeight:"40px",paddingRight:"7px"}} src="/android-chrome-192x192.png" alt="logo"/>
                     <Typography variant="title" color="inherit" className={classes.flex}>
                         FunnyChain
+                        <span className={classes.headerSpacing}></span>
+                        <Button
+                            variant={this.state.currentSelected=="hot"?"raised":undefined}
+                            className={classes.feedButton}
+                            onClick={()=>{this.handleFeedButton("hot")}}>
+                            Hot
+                        </Button>
+                        <Button
+                            variant={this.state.currentSelected=="trending"?"raised":undefined}
+                            className={classes.feedButton}
+                            onClick={()=>{this.handleFeedButton("trending")}}>
+                            Trending
+                        </Button>
+                        <Button
+                            variant={this.state.currentSelected=="fresh"?"raised":undefined}
+                            className={classes.feedButton}
+                            onClick={()=>{this.handleFeedButton("fresh")}}>
+                            Fresh
+                        </Button>
                     </Typography>
                     <div>
                     {this.state.logged ?

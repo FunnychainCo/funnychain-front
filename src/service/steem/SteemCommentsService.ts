@@ -45,7 +45,8 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                             text: message,
                             author: steemAuthService.currentUser,
                             parentId: parentPostId,
-                            id: commentPermalink
+                            id: commentPermalink,
+                            flagged:false
                         };
                         this.emitter.emit("onNewComment" + this.id, [comment]);
                     } else {
@@ -72,12 +73,10 @@ export class SteemCommentsVisitor implements CommentsVisitor {
         steem.api.getContentReplies(this.author, this.permalink, (err, results: SteemReplies[]) => {
             ///dmania/@sanmi/the-real-meaning-of-followerspeople-still-celebratei-feel-we-need-an-auto-unfollow-mechanism-zg1hbmlh-9omhu
             results.forEach((comment: SteemReplies) => {
-                if (Number(steem.formatter.reputation(comment.author_reputation)) < 15) {
-                    return;
-                }
                 memesComments.push(new Promise<MemeComment>((resolve, reject) => {
 
                     loadUserAvatar(comment.author).then((avatarUrl => {
+                        let flagged = (Number(steem.formatter.reputation(comment.author_reputation)) < 15);
                         let memeComment: MemeComment = {
                             author: {
                                 uid: comment.author,
@@ -86,7 +85,8 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                             },
                             id: comment.url,
                             parentId: this.id,
-                            text: markdownImageLink(comment.body)
+                            text: markdownImageLink(comment.body),
+                            flagged:flagged
                         };
                         resolve(memeComment);
                     }));

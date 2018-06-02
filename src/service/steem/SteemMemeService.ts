@@ -6,6 +6,7 @@ import {getAuthorAndPermalink, loadUserAvatar} from "./SteemUtils";
 import {steemAuthService} from "./SteemAuthService";
 import * as EventEmitter from "eventemitter3";
 import {idService} from "../IdService";
+import {memeService} from "../generic/MemeService";
 
 export class SteemMemeService implements MemeServiceInterface {
     getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
@@ -36,8 +37,7 @@ export class SteemMemeService implements MemeServiceInterface {
              * If you want a post, than parentAuthor is an empty string and parentPermlink is your first tag. You might want to check out any post's jsonMetadata on steemd to see how to do that part.
              The doc also explains the login at the top of the page.
              */
-            let tags: string[] = ["test"];
-            //let tags:string[]=["meme","funny","dmania","funnychain"],//TODO change this
+            let tags: string[] = memeService.getTags();
             let parentAuthor = "";
             let parentPermalink = tags[0];
             let commentPermalink = this.makePermalinkFromTitle(title);
@@ -53,7 +53,7 @@ export class SteemMemeService implements MemeServiceInterface {
             };
             //cat meme body is image markdown => //json_metadata:"{"tags":["meme","funny","tether","cryptocurrencies","dmania"],"image":["https://steemitimages.com/DQmQxfdrfb6ucJtmRDNCYvcf8d4QXq71dcVLmZQtT3JnD77/2ar6h6.jpg"],"app":"steemit/0.1","format":"markdown"}"
             //cat dmania body is html => // json_metadata:"{"tags":["dmania","meme","funny"],"image":["https://s3-eu-west-1.amazonaws.com/dmania-images/cyrmarket-0oh7nq4.jpg"],"app":"dmania/0.7"}"
-            console.log("meme to post =>" + parentAuthor + " => " + parentPermalink + " => " + commentPermalink + " => " + owner + " => " + message + " => ", jsonMetadata);
+            console.log("meme post =>" + parentAuthor + " => " + parentPermalink + " => " + commentPermalink + " => " + owner + " => " + message + " => ", jsonMetadata);
             steemAuthService.sc2Api.comment(parentAuthor, parentPermalink, owner, commentPermalink, title, message, jsonMetadata,
                 (err, res) => {
                     if (res != null) {
@@ -123,7 +123,21 @@ class MemeLoader implements MemeLoaderInterface {
             params.start_permlink = authorAndPermalink.permalink;
             params.limit++;//for the skiped redundent post
         }
-        steem.api.getDiscussionsByTrending(params, (err, result: SteemPost[]) => {
+        let apiCallMethod:any=null;
+        if(this.type=="hot"){
+            apiCallMethod = steem.api.getDiscussionsByTrending;
+        }else if(this.type=="trending"){
+            apiCallMethod = steem.api.getDiscussionsByHot;
+        }else if(this.type=="fresh"){
+            apiCallMethod = steem.api.getDiscussionsByCreated;
+        }else{
+            console.error("unkown type");
+        }
+        apiCallMethod(params, (err, result: SteemPost[]) => {
+            if(result == undefined){
+                console.error(result);
+                return;
+            }
             result.forEach((steemPost: SteemPost, index, array) => {
                 if (this.lastPostUrl != "" && index == 0) {
                     //skip redundent post

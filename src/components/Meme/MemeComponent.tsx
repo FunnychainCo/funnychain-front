@@ -6,24 +6,31 @@ import * as React from 'react';
 import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import CardActions from "@material-ui/core/CardActions/CardActions";
-import {ArrowUpward, ChatBubbleOutline, ExpandMore, Send, ThumbUp} from "@material-ui/icons";
+import {
+    ArrowUpward,
+    ChatBubbleOutline,
+    ExpandMore,
+    KeyboardArrowLeft,
+    KeyboardArrowRight,
+    Send,
+    ThumbUp
+} from "@material-ui/icons";
 import Button from "@material-ui/core/Button/Button";
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import Collapse from "@material-ui/core/Collapse/Collapse";
 import CardContent from "@material-ui/core/CardContent/CardContent";
-//import withStyles from "@material-ui/core/styles/withStyles";
-//import classnames from 'classnames';
-import Avatar from "@material-ui/core/Avatar/Avatar";
+import withStyles from "@material-ui/core/styles/withStyles";
 import {commentService} from "../../service/generic/CommentService";
 import {memeService} from "../../service/generic/MemeService";
 import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import TextField from "@material-ui/core/TextField/TextField";
+import UserComment from "./UserComment";
+import classnames from 'classnames';
+import MobileStepper from "@material-ui/core/MobileStepper/MobileStepper";
 
-const ReactMarkdown = require('react-markdown')
 
-//TODO use this for fancy expand collapse button but seems to have issue in prod
-/*const styles = theme => ({
+const styles = theme => ({
     actions: {
         display: 'flex',
     },
@@ -37,18 +44,20 @@ const ReactMarkdown = require('react-markdown')
     expandOpen: {
         transform: 'rotate(180deg)',
     }
-});*/
+});
 
-export default class MemeComponent extends Component<{
+class MemeComponent extends Component<{
     meme: Meme,
-//    classes: any
+    classes: any
 }, {
     meme: Meme,
     expanded: boolean,
     comments: MemeComment[],
     commentToPost:string,
     logged:boolean,
-    loadingComment:boolean
+    loadingComment:boolean,
+    page:number,
+    maxPage:number
 }> {
     state = {
         meme: MEME_ENTRY_NO_VALUE,
@@ -56,20 +65,27 @@ export default class MemeComponent extends Component<{
         comments: [],
         commentToPost:"",
         logged:false,
-        loadingComment:true
+        loadingComment:true,
+        page:0,
+        maxPage:1
     };
 
     commentVisitor: CommentsVisitor;
     private removeListener: () => void;
+    commentPerPage = 5;
 
     componentDidMount() {
-        var meme = this.props.meme;
+        let meme = this.props.meme;
         this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({
                 logged: user!=USER_ENTRY_NO_VALUE ? true : false
             });
-        })
-        this.setState({meme: meme});
+        });
+        
+        this.setState({
+            maxPage : Math.floor(meme.commentNumber/this.commentPerPage)+1,
+            meme: meme
+        });
         this.commentVisitor = commentService.getCommentVisitor(meme.id);
         this.commentVisitor.on((comments: MemeComment[]) => {
             let concat = comments.concat(this.state.comments);
@@ -96,13 +112,33 @@ export default class MemeComponent extends Component<{
 
     handleExpandClick = () => {
         if (!this.state.expanded) {
-            this.commentVisitor.loadMore(30);
+            this.commentVisitor.loadMore(this.commentPerPage*2);//preload two page
         }
         this.setState({expanded: !this.state.expanded});
     };
 
+    getComments= ():MemeComment[] => {
+        let array:MemeComment[] = this.state.comments;
+        return array.slice(this.state.page,this.state.page+5);
+    };
+
+    handleNext = ()=>{
+        if(this.state.page>this.state.maxPage){
+            return;
+        }
+        this.commentVisitor.loadMore(this.commentPerPage);//preload nex page
+        this.setState({page:this.state.page+1})
+    };
+
+    handleBack = () => {
+        if(this.state.page-1<0){
+            return;
+        }
+        this.setState({page:this.state.page-1})
+    };
+
     render() {
-        //const {classes} = this.props;
+        const {classes} = this.props;
         return <Card>
             <CardHeader
                 title={this.state.meme.title}
@@ -124,7 +160,7 @@ export default class MemeComponent extends Component<{
                 </div>
 
                 <IconButton
-                    className="memeExpandButton"
+                    className={classnames(classes.expand, {[classes.expandOpen]: this.state.expanded,})}
                     onClick={this.handleExpandClick}
                     aria-expanded={this.state.expanded}
                     aria-label="Show more"
@@ -155,22 +191,36 @@ export default class MemeComponent extends Component<{
                         <Send/>&nbsp;POST
                     </Button>
                     {
-                        this.state.comments.map((comment: MemeComment, index) => {
-                            return <CardHeader key={index}
-                                               style={{alignItems: "start"}}
-                                               avatar={
-                                                   <Avatar alt={comment.author.displayName}
-                                                           src={comment.author.avatarUrl}/>
-                                               }
-                                               title={comment.author.displayName}
-                                               subheader={<ReactMarkdown source={comment.text} />}
-                            />
+                        this.getComments().map((comment: MemeComment, index) => {
+                            return <UserComment key={index} comment={comment} />
                         })
                     }
                     {this.state.loadingComment && <LoadingBlock/>}
+                    {this.state.maxPage>1 &&
+                    <MobileStepper
+                        variant="dots"
+                        steps={this.state.maxPage}
+                        position="static"
+                        activeStep={this.state.page}
+                        className={classes.root}
+                        nextButton={
+                            <Button size="small" onClick={this.handleNext} disabled={this.state.page === (this.state.maxPage-1)}>
+                                Next
+                                <KeyboardArrowRight />
+                            </Button>
+                        }
+                        backButton={
+                            <Button size="small" onClick={this.handleBack} disabled={this.state.page === 0}>
+                                <KeyboardArrowLeft />
+                                Back
+                            </Button>
+                        }
+                    />}
                 </CardContent>
             </Collapse>
         </Card>
     }
 
 }
+
+export default withStyles(styles)(MemeComponent);
