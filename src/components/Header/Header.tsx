@@ -80,8 +80,10 @@ class Header extends Component<any,any> {
                 <Toolbar>
                     <img style={{maxHeight:"40px",paddingRight:"7px"}} src="/android-chrome-192x192.png" alt="logo"/>
                     <Typography variant="title" color="inherit" className={classes.flex}>
-                        FunnyChain
-                        <span className={classes.headerSpacing}></span>
+                        <div>
+                            FunnyChain
+                            <span className={classes.headerSpacing}></span>
+                        </div>
                         <Button
                             variant={this.state.currentSelected=="hot"?"raised":undefined}
                             className={classes.feedButton}

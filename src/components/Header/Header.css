@@ -1,0 +1,6 @@
+
+@media (orientation: portrait) and (max-width:960px) {
+    .hiddenOnSmallDevice {
+        max-width: 0px !important;
+    }
+}
