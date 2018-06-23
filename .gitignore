@@ -24,3 +24,4 @@ yarn-error.log*
 /.idea
 /*.iml
 /*.ffs_db
+/package-lock.json
