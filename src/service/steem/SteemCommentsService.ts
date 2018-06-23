@@ -1,8 +1,7 @@
 import {CommentServiceInterface, CommentsVisitor, MemeComment} from "../generic/ApplicationInterface";
-import steem from 'steem';
+import * as dsteem from 'dsteem';
 import * as EventEmitter from "eventemitter3";
 import * as Q from "q";
-import {SteemReplies} from "./SteemType";
 import {getAuthorAndPermalink, loadUserAvatar, markdownImageLink} from "./SteemUtils";
 import {steemAuthService} from "./SteemAuthService";
 
@@ -19,8 +18,10 @@ export class SteemCommentsVisitor implements CommentsVisitor {
     author: string;
     permalink: string;
     allDataLoaded: boolean = false;
+    private dSteemClient: dsteem.Client;
 
     constructor(id) {
+        this.dSteemClient = new dsteem.Client('https://api.steemit.com');
         this.id = id;
         let authorAndPermalink = getAuthorAndPermalink(id);
         this.author = authorAndPermalink.author;
@@ -69,14 +70,16 @@ export class SteemCommentsVisitor implements CommentsVisitor {
             return;
         }
         let memesComments: Promise<MemeComment>[] = [];
+        //https://github.com/steemit/devportal-tutorials-js/tree/master/tutorials
         //steem.api.getRepliesByLastUpdate(this.author, this.permalink, limit, (err, results: SteemReplies[]) => {
-        steem.api.getContentReplies(this.author, this.permalink, (err, results: SteemReplies[]) => {
+        this.dSteemClient.database.call('get_content_replies',[this.author, this.permalink]).then(results => {
             ///dmania/@sanmi/the-real-meaning-of-followerspeople-still-celebratei-feel-we-need-an-auto-unfollow-mechanism-zg1hbmlh-9omhu
-            results.forEach((comment: SteemReplies) => {
+            results.forEach((comment: any) => {
                 memesComments.push(new Promise<MemeComment>((resolve, reject) => {
 
                     loadUserAvatar(comment.author).then((avatarUrl => {
-                        let flagged = (Number(steem.formatter.reputation(comment.author_reputation)) < 15);
+                        //let flagged = comment.author_reputation < 15; //TODO reactivate that
+                        let flagged = false;
                         let memeComment: MemeComment = {
                             author: {
                                 uid: comment.author,

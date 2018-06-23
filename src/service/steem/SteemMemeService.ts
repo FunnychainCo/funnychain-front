@@ -1,7 +1,7 @@
 import {Meme, MEME_ENTRY_NO_VALUE, MemeLoaderInterface, MemeServiceInterface} from "../generic/ApplicationInterface";
-import steem from 'steem';
+import * as dsteem from 'dsteem';
 import * as Q from "q";
-import {SteemPost, SteemVote} from "./SteemType";
+import {SteemVote} from "./SteemType";
 import {getAuthorAndPermalink, loadUserAvatar} from "./SteemUtils";
 import {steemAuthService} from "./SteemAuthService";
 import * as EventEmitter from "eventemitter3";
@@ -91,9 +91,13 @@ class MemeLoader implements MemeLoaderInterface {
     eventEmitter = new EventEmitter();
     type: string;
     tags: string[];
-    orderNumber: number = -1;//order can be negative
+    orderNumber: number = -1;
+    private dSteemClient: dsteem.Client;
+
+    //order can be negative
 
     constructor(type: string, tags: string[]) {
+        this.dSteemClient = new dsteem.Client('https://api.steemit.com');
         this.type = type;
         this.tags = tags;
     }
@@ -111,108 +115,130 @@ class MemeLoader implements MemeLoaderInterface {
         };
     }
 
-    loadMore(limit: number) {
-        let memesPromise: Promise<Meme>[] = [];
-        let params: any = {
-            tag: this.tags[0], //TODO manage multiple tags
-            limit: limit
-        };
-        if (this.lastPostUrl != "") {
-            let authorAndPermalink = getAuthorAndPermalink(this.lastPostUrl);
-            params.start_author = authorAndPermalink.author;
-            params.start_permlink = authorAndPermalink.permalink;
-            params.limit++;//for the skiped redundent post
-        }
-        let apiCallMethod:any=null;
-        if(this.type=="hot"){
-            apiCallMethod = steem.api.getDiscussionsByTrending;
-        }else if(this.type=="trending"){
-            apiCallMethod = steem.api.getDiscussionsByHot;
-        }else if(this.type=="fresh"){
-            apiCallMethod = steem.api.getDiscussionsByCreated;
-        }else{
-            console.error("unkown type");
-        }
-        apiCallMethod(params, (err, result: SteemPost[]) => {
-            if(result == undefined){
-                console.error(result);
-                return;
-            }
-            result.forEach((steemPost: SteemPost, index, array) => {
-                if (this.lastPostUrl != "" && index == 0) {
-                    //skip redundent post
-                    return;
-                }
-                this.orderNumber++;
-                //update cursor for next loadmore
-                if (index == array.length - 1) {
-                    this.lastPostUrl = steemPost.url;
-                }
-                //filter ost with author with bad reputation
-                if (Number(steem.formatter.reputation(steemPost.author_reputation)) < 15) {
-                    return;
-                }
-                //create a promise and load
-                let promise = new Promise<Meme>((resolve, reject) => {
-                    loadUserAvatar(steemPost.author)
-                        .then((avatarUrl => {
-                            let currentUserVoted = false;
-                            let currentUser = steemAuthService.currentUser.uid;
-                            steemPost.active_votes.forEach((vote: SteemVote) => {
-                                if (vote.voter === currentUser) {
-                                    currentUserVoted = true;
-                                }
-                            });
-                            //json_metadata:"{"tags":["dmania","meme","funny","punchline","lol"],"image":["https://s3-eu-west-1.amazonaws.com/dmania-images/machine-learning-f4p3k2i.jpg"],"app":"dmania/0.7"}"
-                            let jsonMetadata: {
-                                tags: string[],
-                                image: string[],
-                                links:string[],
-                                app: string
-                            } = JSON.parse(steemPost.json_metadata);
-                            //check json format
-                            if(jsonMetadata.image == undefined){
-                                resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                                return;
-                            }
-                            if(jsonMetadata.image.length!=1){
-                                resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                                return;
-                            }
-                            let newMeme: Meme = {
-                                id: steemPost.url,
-                                created: new Date(steemPost.created),
-                                title: steemPost.title,
-                                imageUrl: jsonMetadata.image[0],
-                                commentNumber: steemPost.children,
-                                voteNumber: steemPost.net_votes,
-                                dolarValue: Number(steemPost.pending_payout_value.replace(" SBD", "")),
-                                user: {
-                                    uid: steemPost.author,
-                                    displayName: steemPost.author,
-                                    avatarUrl: avatarUrl
-                                },
-                                currentUserVoted: currentUserVoted,
-                                order: this.orderNumber
-                            };
-                            resolve(newMeme);
-                        }))
-                        .catch(reason => {
-                            resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                            console.error(reason);
+    loadMore(limit: number): void {
+        //TODO find a better way to do that
+        let totalLoaded = 0;
+        this.loadMoreV1(limit).then((actuallyLoaded: number) => {
+            totalLoaded+=actuallyLoaded;
+            if (limit - totalLoaded > 0)
+                this.loadMoreV1(limit - totalLoaded).then(actuallyLoaded => {
+                    totalLoaded+=actuallyLoaded;
+                    if (limit - totalLoaded > 0)
+                        this.loadMoreV1(limit - totalLoaded).then(actuallyLoaded => {
+                            totalLoaded+=actuallyLoaded;
+                            if (limit - totalLoaded > 0)
+                                this.loadMoreV1(limit - totalLoaded).then(actuallyLoaded => {});
                         });
                 });
-                promise.catch(reason => {
-                    console.error(reason);
+        });
+    }
+
+    loadMoreV1(limit: number): Promise<number> {
+        return new Promise(resolve => {
+            let memesPromise: Promise<Meme>[] = [];
+            let params: dsteem.DisqussionQuery = {
+                tag: this.tags[0], //TODO manage multiple tags
+                limit: limit
+            };
+            if (this.lastPostUrl != "") {
+                let authorAndPermalink = getAuthorAndPermalink(this.lastPostUrl);
+                params.start_author = authorAndPermalink.author;
+                params.start_permlink = authorAndPermalink.permalink;
+                params.limit++;//for the skiped redundent post
+            }
+            let type: dsteem.DiscussionQueryCategory = "trending";
+            if (this.type == "hot") {
+                type = "trending";
+            } else if (this.type == "trending") {
+                type = "hot";
+            } else if (this.type == "fresh") {
+                type = "created";
+            } else {
+                console.error("unkown type");
+            }
+            this.dSteemClient.database.getDiscussions(type, params).then((result: dsteem.Discussion[]) => {
+                if (result == undefined) {
+                    console.error(result);
+                    return;
+                }
+                result.forEach((steemPost: dsteem.Discussion, index, array) => {
+                    if (this.lastPostUrl != "" && index == 0) {
+                        //skip redundent post
+                        return;
+                    }
+                    this.orderNumber++;
+                    //update cursor for next loadmore
+                    if (index == array.length - 1) {
+                        this.lastPostUrl = steemPost.url;
+                    }
+                    //filter ost with author with bad reputation
+                    /*if (steemPost.author_reputation < 15) {
+                        return;
+                    }*/
+                    //create a promise and load
+                    let promise = new Promise<Meme>((resolve, reject) => {
+                        loadUserAvatar(steemPost.author)
+                            .then((avatarUrl => {
+                                let currentUserVoted = false;
+                                let currentUser = steemAuthService.currentUser.uid;
+                                steemPost.active_votes.forEach((vote: SteemVote) => {
+                                    if (vote.voter === currentUser) {
+                                        currentUserVoted = true;
+                                    }
+                                });
+                                //json_metadata:"{"tags":["dmania","meme","funny","punchline","lol"],"image":["https://s3-eu-west-1.amazonaws.com/dmania-images/machine-learning-f4p3k2i.jpg"],"app":"dmania/0.7"}"
+                                let jsonMetadata: {
+                                    tags: string[],
+                                    image: string[],
+                                    links: string[],
+                                    app: string
+                                } = JSON.parse(steemPost.json_metadata);
+                                //check json format
+                                if (jsonMetadata.image == undefined) {
+                                    resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                                    return;
+                                }
+                                if (jsonMetadata.image.length != 1) {
+                                    resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                                    return;
+                                }
+                                let newMeme: Meme = {
+                                    id: steemPost.url,
+                                    created: new Date(steemPost.created),
+                                    title: steemPost.title,
+                                    imageUrl: jsonMetadata.image[0],
+                                    commentNumber: steemPost.children,
+                                    voteNumber: steemPost.net_votes,
+                                    dolarValue: Number(steemPost.pending_payout_value.toString().replace(" SBD", "")),
+                                    user: {
+                                        uid: steemPost.author,
+                                        displayName: steemPost.author,
+                                        avatarUrl: avatarUrl
+                                    },
+                                    currentUserVoted: currentUserVoted,
+                                    order: this.orderNumber
+                                };
+                                resolve(newMeme);
+                            }))
+                            .catch(reason => {
+                                resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                                console.error(reason);
+                            });
+                    });
+                    promise.catch(reason => {
+                        console.error(reason);
+                    });
+                    memesPromise.push(promise);
                 });
-                memesPromise.push(promise);
-            });
-            Q.all(memesPromise).then(memesData => {
-                memesData = memesData.filter(value => {
-                    return value!=MEME_ENTRY_NO_VALUE;//remove invalid meme
+                Q.all(memesPromise).then(memesData => {
+                    memesData = memesData.filter(value => {
+                        return value != MEME_ENTRY_NO_VALUE;//remove invalid meme
+                    });
+                    this.eventEmitter.emit("onMeme", memesData);
+                    resolve(memesData.length);
                 });
-                this.eventEmitter.emit("onMeme", memesData);
             });
+
         });
     }
 
