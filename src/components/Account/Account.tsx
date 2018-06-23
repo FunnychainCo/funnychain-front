@@ -86,7 +86,7 @@ export default class Account extends Component<{
                             {this.state.displayAddToHomeButton &&
                             <Button onClick={() => {
                                 pwaService.triggerAddToHomeScreen();
-                            }}><VpnKey/>&nbsp;&nbsp;Add application to screen</Button>}
+                            }}><VpnKey/>&nbsp;&nbsp;Add app to Home Screen</Button>}
                         </div>
                         <div className="fcContent">
                         <Switch

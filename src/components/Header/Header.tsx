@@ -11,10 +11,12 @@ import AppBar from "@material-ui/core/AppBar/AppBar";
 import Typography from "@material-ui/core/Typography/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Toolbar from "@material-ui/core/Toolbar/Toolbar";
-import Button from "@material-ui/core/Button/Button";
+//import Button from "@material-ui/core/Button/Button";
 import {memeListController} from "../MemeList/MemeListController";
+import Tabs from "@material-ui/core/Tabs/Tabs";
+import Tab from "@material-ui/core/Tab/Tab";
 
-const styles = {
+const styles = theme =>({
     root: {
         flexGrow: 1,
     },
@@ -30,18 +32,28 @@ const styles = {
     },
     headerSpacing:{
         paddingRight:"20px"
+    },
+    tabsStyle:{
+        backgroundColor: theme.palette.background.paper
     }
-};
+});
 
-class Header extends Component<any,any> {
+class Header extends Component<any,{
+    logged: boolean,
+    dialogLogin: boolean,
+    dialogRegister: boolean,
+    drawerOpen:boolean,
+    currentSelected:number//trending
+}> {
     state = {
         logged: false,
         dialogLogin: false,
         dialogRegister: false,
         drawerOpen:false,
-        currentSelected:"trending"
-    }
+        currentSelected:1//trending
+    };
     private removeListener: () => void;
+    itemOrder = {"hot":0,"trending":1,"fresh":2};
 
     componentDidMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
@@ -49,7 +61,7 @@ class Header extends Component<any,any> {
                 logged: user!=USER_ENTRY_NO_VALUE ? true : false
             });
         });
-        memeListController.applyCat(this.state.currentSelected)
+        memeListController.applyCat(this.itemOrder[this.state.currentSelected]);
     }
 
     componentWillUnmount() {
@@ -68,9 +80,9 @@ class Header extends Component<any,any> {
         this.setState({dialogRegister: true});
     };
 
-    handleFeedButton(feed:string){
+    handleFeedButton(feed:number){
         this.setState({currentSelected:feed});
-        memeListController.applyCat(feed);
+        memeListController.applyCat(Object.keys(this.itemOrder)[feed]);
     }
 
     render() {
@@ -80,28 +92,18 @@ class Header extends Component<any,any> {
                 <Toolbar>
                     <img style={{maxHeight:"40px",paddingRight:"7px"}} src="/android-chrome-192x192.png" alt="logo"/>
                     <Typography variant="title" color="inherit" className={classes.flex}>
-                        <div>
-                            FunnyChain
-                            <span className={classes.headerSpacing}></span>
-                        </div>
-                        <Button
-                            variant={this.state.currentSelected=="hot"?"raised":undefined}
-                            className={classes.feedButton}
-                            onClick={()=>{this.handleFeedButton("hot")}}>
-                            Hot
-                        </Button>
-                        <Button
-                            variant={this.state.currentSelected=="trending"?"raised":undefined}
-                            className={classes.feedButton}
-                            onClick={()=>{this.handleFeedButton("trending")}}>
-                            Trending
-                        </Button>
-                        <Button
-                            variant={this.state.currentSelected=="fresh"?"raised":undefined}
-                            className={classes.feedButton}
-                            onClick={()=>{this.handleFeedButton("fresh")}}>
-                            Fresh
-                        </Button>
+                        <Tabs
+                            value={this.state.currentSelected}
+                            onChange={ (event, value) => {
+                                this.handleFeedButton(value);
+                            }}
+                            indicatorColor="primary"
+                            fullWidth
+                        >
+                            <Tab label="Hot" />
+                            <Tab label="Trending" />
+                            <Tab label="Fresh" />
+                        </Tabs>
                     </Typography>
                     <div>
                     {this.state.logged ?
@@ -122,4 +124,25 @@ class Header extends Component<any,any> {
     }
 }
 
+/**
+ *
+ <Button
+ variant={this.state.currentSelected=="hot"?"raised":undefined}
+ className={classes.feedButton}
+ onClick={()=>{this.handleFeedButton("hot")}}>
+ Hot
+ </Button>
+ <Button
+ variant={this.state.currentSelected=="trending"?"raised":undefined}
+ className={classes.feedButton}
+ onClick={()=>{this.handleFeedButton("trending")}}>
+ Trending
+ </Button>
+ <Button
+ variant={this.state.currentSelected=="fresh"?"raised":undefined}
+ className={classes.feedButton}
+ onClick={()=>{this.handleFeedButton("fresh")}}>
+ Fresh
+ </Button>
+ */
 export default withStyles(styles)(Header);
