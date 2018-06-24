@@ -31,9 +31,18 @@ export default class SteemLoginDialog extends Component<any,any> {
                 onClose={this.handleClose}
             >
                 {!this.state.loading && <DialogContent>
+                    <Button
+                        onClick={()=>{window.location.href = "https://signup.steemit.com/?ref=funnychain"}}
+                        variant="raised" color="primary"
+                        fullWidth
+                        style={{marginBottom:"20px"}}
+                    >
+                        <img src="/static/steem/steemit-logo.png" alt="steem" style={{width:"40px",height:"40px"}}/>
+                        &nbsp;&nbsp;Sign up on steem.it
+                    </Button>
                     <Button onClick={this.handleSubmit} variant="raised" color="primary" fullWidth>
                         <img src="/static/steem/steemit-logo.png" alt="steem" style={{width:"40px",height:"40px"}}/>
-                        &nbsp;&nbsp;Login with Steem.it account
+                        &nbsp;&nbsp;Login with steem account
                     </Button>
                 </DialogContent>}
                 {!this.state.loading && <DialogActions>
