@@ -61,7 +61,7 @@ class Header extends Component<any,{
                 logged: user!=USER_ENTRY_NO_VALUE ? true : false
             });
         });
-        memeListController.applyCat(this.itemOrder[this.state.currentSelected]);
+        memeListController.applyCat(Object.keys(this.itemOrder)[this.state.currentSelected]);
     }
 
     componentWillUnmount() {

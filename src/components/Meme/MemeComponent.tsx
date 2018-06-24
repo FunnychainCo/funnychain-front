@@ -28,6 +28,8 @@ import TextField from "@material-ui/core/TextField/TextField";
 import UserComment from "./UserComment";
 import classnames from 'classnames';
 import MobileStepper from "@material-ui/core/MobileStepper/MobileStepper";
+import * as moment from 'moment';
+import Avatar from "@material-ui/core/Avatar/Avatar";
 
 
 const styles = theme => ({
@@ -169,8 +171,20 @@ class MemeComponent extends Component<{
                 </IconButton>
             </CardActions>
             <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
-                <CardContent>
-                    <a href={"https://steemit.com" + this.state.meme.id}>SteemIt</a>
+                <CardContent style={{marginTop:0,paddingTop:0}}>
+                    <div className="memeCommentContainer" style={{marginTop:0,marginBottom:0,paddingBottom:0,paddingTop:0}}>
+                        <div className="memeCommentContainerLeft">
+                            <Avatar alt={this.state.meme.user.displayName}
+                                    src={this.state.meme.user.avatarUrl}
+                                    style={{width:55,height:55}}
+                            />
+                        </div>
+                        <div className="memeCommentContainerRight">
+                            <strong>{this.state.meme.user.displayName}</strong><br/>
+                            <a href={"https://steemit.com" + this.state.meme.id}>SteemIt</a><br/>
+                            {moment(this.state.meme.created).fromNow()}
+                        </div>
+                    </div>
                     <TextField
                         disabled={!this.state.logged}
                         id="multiline-flexible"
@@ -182,6 +196,7 @@ class MemeComponent extends Component<{
                         onChange={(event)=>{this.setState({commentToPost: event.target.value,});}}
                         margin="normal"
                         fullWidth
+                        style={{marginTop:0,paddingTop:0}}
                     />
                     <Button variant="outlined" color="primary" aria-label="Post!"
                             onClick={this.post}
