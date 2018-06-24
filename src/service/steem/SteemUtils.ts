@@ -1,4 +1,8 @@
 import {preLoadImage} from "../ImageUtil";
+import * as dsteem from "dsteem";
+import {SteemVote} from "./SteemType";
+import {steemAuthService} from "./SteemAuthService";
+import {Meme, MEME_ENTRY_NO_VALUE} from "../generic/Meme";
 
 export function loadUserAvatar(user: string): Promise<string> {
     /*return new Promise<string>((resolve, reject) => {
@@ -15,6 +19,61 @@ export function loadUserAvatar(user: string): Promise<string> {
             resolve("https://avatar.admin.rphstudio.net/avatar/avatars/avatar-067.jpeg");//default avatar
         });
     });
+}
+
+export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): Promise<Meme> {
+    let promise = new Promise<Meme>((resolve, reject) => {
+        loadUserAvatar(steemPost.author).then((avatarUrl => {
+            let currentUserVoted = false;
+            let currentUser = steemAuthService.currentUser.uid;
+            //user can be "" in case user is not authed
+            steemPost.active_votes.forEach((vote: SteemVote) => {
+                if (vote.voter === currentUser) {
+                    currentUserVoted = true;
+                }
+            });
+            //json_metadata:"{"tags":["dmania","meme","funny","punchline","lol"],"image":["https://s3-eu-west-1.amazonaws.com/dmania-images/machine-learning-f4p3k2i.jpg"],"app":"dmania/0.7"}"
+            let jsonMetadata: {
+                tags: string[],
+                image: string[],
+                links: string[],
+                app: string
+            } = JSON.parse(steemPost.json_metadata);
+            //check json format
+            if (jsonMetadata.image == undefined) {
+                resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                return;
+            }
+            if (jsonMetadata.image.length != 1) {
+                resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                return;
+            }
+            let newMeme: Meme = {
+                id: steemPost.url,
+                created: new Date(steemPost.created),
+                title: steemPost.title,
+                imageUrl: jsonMetadata.image[0],
+                commentNumber: steemPost.children,
+                voteNumber: steemPost.net_votes,
+                dolarValue: Number(steemPost.pending_payout_value.toString().replace(" SBD", "")),
+                user: {
+                    uid: steemPost.author,
+                    displayName: steemPost.author,
+                    avatarUrl: avatarUrl
+                },
+                currentUserVoted: currentUserVoted,
+                order: orderNumber
+            };
+            resolve(newMeme);
+        })).catch(reason => {
+            resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+            console.error(reason);
+        });
+    });
+    promise.catch(reason => {
+        console.error(reason);
+    });
+    return promise;
 }
 
 export function getAuthorAndPermalink(url: string): { author: string, permalink: string } {

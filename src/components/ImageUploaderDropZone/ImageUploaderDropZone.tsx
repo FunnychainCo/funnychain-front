@@ -5,9 +5,10 @@ import Dropzone from 'react-dropzone'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './ImageUploaderDropZone.css';
 import * as MobileDetect from 'mobile-detect'
-import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
+import {authService} from "../../service/generic/AuthService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import Snackbar from "@material-ui/core/Snackbar/Snackbar";
+import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 //import {fileUploadService} from "../../service/generic/FileUploadService";
 
 export interface IState{

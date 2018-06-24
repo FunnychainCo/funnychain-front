@@ -1,6 +1,6 @@
 //import {firebaseMemeService} from "../firebase/FirebaseMemeService";
 import {steemMemeService} from "../steem/SteemMemeService";
-import {MemeLoaderInterface, MemeServiceInterface} from "./ApplicationInterface";
+import {MemeLinkInterface, MemeLoaderInterface, MemeServiceInterface} from "./ApplicationInterface";
 import {debugService} from "../debugService";
 
 export class MemeService implements MemeServiceInterface {
@@ -16,6 +16,10 @@ export class MemeService implements MemeServiceInterface {
 
     getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
         return steemMemeService.getMemeLoader(type,tags);
+    }
+
+    getMemeLink(id: string): MemeLinkInterface {
+        return steemMemeService.getMemeLink(id);
     }
 
     post(title: string, body: string):Promise<string> {

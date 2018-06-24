@@ -1,9 +1,11 @@
 import * as firebase from 'firebase';
 import {idService} from "../IdService";
-import {CommentsVisitor, Meme, MemeLoaderInterface, MemeServiceInterface} from "../generic/ApplicationInterface";
-import {authService, UserEntry} from "../generic/AuthService";
+import {CommentsVisitor, MemeLoaderInterface, MemeServiceInterface} from "../generic/ApplicationInterface";
+import {authService} from "../generic/AuthService";
 import * as Q from 'q';
 import {firebaseMediaService} from "./FirebaseMediaService";
+import {UserEntry} from "../generic/UserEntry";
+import {Meme} from "../generic/Meme";
 
 export interface FirebaseMeme {
     title: string,

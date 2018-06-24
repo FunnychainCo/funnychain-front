@@ -1,6 +1,6 @@
 import {Component} from 'react'
 import * as React from 'react'
-import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
+import {authService} from "../../service/generic/AuthService";
 import ModeEdit from '@material-ui/icons/ModeEdit';
 import VpnKey from '@material-ui/icons/VpnKey';
 
@@ -12,6 +12,7 @@ import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import TextField from "@material-ui/core/TextField/TextField";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 
 export default class Account extends Component<any,any> {
     state = {

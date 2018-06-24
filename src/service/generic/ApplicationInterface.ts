@@ -1,33 +1,5 @@
-import {USER_ENTRY_NO_VALUE, UserEntry} from "./AuthService";
-
-/**
- * MEME SERVICE
- */
-export interface Meme {
-    id: string,
-    title: string,
-    user: UserEntry,
-    imageUrl: string,
-    created: Date,
-    dolarValue: number,
-    voteNumber: number,
-    commentNumber: number,
-    currentUserVoted: boolean,
-    order:number
-}
-
-export const MEME_ENTRY_NO_VALUE: Meme = {
-    id: "",
-    user: USER_ENTRY_NO_VALUE,
-    title: "",
-    imageUrl: "",
-    created: new Date(),
-    dolarValue: 42.10,
-    voteNumber: 41,
-    commentNumber: 5,
-    currentUserVoted: false,
-    order:0,
-};
+import {UserEntry} from "./UserEntry";
+import {Meme} from "./Meme";
 
 export interface MemeComment {
     id: string,
@@ -41,6 +13,11 @@ export interface MemeLoaderInterface {
     on(callback: (memes: Meme[]) => void): () => void,
     loadMore(limit:number),
     refresh()
+}
+
+export interface MemeLinkInterface {
+    on(callback: (memes: Meme) => void): () => void,
+    refresh():Promise<any>
 }
 
 export interface MemeServiceInterface {

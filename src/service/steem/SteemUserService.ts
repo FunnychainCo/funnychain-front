@@ -1,5 +1,5 @@
 import {UserServiceInterface} from "../generic/ApplicationInterface";
-import {UserEntry} from "../generic/AuthService";
+import {UserEntry} from "../generic/UserEntry";
 import {loadUserAvatar} from "./SteemUtils";
 
 export class SteemUserService implements UserServiceInterface {

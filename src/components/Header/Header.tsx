@@ -1,7 +1,7 @@
 import {Component} from 'react';
 import * as React from 'react';
 import {leftMenuService} from "../../service/LeftMenuService";
-import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
+import {authService} from "../../service/generic/AuthService";
 import RegisterDialog from "../RegisterDialog/RegisterDialog";
 import Logged from "./Logged";
 import NotLogged from "./NotLogged";
@@ -15,6 +15,7 @@ import Toolbar from "@material-ui/core/Toolbar/Toolbar";
 import {memeListController} from "../MemeList/MemeListController";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
+import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 
 const styles = theme =>({
     root: {

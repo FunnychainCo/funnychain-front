@@ -1,7 +1,8 @@
 import * as React from 'react';
-import {authService, USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/AuthService";
+import {authService} from "../../service/generic/AuthService";
 import {Component} from "react";
 import Avatar from "@material-ui/core/Avatar/Avatar";
+import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 
 export default class Logged extends Component<any,
     {

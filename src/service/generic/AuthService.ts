@@ -1,19 +1,7 @@
 import {firebaseAuthService} from "../firebase/FirebaseAuthService";
 import {steemAuthService} from "../steem/SteemAuthService";
 import {steemUserService} from "../steem/SteemUserService";
-
-
-export interface UserEntry {
-    uid: string,
-    displayName: string,
-    avatarUrl: string,
-}
-
-export const USER_ENTRY_NO_VALUE: UserEntry = {
-    uid: "",
-    displayName: "",
-    avatarUrl: "",
-};
+import {UserEntry} from "./UserEntry";
 
 export interface MailAuthServiceInterface {
     //specific email pasword auth

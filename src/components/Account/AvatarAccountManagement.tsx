@@ -1,6 +1,6 @@
 import {Component} from 'react'
 import * as React from 'react'
-import {authService, USER_ENTRY_NO_VALUE} from "../../service/generic/AuthService";
+import {authService} from "../../service/generic/AuthService";
 import "./Account.css";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import ModalPage from "../ModalPage/ModalPage";
@@ -11,6 +11,7 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
+import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 
 export default class Account extends Component<any, any> {
     state = {

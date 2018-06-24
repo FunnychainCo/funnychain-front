@@ -1,8 +1,10 @@
 import sc2 from 'sc2-sdk';
 import * as EventEmitter from "eventemitter3";
 import * as store from 'store';
-import {AuthServiceInterface, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/AuthService";
+import {AuthServiceInterface} from "../generic/AuthService";
 import {steemUserService} from "./SteemUserService";
+import * as dsteem from "dsteem";
+import {USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
 
 export interface SteemToken {
     access_token: string,
@@ -20,6 +22,7 @@ export class SteemAuthService implements AuthServiceInterface {
     private _sc2Api: any = null;
     steemToken: SteemToken = STEEM_TOKEN_NO_VALUE;
     private _currentUser: UserEntry = USER_ENTRY_NO_VALUE;
+    private _dSteemClient = new dsteem.Client('https://api.steemit.com');
 
     eventEmitter = new EventEmitter();
 
@@ -63,6 +66,9 @@ export class SteemAuthService implements AuthServiceInterface {
         return this._sc2Api;
     }
 
+    get dSteemClient(): dsteem.Client {
+        return this._dSteemClient;
+    }
 
     get currentUser(): UserEntry {
         if(this._currentUser==undefined) {

@@ -4,7 +4,7 @@ import {firebaseMediaService} from "../firebase/FirebaseMediaService";
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import * as firebase from "firebase";
 import * as EventEmitter from "eventemitter3";
-import {UserEntry} from "../generic/AuthService";
+import {UserEntry} from "../generic/UserEntry";
 
 export interface FireBaseUser {
     uid: string;

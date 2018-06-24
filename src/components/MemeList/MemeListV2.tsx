@@ -5,10 +5,11 @@ import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import * as React from "react";
 import {Component} from "react";
 import Divider from "@material-ui/core/Divider/Divider";
-import {Meme, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
+import {MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
 import Waypoint from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {memeListController} from "./MemeListController";
+import {Meme} from "../../service/generic/Meme";
 
 
 interface State {
