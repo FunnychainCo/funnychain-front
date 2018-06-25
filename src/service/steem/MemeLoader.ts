@@ -35,26 +35,20 @@ export class MemeLoader implements MemeLoaderInterface {
         };
     }
 
-    loadMore(limit: number): void {
-        //TODO find a better way to do that
-        let totalLoaded = 0;
-        this.loadMoreV1(limit).then((actuallyLoaded: number) => {
-            totalLoaded += actuallyLoaded;
-            if (limit - totalLoaded > 0)
-                this.loadMoreV1(limit - totalLoaded).then(actuallyLoaded => {
-                    totalLoaded += actuallyLoaded;
-                    if (limit - totalLoaded > 0)
-                        this.loadMoreV1(limit - totalLoaded).then(actuallyLoaded => {
-                            totalLoaded += actuallyLoaded;
-                            if (limit - totalLoaded > 0)
-                                this.loadMoreV1(limit - totalLoaded).then(actuallyLoaded => {
-                                });
-                        });
-                });
-        });
+
+
+    loadMoreRec(limit:number,totalLoaded:number,actuallyLoaded: number){
+        totalLoaded += actuallyLoaded;
+        if (limit - totalLoaded > 0)
+            this.loadMoreInternal(limit - totalLoaded).then((actuallyLoaded)=> {this.loadMoreRec(limit,totalLoaded,actuallyLoaded)});
     }
 
-    loadMoreV1(limit: number): Promise<number> {
+    loadMore(limit: number): void {
+        let totalLoaded = 0;
+        this.loadMoreRec(limit,totalLoaded,0);
+    }
+
+    loadMoreInternal(limit: number): Promise<number> {
         return new Promise(resolve => {
             let memesPromise: Promise<Meme>[] = [];
             let params: dsteem.DisqussionQuery = {
