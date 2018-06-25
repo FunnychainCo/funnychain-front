@@ -99,11 +99,10 @@ class Header extends Component<any,{
                                 this.handleFeedButton(value);
                             }}
                             indicatorColor="primary"
-                            fullWidth
                         >
-                            <Tab label="Hot" />
-                            <Tab label="Trending" />
-                            <Tab label="Fresh" />
+                            <Tab label="Hot" style={{minWidth:'30px'}}/>
+                            <Tab label="Trending" style={{minWidth:'30px'}}/>
+                            <Tab label="Fresh" style={{minWidth:'30px'}}/>
                         </Tabs>
                     </Typography>
                     <div>

@@ -1,7 +1,7 @@
 import {Component} from 'react';
 import * as React from 'react';
 import IconButton from "@material-ui/core/IconButton/IconButton";
-import {ExpandMore} from "@material-ui/icons";
+import {Menu} from "@material-ui/icons";
 
 export default class NotLogged extends Component<any,{
     anchorEl:any
@@ -26,7 +26,7 @@ export default class NotLogged extends Component<any,{
                     aria-haspopup="true"
                     onClick={()=>{this.handleClose();this.props.onDialogLogin();}}
                 >
-                    <ExpandMore/>
+                    <Menu style={{color:"#FFFFFF"}}/>
                 </IconButton>
             </div>
         )
