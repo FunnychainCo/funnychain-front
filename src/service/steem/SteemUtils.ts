@@ -48,23 +48,26 @@ export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): 
                 resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
                 return;
             }
-            let newMeme: Meme = {
-                id: steemPost.url,
-                created: new Date(steemPost.created),
-                title: steemPost.title,
-                imageUrl: jsonMetadata.image[0],
-                commentNumber: steemPost.children,
-                voteNumber: steemPost.net_votes,
-                dolarValue: Number(steemPost.pending_payout_value.toString().replace(" SBD", "")),
-                user: {
-                    uid: steemPost.author,
-                    displayName: steemPost.author,
-                    avatarUrl: avatarUrl
-                },
-                currentUserVoted: currentUserVoted,
-                order: orderNumber
-            };
-            resolve(newMeme);
+            let memeImgUrl = jsonMetadata.image[0];
+            preLoadImage(memeImgUrl).then(memeImgUrl => {
+                let newMeme: Meme = {
+                    id: steemPost.url,
+                    created: new Date(steemPost.created),
+                    title: steemPost.title,
+                    imageUrl: memeImgUrl,
+                    commentNumber: steemPost.children,
+                    voteNumber: steemPost.net_votes,
+                    dolarValue: Number(steemPost.pending_payout_value.toString().replace(" SBD", "")),
+                    user: {
+                        uid: steemPost.author,
+                        displayName: steemPost.author,
+                        avatarUrl: avatarUrl
+                    },
+                    currentUserVoted: currentUserVoted,
+                    order: orderNumber
+                };
+                resolve(newMeme);
+            });
         })).catch(reason => {
             resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
             console.error(reason);

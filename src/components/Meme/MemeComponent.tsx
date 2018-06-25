@@ -149,7 +149,8 @@ class MemeComponent extends Component<{
 
     getComments = (): MemeComment[] => {
         let array: MemeComment[] = this.state.comments;
-        return array.slice(this.state.page, this.state.page + 5);
+        let commentPerPage = 5;
+        return array.slice((this.state.page*commentPerPage), ((this.state.page+1)*commentPerPage));
     };
 
     handleNext = () => {
