@@ -4,7 +4,7 @@ import {authService} from "../../service/generic/AuthService";
 import "./Account.css";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import ModalPage from "../ModalPage/ModalPage";
-import {pwaService} from "../../service/PWAService";
+import {pwaService} from "../../service/mobile/PWAService";
 import {fileUploadService} from "../../service/generic/FileUploadService";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";

@@ -6,7 +6,7 @@ import VpnKey from '@material-ui/icons/VpnKey';
 
 import "./Account.css";
 import ModalPage from "../ModalPage/ModalPage";
-import {pwaService} from "../../service/PWAService";
+import {pwaService} from "../../service/mobile/PWAService";
 import Button from "@material-ui/core/Button/Button";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";

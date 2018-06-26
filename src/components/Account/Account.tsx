@@ -5,42 +5,43 @@ import ModeEdit from '@material-ui/icons/ModeEdit';
 import VpnKey from '@material-ui/icons/VpnKey';
 
 import "./Account.css";
-import {pwaService} from "../../service/PWAService";
+import {pwaService} from "../../service/mobile/PWAService";
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import Button from "@material-ui/core/Button/Button";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import Switch from "@material-ui/core/Switch/Switch";
 import {debugService} from "../../service/debugService";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
+import {ChatBubble} from "@material-ui/icons";
 
 export default class Account extends Component<{
     onLogout: () => void
-},{
+}, {
     user: UserEntry,
     loading: boolean,
     displayAddToHomeButton: boolean,
-    testNetwork:boolean
+    testNetwork: boolean
 }> {
     state = {
         user: {
-            uid:"",
-            displayName:"",
-            avatarUrl:""
+            uid: "",
+            displayName: "",
+            avatarUrl: ""
         },
         loading: true,
         displayAddToHomeButton: false,
-        testNetwork:debugService.testNetwork
+        testNetwork: debugService.testNetwork
     };
 
     private removeListener: () => void;
     private removeListenerPWA: any;
     private openSteemAccount = () => {
-        window.location.href = "https://steemit.com/@"+this.state.user.uid;
+        window.location.href = "https://steemit.com/@" + this.state.user.uid;
     };
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
-            if (user==USER_ENTRY_NO_VALUE) {
+            if (user == USER_ENTRY_NO_VALUE) {
                 this.setState({
                     loading: true
                 });
@@ -75,8 +76,13 @@ export default class Account extends Component<{
                     </div>
                     <div className="fcLeftAlignContainer">
                         <div className="fcContent">
-                            <Button onClick={this.openSteemAccount}
-                            ><ModeEdit/>&nbsp;&nbsp;{this.state.user.displayName}</Button><br/>
+                            <Button onClick={this.openSteemAccount}>
+                                <ModeEdit/>&nbsp;&nbsp;{this.state.user.displayName}
+                                </Button><br/>
+
+                            <Button onClick={()=>{window.location.href="https://discord.gg/9NmfPXc"}}>
+                                <ChatBubble/>&nbsp;&nbsp;Join on discord
+                            </Button><br/>
                             <Button onClick={() => {
                                 setTimeout(() => {
                                     authService.logout();
@@ -90,14 +96,14 @@ export default class Account extends Component<{
                             }}><VpnKey/>&nbsp;&nbsp;Add app to Home Screen</Button>}
                         </div>
                         <div className="fcContent">
-                        <Switch
-                            checked={this.state.testNetwork}
-                            onChange={event=>{
-                                this.setState({ testNetwork: event.target.checked });
-                                debugService.testNetwork = event.target.checked;
-                            }}
-                            value="checkedA"
-                        />
+                            <Switch
+                                checked={this.state.testNetwork}
+                                onChange={event => {
+                                    this.setState({testNetwork: event.target.checked});
+                                    debugService.testNetwork = event.target.checked;
+                                }}
+                                value="checkedA"
+                            />
                         </div>
                     </div>
                 </div>}

@@ -1,8 +1,10 @@
-import EventEmitter from "eventemitter3/index";
+import * as EventEmitter from "eventemitter3/index";
+
+declare let window:any;
 
 export class PWAService {
 
-    _promptEvent = null;
+    _promptEvent:any = null;
 
     installPromptChange = 'PWAService.installpromptchange';
     eventEmitter = new EventEmitter();
@@ -73,6 +75,9 @@ export class PWAService {
         };
     }
 
+
+    tapped: boolean = true;
+
 }
 
-export var pwaService = new PWAService();
+export let pwaService = new PWAService();

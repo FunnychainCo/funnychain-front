@@ -8,7 +8,7 @@ import Header from "../components/Header/Header";
 import Home from "../containers/Home";
 import Version from "../components/Version/Version";
 import {userNotificationService} from "../service/UserNotificationService";
-import {pwaService} from "../service/PWAService";
+import {pwaService} from "../service/mobile/PWAService";
 import {steemAuthService} from "../service/steem/SteemAuthService";
 import Connect from "../components/Steem/Connect"
 import {ipfsFileUploadService} from "../service/IPFSFileUploader/IPFSFileUploadService";
