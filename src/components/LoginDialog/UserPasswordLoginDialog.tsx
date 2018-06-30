@@ -1,9 +1,17 @@
-import React, {Component} from 'react'
-import {Button, CircularProgress, DialogActions, DialogContent, TextField} from "material-ui";
+import *as React from 'react';
+import {Component} from 'react';
 import ModalPage from "../ModalPage/ModalPage";
 import {authService} from "../../service/generic/AuthService";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import TextField from "@material-ui/core/TextField/TextField";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import Button from "@material-ui/core/Button/Button";
+import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 
-export default class LoginDialog extends Component {
+export default class UserPasswordLoginDialog extends Component<{
+    onRequestClose:()=>void,
+    open:boolean
+},any> {
     state = {
         errorMessage: null,
         displayButton: false,
@@ -23,7 +31,7 @@ export default class LoginDialog extends Component {
 
     handleSubmit = () => {
         this.setState({loading: true});
-        authService.login(this.email, this.pw)
+        authService.login(authService.MODE_EMAIL,JSON.stringify({email:this.email, password:this.pw}))
             .then(() => {
                 console.log(this.email + " logged");
                 this.setState({loading: false});

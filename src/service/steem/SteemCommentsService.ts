@@ -17,8 +17,11 @@ export class SteemCommentsVisitor implements CommentsVisitor {
     id: string;
     author: string;
     permalink: string;
-    allDataLoaded: boolean = false;
     private dSteemClient: dsteem.Client;
+    private lastCommentIndex: number=0;
+    //TODO improve this system use limit in steem API
+    allDataLoaded: boolean = false;
+    allComments:MemeComment[] = [];
 
     constructor(id) {
         this.dSteemClient = new dsteem.Client('https://api.steemit.com');
@@ -65,40 +68,51 @@ export class SteemCommentsVisitor implements CommentsVisitor {
         };
     }
 
-    loadMore(limit: number) {
-        if (this.allDataLoaded == true) {
-            return;
+    getAllComment():Promise<MemeComment[]>{
+        if(this.allDataLoaded){
+            return new Promise<MemeComment[]>(resolve => {
+                resolve(this.allComments);
+            })
+        }else {
+            return new Promise<MemeComment[]>(resolve => {
+                let memesComments: Promise<MemeComment>[] = [];
+                this.dSteemClient.database.call('get_content_replies', [this.author, this.permalink]).then(results => {
+                    ///dmania/@sanmi/the-real-meaning-of-followerspeople-still-celebratei-feel-we-need-an-auto-unfollow-mechanism-zg1hbmlh-9omhu
+                    results.forEach((comment: any) => {
+                        memesComments.push(new Promise<MemeComment>((resolve, reject) => {
+                            loadUserAvatar(comment.author).then((avatarUrl => {
+                                //let flagged = comment.author_reputation < 15; //TODO reactivate that
+                                let flagged = false;
+                                let memeComment: MemeComment = {
+                                    author: {
+                                        uid: comment.author,
+                                        displayName: comment.author,
+                                        avatarUrl: avatarUrl
+                                    },
+                                    id: comment.url,
+                                    parentId: this.id,
+                                    text: markdownImageLink(comment.body),
+                                    flagged: flagged
+                                };
+                                resolve(memeComment);
+                            }));
+                        }));
+                    });
+                    Q.all(memesComments).then(comments => {
+                        this.allComments=comments;
+                        this.allDataLoaded = true;
+                        resolve(this.allComments);
+                    });
+                });
+            });
         }
-        let memesComments: Promise<MemeComment>[] = [];
-        //https://github.com/steemit/devportal-tutorials-js/tree/master/tutorials
-        //steem.api.getRepliesByLastUpdate(this.author, this.permalink, limit, (err, results: SteemReplies[]) => {
-        this.dSteemClient.database.call('get_content_replies',[this.author, this.permalink]).then(results => {
-            ///dmania/@sanmi/the-real-meaning-of-followerspeople-still-celebratei-feel-we-need-an-auto-unfollow-mechanism-zg1hbmlh-9omhu
-            results.forEach((comment: any) => {
-                memesComments.push(new Promise<MemeComment>((resolve, reject) => {
+    }
 
-                    loadUserAvatar(comment.author).then((avatarUrl => {
-                        //let flagged = comment.author_reputation < 15; //TODO reactivate that
-                        let flagged = false;
-                        let memeComment: MemeComment = {
-                            author: {
-                                uid: comment.author,
-                                displayName: comment.author,
-                                avatarUrl: avatarUrl
-                            },
-                            id: comment.url,
-                            parentId: this.id,
-                            text: markdownImageLink(comment.body),
-                            flagged:flagged
-                        };
-                        resolve(memeComment);
-                    }));
-                }));
-            });
-            Q.all(memesComments).then(comments => {
-                this.allDataLoaded = true;
-                this.emitter.emit("onNewComment" + this.id, comments);
-            });
+    loadMore(limit: number) {
+        this.getAllComment().then(comments => {
+            let memeComments = comments.slice(this.lastCommentIndex,this.lastCommentIndex+limit);
+            this.lastCommentIndex+=limit;
+            this.emitter.emit("onNewComment" + this.id, memeComments);
         });
     }
 }

@@ -9,11 +9,11 @@ import Home from "../containers/Home";
 import Version from "../components/Version/Version";
 import {userNotificationService} from "../service/UserNotificationService";
 import {pwaService} from "../service/mobile/PWAService";
-import {steemAuthService} from "../service/steem/SteemAuthService";
 import Connect from "../components/Steem/Connect"
 import {ipfsFileUploadService} from "../service/IPFSFileUploader/IPFSFileUploadService";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+import {authService} from "../service/generic/AuthService";
 
 class App extends React.Component<any,{
     userMessage: {
@@ -30,7 +30,7 @@ class App extends React.Component<any,{
 
     componentDidMount() {
         pwaService.start();
-        steemAuthService.start();
+        authService.start();
         ipfsFileUploadService.start();
         userNotificationService.registerCallBack((message) => {
             this.setState({

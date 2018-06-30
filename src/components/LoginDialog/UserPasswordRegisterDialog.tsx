@@ -8,7 +8,7 @@ import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 
-export default class RegisterDialog extends Component<any,any> {
+export default class UserPasswordRegisterDialog extends Component<any,any> {
     state = {
         errorMessage: null,
         displayButton: false,

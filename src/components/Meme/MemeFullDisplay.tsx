@@ -11,12 +11,10 @@ import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import CardActions from "@material-ui/core/CardActions/CardActions";
 import {
-    ChatBubbleOutline,
     Send,
     ThumbUp
 } from "@material-ui/icons";
 import Button from "@material-ui/core/Button/Button";
-import Collapse from "@material-ui/core/Collapse/Collapse";
 import CardContent from "@material-ui/core/CardContent/CardContent";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {commentService} from "../../service/generic/CommentService";
@@ -29,7 +27,8 @@ import * as moment from 'moment';
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
-import MemeFullDisplay from "./MemeFullDisplay";
+import ModalPage from "../ModalPage/ModalPage";
+import Waypoint from "react-waypoint";
 
 
 const styles = theme => ({
@@ -49,7 +48,9 @@ const styles = theme => ({
 
 class MemeComponent extends Component<{
     meme: Meme,
-    classes: any
+    classes: any,
+    open: boolean,
+    onRequestClose: () => void,
 }, {
     meme: Meme,
     expanded: boolean,
@@ -57,8 +58,7 @@ class MemeComponent extends Component<{
     commentToPost: string,
     logged: boolean,
     loadingComment: boolean,
-    commentNumber: number,
-    fullDisplay: boolean,
+    displayWaypoint: boolean,
 }> {
     state = {
         meme: MEME_ENTRY_NO_VALUE,
@@ -66,14 +66,12 @@ class MemeComponent extends Component<{
         comments: [],
         commentToPost: "",
         logged: false,
-        loadingComment: true,
-        commentNumber: 0,
-        fullDisplay: false,
+        loadingComment: false,
+        displayWaypoint: true,
     };
 
-    private commentVisitor: CommentsVisitor;
+    commentVisitor: CommentsVisitor;
     private removeListener: () => void;
-    private commentPerPage = 5;
     private memeLink: MemeLinkInterface;
 
     componentDidMount() {
@@ -91,19 +89,20 @@ class MemeComponent extends Component<{
 
         this.memeLink.on(meme => {
             this.setState({
-                commentNumber: meme.commentNumber,
                 meme: meme
             });
         });
         this.setState({
-            commentNumber: meme.commentNumber,
             meme: meme
         });
         this.commentVisitor = commentService.getCommentVisitor(meme.id);
         this.commentVisitor.on((comments: MemeComment[]) => {
-            let concat = comments.concat(this.state.comments);
-            this.setState({comments: concat, loadingComment: false});
+            let concatResult: MemeComment[] = this.state.comments;
+            concatResult=concatResult.concat(comments);
+            this.setState({comments: concatResult, loadingComment: false});
         });
+        //initialize
+        this.commentVisitor.loadMore(3);
     }
 
     componentWillUnmount() {
@@ -140,24 +139,24 @@ class MemeComponent extends Component<{
         this.setState({commentToPost: ""});//errase old comment value
     };
 
-    handleExpandClick = () => {
-        if (!this.state.expanded) {
-            this.commentVisitor.loadMore(this.commentPerPage);
+    renderWaypoint = () => {
+        if (this.state.displayWaypoint) {
+            return (
+                <Waypoint
+                    onEnter={() => {
+                        console.log("loadmore comment");
+                        this.commentVisitor.loadMore(10);
+                    }}
+                />
+            );
         }
-        this.setState({expanded: !this.state.expanded});
-        this.memeLink.refresh();//refresh meme on every action from user
-    };
-
-    getComments = (): MemeComment[] => {
-        let array: MemeComment[] = this.state.comments;
-        let commentPerPage = this.commentPerPage;
-        let page = 0;
-        return array.slice((page * commentPerPage), ((page + 1) * commentPerPage));
+        return <div></div>
     };
 
     render() {
         //const {classes} = this.props;
-        return <Card>
+        return <ModalPage title={this.state.meme.title} open={this.props.open}
+                          onRequestClose={this.props.onRequestClose}><Card>
             <CardHeader
                 title={this.state.meme.title}
             />
@@ -172,78 +171,60 @@ class MemeComponent extends Component<{
                     <ThumbUp style={{height: "0.7em"}}/>
                 </Button>
                 <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue}</div>
-                <div style={{marginLeft: 'auto'}}>
-                    <Button variant="outlined"
-                            onClick={this.handleExpandClick}
-                            aria-expanded={this.state.expanded}
-                            aria-label="Show more"
-                    >
-                        {this.state.meme.commentNumber}&nbsp;
-                        <ChatBubbleOutline style={{height: "0.7em"}}/>
-                        {/*<ExpandMore className={classnames(classes.expand, {[classes.expandOpen]: this.state.expanded,})}/>*/}
-                    </Button>
-                </div>
             </CardActions>
-            <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
-                <CardContent style={{marginTop: 0, paddingTop: 0}}>
-                    <div className="memeCommentContainer"
-                         style={{marginTop: 0, marginBottom: 0, paddingBottom: 0, paddingTop: 0}}>
-                        <div className="memeCommentContainerLeft">
-                            <Avatar alt={this.state.meme.user.displayName}
-                                    src={this.state.meme.user.avatarUrl}
-                                    style={{width: 55, height: 55}}
-                            />
-                        </div>
-                        <div className="memeCommentContainerRight">
-                            <strong>{this.state.meme.user.displayName}</strong><br/>
-                            <a href={"https://steemit.com" + this.state.meme.id}>SteemIt</a><br/>
-                            {moment(this.state.meme.created).fromNow()}
-                        </div>
-                    </div>
-                    {this.state.loadingComment && <LoadingBlock/>}
-                    {!this.state.loadingComment && <div>
-                        <TextField
-                            disabled={!this.state.logged}
-                            id="multiline-flexible"
-                            label="Post a comment"
-                            multiline
-                            rows="3"
-                            rowsMax="10"
-                            value={this.state.commentToPost}
-                            onChange={(event) => {
-                                this.setState({commentToPost: event.target.value,});
-                            }}
-                            margin="normal"
-                            fullWidth
-                            style={{marginTop: 0, paddingTop: 0}}
+            <CardContent style={{marginTop: 0, paddingTop: 0}}>
+                <div className="memeCommentContainer"
+                     style={{marginTop: 0, marginBottom: 0, paddingBottom: 0, paddingTop: 0}}>
+                    <div className="memeCommentContainerLeft">
+                        <Avatar alt={this.state.meme.user.displayName}
+                                src={this.state.meme.user.avatarUrl}
+                                style={{width: 55, height: 55}}
                         />
-                        <Button variant="outlined" color="primary" aria-label="Post!"
-                                onClick={this.post}
-                                autoFocus={true}
-                                disabled={this.state.commentToPost.replace(new RegExp(" ", "g"), "") == "" || !this.state.logged}
-                        >
-                            <Send/>&nbsp;POST
-                        </Button>
-                        {
-                            this.getComments().map((comment: MemeComment, index) => {
-                                return <UserComment key={index} comment={comment}/>
-                            })
-                        }
-                        {this.state.commentNumber > this.commentPerPage &&
-                        <Button variant="contained" color="primary" fullWidth size="large" onClick={() => {
-                            this.setState({fullDisplay: true})
-                        }}>
-                            Show more comment
-                        </Button>}
-                    </div>}
-                </CardContent>
-            </Collapse>
-            {this.state.meme != MEME_ENTRY_NO_VALUE &&
-            <MemeFullDisplay meme={this.state.meme} open={this.state.fullDisplay} onRequestClose={() => {
-                this.setState({fullDisplay: false})
-            }}></MemeFullDisplay>
-            }
+                    </div>
+                    <div className="memeCommentContainerRight">
+                        <strong>{this.state.meme.user.displayName}</strong><br/>
+                        <a href={"https://steemit.com" + this.state.meme.id}>SteemIt</a><br/>
+                        {moment(this.state.meme.created).fromNow()}
+                    </div>
+                </div>
+                {this.state.loadingComment && <LoadingBlock/>}
+                {!this.state.loadingComment && <div>
+                    <TextField
+                        disabled={!this.state.logged}
+                        id="multiline-flexible"
+                        label="Post a comment"
+                        multiline
+                        rows="3"
+                        rowsMax="10"
+                        value={this.state.commentToPost}
+                        onChange={(event) => {
+                            this.setState({commentToPost: event.target.value,});
+                        }}
+                        margin="normal"
+                        fullWidth
+                        style={{marginTop: 0, paddingTop: 0}}
+                    />
+                    <Button variant="outlined" color="primary" aria-label="Post!"
+                            onClick={this.post}
+                            autoFocus={true}
+                            disabled={this.state.commentToPost.replace(new RegExp(" ", "g"), "") == "" || !this.state.logged}
+                    >
+                        <Send/>&nbsp;POST
+                    </Button>
+                    {
+                        this.state.comments.map((comment, index, array) => {
+                            return <div key={index}>
+                                <UserComment key={index} comment={comment}/>
+                                {((index == array.length - 5) || (array.length<=5 && index==array.length-1)) &&
+                                this.renderWaypoint()
+                                }
+                            </div>
+                        })
+                    }
+                </div>}
+            </CardContent>
         </Card>
+        </ModalPage>
     }
 
 }

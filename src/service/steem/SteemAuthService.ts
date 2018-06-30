@@ -101,21 +101,24 @@ export class SteemAuthService implements AuthServiceInterface {
         }
     }
 
-    notifyConnexionURL(href) {
-        //TODO maybe there is a better way to do that.
-        let urlElements = href.split("?");
-        urlElements = urlElements[1];
-        urlElements = urlElements.split("&");
-        //decodeURIComponent
-        urlElements.forEach((element) => {
-            element = element.split("=");
-            this.steemToken[element[0]] = decodeURIComponent(element[1]);
+    notifyConnexionURL(href):Promise<string> {
+        return new Promise<string>(resolve => {
+            //TODO maybe there is a better way to do that.
+            let urlElements = href.split("?");
+            urlElements = urlElements[1];
+            urlElements = urlElements.split("&");
+            //decodeURIComponent
+            urlElements.forEach((element) => {
+                element = element.split("=");
+                this.steemToken[element[0]] = decodeURIComponent(element[1]);
+            });
+            store.set('steem.token', this.steemToken);
+            this.start();//start service in case it is not already started
+            this.sc2Api.setAccessToken(this.steemToken.access_token);//set token anyway in case already started
+            console.log("steem token stored to NVM", this.steemToken);
+            this.notifyChange();
+            resolve("connected");
         });
-        store.set('steem.token', this.steemToken);
-        this.start();//start service in case it is not already started
-        this.sc2Api.setAccessToken(this.steemToken.access_token);//set token anyway in case already started
-        console.log("steem token stored to NVM", this.steemToken);
-        this.notifyChange();
     }
 
     getLoginURL() {
@@ -165,6 +168,9 @@ export class SteemAuthService implements AuthServiceInterface {
         };
     }
 
+    getLoggedUser():Promise<UserEntry> {
+        return new Promise<UserEntry>(resolve => {resolve(this._currentUser)});
+    }
 }
 
 export let steemAuthService = new SteemAuthService();

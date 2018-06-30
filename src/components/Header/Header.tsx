@@ -2,11 +2,10 @@ import {Component} from 'react';
 import * as React from 'react';
 import {leftMenuService} from "../../service/LeftMenuService";
 import {authService} from "../../service/generic/AuthService";
-import RegisterDialog from "../RegisterDialog/RegisterDialog";
+import UserPasswordRegisterDialog from "../LoginDialog/UserPasswordRegisterDialog";
 import Logged from "./Logged";
 import NotLogged from "./NotLogged";
 import AccountDrawer from "../Account/AccountDrawer";
-import SteemLoginDialog from "../SteemLoginDialog/SteemLoginDialog";
 import AppBar from "@material-ui/core/AppBar/AppBar";
 import Typography from "@material-ui/core/Typography/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -16,6 +15,7 @@ import {memeListController} from "../MemeList/MemeListController";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
+import LoginRegisterDialog from "../LoginDialog/LoginRegisterDialog";
 
 const styles = theme =>({
     root: {
@@ -114,9 +114,9 @@ class Header extends Component<any,{
                         />}
                     </div>
                 </Toolbar>
-                <SteemLoginDialog open={this.state.dialogLogin} onRequestClose={() => this.setState({dialogLogin: false})}/>
-                <RegisterDialog open={this.state.dialogRegister}
-                                onRequestClose={() => this.setState({dialogRegister: false})}/>
+                <LoginRegisterDialog open={this.state.dialogLogin} onRequestClose={() => this.setState({dialogLogin: false})}/>
+                <UserPasswordRegisterDialog open={this.state.dialogRegister}
+                                            onRequestClose={() => this.setState({dialogRegister: false})}/>
                 <AccountDrawer open={this.state.drawerOpen}
                                onRequestChange={(open)=>{this.setState({drawerOpen:open})}}/>
             </AppBar>

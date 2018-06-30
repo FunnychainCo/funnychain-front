@@ -4,7 +4,7 @@ import {firebaseMediaService} from "../firebase/FirebaseMediaService";
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import * as firebase from "firebase";
 import * as EventEmitter from "eventemitter3";
-import {UserEntry} from "../generic/UserEntry";
+import {USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
 
 export interface FireBaseUser {
     uid: string;
@@ -24,6 +24,10 @@ export class FirebaseAuthService {
     userCache = {};//{uid:userobj}
 
     constructor() {
+    }
+
+    start(){
+        console.log("Firebase auth service started");
         firebaseInitAuthService.firebaseAuth().onAuthStateChanged((user) => {
             if (user == null) {
                 this.currentUserUid = "";
@@ -252,6 +256,14 @@ export class FirebaseAuthService {
                 reject(error);
             });
         });
+    }
+
+    getLoggedUser():Promise<UserEntry> {
+        if (this.currentUserUid == "" || this.currentUserUid == null) {
+            return new Promise<UserEntry>(resolve => {resolve(USER_ENTRY_NO_VALUE)});
+        }else {
+            return this.loadUserData(this.currentUserUid);
+        }
     }
 }
 

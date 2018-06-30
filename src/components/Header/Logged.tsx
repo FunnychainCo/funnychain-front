@@ -3,6 +3,7 @@ import {authService} from "../../service/generic/AuthService";
 import {Component} from "react";
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
+import {Menu} from "@material-ui/icons";
 
 export default class Logged extends Component<any,
     {
@@ -24,9 +25,12 @@ export default class Logged extends Component<any,
     }
 
     render() {
-        return <div>
+        return <div onClick={this.props.onAccountClick}>
             {(this.state.user.avatarUrl !== "") &&
-            <Avatar onClick={this.props.onAccountClick} src={this.state.user.avatarUrl}/>
+            <Avatar  src={this.state.user.avatarUrl}/>
+            }
+            {(this.state.user.avatarUrl === "") &&
+            <Menu/>
             }
         </div>
     }
