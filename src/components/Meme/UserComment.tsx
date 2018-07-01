@@ -12,7 +12,6 @@ const ReactMarkdown = require('react-markdown')
 export default class UserComment extends Component<{
     comment: MemeComment,
 }, {}> {
-
     render() {
         return <div className="memeCommentContainer">
             <div className="memeCommentContainerLeft">

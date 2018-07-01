@@ -5,7 +5,6 @@ import {Route, BrowserRouter, Switch} from 'react-router-dom'
 import "./App.css"
 
 import Header from "../components/Header/Header";
-import Home from "../containers/Home";
 import Version from "../components/Version/Version";
 import {userNotificationService} from "../service/UserNotificationService";
 import {pwaService} from "../service/mobile/PWAService";
@@ -14,6 +13,7 @@ import {ipfsFileUploadService} from "../service/IPFSFileUploader/IPFSFileUploadS
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {authService} from "../service/generic/AuthService";
+import Home from "../containers/Home";
 
 class App extends React.Component<any,{
     userMessage: {
@@ -75,9 +75,8 @@ class App extends React.Component<any,{
                         <Header/>
                         <div className="fullSpace">
                             <Switch className="fullSpace">
-                                <Route className="fullSpace" path='/index.html' exact component={Home}/>
-                                <Route className="fullSpace" path='/' exact component={Home}/>
-                                <Route className="fullSpace" path='/steem/connect' component={Connect}/>
+                                <Route className="fullSpace" path='/' component={Home}/>
+                                <Route className="fullSpace" exact path='/steem/connect' component={Connect}/>
                                 <Route className="fullSpace" component={Home}/>
                             </Switch>
                         </div>

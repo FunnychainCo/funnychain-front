@@ -29,7 +29,8 @@ import * as moment from 'moment';
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
-import MemeFullDisplay from "./MemeFullDisplay";
+import { Link } from 'react-router-dom';
+import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
 
 
 const styles = theme => ({
@@ -157,11 +158,12 @@ class MemeComponent extends Component<{
 
     render() {
         //const {classes} = this.props;
+        const MemeDisplayLink = (props) => <Link to={"/meme/"+encodeURIComponent(this.state.meme.id)} {...props} />
         return <Card>
             <CardHeader
                 title={this.state.meme.title}
             />
-            <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
+            <ButtonBase className="memeImage" component={MemeDisplayLink}><img className="memeImage" src={this.state.meme.imageUrl} alt=""/></ButtonBase>
             <CardActions className="memeElementStyleDivContainer">
                 <Button variant="outlined"
                         color={this.state.meme.currentUserVoted ? "secondary" : "default"}
@@ -230,19 +232,12 @@ class MemeComponent extends Component<{
                             })
                         }
                         {this.state.commentNumber > this.commentPerPage &&
-                        <Button variant="contained" color="primary" fullWidth size="large" onClick={() => {
-                            this.setState({fullDisplay: true})
-                        }}>
+                        <Button variant="contained" color="primary" fullWidth size="large" component={MemeDisplayLink}>
                             Show more comment
                         </Button>}
                     </div>}
                 </CardContent>
             </Collapse>
-            {this.state.meme != MEME_ENTRY_NO_VALUE &&
-            <MemeFullDisplay meme={this.state.meme} open={this.state.fullDisplay} onRequestClose={() => {
-                this.setState({fullDisplay: false})
-            }}></MemeFullDisplay>
-            }
         </Card>
     }
 

@@ -16,7 +16,7 @@ export interface MemeLoaderInterface {
 }
 
 export interface MemeLinkInterface {
-    on(callback: (memes: Meme) => void): () => void,
+    on(callback: (meme: Meme) => void): () => void,
     refresh():Promise<any>
 }
 
