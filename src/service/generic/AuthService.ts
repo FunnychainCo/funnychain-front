@@ -3,6 +3,7 @@ import {steemAuthService} from "../steem/SteemAuthService";
 import {steemUserService} from "../steem/SteemUserService";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "./UserEntry";
 import * as EventEmitter from "eventemitter3";
+import * as store from 'store';
 
 export interface MailAuthServiceInterface {
     //specific email pasword auth
@@ -37,85 +38,100 @@ export class AuthService implements AuthServiceInterface {
     MODE_STEEM = "STEEM";
     MODE_EMAIL = "EMAIL";
     MODE_UNDEFINDED = "UNDEFINED";
-    mode:string = this.MODE_UNDEFINDED;
+    mode: string = this.MODE_UNDEFINDED;
     AUTH_EVENTNAME = "AuthService.AuthStateChanged";
     eventEmitter = new EventEmitter();
-    private removeAuthListener: () => void = ()=>{};
+    private removeAuthListener: () => void = () => {
+    };
 
-    start(){
-        steemAuthService.start();
-        firebaseAuthService.start();
+    start() {
+        let mode: string = store.get("fc.auth.method") || this.MODE_UNDEFINDED;
+        console.log("auth mode : "+mode);
+        this.switchMode(mode);
     }
 
     changeEmail(newEmail: string): Promise<string> {
-        if(this.mode!=this.MODE_EMAIL){
+        if (this.mode != this.MODE_EMAIL) {
             throw new Error("invalid mode");
         }
         return firebaseAuthService.changeEmail(newEmail);
     }
 
     changePassword(currentPassword: string, newTextValue: string): Promise<string> {
-        if(this.mode!=this.MODE_EMAIL){
+        if (this.mode != this.MODE_EMAIL) {
             throw new Error("invalid mode");
         }
         return firebaseAuthService.changePassword(currentPassword, newTextValue);
     }
 
     resetPassword(email: string): Promise<string> {
-        if(this.mode!=this.MODE_EMAIL){
+        if (this.mode != this.MODE_EMAIL) {
             throw new Error("invalid mode");
         }
         return firebaseAuthService.resetPassword(email);
     }
 
     register(email: string, pw: string): Promise<string> {
-        if(this.mode!=this.MODE_EMAIL){
+        if (this.mode != this.MODE_EMAIL) {
             throw new Error("invalid mode");
         }
         return firebaseAuthService.register(email, pw);
     }
 
     loginEmailPassword(email: string, password: string): Promise<string> {
-        return this.login(this.MODE_EMAIL,JSON.stringify({email:email,password:password}));
+        return this.login(this.MODE_EMAIL, JSON.stringify({email: email, password: password}));
     }
 
-    login(mode:string,authToken: string): Promise<string> {
-        switch (mode){
+    login(mode: string, authToken: string): Promise<string> {
+        this.switchMode(mode);
+        switch (mode) {
             case this.MODE_EMAIL:
-                this.mode = mode;
                 let parse = JSON.parse(authToken);
-                this.removeAuthListener = firebaseAuthService.onAuthStateChanged(userDataReceived => {
-                    if(this.mode==this.MODE_EMAIL) {
-                        this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);
-                    }else{
-                        throw new Error("invalid mode");
-                    }
-                });
                 return firebaseAuthService.login(parse.email, parse.password);
             case this.MODE_STEEM:
-                this.mode = mode;
-                this.removeAuthListener = steemAuthService.onAuthStateChanged(userDataReceived => {
-                    if(this.mode==this.MODE_STEEM) {
-                        this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);
-                    }else{
-                        throw new Error("invalid mode");
-                    }
-                });
                 return steemAuthService.notifyConnexionURL(authToken);
             default:
                 throw new Error("invalid mode");
         }
     }
 
+    switchMode(mode: string) {
+        this.mode = mode;
+        store.set("fc.auth.method", this.mode);
+        this.removeAuthListener();
+        switch (this.mode) {
+            case this.MODE_EMAIL:
+                firebaseAuthService.start();
+                this.removeAuthListener = firebaseAuthService.onAuthStateChanged(userDataReceived => {
+                    if (this.mode == this.MODE_EMAIL) {
+                        this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);
+                    } else {
+                        throw new Error("invalid mode");
+                    }
+                });
+                break;
+            case this.MODE_STEEM:
+                steemAuthService.start();
+                this.removeAuthListener = steemAuthService.onAuthStateChanged(userDataReceived => {
+                    if (this.mode == this.MODE_STEEM) {
+                        this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);
+                    } else {
+                        throw new Error("invalid mode");
+                    }
+                });
+                break;
+        }
+    }
+
     changeDisplayName(newDisplayName: string): Promise<string> {
-        if(this.mode!=this.MODE_EMAIL){
+        if (this.mode != this.MODE_EMAIL) {
             throw new Error("invalid mode");
         }
         return firebaseAuthService.changeDisplayName(newDisplayName);
     }
 
     changeAvatar(newAvatarIid: string): Promise<string> {
-        if(this.mode!=this.MODE_EMAIL){
+        if (this.mode != this.MODE_EMAIL) {
             throw new Error("invalid mode");
         }
         return firebaseAuthService.changeAvatar(newAvatarIid);
@@ -123,23 +139,25 @@ export class AuthService implements AuthServiceInterface {
 
     loadUserData(uid: string): Promise<UserEntry> {
         //TODO this api is stupid and should be in a UserService
-        if(this.mode!=this.MODE_STEEM){
+        if (this.mode != this.MODE_STEEM) {
             return steemUserService.loadUserData(uid);
-        }else if(this.mode!=this.MODE_EMAIL){
+        } else if (this.mode != this.MODE_EMAIL) {
             return firebaseAuthService.loadUserData(uid);
-        }else{
+        } else {
             throw new Error("invalid mode");
         }
     }
 
-    getLoggedUser():Promise<UserEntry> {
-        switch (this.mode){
+    getLoggedUser(): Promise<UserEntry> {
+        switch (this.mode) {
             case this.MODE_EMAIL:
                 return firebaseAuthService.getLoggedUser();
             case this.MODE_STEEM:
                 return steemAuthService.getLoggedUser();
             default:
-                return new Promise<UserEntry>(resolve => {USER_ENTRY_NO_VALUE});
+                return new Promise<UserEntry>(resolve => {
+                    USER_ENTRY_NO_VALUE
+                });
         }
     }
 
@@ -149,7 +167,7 @@ export class AuthService implements AuthServiceInterface {
      * @returns {() => void} A method to unregister this listener
      */
     onAuthStateChanged(callback: (userData: UserEntry) => void): () => void {
-        let wrapedCallback = (userDataReceived: UserEntry)=>{
+        let wrapedCallback = (userDataReceived: UserEntry) => {
             callback(userDataReceived);
         };
         this.eventEmitter.on(this.AUTH_EVENTNAME, wrapedCallback);
@@ -162,22 +180,25 @@ export class AuthService implements AuthServiceInterface {
     }
 
     logout(): Promise<string> {
-        if(this.mode!=this.MODE_STEEM) {
-            return new Promise<string>(resolve => {
-                steemAuthService.logout().then(()=>{
-                    this.removeAuthListener();
-                    this.mode=this.MODE_UNDEFINDED;
+        switch (this.mode) {
+            case this.MODE_STEEM:
+                return new Promise<string>(resolve => {
+                    steemAuthService.logout().then(() => {
+                        this.switchMode(this.MODE_UNDEFINDED);
+                        resolve("ok");
+                    });
                 });
-            });
-        }else if(this.mode!=this.MODE_EMAIL) {
-            return new Promise<string>(resolve => {
-                firebaseAuthService.logout().then(()=>{
-                    this.removeAuthListener();
-                    this.mode=this.MODE_UNDEFINDED;
+                break;
+            case this.MODE_EMAIL:
+                return new Promise<string>(resolve => {
+                    firebaseAuthService.logout().then(() => {
+                        this.switchMode(this.MODE_UNDEFINDED);
+                        resolve("ok");
+                    });
                 });
-            });
-        }else{
-            throw new Error("invalid mode");
+                break;
+            default:
+                throw new Error("invalid mode");
         }
     }
 

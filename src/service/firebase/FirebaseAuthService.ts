@@ -4,7 +4,7 @@ import {firebaseMediaService} from "../firebase/FirebaseMediaService";
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import * as firebase from "firebase";
 import * as EventEmitter from "eventemitter3";
-import {USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
+import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
 
 export interface FireBaseUser {
     uid: string;
@@ -20,13 +20,18 @@ export class FirebaseAuthService {
 
     eventEmitter = new EventEmitter<string>();
     currentUserUid: string = "";
+    started:boolean = false;
 
-    userCache = {};//{uid:userobj}
+    userCache:{ [id: string] : UserEntry; } = {};//{uid:userobj}
 
     constructor() {
     }
 
     start(){
+        if(this.started){
+            return;
+        }
+        this.started=true;
         console.log("Firebase auth service started");
         firebaseInitAuthService.firebaseAuth().onAuthStateChanged((user) => {
             if (user == null) {
@@ -46,7 +51,7 @@ export class FirebaseAuthService {
                 reject("user is null");
                 return;
             }
-            this.userCache[user.uid] = null;//invalidate cache
+            delete this.userCache[user.uid];//invalidate cache
             user.updateEmail(newEmail).then(() => {
                 firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/email')
                     .set(newEmail)
@@ -78,7 +83,7 @@ export class FirebaseAuthService {
     changeDisplayName(newDisplayName: string): Promise<string> {
         return new Promise((resolve, reject) => {
             let user: any = firebase.auth().currentUser;
-            this.userCache[user.uid] = null;//invalidate cache
+            delete this.userCache[user.uid];//invalidate cache
             firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/displayName')
                 .set(newDisplayName)
                 .then(() => {
@@ -91,7 +96,7 @@ export class FirebaseAuthService {
     changeAvatar(newAvatarIid: string): Promise<string> {
         return new Promise((resolve, reject) => {
             let user: any = firebase.auth().currentUser;
-            this.userCache[user.uid] = null;//invalidate cache
+            delete this.userCache[user.uid];//invalidate cache
             firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
                 .set(newAvatarIid)
                 .then(() => {
@@ -145,13 +150,19 @@ export class FirebaseAuthService {
                 resolve(this.userCache[uid]);//continue to update user
             }
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
-                let userData = user.val();
-                if (userData == null) {
+                let fireBaseUser = user.val();
+                if (fireBaseUser == null) {
                     reject("");
                     return;
                 }
-                firebaseMediaService.loadMediaEntry(userData.avatarIid).then((avatar) => {
-                    userData.avatar = avatar;
+                firebaseMediaService.loadMediaEntry(fireBaseUser.avatarIid).then((avatar) => {
+                    let userData:UserEntry={
+                        avatarUrl: avatar.url,
+                        email: fireBaseUser.email,
+                        provider: PROVIDER_FIREBASE_MAIL,
+                        displayName : fireBaseUser.displayName,
+                        uid : fireBaseUser.uid,
+                    };
                     this.userCache[uid] = userData;
                     resolve(userData);
                 });
@@ -181,7 +192,7 @@ export class FirebaseAuthService {
                         resolve("ok");
                     }
                 });
-                console.log("logged : ", user);
+                //console.log("logged : ", user);
             }).catch(error => {
                 reject(error);
             });

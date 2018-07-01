@@ -13,7 +13,7 @@ import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 
-export default class Account extends Component<any, any> {
+export default class AvatarAccountManagement extends Component<any, any> {
     state = {
         user: {
             uid: "",
@@ -48,7 +48,6 @@ export default class Account extends Component<any, any> {
                 });
             } else {
                 this.userId = user.uid;
-                console.log(user);
                 this.setState({
                     user: user,
                     loading: false

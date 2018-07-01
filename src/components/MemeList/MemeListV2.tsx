@@ -4,7 +4,6 @@ import MemeComponent from '../Meme/MemeComponent';
 import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import * as React from "react";
 import {Component} from "react";
-import Divider from "@material-ui/core/Divider/Divider";
 import {MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
 import Waypoint from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
@@ -23,7 +22,8 @@ export default class MemeListV2 extends Component<any, State> {
         displayWaypoint: true
     };
 
-    private removeCallback: (() => void) = () => {};
+    private removeCallback: (() => void) = () => {
+    };
 
     private memeLoader: MemeLoaderInterface;
 
@@ -34,10 +34,10 @@ export default class MemeListV2 extends Component<any, State> {
         });
     }
 
-    updateMemeLoader(type:string,tags:string[]){
+    updateMemeLoader(type: string, tags: string[]) {
         this.memeLoader = memeService.getMemeLoader(type, tags);
         this.removeCallback();
-        this.setState({memes:{}});//reset view
+        this.setState({memes: {}});//reset view
         this.removeCallback = this.memeLoader.on((memes: Meme[]) => {
             memes.forEach((meme: Meme) => {
                 this.state.memes[meme.id] = meme;
@@ -64,11 +64,14 @@ export default class MemeListV2 extends Component<any, State> {
         return keys;
     }
 
-    renderWaypoint = () => {
+    renderWaypoint = (key) => {
+        console.log("create waypoint");
         if (this.state.displayWaypoint) {
             return (
                 <Waypoint
+                    key = {"waypoint"+key}
                     onEnter={() => {
+                        console.log("waypoint triggered");
                         this.memeLoader.loadMore(4);
                     }}
                 />
@@ -92,14 +95,13 @@ export default class MemeListV2 extends Component<any, State> {
                             }
                             return <div key={key}>
                                 <MemeComponent key={key} meme={this.state.memes[key]}/>
-                                <Divider/>
                                 {index == array.length - 2 &&
-                                this.renderWaypoint()
+                                this.renderWaypoint(key)
                                 }
                             </div>
                         })
                     }
-                    <LoadingBlock />
+                    <LoadingBlock/>
                     <CreateMemeDialogFab/>
                 </div>
             </div>

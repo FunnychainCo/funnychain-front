@@ -4,6 +4,7 @@ import * as EventEmitter from "eventemitter3";
 import * as Q from "q";
 import {getAuthorAndPermalink, loadUserAvatar, markdownImageLink} from "./SteemUtils";
 import {steemAuthService} from "./SteemAuthService";
+import {PROVIDER_STEEM} from "../generic/UserEntry";
 
 export class SteemCommentService implements CommentServiceInterface {
 
@@ -86,6 +87,8 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                                 let memeComment: MemeComment = {
                                     author: {
                                         uid: comment.author,
+                                        provider:PROVIDER_STEEM,
+                                        email:"",
                                         displayName: comment.author,
                                         avatarUrl: avatarUrl
                                     },

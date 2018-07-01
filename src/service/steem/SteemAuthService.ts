@@ -82,7 +82,6 @@ export class SteemAuthService implements AuthServiceInterface {
         if (this._sc2Api != null && this.steemToken!=STEEM_TOKEN_NO_VALUE) {
             //check validity of token
             this._sc2Api.me((err, res) => {
-                console.log(res)
                 if (res) {
                     steemUserService.loadUserData(this.steemToken.username).then((data) => {
                         this._currentUser = data;//update cache
@@ -122,6 +121,7 @@ export class SteemAuthService implements AuthServiceInterface {
     }
 
     getLoginURL() {
+        this.start();
         return this._sc2Api.getLoginURL();
         //will get after login => http://localhost:3000/steem/connect/?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXBwIiwicHJveHkiOiJmdW5ueWNoYWluLmFwcCIsInVzZXIiOiJwaWVycmVoMzciLCJzY29wZSI6WyJ2b3RlIiwiY29tbWVudCJdLCJpYXQiOjE1MjYzMzM3MjEsImV4cCI6MTUyNjkzODUyMX0.j-ouFShCHqKqu0-KoTzzoUZziWzU_czh7mbED9jYmgg&expires_in=604800&username=pierreh37
     }

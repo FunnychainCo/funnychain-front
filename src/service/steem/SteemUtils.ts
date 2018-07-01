@@ -3,6 +3,7 @@ import * as dsteem from "dsteem";
 import {SteemVote} from "./SteemType";
 import {steemAuthService} from "./SteemAuthService";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../generic/Meme";
+import {PROVIDER_STEEM} from "../generic/UserEntry";
 
 export function loadUserAvatar(user: string): Promise<string> {
     /*return new Promise<string>((resolve, reject) => {
@@ -60,6 +61,8 @@ export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): 
                     dolarValue: Number(steemPost.pending_payout_value.toString().replace(" SBD", "")),
                     user: {
                         uid: steemPost.author,
+                        provider: PROVIDER_STEEM,
+                        email:"",
                         displayName: steemPost.author,
                         avatarUrl: avatarUrl
                     },
@@ -67,6 +70,9 @@ export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): 
                     order: orderNumber
                 };
                 resolve(newMeme);
+            }).catch(reason => {
+                resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                console.error(reason);//preload failed
             });
         })).catch(reason => {
             resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work

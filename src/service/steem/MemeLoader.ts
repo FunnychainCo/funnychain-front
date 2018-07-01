@@ -36,16 +36,17 @@ export class MemeLoader implements MemeLoaderInterface {
     }
 
 
-
-    loadMoreRec(limit:number,totalLoaded:number,actuallyLoaded: number){
+    loadMoreRec(limit: number, totalLoaded: number, actuallyLoaded: number) {
         totalLoaded += actuallyLoaded;
         if (limit - totalLoaded > 0)
-            this.loadMoreInternal(limit - totalLoaded).then((actuallyLoaded)=> {this.loadMoreRec(limit,totalLoaded,actuallyLoaded)});
+            this.loadMoreInternal(limit - totalLoaded).then((actuallyLoaded) => {
+                this.loadMoreRec(limit, totalLoaded, actuallyLoaded)
+            });
     }
 
     loadMore(limit: number): void {
         let totalLoaded = 0;
-        this.loadMoreRec(limit,totalLoaded,0);
+        this.loadMoreRec(limit, totalLoaded, 0);
     }
 
     loadMoreInternal(limit: number): Promise<number> {
@@ -91,7 +92,7 @@ export class MemeLoader implements MemeLoaderInterface {
                         return;
                     }*/
                     //create a promise and load
-                    let promise = convertMeme(steemPost,this.orderNumber);
+                    let promise = convertMeme(steemPost, this.orderNumber);
                     memesPromise.push(promise);
                 });
                 Q.all(memesPromise).then(memesData => {

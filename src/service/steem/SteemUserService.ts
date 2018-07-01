@@ -1,5 +1,5 @@
 import {UserServiceInterface} from "../generic/ApplicationInterface";
-import {UserEntry} from "../generic/UserEntry";
+import {PROVIDER_STEEM, UserEntry} from "../generic/UserEntry";
 import {loadUserAvatar} from "./SteemUtils";
 
 export class SteemUserService implements UserServiceInterface {
@@ -9,6 +9,8 @@ export class SteemUserService implements UserServiceInterface {
             loadUserAvatar(uid).then((avatarUrl) => {
                 resolve({
                     uid: uid,
+                    provider:PROVIDER_STEEM,
+                    email:"",
                     displayName: uid,
                     avatarUrl: avatarUrl
                 });

@@ -16,6 +16,7 @@
 .fcLeftAlignContainer{
     overflow: auto;
     display: flex;
+    flex-direction: column;
     justify-content: left;
 }
 

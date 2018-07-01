@@ -14,6 +14,7 @@ import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {authService} from "../service/generic/AuthService";
 import Home from "../containers/Home";
+import Debug from "../containers/Debug";
 
 class App extends React.Component<any,{
     userMessage: {
@@ -75,8 +76,9 @@ class App extends React.Component<any,{
                         <Header/>
                         <div className="fullSpace">
                             <Switch className="fullSpace">
+                                <Route className="fullSpace" path='/steem/connect' component={Connect}/>
+                                <Route className="fullSpace" exact path='/debug' component={Debug}/>
                                 <Route className="fullSpace" path='/' component={Home}/>
-                                <Route className="fullSpace" exact path='/steem/connect' component={Connect}/>
                                 <Route className="fullSpace" component={Home}/>
                             </Switch>
                         </div>

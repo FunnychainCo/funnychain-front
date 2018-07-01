@@ -12,16 +12,16 @@ import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import TextField from "@material-ui/core/TextField/TextField";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
-import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
+import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 
-export default class Account extends Component<any,any> {
+export default class EmailAccountManagement extends Component<{}, {
+    user:UserEntry,
+    loading:boolean,
+    displayAddToHomeButton:boolean,
+    dialog:any,
+}> {
     state = {
-        user: {
-            uid:"",
-            displayName:"",
-            avatarUrl:"",
-            email:""
-        },
+        user: USER_ENTRY_NO_VALUE,
         loading: true,
         displayAddToHomeButton: false,
         dialog: {
@@ -32,16 +32,16 @@ export default class Account extends Component<any,any> {
         }
     };
 
-    dialogValue:string = "";
-    dialogValueCurrentPassword:string = "";
-    userId:string = "";
-    iid:string = "";
+    dialogValue: string = "";
+    dialogValueCurrentPassword: string = "";
+    userId: string = "";
+    iid: string = "";
     private removeListener: () => void;
     private removeListenerPWA: any;
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
-            if (user==USER_ENTRY_NO_VALUE) {
+            if (user == USER_ENTRY_NO_VALUE) {
                 this.setState({
                     dialog: {
                         user: {},
@@ -164,15 +164,10 @@ export default class Account extends Component<any,any> {
 
     render() {
         return (
-            <div className="fcLeftAlignContainer">
-                <div className="fcContent">
-                    <Button onClick={this.openChangeDisplayName}
-                    ><ModeEdit/>{this.state.user.displayName}</Button><br/>
-                    <Button onClick={this.openChangeEmail}
-                    ><ModeEdit/>{this.state.user.email}</Button><br/>
-                    <Button onClick={this.openChangePassword}
-                    ><VpnKey/>Change password</Button><br/>
-                </div>
+            <div className="fcContent">
+                <Button onClick={this.openChangeDisplayName}><ModeEdit/>{this.state.user.displayName}</Button><br/>
+                <Button onClick={this.openChangeEmail}><ModeEdit/>{this.state.user.email}</Button><br/>
+                <Button onClick={this.openChangePassword}><VpnKey/>Change password</Button><br/>
                 <ModalPage
                     open={this.state.dialog.open}
                     onRequestClose={this.handleClose}

@@ -17,7 +17,7 @@ import Tab from "@material-ui/core/Tab/Tab";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import LoginRegisterDialog from "../LoginDialog/LoginRegisterDialog";
 
-const styles = theme =>({
+const styles = theme => ({
     root: {
         flexGrow: 1,
     },
@@ -28,38 +28,38 @@ const styles = theme =>({
         marginLeft: -12,
         marginRight: 20,
     },
-    feedButton:{
-        color:"white"
+    feedButton: {
+        color: "white"
     },
-    headerSpacing:{
-        paddingRight:"20px"
+    headerSpacing: {
+        paddingRight: "20px"
     },
-    tabsStyle:{
+    tabsStyle: {
         backgroundColor: theme.palette.background.paper
     }
 });
 
-class Header extends Component<any,{
+class Header extends Component<any, {
     logged: boolean,
     dialogLogin: boolean,
     dialogRegister: boolean,
-    drawerOpen:boolean,
-    currentSelected:number//trending
+    drawerOpen: boolean,
+    currentSelected: number//trending
 }> {
     state = {
         logged: false,
         dialogLogin: false,
         dialogRegister: false,
-        drawerOpen:false,
-        currentSelected:1//trending
+        drawerOpen: false,
+        currentSelected: 1//trending
     };
     private removeListener: () => void;
-    itemOrder = {"hot":0,"trending":1,"fresh":2};
+    itemOrder = {"hot": 0, "trending": 1, "fresh": 2};
 
     componentDidMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({
-                logged: user!=USER_ENTRY_NO_VALUE ? true : false
+                logged: user !== USER_ENTRY_NO_VALUE ? true : false
             });
         });
         memeListController.applyCat(Object.keys(this.itemOrder)[this.state.currentSelected]);
@@ -81,44 +81,49 @@ class Header extends Component<any,{
         this.setState({dialogRegister: true});
     };
 
-    handleFeedButton(feed:number){
-        this.setState({currentSelected:feed});
+    handleFeedButton(feed: number) {
+        this.setState({currentSelected: feed});
         memeListController.applyCat(Object.keys(this.itemOrder)[feed]);
     }
 
     render() {
-        const { classes } = this.props;
+        const {classes} = this.props;
         return (
             <AppBar position="static">
                 <Toolbar>
-                    <img style={{maxHeight:"40px",paddingRight:"7px"}} src="/android-chrome-192x192.png" alt="logo"/>
+                    <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png" alt="logo"/>
                     <Typography variant="title" color="inherit" className={classes.flex}>
                         <Tabs
                             value={this.state.currentSelected}
-                            onChange={ (event, value) => {
+                            onChange={(event, value) => {
                                 this.handleFeedButton(value);
                             }}
                             indicatorColor="primary"
                         >
-                            <Tab label="Hot" style={{minWidth:'30px'}}/>
-                            <Tab label="Trending" style={{minWidth:'30px'}}/>
-                            <Tab label="Fresh" style={{minWidth:'30px'}}/>
+                            <Tab label="Hot" style={{minWidth: '30px'}}/>
+                            <Tab label="Trending" style={{minWidth: '30px'}}/>
+                            <Tab label="Fresh" style={{minWidth: '30px'}}/>
                         </Tabs>
                     </Typography>
                     <div>
-                    {this.state.logged ?
-                        <Logged onAccountClick={()=>{this.setState({drawerOpen:true})}}/> :
-                        <NotLogged
-                            onDialogLogin={this.openDialogLogin}
-                            onDialogRegister={this.openDialogRegister}
-                        />}
+                        {this.state.logged ?
+                            <Logged onAccountClick={() => {
+                                this.setState({drawerOpen: true})
+                            }}/> :
+                            <NotLogged
+                                onDialogLogin={this.openDialogLogin}
+                                onDialogRegister={this.openDialogRegister}
+                            />}
                     </div>
                 </Toolbar>
-                <LoginRegisterDialog open={this.state.dialogLogin} onRequestClose={() => this.setState({dialogLogin: false})}/>
+                <LoginRegisterDialog open={this.state.dialogLogin}
+                                     onRequestClose={() => this.setState({dialogLogin: false})}/>
                 <UserPasswordRegisterDialog open={this.state.dialogRegister}
                                             onRequestClose={() => this.setState({dialogRegister: false})}/>
                 <AccountDrawer open={this.state.drawerOpen}
-                               onRequestChange={(open)=>{this.setState({drawerOpen:open})}}/>
+                               onRequestChange={(open) => {
+                                   this.setState({drawerOpen: open})
+                               }}/>
             </AppBar>
         )
     }
