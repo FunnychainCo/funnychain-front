@@ -143,6 +143,7 @@ class MemeComponent extends Component<{
         if (this.state.displayWaypoint) {
             return (
                 <Waypoint
+                    scrollableAncestor={window}
                     onEnter={() => {
                         console.log("loadmore comment");
                         this.commentVisitor.loadMore(10);

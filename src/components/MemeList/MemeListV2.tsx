@@ -65,16 +65,19 @@ export default class MemeListV2 extends Component<any, State> {
     }
 
     renderWaypoint = (key) => {
-        console.log("create waypoint");
+        //console.log("create waypoint "+key + " => "+this.state.memes[key].title);
+        //<div style={{minHeight:"100px",backgroundColor:"red"}}></div>
         if (this.state.displayWaypoint) {
             return (
                 <Waypoint
                     key = {"waypoint"+key}
+                    scrollableAncestor={window}
                     onEnter={() => {
-                        console.log("waypoint triggered");
+                        console.log("waypoint triggered => load more");
                         this.memeLoader.loadMore(4);
                     }}
-                />
+                >
+                </Waypoint>
             );
         }
         return <div></div>
@@ -95,7 +98,7 @@ export default class MemeListV2 extends Component<any, State> {
                             }
                             return <div key={key}>
                                 <MemeComponent key={key} meme={this.state.memes[key]}/>
-                                {index == array.length - 2 &&
+                                {((index == array.length - 4) || (index == 0)) &&
                                 this.renderWaypoint(key)
                                 }
                             </div>
