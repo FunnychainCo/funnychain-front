@@ -1,13 +1,15 @@
-import {MemeLoaderInterface} from "../generic/ApplicationInterface";
+import {MemeLinkInterface, MemeLoaderInterface} from "../generic/ApplicationInterface";
 import * as dsteem from "dsteem";
 import {convertMeme, getAuthorAndPermalink} from "./generic/SteemUtils";
 import {steemConnectAuthService} from "./steemConnect/SteemConnectAuthService";
 import * as EventEmitter from "eventemitter3";
 import * as Q from "q";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../generic/Meme";
+import {MemeLink} from "./MemeLink";
 
 export class MemeLoader implements MemeLoaderInterface {
     lastPostUrl: string = "";
+    readonly EVENT_ON_MEME = "onMeme";
     eventEmitter = new EventEmitter();
     type: string;
     tags: string[];
@@ -23,15 +25,15 @@ export class MemeLoader implements MemeLoaderInterface {
     }
 
 //id is url
-    on(callback: (memes: Meme[]) => void): () => void {
+    on(callback: (memes: MemeLinkInterface[]) => void): () => void {
         //https://www.npmjs.com/package/steem
         //https://jsfiddle.net/bonustrack/84dmnoLj/3/
         //https://github.com/Stormrose/steem-js/blob/444decdd182a136d066c0e0fd9ac81be974bdc88/doc/README.md
         //https://steemit.com/steemjs/@morning/steem-api-guide-how-to-get-recent-posts-getdiscussionsbycreated-load-more-and-pagination
 
-        this.eventEmitter.on("onMeme", callback);
+        this.eventEmitter.on(this.EVENT_ON_MEME, callback);
         return () => {
-            this.eventEmitter.off("onMeme", callback);
+            this.eventEmitter.off(this.EVENT_ON_MEME, callback);
         };
     }
 
@@ -96,10 +98,16 @@ export class MemeLoader implements MemeLoaderInterface {
                     memesPromise.push(promise);
                 });
                 Q.all(memesPromise).then(memesData => {
-                    memesData = memesData.filter(value => {
+                    memesData = memesData.filter((value:Meme) => {
                         return value != MEME_ENTRY_NO_VALUE;//remove invalid meme
                     });
-                    this.eventEmitter.emit("onMeme", memesData);
+                    let memeLinkData:MemeLinkInterface[] = [];
+                    memesData.forEach((value:Meme) => {
+                        let memeLink = new MemeLink(value.id,value.order);
+                        memeLink.setMeme(value);
+                        memeLinkData.push(memeLink);
+                    });
+                    this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
                     resolve(memesData.length);
                 });
             });

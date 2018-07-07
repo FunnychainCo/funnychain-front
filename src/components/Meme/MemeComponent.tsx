@@ -3,7 +3,6 @@ import {Component} from 'react'
 import "./Meme.css"
 import {
     CommentsVisitor,
-    MemeComment,
     MemeLinkInterface
 } from "../../service/generic/ApplicationInterface";
 import * as React from 'react';
@@ -19,8 +18,6 @@ import Button from "@material-ui/core/Button/Button";
 import Collapse from "@material-ui/core/Collapse/Collapse";
 import CardContent from "@material-ui/core/CardContent/CardContent";
 import withStyles from "@material-ui/core/styles/withStyles";
-import {commentService} from "../../service/generic/CommentService";
-import {memeService} from "../../service/generic/MemeService";
 import {authService} from "../../service/generic/AuthService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import TextField from "@material-ui/core/TextField/TextField";
@@ -31,6 +28,7 @@ import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
 import { Link } from 'react-router-dom';
 import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
+import {MemeComment} from "../../service/generic/MemeComment";
 
 
 const styles = theme => ({
@@ -48,10 +46,7 @@ const styles = theme => ({
     }
 });
 
-class MemeComponent extends Component<{
-    meme: Meme,
-    classes: any
-}, {
+interface State {
     meme: Meme,
     expanded: boolean,
     comments: MemeComment[],
@@ -60,8 +55,13 @@ class MemeComponent extends Component<{
     loadingComment: boolean,
     commentNumber: number,
     fullDisplay: boolean,
-}> {
-    state = {
+}
+
+class MemeComponent extends Component<{
+    meme: MemeLinkInterface,
+    classes: any
+},State > {
+    state:State = {
         meme: MEME_ENTRY_NO_VALUE,
         expanded: false,
         comments: [],
@@ -78,11 +78,7 @@ class MemeComponent extends Component<{
     private memeLink: MemeLinkInterface;
 
     componentDidMount() {
-        let meme = this.props.meme;
-        if (meme === MEME_ENTRY_NO_VALUE) {
-            throw new Error();
-        }
-        this.memeLink = memeService.getMemeLink(meme.id);
+        this.memeLink = this.props.meme;
         this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({
                 logged: user != USER_ENTRY_NO_VALUE ? true : false
@@ -96,11 +92,7 @@ class MemeComponent extends Component<{
                 meme: meme
             });
         });
-        this.setState({
-            commentNumber: meme.commentNumber,
-            meme: meme
-        });
-        this.commentVisitor = commentService.getCommentVisitor(meme.id);
+        this.commentVisitor = this.memeLink.getCommentVisitor();
         this.commentVisitor.on((comments: MemeComment[]) => {
             let concat = comments.concat(this.state.comments);
             this.setState({comments: concat, loadingComment: false});

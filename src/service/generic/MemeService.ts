@@ -13,8 +13,8 @@ export class MemeService implements MemeServiceInterface {
         return steemMemeService.getMemeLoader(type,tags);
     }
 
-    getMemeLink(id: string): MemeLinkInterface {
-        return steemMemeService.getMemeLink(id);
+    getMemeLink(id: string,order:number): MemeLinkInterface {
+        return steemMemeService.getMemeLink(id,order);
     }
 
 }

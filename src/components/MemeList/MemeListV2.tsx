@@ -4,20 +4,19 @@ import MemeComponent from '../Meme/MemeComponent';
 import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import * as React from "react";
 import {Component} from "react";
-import {MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
+import {MemeLinkInterface, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
 import Waypoint from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {memeListController} from "./MemeListController";
-import {Meme} from "../../service/generic/Meme";
 
 
 interface State {
-    memes: { [id: string]: Meme },
+    memes: { [id: string]: MemeLinkInterface },
     displayWaypoint: boolean
 }
 
 export default class MemeListV2 extends Component<any, State> {
-    state = {
+    state:State = {
         memes: {},
         displayWaypoint: true
     };
@@ -38,8 +37,8 @@ export default class MemeListV2 extends Component<any, State> {
         this.memeLoader = memeService.getMemeLoader(type, tags);
         this.removeCallback();
         this.setState({memes: {}});//reset view
-        this.removeCallback = this.memeLoader.on((memes: Meme[]) => {
-            memes.forEach((meme: Meme) => {
+        this.removeCallback = this.memeLoader.on((memes: MemeLinkInterface[]) => {
+            memes.forEach((meme: MemeLinkInterface) => {
                 this.state.memes[meme.id] = meme;
             });
             this.forceUpdate();
@@ -90,12 +89,6 @@ export default class MemeListV2 extends Component<any, State> {
                     {
                         this.getKeyList().map((value, index, array) => {
                             let key = value;
-                            if (this.state.memes[key].title === null || this.state.memes[key].title === "") {
-                                return <div key={key}></div>
-                            }
-                            if (this.state.memes[key].imageUrl === null || this.state.memes[key].imageUrl === "") {
-                                return <div key={key}></div>
-                            }
                             return <div key={key}>
                                 <MemeComponent key={key} meme={this.state.memes[key]}/>
                                 {((index == array.length - 4) || (index == 0)) &&

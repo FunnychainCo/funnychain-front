@@ -1,4 +1,4 @@
-import {CommentServiceInterface, CommentsVisitor, MemeComment} from "../generic/ApplicationInterface";
+import {CommentServiceInterface, CommentsVisitor} from "../generic/ApplicationInterface";
 import * as dsteem from 'dsteem';
 import * as EventEmitter from "eventemitter3";
 import * as Q from "q";
@@ -8,6 +8,7 @@ import {
     preloadImageWithFallBackURL
 } from "./generic/SteemUtils";
 import {PROVIDER_STEEM} from "../generic/UserEntry";
+import {MEME_COMMENT_NO_VALUE, MemeComment} from "../generic/MemeComment";
 
 export class SteemCommentService implements CommentServiceInterface {
 
@@ -41,7 +42,7 @@ export class SteemCommentsVisitor implements CommentsVisitor {
             this.emitter.off("onNewComment" + this.id, callback);
         };
     }
-
+    
     getAllComment(): Promise<MemeComment[]> {
         if (this.allDataLoaded) {
             return new Promise<MemeComment[]>(resolve => {
@@ -54,12 +55,17 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                 this.dSteemClient.database.call('get_content_replies', [this.author, this.permalink]).then((results:dsteem.Discussion[]) => {
                     ///dmania/@sanmi/the-real-meaning-of-followerspeople-still-celebratei-feel-we-need-an-auto-unfollow-mechanism-zg1hbmlh-9omhu
                     results.forEach((comment: dsteem.Discussion) => {
-                        memesComments.push(new Promise<MemeComment>((resolve, reject) => {
+                        memesComments.push(new Promise<MemeComment>((resolve) => {
                             let avatarURL = getAvatarURLFromSteemUserAccount(comment.author);
-                            let jsonMetaData:any = JSON.parse(comment.json_metadata);
-                            if(jsonMetaData.delegatedOwner !== undefined){
-                                comment.author = jsonMetaData.delegatedOwner.name;
-                                avatarURL = jsonMetaData.delegatedOwner.url;
+                            try {
+                                let jsonMetaData: any = JSON.parse(comment.json_metadata);
+                                if (jsonMetaData.delegatedOwner !== undefined) {
+                                    comment.author = jsonMetaData.delegatedOwner.name;
+                                    avatarURL = jsonMetaData.delegatedOwner.url;
+                                }
+                            }catch (e) {
+                                console.error(e);
+                                //continue
                             }
                             preloadImageWithFallBackURL(avatarURL).then((avatarUrl => {
                                 //let flagged = comment.author_reputation < 15; //TODO reactivate that
@@ -78,10 +84,16 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                                     flagged: flagged
                                 };
                                 resolve(memeComment);
-                            }));
+                            })).catch(reason => {
+                                console.error(reason);
+                                resolve(MEME_COMMENT_NO_VALUE);
+                            });
                         }));
                     });
                     Q.all(memesComments).then(comments => {
+                        comments = comments.filter((value:MemeComment) => {
+                            return value != MEME_COMMENT_NO_VALUE;//remove invalid meme
+                        });
                         this.allComments = comments;
                         this.allDataLoaded = true;
                         resolve(this.allComments);

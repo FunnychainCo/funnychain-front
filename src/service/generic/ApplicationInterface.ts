@@ -1,27 +1,19 @@
 import {UserEntry} from "./UserEntry";
 import {Meme} from "./Meme";
+import {MemeComment} from "./MemeComment";
 
-/**
- * MEME SERVICE
- */
-
-export interface MemeComment {
-    id: string,
-    parentId: string,
-    author: UserEntry,
-    text: string,
-    flagged : boolean
+export interface MemeLinkInterface {
+    id:string,
+    order:number,
+    on(callback: (meme: Meme) => void): () => void,
+    refresh():Promise<any>
+    getCommentVisitor():CommentsVisitor
 }
 
 export interface MemeLoaderInterface {
-    on(callback: (memes: Meme[]) => void): () => void,
+    on(callback: (memes: MemeLinkInterface[]) => void): () => void,
     loadMore(limit:number),
     refresh()
-}
-
-export interface MemeLinkInterface {
-    on(callback: (meme: Meme) => void): () => void,
-    refresh():Promise<any>
 }
 
 export interface MemeServiceAction {

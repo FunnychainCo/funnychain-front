@@ -9,9 +9,12 @@ export class SteemMemeService implements MemeServiceInterface {
         return new MemeLoader(type, tags);
     }
 
-    getMemeLink(id: string): MemeLinkInterface {
+    getMemeLink(id: string,order:number): MemeLinkInterface {
         if (this.memeLinkChache[id] == undefined) {
-            this.memeLinkChache[id] = new MemeLink(id);
+            this.memeLinkChache[id] = new MemeLink(id,order);
+        }
+        if(this.memeLinkChache[id].order===NaN){
+            this.memeLinkChache[id].order = order;
         }
         return this.memeLinkChache[id];
     }

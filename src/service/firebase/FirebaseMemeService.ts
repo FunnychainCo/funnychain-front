@@ -1,11 +1,17 @@
 import * as firebase from 'firebase';
 import {idService} from "../IdService";
-import {CommentsVisitor, MemeLoaderInterface, MemeServiceInterface} from "../generic/ApplicationInterface";
+import {
+    CommentsVisitor,
+    MemeLinkInterface,
+    MemeLoaderInterface,
+    MemeServiceInterface
+} from "../generic/ApplicationInterface";
 import {authService} from "../generic/AuthService";
 import * as Q from 'q';
 import {firebaseMediaService} from "./FirebaseMediaService";
 import {UserEntry} from "../generic/UserEntry";
 import {Meme} from "../generic/Meme";
+import {MemeLink} from "../steem/MemeLink";
 
 export interface FirebaseMeme {
     title: string,
@@ -142,7 +148,7 @@ class MemeLoader implements MemeLoaderInterface{
         };
     }
 
-    on(callback: (memes: Meme[]) => void): () => void {
+    on(callback: (memes: MemeLinkInterface[]) => void): () => void {
         return firebaseMemeService.onFirebaseItemOnly(memes => {
             let memesPromise: Promise<Meme>[] = [];
             Object.keys(memes).forEach(key => {
@@ -172,7 +178,13 @@ class MemeLoader implements MemeLoaderInterface{
                 }));
             });
             Q.all(memesPromise).then(memes => {
-                callback(memes);
+                let memeLinkData:MemeLinkInterface[] = [];
+                memes.forEach((value:Meme) => {
+                    let memeLink = new MemeLink(value.id,value.order);
+                    memeLink.setMeme(value);
+                    memeLinkData.push(memeLink);
+                });
+                callback(memeLinkData);
             });
         });
     }
