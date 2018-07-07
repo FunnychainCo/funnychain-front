@@ -165,9 +165,9 @@ export default class EmailAccountManagement extends Component<{}, {
     render() {
         return (
             <div className="fcContent">
-                <Button onClick={this.openChangeDisplayName}><ModeEdit/>{this.state.user.displayName}</Button><br/>
-                <Button onClick={this.openChangeEmail}><ModeEdit/>{this.state.user.email}</Button><br/>
-                <Button onClick={this.openChangePassword}><VpnKey/>Change password</Button><br/>
+                <Button onClick={this.openChangeDisplayName}><ModeEdit/>&nbsp;&nbsp;{this.state.user.displayName}</Button><br/>
+                <Button onClick={this.openChangeEmail}><ModeEdit/>&nbsp;&nbsp;{this.state.user.email}</Button><br/>
+                <Button onClick={this.openChangePassword}><VpnKey/>&nbsp;&nbsp;Change password</Button><br/>
                 <ModalPage
                     open={this.state.dialog.open}
                     onRequestClose={this.handleClose}

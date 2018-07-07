@@ -1,7 +1,7 @@
 import {Component} from 'react';
 import * as React from 'react';
 import ModalPage from "../ModalPage/ModalPage";
-import {steemAuthService} from "../../service/steem/SteemAuthService";
+import {steemConnectAuthService} from "../../service/steem/steemConnect/SteemConnectAuthService";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import Button from "@material-ui/core/Button/Button";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
@@ -21,7 +21,7 @@ export default class SteemLoginDialog extends Component<any,any> {
     };
 
     handleSubmit = () => {
-        window.location.href = steemAuthService.getLoginURL();
+        window.location.href = steemConnectAuthService.getLoginURL();
     };
 
     render() {

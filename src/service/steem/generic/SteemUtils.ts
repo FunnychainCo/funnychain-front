@@ -1,9 +1,24 @@
-import {preLoadImage} from "../ImageUtil";
+import {preLoadImage} from "../../ImageUtil";
 import * as dsteem from "dsteem";
-import {SteemVote} from "./SteemType";
-import {steemAuthService} from "./SteemAuthService";
-import {Meme, MEME_ENTRY_NO_VALUE} from "../generic/Meme";
-import {PROVIDER_STEEM} from "../generic/UserEntry";
+import {SteemVote} from "../SteemType";
+import {steemConnectAuthService} from "../steemConnect/SteemConnectAuthService";
+import {Meme, MEME_ENTRY_NO_VALUE} from "../../generic/Meme";
+import {PROVIDER_STEEM} from "../../generic/UserEntry";
+import {idService} from "../../IdService";
+
+export function getAvatarURLFromSteemUserAccount(steemUserAccount: string): string {
+    return "https://steemitimages.com/u/" + steemUserAccount + "/avatar";
+}
+
+export function preloadImageWithFallBackURL(url: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+        preLoadImage(url).then(value => {
+            resolve(value);
+        }).catch(reason => {
+            resolve("https://avatar.admin.rphstudio.net/avatar/avatars/avatar-067.jpeg");//default avatar //TODO use ipfs link
+        });
+    });
+}
 
 export function loadUserAvatar(user: string): Promise<string> {
     /*return new Promise<string>((resolve, reject) => {
@@ -24,9 +39,15 @@ export function loadUserAvatar(user: string): Promise<string> {
 
 export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): Promise<Meme> {
     let promise = new Promise<Meme>((resolve, reject) => {
-        loadUserAvatar(steemPost.author).then((avatarUrl => {
+        let avatarURL = getAvatarURLFromSteemUserAccount(steemPost.author);
+        let jsonMetaData:any = JSON.parse(steemPost.json_metadata);
+        if(jsonMetaData.delegatedOwner !== undefined){
+            steemPost.author = jsonMetaData.delegatedOwner.name;
+            avatarURL = jsonMetaData.delegatedOwner.url;
+        }
+        preloadImageWithFallBackURL(avatarURL).then((avatarUrl => {
             let currentUserVoted = false;
-            let currentUser = steemAuthService.currentUser.uid;
+            let currentUser = steemConnectAuthService.currentUser.uid;
             //user can be "" in case user is not authed
             steemPost.active_votes.forEach((vote: SteemVote) => {
                 if (vote.voter === currentUser) {
@@ -102,4 +123,16 @@ export function markdownImageLink(text: string): string {
     }
     let isImgUrl = /https?:\/\/.*?\.(?:png|jpg|jpeg|gif)/ig;
     return text.replace(isImgUrl, '\n![img]($&)\n');
+}
+
+export function replaceAll(target, search, replacement) {
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
+export function makePermalinkFromTitle(title: string): string {
+    title = title.toLowerCase();
+    title = replaceAll(title,/[^a-zA-Z]/, "2");
+    title = title.replace(new RegExp(/[^\w\s]|(2)(?=\1)/gi, 'g'), "");//remove duplicate "2" char
+    title = replaceAll(title,"2", "-");
+    return title + idService.makeidAlpha(6).toLowerCase();
 }

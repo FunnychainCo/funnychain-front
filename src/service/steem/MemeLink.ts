@@ -1,8 +1,8 @@
 import {MemeLinkInterface} from "../generic/ApplicationInterface";
 import * as dsteem from "dsteem";
-import {steemAuthService} from "./SteemAuthService";
+import {steemConnectAuthService} from "./steemConnect/SteemConnectAuthService";
 import * as EventEmitter from "eventemitter3";
-import {convertMeme} from "./SteemUtils";
+import {convertMeme} from "./generic/SteemUtils";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../generic/Meme";
 
 export class MemeLink implements MemeLinkInterface {
@@ -11,7 +11,7 @@ export class MemeLink implements MemeLinkInterface {
     private lastValidMeme:Meme = MEME_ENTRY_NO_VALUE;
 
     constructor(public id: string) {
-        this.dSteemClient = steemAuthService.dSteemClient;
+        this.dSteemClient = steemConnectAuthService.dSteemClient;
     }
 
     on(callback: (meme: Meme) => void): () => void {

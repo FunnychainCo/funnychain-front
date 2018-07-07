@@ -6,12 +6,7 @@ import {debugService} from "../debugService";
 export class MemeService implements MemeServiceInterface {
 
     getTags():string[]{
-        return debugService.testNetwork?["tag1"]:["meme","dmania"];
-        //let tags:string[]=["meme","funny","dmania","funnychain"],//TODO change this
-    }
-
-    vote(url: string): Promise<string> {
-        return steemMemeService.vote(url);
+        return debugService.testNetwork?["tag1"]:["meme","funny"];//TODO add funnychain tag change this
     }
 
     getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
@@ -20,10 +15,6 @@ export class MemeService implements MemeServiceInterface {
 
     getMemeLink(id: string): MemeLinkInterface {
         return steemMemeService.getMemeLink(id);
-    }
-
-    post(title: string, body: string):Promise<string> {
-        return steemMemeService.post(title,body);
     }
 
 }

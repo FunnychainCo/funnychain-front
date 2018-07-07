@@ -1,6 +1,10 @@
 import {UserEntry} from "./UserEntry";
 import {Meme} from "./Meme";
 
+/**
+ * MEME SERVICE
+ */
+
 export interface MemeComment {
     id: string,
     parentId: string,
@@ -20,31 +24,47 @@ export interface MemeLinkInterface {
     refresh():Promise<any>
 }
 
-export interface MemeServiceInterface {
-    getMemeLoader(type:string,tags:string[]):MemeLoaderInterface
+export interface MemeServiceAction {
     vote(url: string): Promise<string>,
     post(title:string,body:string):Promise<string>
 }
+
+export interface MemeServiceView {
+    getMemeLoader(type:string,tags:string[]):MemeLoaderInterface
+}
+
+export interface MemeServiceInterface extends MemeServiceView{}
 
 /**
  * COMMENT SERVICE
  */
 
-export interface CommentsVisitor {
+export interface CommentsAction {
+    postComment(parentPostId: string, message: string): Promise<string>;
+}
+
+export interface CommentsView {
     on(callback: (comments: MemeComment[]) => void): () => void,
 
     loadMore(limit: number);
-
-    postComment(parentPostId: string, message: string): Promise<String>;
 }
+
+export interface CommentsVisitor extends CommentsView{}
 
 export interface CommentServiceInterface {
     getCommentVisitor(id): CommentsVisitor
 }
 
 /**
+ * AUTH USER SERVICE
+ */
+export interface UserActionInterface extends CommentsAction,MemeServiceAction{
+}
+
+/**
  * USER SERVICE
  */
+
 
 export interface UserServiceInterface {
     loadUserData(uid: string): Promise<UserEntry>,

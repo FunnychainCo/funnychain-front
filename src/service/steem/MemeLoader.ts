@@ -1,7 +1,7 @@
 import {MemeLoaderInterface} from "../generic/ApplicationInterface";
 import * as dsteem from "dsteem";
-import {convertMeme, getAuthorAndPermalink} from "./SteemUtils";
-import {steemAuthService} from "./SteemAuthService";
+import {convertMeme, getAuthorAndPermalink} from "./generic/SteemUtils";
+import {steemConnectAuthService} from "./steemConnect/SteemConnectAuthService";
 import * as EventEmitter from "eventemitter3";
 import * as Q from "q";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../generic/Meme";
@@ -17,7 +17,7 @@ export class MemeLoader implements MemeLoaderInterface {
     //order can be negative
 
     constructor(type: string, tags: string[]) {
-        this.dSteemClient = steemAuthService.dSteemClient;
+        this.dSteemClient = steemConnectAuthService.dSteemClient;
         this.type = type;
         this.tags = tags;
     }

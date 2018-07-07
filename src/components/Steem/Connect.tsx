@@ -1,6 +1,6 @@
 import {Component} from 'react'
 import *as React from 'react'
-//import {steemAuthService} from "../../service/steem/SteemAuthService";
+//import {steemConnectAuthService} from "../../service/steem/SteemConnectAuthService";
 import {Redirect} from "react-router-dom";
 import {authService} from "../../service/generic/AuthService";
 
@@ -12,7 +12,7 @@ export default class Connect extends Component {
 
     componentDidMount(){
         console.log(window.location.href);
-        //steemAuthService.notifyConnexionURL(window.location.href);
+        //steemConnectAuthService.notifyConnexionURL(window.location.href);
         authService.login(authService.MODE_STEEM,window.location.href);
         this.setState({loading:false});
     }

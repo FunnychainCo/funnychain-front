@@ -51,7 +51,7 @@ class Header extends Component<any, {
         dialogLogin: false,
         dialogRegister: false,
         drawerOpen: false,
-        currentSelected: 1//trending
+        currentSelected: 2//trending
     };
     private removeListener: () => void;
     itemOrder = {"hot": 0, "trending": 1, "fresh": 2};

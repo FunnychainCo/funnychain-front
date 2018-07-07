@@ -114,7 +114,7 @@ class MemeComponent extends Component<{
             this.state.meme.currentUserVoted = true;
             this.state.meme.voteNumber++;
             this.setState({meme: this.state.meme});//update ui
-            memeService.vote(this.state.meme.id).then(() => {
+            authService.getUserAction().vote(this.state.meme.id).then(() => {
                 this.memeLink.refresh();//refresh meme on every action from user
             }).catch(reason => {
                 console.log(reason);
@@ -129,7 +129,7 @@ class MemeComponent extends Component<{
     post = () => {
         this.state.meme.commentNumber++;
         this.setState({meme: this.state.meme});//update ui
-        this.commentVisitor.postComment(this.state.meme.id, this.state.commentToPost).then(() => {
+        authService.getUserAction().postComment(this.state.meme.id, this.state.commentToPost).then(() => {
             this.memeLink.refresh();//refresh meme on every action from user
         }).catch(reason => {
             //cancel previous operation

@@ -5,11 +5,11 @@ import {userNotificationService} from "../../service/UserNotificationService";
 import {fileUploadService} from "../../service/generic/FileUploadService";
 import ModalPage from "../ModalPage/ModalPage";
 import Button from "@material-ui/core/Button/Button";
-import {memeService} from "../../service/generic/MemeService";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import TextField from "@material-ui/core/TextField/TextField";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import {authService} from "../../service/generic/AuthService";
 
 
 export default class CreateMemeDialog extends Component<{
@@ -38,7 +38,7 @@ export default class CreateMemeDialog extends Component<{
             userNotificationService.notifyUser("A title is required");
         }
 
-        memeService.post(this.state.title, this.state.imageURL).then(() => {
+        authService.getUserAction().post(this.state.title, this.state.imageURL).then(() => {
             this.props.handleClose();
         });
     };

@@ -1,6 +1,7 @@
-export class DebugService {
-    private _testNetwork = false;
+import * as store from 'store';
 
+export class DebugService {
+    private _testNetwork = store.get("fc.debug.testnetwork") || false;
 
     get testNetwork(): boolean {
         return this._testNetwork;
@@ -9,6 +10,7 @@ export class DebugService {
     set testNetwork(value: boolean) {
         console.log("test network : "+value);
         this._testNetwork = value;
+        store.set("fc.debug.testnetwork",value);
     }
 }
 
