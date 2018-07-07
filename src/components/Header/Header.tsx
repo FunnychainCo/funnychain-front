@@ -10,12 +10,11 @@ import AppBar from "@material-ui/core/AppBar/AppBar";
 import Typography from "@material-ui/core/Typography/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Toolbar from "@material-ui/core/Toolbar/Toolbar";
-//import Button from "@material-ui/core/Button/Button";
-import {memeListController} from "../MemeList/MemeListController";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import LoginRegisterDialog from "../LoginDialog/LoginRegisterDialog";
+import { Link } from 'react-router-dom';
 
 const styles = theme => ({
     root: {
@@ -39,7 +38,10 @@ const styles = theme => ({
     }
 });
 
-class Header extends Component<any, {
+class Header extends Component<{
+    type:string,
+    classes:any
+}, {
     logged: boolean,
     dialogLogin: boolean,
     dialogRegister: boolean,
@@ -57,12 +59,12 @@ class Header extends Component<any, {
     itemOrder = {"hot": 0, "trending": 1, "fresh": 2};
 
     componentDidMount() {
+        this.setState({currentSelected:this.itemOrder[this.props.type]});
         this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({
                 logged: user !== USER_ENTRY_NO_VALUE ? true : false
             });
         });
-        memeListController.applyCat(Object.keys(this.itemOrder)[this.state.currentSelected]);
     }
 
     componentWillUnmount() {
@@ -83,11 +85,13 @@ class Header extends Component<any, {
 
     handleFeedButton(feed: number) {
         this.setState({currentSelected: feed});
-        memeListController.applyCat(Object.keys(this.itemOrder)[feed]);
     }
 
     render() {
         const {classes} = this.props;
+        const HotTabLinkLink = (props) => <Link to={"/hot"} {...props} />
+        const TrendingTabLink = (props) => <Link to={"/trending"} {...props} />
+        const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />
         return (
             <AppBar position="static">
                 <Toolbar>
@@ -100,9 +104,9 @@ class Header extends Component<any, {
                             }}
                             indicatorColor="primary"
                         >
-                            <Tab label="Hot" style={{minWidth: '30px'}}/>
-                            <Tab label="Trending" style={{minWidth: '30px'}}/>
-                            <Tab label="Fresh" style={{minWidth: '30px'}}/>
+                            <Tab label="Hot" style={{minWidth: '30px'}} component={HotTabLinkLink}/>
+                            <Tab label="Trending" style={{minWidth: '30px'}}  component={TrendingTabLink}/>
+                            <Tab label="Fresh" style={{minWidth: '30px'}}  component={FreshTabLink}/>
                         </Tabs>
                     </Typography>
                     <div>

@@ -7,7 +7,6 @@ import {Component} from "react";
 import {MemeLinkInterface, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
 import Waypoint from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
-import {memeListController} from "./MemeListController";
 
 
 interface State {
@@ -15,7 +14,9 @@ interface State {
     displayWaypoint: boolean
 }
 
-export default class MemeListV2 extends Component<any, State> {
+export default class MemeListV2 extends Component<{
+    type:string
+}, State> {
     state:State = {
         memes: {},
         displayWaypoint: true
@@ -27,21 +28,21 @@ export default class MemeListV2 extends Component<any, State> {
     private memeLoader: MemeLoaderInterface;
 
 
-    componentDidMount() {
-        memeListController.registerCallBack(type => {
-            this.updateMemeLoader(type, memeService.getTags());
-        });
+    componentWillMount() {
+        this.restartMemeLoader(this.props.type, memeService.getTags());
+        console.log(this.props.type);
     }
 
-    updateMemeLoader(type: string, tags: string[]) {
+    restartMemeLoader(type: string, tags: string[]) {
         this.memeLoader = memeService.getMemeLoader(type, tags);
         this.removeCallback();
         this.setState({memes: {}});//reset view
         this.removeCallback = this.memeLoader.on((memes: MemeLinkInterface[]) => {
+            let tmpState = {};
             memes.forEach((meme: MemeLinkInterface) => {
-                this.state.memes[meme.id] = meme;
+                tmpState[meme.id] = meme;
             });
-            this.forceUpdate();
+            this.setState((state)=>({memes: {...tmpState,...state.memes}}));//reset view
         });
         this.memeLoader.loadMore(10);
     }

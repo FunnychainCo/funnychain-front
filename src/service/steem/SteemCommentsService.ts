@@ -42,7 +42,7 @@ export class SteemCommentsVisitor implements CommentsVisitor {
             this.emitter.off("onNewComment" + this.id, callback);
         };
     }
-    
+
     getAllComment(): Promise<MemeComment[]> {
         if (this.allDataLoaded) {
             return new Promise<MemeComment[]>(resolve => {

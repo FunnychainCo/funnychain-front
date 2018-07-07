@@ -4,7 +4,6 @@ import {Route, BrowserRouter, Switch} from 'react-router-dom'
 
 import "./App.css"
 
-import Header from "../components/Header/Header";
 import Version from "../components/Version/Version";
 import {userNotificationService} from "../service/UserNotificationService";
 import {pwaService} from "../service/mobile/PWAService";
@@ -73,7 +72,6 @@ class App extends React.Component<any,{
             <BrowserRouter>
                 <MuiThemeProvider theme={theme}>
                     <div className="fullSpace">
-                        <Header/>
                         <div className="fullSpace">
                             <Switch className="fullSpace">
                                 <Route className="fullSpace" path='/steem/connect' component={Connect}/>
