@@ -99,14 +99,14 @@ export class AuthService implements AuthServiceInterface {
         }
     }
 
-    switchMode(mode: string) {
+    switchMode(mode: string):void{
         this.mode = mode;
         store.set(this.STORAGE_KEY_AUTH_METHOD, this.mode);
         this.removeAuthListener();
         switch (this.mode) {
             case this.MODE_EMAIL:
                 firebaseAuthService.start();
-                this.removeAuthListener = firebaseAuthService.onAuthStateChanged((userDataReceived:UserEntry) => {
+                this.removeAuthListener = firebaseAuthService.onAuthStateChanged((userDataReceived: UserEntry) => {
                     if (this.mode == this.MODE_EMAIL) {
                         dsteemActionService.start(userDataReceived);
                         this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);
@@ -126,6 +126,10 @@ export class AuthService implements AuthServiceInterface {
                     }
                 });
                 break;
+            default: {
+                this.eventEmitter.emit(this.AUTH_EVENTNAME, USER_ENTRY_NO_VALUE);
+                break;
+            }
         }
     }
 
