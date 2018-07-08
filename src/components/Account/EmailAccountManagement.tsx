@@ -13,6 +13,7 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import TextField from "@material-ui/core/TextField/TextField";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
+import {userService} from "../../service/generic/UserService";
 
 export default class EmailAccountManagement extends Component<{}, {
     user:UserEntry,
@@ -80,7 +81,7 @@ export default class EmailAccountManagement extends Component<{}, {
     };
 
     updateUser() {
-        authService.loadUserData(this.userId).then((userData) => {
+        userService.loadUserData(this.userId).then((userData) => {
             console.log(userData);
             this.setState({
                 user: userData,

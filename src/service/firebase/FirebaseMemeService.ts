@@ -6,12 +6,12 @@ import {
     MemeLoaderInterface,
     MemeServiceInterface
 } from "../generic/ApplicationInterface";
-import {authService} from "../generic/AuthService";
 import * as Q from 'q';
 import {firebaseMediaService} from "./FirebaseMediaService";
 import {UserEntry} from "../generic/UserEntry";
 import {Meme} from "../generic/Meme";
 import {MemeLink} from "../steem/MemeLink";
+import {firebaseAuthService} from "./FirebaseAuthService";
 
 export interface FirebaseMeme {
     title: string,
@@ -57,7 +57,7 @@ export class FirebaseMemeService implements MemeServiceInterface {
                             console.error(imageValue.url);
                             return;//just ignore the meme
                         }
-                        authService.loadUserData(meme.uid).then((userValue: UserEntry) => {
+                        firebaseAuthService.loadUserData(meme.uid).then((userValue: UserEntry) => {
                             resolve({
                                 id: key,
                                 title: meme.title,
@@ -160,7 +160,7 @@ class MemeLoader implements MemeLoaderInterface{
                             console.error(imageValue.url);
                             return;//just ignore the meme
                         }
-                        authService.loadUserData(meme.uid).then((userValue: UserEntry) => {
+                        firebaseAuthService.loadUserData(meme.uid).then((userValue: UserEntry) => {
                             resolve({
                                 id: key,
                                 title: meme.title,

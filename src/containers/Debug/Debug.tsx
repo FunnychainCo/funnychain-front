@@ -1,6 +1,6 @@
 import {Component} from 'react'
 import * as React from 'react'
-import {debugService} from "../service/debugService";
+import {debugService} from "../../service/debugService";
 import Switch from "@material-ui/core/Switch/Switch";
 
 export default class Debug extends Component<{},{testNetwork:boolean}> {

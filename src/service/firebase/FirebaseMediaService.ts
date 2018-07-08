@@ -11,7 +11,7 @@ export default class MediaService {
 
     imageDataBase = "images"
 
-    createMediaEntry(url, ownerUid) {
+    createMediaEntry(url, ownerUid):Promise<string> {
         return new Promise((resolve) => {
             let fileId = idService.makeid();
             firebase.database().ref(this.imageDataBase + '/' + fileId).set({

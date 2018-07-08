@@ -1,55 +1,26 @@
-//import 'bootstrap/dist/css/bootstrap.css'
 import * as React from 'react';
-import {Route, BrowserRouter, Switch} from 'react-router-dom'
+import {BrowserRouter, Switch} from 'react-router-dom'
 
 import "./App.css"
 
 import Version from "../components/Version/Version";
 import {userNotificationService} from "../service/UserNotificationService";
 import {pwaService} from "../service/mobile/PWAService";
-import Connect from "../components/Steem/Connect"
 import {ipfsFileUploadService} from "../service/IPFSFileUploader/IPFSFileUploadService";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {authService} from "../service/generic/AuthService";
-import Home from "../containers/Home";
-import Debug from "../containers/Debug";
+import HomePage from "../containers/HomePage";
 
-class App extends React.Component<any,{
-    userMessage: {
-        display: boolean,
-        message: string
-    }
-}> {
-    state = {
-        userMessage: {
-            display: false,
-            message: ""
-        }
-    };
+class App extends React.Component<any,any> {
+    state = {};
 
     componentDidMount() {
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();
-        userNotificationService.registerCallBack((message) => {
-            this.setState({
-                userMessage: {
-                    display: true,
-                    message: message
-                }
-            })
-        });
+        userNotificationService.registerCallBack((message) => {console.log(message);});
     }
-
-    handleRequestClose = () => {
-        this.setState({
-            userMessage: {
-                display: false,
-                message: ""
-            }
-        })
-    };
 
     render() {
         const theme = createMuiTheme({
@@ -72,21 +43,10 @@ class App extends React.Component<any,{
             <BrowserRouter>
                 <MuiThemeProvider theme={theme}>
                     <div className="fullSpace">
-                        <div className="fullSpace">
-                            <Switch className="fullSpace">
-                                <Route className="fullSpace" path='/steem/connect' component={Connect}/>
-                                <Route className="fullSpace" exact path='/debug' component={Debug}/>
-                                <Route className="fullSpace" path='/' component={Home}/>
-                                <Route className="fullSpace" component={Home}/>
-                            </Switch>
-                        </div>
+                        <Switch className="fullSpace">
+                            <HomePage />
+                        </Switch>
                         <Version/>
-                        {/**<Snackbar
-                            open={this.state.userMessage.display}
-                            message={this.state.userMessage.message}
-                            autoHideDuration={4000}
-                            onRequestClose={this.handleRequestClose}
-                        />**/}
                     </div>
                 </MuiThemeProvider>
             </BrowserRouter>

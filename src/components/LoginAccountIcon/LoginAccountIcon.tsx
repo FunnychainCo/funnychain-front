@@ -4,8 +4,7 @@ import {Component} from "react";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import Logged from "./Logged";
 import NotLogged from "./NotLogged";
-import LoginRegisterDialog from "../LoginDialog/LoginRegisterDialog";
-import AccountDrawer from "../Account/AccountDrawer";
+import {withRouter} from 'react-router-dom'
 
 interface State {
     user: UserEntry,
@@ -13,8 +12,8 @@ interface State {
     drawerOpen: boolean,
 }
 
-export default class LoginAccountIcon extends Component<{},State> {
-    state:State = {
+class LoginAccountIcon extends Component<{history:any}, State> {
+    state: State = {
         user: USER_ENTRY_NO_VALUE,
         dialogLogin: false,
         drawerOpen: false,
@@ -36,21 +35,20 @@ export default class LoginAccountIcon extends Component<{},State> {
     };
 
     render() {
-        return(
-        <div>
-            {(this.state.user !== USER_ENTRY_NO_VALUE ? true : false) ?
-                <Logged onAccountClick={() => {
-                    this.setState({drawerOpen: true})
-                }}/> :
-                <NotLogged
-                    onDialogLogin={this.openDialogLogin}
-                />}
-            <LoginRegisterDialog open={this.state.dialogLogin}
-                                 onRequestClose={() => this.setState({dialogLogin: false})}/>
-            <AccountDrawer open={this.state.drawerOpen}
-                           onRequestChange={(open) => {
-                               this.setState({drawerOpen: open})
-                           }}/>
-        </div>)
+        const LoggedButton =
+            <Logged onAccountClick={() => {
+                this.props.history.push(window.location.pathname + "/account");
+            }}/>;
+       const NotLoggedButton =
+                <NotLogged onDialogLogin={() => {
+                    this.props.history.push(window.location.pathname + "/login");
+                }}/>;
+        return (
+            <div>
+                {(this.state.user !== USER_ENTRY_NO_VALUE ? true : false) ?
+                    LoggedButton : NotLoggedButton}
+            </div>)
     }
 }
+
+export default withRouter(LoginAccountIcon);

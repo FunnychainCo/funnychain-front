@@ -1,6 +1,5 @@
 import {firebaseAuthService} from "../firebase/FirebaseAuthService";
 import {steemConnectAuthService} from "../steem/steemConnect/SteemConnectAuthService";
-import {steemUserService} from "../steem/SteemUserService";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "./UserEntry";
 import * as EventEmitter from "eventemitter3";
 import * as store from 'store';
@@ -140,22 +139,11 @@ export class AuthService implements AuthServiceInterface {
         return firebaseAuthService.changeDisplayName(newDisplayName);
     }
 
-    changeAvatar(newAvatarIid: string): Promise<string> {
+    changeAvatar(newAvatarUrl: string): Promise<string> {
         if (this.mode != this.MODE_EMAIL) {
             throw new Error("invalid mode");
         }
-        return firebaseAuthService.changeAvatar(newAvatarIid);
-    }
-
-    loadUserData(uid: string): Promise<UserEntry> {
-        //TODO this api is stupid and should be in a UserService
-        if (this.mode != this.MODE_STEEM) {
-            return steemUserService.loadUserData(uid);
-        } else if (this.mode !== this.MODE_EMAIL) {
-            return firebaseAuthService.loadUserData(uid);
-        } else {
-            throw new Error("invalid mode");
-        }
+        return firebaseAuthService.changeAvatar(newAvatarUrl);
     }
 
     getUserAction():UserActionInterface{

@@ -12,7 +12,7 @@ export default class Version extends Component {
             position: 'fixed',
         };
         return (
-            <span style={style}>0.2.9</span>
+            <span style={style}>0.2.10</span>
         )
     }
 }

@@ -12,6 +12,8 @@ import Avatar from "@material-ui/core/Avatar/Avatar";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
+import {userService} from "../../service/generic/UserService";
+import {UploadedDataInterface} from "../../service/generic/ApplicationInterface";
 
 export default class AvatarAccountManagement extends Component<any, any> {
     state = {
@@ -33,7 +35,7 @@ export default class AvatarAccountManagement extends Component<any, any> {
     dialogValue: string = "";
     dialogValueCurrentPassword: string = "";
     userId: string = "";
-    iid: string = "";
+    url: string = "";
     private removeListener: () => void;
     private removeListenerPWA: any;
 
@@ -77,7 +79,7 @@ export default class AvatarAccountManagement extends Component<any, any> {
     };
 
     updateUser() {
-        authService.loadUserData(this.userId).then((userData) => {
+        userService.loadUserData(this.userId).then((userData) => {
             console.log(userData);
             this.setState({
                 user: userData,
@@ -88,20 +90,27 @@ export default class AvatarAccountManagement extends Component<any, any> {
 
     handleSaveAndClose = () => {
         this.dialogValue = "";
-        authService.changeAvatar(this.iid).then(() => {
+        authService.changeAvatar(this.url).then(() => {
             this.updateUser();
         });
-        this.iid = "";
+        this.url = "";
         this.handleClose();
     };
 
     checkValidity() {
-        this.state.dialog.valid = this.iid !== "" && this.iid !== null;
-        this.setState({dialog: this.state.dialog});
+        let valid = this.url !== "" && this.url !== null && this.url !== undefined;
+        this.setState({
+            dialog: {
+                title: this.state.dialog.title,
+                open: this.state.dialog.open,
+                type: this.state.dialog.type,
+                valid: valid
+            }
+        });
     }
 
-    onImageLoaded = (image) => {
-        this.iid = image.iid;
+    onImageLoaded = (url:string) => {
+        this.url = url;
         this.checkValidity();
     };
 
@@ -134,13 +143,12 @@ export default class AvatarAccountManagement extends Component<any, any> {
                         <ImageUploaderDropZone
                             onImageLoaded={
                                 (image: string) => {
-                                    console.log(image);
+                                    this.onImageLoaded(image);
                                 }
-                                //this.onImageLoaded
                             }
                             onFileToUpload={(file: File) => {
                                 return new Promise<string>((resolve, reject) => {
-                                    fileUploadService.uploadFile(file).then((data) => {
+                                    fileUploadService.uploadFile(file).then((data:UploadedDataInterface) => {
                                         resolve(data.fileURL);
                                     });
                                 });

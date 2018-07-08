@@ -13,11 +13,21 @@ import {MailOutline} from "@material-ui/icons";
 import UserPasswordLoginDialog from "./UserPasswordLoginDialog";
 import UserPasswordRegisterDialog from "./UserPasswordRegisterDialog";
 
-export default class LoginRegisterDialog extends Component<any, any> {
-    state = {
+interface State {
+    loading: boolean,
+    userPasswordLoginDialogOpen: boolean,
+    userPasswordRegisterDialogOpen: boolean
+}
+
+export default class LoginRegisterDialog extends Component<
+    {
+        onRequestClose: () => void,
+        open: boolean
+    }, State> {
+    state: State = {
         loading: false,
-        userPasswordLoginDialogOpen:false,
-        userPasswordRegisterDialogOpen:false
+        userPasswordLoginDialogOpen: false,
+        userPasswordRegisterDialogOpen: false
     };
 
 
@@ -25,7 +35,7 @@ export default class LoginRegisterDialog extends Component<any, any> {
     }
 
     handleClose = () => {
-        this.setState({userPasswordLoginDialogOpen:false,userPasswordRegisterDialogOpen:false});
+        this.setState({userPasswordLoginDialogOpen: false, userPasswordRegisterDialogOpen: false});
         this.props.onRequestClose();
     };
 
@@ -42,11 +52,13 @@ export default class LoginRegisterDialog extends Component<any, any> {
                         </ListItem>
                         <ListItem>
                             <Button
-                                onClick={() => {this.setState({userPasswordLoginDialogOpen:true})}}
+                                onClick={() => {
+                                    this.setState({userPasswordLoginDialogOpen: true})
+                                }}
                                 variant="raised"
                                 fullWidth
                             >
-                                <MailOutline />
+                                <MailOutline/>
                                 &nbsp;&nbsp;Login
                             </Button>
                         </ListItem>
@@ -70,11 +82,13 @@ export default class LoginRegisterDialog extends Component<any, any> {
                         </ListItem>
                         <ListItem>
                             <Button
-                                onClick={() => {this.setState({userPasswordRegisterDialogOpen:true})}}
+                                onClick={() => {
+                                    this.setState({userPasswordRegisterDialogOpen: true})
+                                }}
                                 variant="raised"
                                 fullWidth
                             >
-                                <MailOutline />
+                                <MailOutline/>
                                 &nbsp;&nbsp;Create an account
                             </Button>
                         </ListItem>
@@ -101,8 +115,12 @@ export default class LoginRegisterDialog extends Component<any, any> {
                     </Button>
                 </DialogActions>}
                 {this.state.loading && <CircularProgress/>}
-                <UserPasswordLoginDialog onRequestClose={()=>{this.handleClose()}} open={this.state.userPasswordLoginDialogOpen}/>
-                <UserPasswordRegisterDialog onRequestClose={()=>{this.handleClose()}} open={this.state.userPasswordRegisterDialogOpen}/>
+                <UserPasswordLoginDialog onRequestClose={() => {
+                    this.handleClose()
+                }} open={this.state.userPasswordLoginDialogOpen}/>
+                <UserPasswordRegisterDialog onRequestClose={() => {
+                    this.handleClose()
+                }} open={this.state.userPasswordRegisterDialogOpen}/>
             </ModalPage>
         )
     }

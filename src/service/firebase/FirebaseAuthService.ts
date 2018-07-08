@@ -93,16 +93,18 @@ export class FirebaseAuthService {
         });
     }
 
-    changeAvatar(newAvatarIid: string): Promise<string> {
+    changeAvatar(newAvatarUrl: string): Promise<string> {
         return new Promise((resolve, reject) => {
             let user: any = firebase.auth().currentUser;
             delete this.userCache[user.uid];//invalidate cache
-            firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
-                .set(newAvatarIid)
-                .then(() => {
-                    this.eventEmitter.emit('AuthStateChanged', user.uid);
-                    resolve("ok");
-                });
+            firebaseMediaService.createMediaEntry(newAvatarUrl,user.uid).then(newAvatarIid => {
+                firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
+                    .set(newAvatarIid)
+                    .then(() => {
+                        this.eventEmitter.emit('AuthStateChanged', user.uid);
+                        resolve("ok");
+                    });
+            })
         });
     }
 

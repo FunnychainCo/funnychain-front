@@ -35,11 +35,10 @@ export default class CommonAccountManagement extends Component<{ onLogout: () =>
                     <ChatBubble/>&nbsp;&nbsp;Join on discord
                 </Button><br/>
                 <Button onClick={() => {
-                    setTimeout(() => {
-                        authService.logout().then(() => {
-                            this.props.onLogout();
-                        });
-                    }, 500);
+                    authService.logout().then(() => {
+                        console.log("logout");
+                        this.props.onLogout();
+                    });
                 }}
                 ><VpnKey/>&nbsp;&nbsp;Logout</Button><br/>
                 {this.state.displayAddToHomeButton &&
