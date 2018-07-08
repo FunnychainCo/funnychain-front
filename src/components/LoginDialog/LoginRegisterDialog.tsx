@@ -25,6 +25,7 @@ export default class LoginRegisterDialog extends Component<any, any> {
     }
 
     handleClose = () => {
+        this.setState({userPasswordLoginDialogOpen:false,userPasswordRegisterDialogOpen:false});
         this.props.onRequestClose();
     };
 

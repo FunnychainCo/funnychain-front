@@ -30,7 +30,6 @@ export default class MemeListV2 extends Component<{
 
     componentWillMount() {
         this.restartMemeLoader(this.props.type, memeService.getTags());
-        console.log(this.props.type);
     }
 
     restartMemeLoader(type: string, tags: string[]) {

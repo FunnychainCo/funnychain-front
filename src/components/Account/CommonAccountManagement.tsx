@@ -36,9 +36,10 @@ export default class CommonAccountManagement extends Component<{ onLogout: () =>
                 </Button><br/>
                 <Button onClick={() => {
                     setTimeout(() => {
-                        authService.logout();
+                        authService.logout().then(() => {
+                            this.props.onLogout();
+                        });
                     }, 500);
-                    this.props.onLogout();
                 }}
                 ><VpnKey/>&nbsp;&nbsp;Logout</Button><br/>
                 {this.state.displayAddToHomeButton &&

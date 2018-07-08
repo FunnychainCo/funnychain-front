@@ -36,15 +36,19 @@ class Header extends Component<{
     type:string,
     classes:any
 }, {
-    currentSelected: number//trending
+    currentSelected: any
 }> {
     state = {
-        currentSelected: 2//trending
+        currentSelected: false
     };
     itemOrder = {"hot": 0, "trending": 1, "fresh": 2};
 
     componentDidMount() {
-        this.setState({currentSelected:this.itemOrder[this.props.type]});
+        if(this.props.type!=="hot" && this.props.type!=="trending" && this.props.type!=="fresh"){
+            this.setState({currentSelected:false});
+        }else {
+            this.setState({currentSelected:this.itemOrder[this.props.type]});
+        }
     }
 
     componentWillUnmount() {

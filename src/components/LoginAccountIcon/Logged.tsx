@@ -27,7 +27,7 @@ export default class Logged extends Component<any,
     render() {
         return <div onClick={this.props.onAccountClick}>
             {(this.state.user.avatarUrl !== "") &&
-            <Avatar  src={this.state.user.avatarUrl}/>
+            <Avatar src={this.state.user.avatarUrl}/>
             }
             {(this.state.user.avatarUrl === "") &&
             <Menu/>

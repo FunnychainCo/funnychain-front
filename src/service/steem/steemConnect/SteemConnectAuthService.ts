@@ -12,11 +12,14 @@ export interface SteemToken {
     username: string
 }
 
-export const STEEM_TOKEN_NO_VALUE: SteemToken = {
-    access_token: "",
-    expires_in: "",
-    username: ""
-};
+class ImmutableSteemTokenNoValue implements SteemToken{
+    readonly access_token= "";
+    readonly expires_in= "";
+    readonly username= "";
+}
+
+export const STEEM_TOKEN_NO_VALUE: ImmutableSteemTokenNoValue = Object.freeze(new ImmutableSteemTokenNoValue());
+
 
 export class SteemConnectAuthService implements AuthServiceInterface {
     private _sc2Api: any = null;
@@ -107,10 +110,12 @@ export class SteemConnectAuthService implements AuthServiceInterface {
             urlElements = urlElements[1];
             urlElements = urlElements.split("&");
             //decodeURIComponent
+            let tmpToken:any={};
             urlElements.forEach((element) => {
                 element = element.split("=");
-                this.steemToken[element[0]] = decodeURIComponent(element[1]);
+                tmpToken[element[0]] = decodeURIComponent(element[1]);
             });
+            this.steemToken=tmpToken;
             store.set('steem.token', this.steemToken);
             this.start();//start service in case it is not already started
             this.sc2Api.setAccessToken(this.steemToken.access_token);//set token anyway in case already started

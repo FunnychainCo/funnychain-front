@@ -76,6 +76,8 @@ class MemeComponent extends Component<{
     private removeListener: () => void;
     private commentPerPage = 5;
     private memeLink: MemeLinkInterface;
+    private removeListenerMemeLink: () => void;
+    private removeListenerCommentVisitor: () => void;
 
     componentDidMount() {
         this.memeLink = this.props.meme;
@@ -86,14 +88,14 @@ class MemeComponent extends Component<{
             this.memeLink.refresh();
         });
 
-        this.memeLink.on(meme => {
+        this.removeListenerMemeLink = this.memeLink.on(meme => {
             this.setState({
                 commentNumber: meme.commentNumber,
                 meme: meme
             });
         });
         this.commentVisitor = this.memeLink.getCommentVisitor();
-        this.commentVisitor.on((comments: MemeComment[]) => {
+        this.removeListenerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concat = comments.concat(this.state.comments);
             this.setState({comments: concat, loadingComment: false});
         });
@@ -101,6 +103,8 @@ class MemeComponent extends Component<{
 
     componentWillUnmount() {
         this.removeListener();
+        this.removeListenerMemeLink();
+        this.removeListenerCommentVisitor();
     }
 
     upvote = () => {

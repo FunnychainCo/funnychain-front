@@ -1,3 +1,27 @@
+/* default */
+.fcDynamicWidth{
+    max-width:100%;
+}
+
+@media (orientation: landscape) and (min-width:961px){
+    .fcDynamicWidth{
+        max-width:33%;
+    }
+}
+
+.fcCenteredContainer{
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.fcCenteredContent{
+    flex: 1 0 auto;
+}
+
+/* other */
+
+
 .memeImage{
     max-width: 100%;
     max-height: 100%;

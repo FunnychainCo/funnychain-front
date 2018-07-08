@@ -19,12 +19,12 @@ export default class Home extends React.Component<{
     render() {
         return (
             <div>
+                <Route exact path='/meme/:memeid' component={MemeDisplayPage} />
                 <Route exact path='/' component={MemeListPage} />
                 <Route exact path='/hot' component={MemeListPage} />
                 <Route exact path='/trending' component={MemeListPage} />
                 <Route exact path='/fresh' component={MemeListPage} />
                 <Route exact path='/home' component={MemeListPage} />
-                <Route path='/meme/:memeid' component={MemeDisplayPage} />
             </div>
         )
     }

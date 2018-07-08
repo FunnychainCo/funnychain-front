@@ -19,4 +19,4 @@ class ImmutableMemeComment implements MemeComment{
     readonly text= "";
     readonly flagged = true;
 }
-export const MEME_COMMENT_NO_VALUE: ImmutableMemeComment = new ImmutableMemeComment();
+export const MEME_COMMENT_NO_VALUE: ImmutableMemeComment = Object.freeze(new ImmutableMemeComment());

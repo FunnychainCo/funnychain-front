@@ -16,7 +16,7 @@ export interface Meme {
     order: number
 }
 
-export const MEME_ENTRY_NO_VALUE: Meme = {
+export const MEME_ENTRY_NO_VALUE: Meme = Object.freeze({
     id: "",
     user: USER_ENTRY_NO_VALUE,
     title: "",
@@ -27,4 +27,4 @@ export const MEME_ENTRY_NO_VALUE: Meme = {
     commentNumber: 5,
     currentUserVoted: false,
     order:0,
-};
+});

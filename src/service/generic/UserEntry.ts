@@ -18,4 +18,4 @@ class ImmutableUserEntry implements UserEntry{
     readonly avatarUrl = "";
 }
 
-export const USER_ENTRY_NO_VALUE: ImmutableUserEntry = new ImmutableUserEntry();
+export const USER_ENTRY_NO_VALUE: ImmutableUserEntry = Object.freeze(new ImmutableUserEntry());

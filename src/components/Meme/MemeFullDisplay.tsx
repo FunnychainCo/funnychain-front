@@ -24,7 +24,6 @@ import * as moment from 'moment';
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
-import ModalPage from "../ModalPage/ModalPage";
 import Waypoint from "react-waypoint";
 import {MemeComment} from "../../service/generic/MemeComment";
 
@@ -47,8 +46,6 @@ const styles = theme => ({
 class MemeFullDisplay extends Component<{
     meme: MemeLinkInterface,
     classes: any,
-    open: boolean,
-    onRequestClose: () => void,
 }, {
     meme: Meme,
     expanded: boolean,
@@ -72,6 +69,7 @@ class MemeFullDisplay extends Component<{
     private removeListener: () => void;
     private memeLink: MemeLinkInterface;
     private removeListenerMemeLink: () => void;
+    private removeListnerCommentVisitor: () => void;
 
     componentDidMount() {
         this.memeLink = this.props.meme;
@@ -88,18 +86,19 @@ class MemeFullDisplay extends Component<{
             });
         });
         this.commentVisitor = this.memeLink.getCommentVisitor();
-        this.commentVisitor.on((comments: MemeComment[]) => {
+        this.removeListnerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concatResult: MemeComment[] = this.state.comments;
             concatResult=concatResult.concat(comments);
             this.setState({comments: concatResult, loadingComment: false});
         });
         //initialize
-        this.commentVisitor.loadMore(3);
+        this.commentVisitor.loadMore(10);
     }
 
     componentWillUnmount() {
         this.removeListener();
         this.removeListenerMemeLink();
+        this.removeListnerCommentVisitor();
     }
 
     upvote = () => {
@@ -149,8 +148,7 @@ class MemeFullDisplay extends Component<{
 
     render() {
         //const {classes} = this.props;
-        return <ModalPage title={this.state.meme.title} open={this.props.open}
-                          onRequestClose={this.props.onRequestClose}><Card>
+        return <div className="fcCenteredContainer fcFullWidth"><Card className="fcCenteredContent fcDynamicWidth">
             <CardHeader
                 title={this.state.meme.title}
             />
@@ -217,8 +215,7 @@ class MemeFullDisplay extends Component<{
                     }
                 </div>}
             </CardContent>
-        </Card>
-        </ModalPage>
+        </Card></div>
     }
 
 }
