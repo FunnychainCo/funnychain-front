@@ -75,9 +75,7 @@ export class AuthService implements AuthServiceInterface {
     }
 
     register(email: string, pw: string): Promise<string> {
-        if (this.mode != this.MODE_EMAIL) {
-            throw new Error("invalid mode");
-        }
+        this.switchMode(this.MODE_EMAIL);
         return firebaseAuthService.register(email, pw);
     }
 
