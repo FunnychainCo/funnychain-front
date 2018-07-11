@@ -36,8 +36,8 @@ export interface CommentsAction {
 }
 
 export interface CommentsView {
-    on(callback: (comments: MemeComment[]) => void): () => void,
-
+    on(callback: (comments: MemeComment[]) => void): () => void;
+    refresh():Promise<string>;
     loadMore(limit: number);
 }
 

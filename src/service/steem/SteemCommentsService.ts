@@ -43,6 +43,76 @@ export class SteemCommentsVisitor implements CommentsVisitor {
         };
     }
 
+    refresh():Promise<string>{
+        return new Promise<string>(resolve => {
+            this.loadComments().then((comments)=>{
+                let commentsMap = {};
+                this.allComments.forEach(comment => {
+                    commentsMap[comment.id] = comment;
+                });
+                comments.forEach(comment => {
+                    if(commentsMap[comment.id]==undefined){
+                        //new comment update the table
+                        this.allComments.push(comment);
+                        this.emitter.emit("onNewComment" + this.id, [comment]);
+                    }
+                });
+            });
+        });
+    }
+
+    loadComments(): Promise<MemeComment[]>{
+        return new Promise<MemeComment[]>(resolve => {
+            let memesComments: Promise<MemeComment>[] = [];
+            //https://jnordberg.github.io/dsteem/
+            this.dSteemClient.database.call('get_content_replies', [this.author, this.permalink]).then((results:dsteem.Discussion[]) => {
+                ///dmania/@sanmi/the-real-meaning-of-followerspeople-still-celebratei-feel-we-need-an-auto-unfollow-mechanism-zg1hbmlh-9omhu
+                results.forEach((comment: dsteem.Discussion) => {
+                    memesComments.push(new Promise<MemeComment>((resolve) => {
+                        let avatarURL = getAvatarURLFromSteemUserAccount(comment.author);
+                        try {
+                            let jsonMetaData: any = JSON.parse(comment.json_metadata);
+                            if (jsonMetaData.delegatedOwner !== undefined) {
+                                comment.author = jsonMetaData.delegatedOwner.name;
+                                avatarURL = jsonMetaData.delegatedOwner.url;
+                            }
+                        }catch (e) {
+                            console.error(e);
+                            //continue
+                        }
+                        preloadImageWithFallBackURL(avatarURL).then((avatarUrl => {
+                            //let flagged = comment.author_reputation < 15; //TODO reactivate that
+                            let flagged = false;
+                            let memeComment: MemeComment = {
+                                author: {
+                                    uid: comment.author,
+                                    provider: PROVIDER_STEEM,
+                                    email: "",
+                                    displayName: comment.author,
+                                    avatarUrl: avatarUrl
+                                },
+                                id: comment.url,
+                                parentId: this.id,
+                                text: markdownImageLink(comment.body),
+                                flagged: flagged
+                            };
+                            resolve(memeComment);
+                        })).catch(reason => {
+                            console.error(reason);
+                            resolve(MEME_COMMENT_NO_VALUE);
+                        });
+                    }));
+                });
+                Q.all(memesComments).then(comments => {
+                    comments = comments.filter((value:MemeComment) => {
+                        return value != MEME_COMMENT_NO_VALUE;//remove invalid meme
+                    });
+                    resolve(comments);
+                });
+            });
+        });
+    }
+
     getAllComment(): Promise<MemeComment[]> {
         if (this.allDataLoaded) {
             return new Promise<MemeComment[]>(resolve => {
@@ -50,55 +120,11 @@ export class SteemCommentsVisitor implements CommentsVisitor {
             })
         } else {
             return new Promise<MemeComment[]>(resolve => {
-                let memesComments: Promise<MemeComment>[] = [];
-                //https://jnordberg.github.io/dsteem/
-                this.dSteemClient.database.call('get_content_replies', [this.author, this.permalink]).then((results:dsteem.Discussion[]) => {
-                    ///dmania/@sanmi/the-real-meaning-of-followerspeople-still-celebratei-feel-we-need-an-auto-unfollow-mechanism-zg1hbmlh-9omhu
-                    results.forEach((comment: dsteem.Discussion) => {
-                        memesComments.push(new Promise<MemeComment>((resolve) => {
-                            let avatarURL = getAvatarURLFromSteemUserAccount(comment.author);
-                            try {
-                                let jsonMetaData: any = JSON.parse(comment.json_metadata);
-                                if (jsonMetaData.delegatedOwner !== undefined) {
-                                    comment.author = jsonMetaData.delegatedOwner.name;
-                                    avatarURL = jsonMetaData.delegatedOwner.url;
-                                }
-                            }catch (e) {
-                                console.error(e);
-                                //continue
-                            }
-                            preloadImageWithFallBackURL(avatarURL).then((avatarUrl => {
-                                //let flagged = comment.author_reputation < 15; //TODO reactivate that
-                                let flagged = false;
-                                let memeComment: MemeComment = {
-                                    author: {
-                                        uid: comment.author,
-                                        provider: PROVIDER_STEEM,
-                                        email: "",
-                                        displayName: comment.author,
-                                        avatarUrl: avatarUrl
-                                    },
-                                    id: comment.url,
-                                    parentId: this.id,
-                                    text: markdownImageLink(comment.body),
-                                    flagged: flagged
-                                };
-                                resolve(memeComment);
-                            })).catch(reason => {
-                                console.error(reason);
-                                resolve(MEME_COMMENT_NO_VALUE);
-                            });
-                        }));
-                    });
-                    Q.all(memesComments).then(comments => {
-                        comments = comments.filter((value:MemeComment) => {
-                            return value != MEME_COMMENT_NO_VALUE;//remove invalid meme
-                        });
-                        this.allComments = comments;
-                        this.allDataLoaded = true;
-                        resolve(this.allComments);
-                    });
-                });
+                this.loadComments().then((comments)=>{
+                    this.allComments = comments;
+                    this.allDataLoaded = true;
+                    resolve(this.allComments);
+                })
             });
         }
     }

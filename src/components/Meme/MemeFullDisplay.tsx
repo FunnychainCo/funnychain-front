@@ -1,5 +1,4 @@
 import {Component} from 'react'
-//import * as ImagesLoaded from 'react-images-loaded';
 import "./Meme.css"
 import {
     CommentsVisitor,
@@ -10,7 +9,6 @@ import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import CardActions from "@material-ui/core/CardActions/CardActions";
 import {
-    Send,
     ThumbUp
 } from "@material-ui/icons";
 import Button from "@material-ui/core/Button/Button";
@@ -18,7 +16,6 @@ import CardContent from "@material-ui/core/CardContent/CardContent";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {authService} from "../../service/generic/AuthService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
-import TextField from "@material-ui/core/TextField/TextField";
 import UserComment from "./UserComment";
 import * as moment from 'moment';
 import Avatar from "@material-ui/core/Avatar/Avatar";
@@ -26,6 +23,7 @@ import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
 import Waypoint from "react-waypoint";
 import {MemeComment} from "../../service/generic/MemeComment";
+import CommentPoster from "./CommentPoster";
 
 
 const styles = theme => ({
@@ -118,19 +116,6 @@ class MemeFullDisplay extends Component<{
         }
     };
 
-    post = () => {
-        this.state.meme.commentNumber++;
-        this.setState({meme: this.state.meme});//update ui
-        authService.getUserAction().postComment(this.state.meme.id, this.state.commentToPost).then(() => {
-            this.memeLink.refresh();//refresh meme on every action from user
-        }).catch(reason => {
-            //cancel previous operation
-            this.state.meme.commentNumber--;
-            this.setState({meme: this.state.meme});//update ui
-        });
-        this.setState({commentToPost: ""});//errase old comment value
-    };
-
     renderWaypoint = () => {
         if (this.state.displayWaypoint) {
             return (
@@ -181,28 +166,17 @@ class MemeFullDisplay extends Component<{
                 </div>
                 {this.state.loadingComment && <LoadingBlock/>}
                 {!this.state.loadingComment && <div>
-                    <TextField
-                        disabled={!this.state.logged}
-                        id="multiline-flexible"
-                        label="Post a comment"
-                        multiline
-                        rows="3"
-                        rowsMax="10"
-                        value={this.state.commentToPost}
-                        onChange={(event) => {
-                            this.setState({commentToPost: event.target.value,});
-                        }}
-                        margin="normal"
-                        fullWidth
-                        style={{marginTop: 0, paddingTop: 0}}
-                    />
-                    <Button variant="outlined" color="primary" aria-label="Post!"
-                            onClick={this.post}
-                            autoFocus={true}
-                            disabled={this.state.commentToPost.replace(new RegExp(" ", "g"), "") == "" || !this.state.logged}
-                    >
-                        <Send/>&nbsp;POST
-                    </Button>
+                    <CommentPoster memeLink={this.props.meme}
+                                   onPost={() => {
+                                       this.state.meme.commentNumber++;
+                                       this.setState({meme: this.state.meme});//update ui
+                                   }}
+                                   onPostValidated={() => {
+                                   }}
+                                   onPostCanceled={() => {
+                                       this.state.meme.commentNumber++;
+                                       this.setState({meme: this.state.meme});//update ui
+                                   }}/>
                     {
                         this.state.comments.map((comment, index, array) => {
                             return <div key={index}>

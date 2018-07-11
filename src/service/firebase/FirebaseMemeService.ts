@@ -103,6 +103,9 @@ export class FirebaseMemeService implements MemeServiceInterface {
                 return () => {
                 };
             },
+            refresh():Promise<string>{
+                return new Promise<string>(resolve => {resolve("ok")});
+            }
         };
     }
 

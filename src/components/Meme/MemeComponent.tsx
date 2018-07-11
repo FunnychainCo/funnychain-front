@@ -11,7 +11,6 @@ import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import CardActions from "@material-ui/core/CardActions/CardActions";
 import {
     ChatBubbleOutline,
-    Send,
     ThumbUp
 } from "@material-ui/icons";
 import Button from "@material-ui/core/Button/Button";
@@ -20,15 +19,15 @@ import CardContent from "@material-ui/core/CardContent/CardContent";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {authService} from "../../service/generic/AuthService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
-import TextField from "@material-ui/core/TextField/TextField";
 import UserComment from "./UserComment";
 import * as moment from 'moment';
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
 import {MemeComment} from "../../service/generic/MemeComment";
+import CommentPoster from "./CommentPoster";
 
 
 const styles = theme => ({
@@ -60,8 +59,8 @@ interface State {
 class MemeComponent extends Component<{
     meme: MemeLinkInterface,
     classes: any
-},State > {
-    state:State = {
+}, State> {
+    state: State = {
         meme: MEME_ENTRY_NO_VALUE,
         expanded: false,
         comments: [],
@@ -124,19 +123,6 @@ class MemeComponent extends Component<{
         }
     };
 
-    post = () => {
-        this.state.meme.commentNumber++;
-        this.setState({meme: this.state.meme});//update ui
-        authService.getUserAction().postComment(this.state.meme.id, this.state.commentToPost).then(() => {
-            this.memeLink.refresh();//refresh meme on every action from user
-        }).catch(reason => {
-            //cancel previous operation
-            this.state.meme.commentNumber--;
-            this.setState({meme: this.state.meme});//update ui
-        });
-        this.setState({commentToPost: ""});//errase old comment value
-    };
-
     handleExpandClick = () => {
         if (!this.state.expanded) {
             this.commentVisitor.loadMore(this.commentPerPage);
@@ -154,14 +140,16 @@ class MemeComponent extends Component<{
 
     render() {
         //const {classes} = this.props;
-        const MemeDisplayLink = (props) => <Link to={"/meme/"+encodeURIComponent(this.state.meme.id)} {...props} />
+        const MemeDisplayLink = (props) => <Link to={"/meme/" + encodeURIComponent(this.state.meme.id)} {...props} />
         return <Card>
-            <ButtonBase component={MemeDisplayLink} style={{width:"100%",justifyContent:"left"}}>
-            <CardHeader
-                title={this.state.meme.title}
-            />
+            <ButtonBase component={MemeDisplayLink} style={{width: "100%", justifyContent: "left"}}>
+                <CardHeader
+                    title={this.state.meme.title}
+                />
             </ButtonBase>
-            <ButtonBase className="memeImage" component={MemeDisplayLink}><img className="memeImage" src={this.state.meme.imageUrl} alt=""/></ButtonBase>
+            <ButtonBase className="memeImage" component={MemeDisplayLink}><img className="memeImage"
+                                                                               src={this.state.meme.imageUrl}
+                                                                               alt=""/></ButtonBase>
             <CardActions className="memeElementStyleDivContainer">
                 <Button variant="outlined"
                         color={this.state.meme.currentUserVoted ? "secondary" : "default"}
@@ -202,28 +190,17 @@ class MemeComponent extends Component<{
                     </div>
                     {this.state.loadingComment && <LoadingBlock/>}
                     {!this.state.loadingComment && <div>
-                        <TextField
-                            disabled={!this.state.logged}
-                            id="multiline-flexible"
-                            label="Post a comment"
-                            multiline
-                            rows="3"
-                            rowsMax="10"
-                            value={this.state.commentToPost}
-                            onChange={(event) => {
-                                this.setState({commentToPost: event.target.value,});
-                            }}
-                            margin="normal"
-                            fullWidth
-                            style={{marginTop: 0, paddingTop: 0}}
-                        />
-                        <Button variant="outlined" color="primary" aria-label="Post!"
-                                onClick={this.post}
-                                autoFocus={true}
-                                disabled={this.state.commentToPost.replace(new RegExp(" ", "g"), "") == "" || !this.state.logged}
-                        >
-                            <Send/>&nbsp;POST
-                        </Button>
+                        <CommentPoster memeLink={this.props.meme}
+                                       onPost={() => {
+                                           this.state.meme.commentNumber++;
+                                           this.setState({meme: this.state.meme});//update ui
+                                       }}
+                                       onPostValidated={() => {
+                                       }}
+                                       onPostCanceled={() => {
+                                           this.state.meme.commentNumber++;
+                                           this.setState({meme: this.state.meme});//update ui
+                                       }}/>
                         {
                             this.getComments().map((comment: MemeComment, index) => {
                                 return <UserComment key={index} comment={comment}/>
