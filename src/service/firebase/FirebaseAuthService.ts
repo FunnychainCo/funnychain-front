@@ -154,7 +154,7 @@ export class FirebaseAuthService {
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
                 let fireBaseUser = user.val();
                 if (fireBaseUser == null) {
-                    reject("");
+                    reject("uid does not exsist in database");
                     return;
                 }
                 firebaseMediaService.loadMediaEntry(fireBaseUser.avatarIid).then((avatar) => {

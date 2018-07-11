@@ -160,9 +160,17 @@ export class AuthService implements AuthServiceInterface {
     getLoggedUser(): Promise<UserEntry> {
         switch (this.mode) {
             case this.MODE_EMAIL:
-                return firebaseAuthService.getLoggedUser();
+                let loggedUser = firebaseAuthService.getLoggedUser();
+                loggedUser.catch(()=>{
+                    this.logout();//if this fail it means the current user is invalid we have to logout to recreate a new user at login
+                });
+                return loggedUser;
             case this.MODE_STEEM:
-                return steemConnectAuthService.getLoggedUser();
+                let loggedUser1 = steemConnectAuthService.getLoggedUser();
+                loggedUser1.catch(()=>{
+                    this.logout();//if this fail it means the current user is invalid we have to logout to recreate a new user at login
+                });
+                return loggedUser1;
             default:
                 return new Promise<UserEntry>(resolve => {
                     USER_ENTRY_NO_VALUE
