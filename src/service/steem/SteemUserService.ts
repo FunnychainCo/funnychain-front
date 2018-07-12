@@ -1,6 +1,7 @@
 import {UserServiceInterface} from "../generic/ApplicationInterface";
 import {PROVIDER_STEEM, UserEntry} from "../generic/UserEntry";
 import {loadUserAvatar} from "./generic/SteemUtils";
+import {forceUrlToHttps} from "../ImageUtil";
 
 export class SteemUserService implements UserServiceInterface {
 
@@ -12,7 +13,7 @@ export class SteemUserService implements UserServiceInterface {
                     provider:PROVIDER_STEEM,
                     email:"",
                     displayName: uid,
-                    avatarUrl: avatarUrl
+                    avatarUrl: forceUrlToHttps(avatarUrl)
                 });
             });
         });
