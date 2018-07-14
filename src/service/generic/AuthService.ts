@@ -174,7 +174,7 @@ export class AuthService implements AuthServiceInterface {
                 return loggedUser1;
             default:
                 return new Promise<UserEntry>(resolve => {
-                    USER_ENTRY_NO_VALUE
+                    resolve(USER_ENTRY_NO_VALUE);
                 });
         }
     }
