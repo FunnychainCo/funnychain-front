@@ -2,7 +2,7 @@ import {CommentsAction, MemeServiceAction} from "../../generic/ApplicationInterf
 import {constructMemeComment, constructMemePost, makeDelegatedUserDataV1} from "../generic/PostsMaker";
 import {getAuthorAndPermalink} from "../generic/SteemUtils";
 import {USER_ENTRY_NO_VALUE} from "../../generic/UserEntry";
-import {steemCommunityAccountService} from "../steemComunity/SteemCommunityAccountService";
+import {steemCommunityAccountService} from "./SteemCommunityAccountService";
 
 export class DsteemService implements MemeServiceAction, CommentsAction {
 

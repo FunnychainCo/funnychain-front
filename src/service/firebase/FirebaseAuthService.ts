@@ -118,7 +118,10 @@ export class FirebaseAuthService {
                             resolve("ok");
                         })
                         .catch(error => {
-                            reject(error);
+                            this.eventEmitter.emit('AuthStateChanged', user.uid);
+                            //Save process did fail but register succeeded => user will just have to login again after page is closed
+                            console.error(error);
+                            resolve("ok");
                         });
                 })
                 .catch(error => {
@@ -205,52 +208,62 @@ export class FirebaseAuthService {
         return firebaseInitAuthService.firebaseAuth().sendPasswordResetEmail(email)
     }
 
-    saveUser(user: FireBaseUser): Promise<string> {
-        return new Promise((resolve, reject) => {
-            let userNamePromised;
-            let iidPromised;
-            if (user.displayName !== null) {
-                userNamePromised = new Promise((resolve, reject) => {
-                    resolve(user.displayName);
+    generateUserName(user: FireBaseUser):Promise<string>{
+        let userNamePromised;
+        if (user.displayName !== null) {
+            userNamePromised = new Promise((resolve, reject) => {
+                resolve(user.displayName);
+            });
+        } else {
+            userNamePromised = new Promise((resolve, reject) => {
+                //configure default HTTP timeout
+                const httpClient = axios.create();
+                httpClient.defaults.timeout = 20000;//ms
+                httpClient.get(backEndPropetiesProvider.getProperty('USERNAME_GENERATION_SERVICE')).then(response => {
+                    let username = response.data;
+                    resolve(username);
+                }).catch(error => {
+                    console.error("fail to generate user name");
+                    resolve("Toto");
                 });
-            } else {
-                userNamePromised = new Promise((resolve, reject) => {
-                    //configure default HTTP timeout
-                    const httpClient = axios.create();
-                    httpClient.defaults.timeout = 20000;//ms
-                    httpClient.get(backEndPropetiesProvider.getProperty('USERNAME_GENERATION_SERVICE')).then(response => {
-                        let username = response.data;
-                        resolve(username);
-                    }).catch(error => {
-                        console.error("fail to generate user name");
-                        resolve("Toto");
+            });
+        }
+        return userNamePromised;
+    }
+
+    generateUserAvatarIid(user: FireBaseUser):Promise<string>{
+        let iidPromised;
+        if (user.photoURL !== null) {
+            iidPromised = new Promise((resolve) => {
+                firebaseMediaService.createMediaEntry(user.photoURL, user.uid).then((fileId) => {
+                    resolve(fileId);
+                });
+            });
+        } else {
+            iidPromised = new Promise((resolve) => {
+                const httpClient = axios.create();
+                httpClient.defaults.timeout = 20000;//ms
+                httpClient.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
+                    let url = response.data;
+                    firebaseMediaService.createMediaEntry(url, user.uid).then((fileId) => {
+                        resolve(fileId);
                     });
-                });
-            }
-            if (user.photoURL !== null) {
-                //TODO implement this case
-                iidPromised = new Promise((resolve, reject) => {
-                    firebaseMediaService.createMediaEntry(user.photoURL, user.uid).then((fileId) => {
+                }).catch(error => {
+                    console.error("fail to generate avatar image");
+                    firebaseMediaService.createMediaEntry("https://avatar.admin.rphstudio.net/avatar/avatars/avatar-044.jpeg", user.uid).then((fileId) => {
                         resolve(fileId);
                     });
                 });
-            } else {
-                iidPromised = new Promise((resolve, reject) => {
-                    const httpClient = axios.create();
-                    httpClient.defaults.timeout = 20000;//ms
-                    httpClient.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
-                        let url = response.data;
-                        firebaseMediaService.createMediaEntry(url, user.uid).then((fileId) => {
-                            resolve(fileId);
-                        });
-                    }).catch(error => {
-                        console.error("fail to generate user name");
-                        reject("fail to generate user name");//TODO default avatar in this case
-                    });
-                });
-            }
-            userNamePromised.then(username => {
-                iidPromised.then(iid => {
+            });
+        }
+        return iidPromised;
+    }
+
+    saveUser(user: FireBaseUser): Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.generateUserName(user).then(username => {
+                this.generateUserAvatarIid(user).then(iid => {
+                    console.log("saving generated user :"+username+" - "+iid);
                     firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid)
                         .set({
                             uid: user.uid,

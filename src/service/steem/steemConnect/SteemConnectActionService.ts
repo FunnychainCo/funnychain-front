@@ -1,7 +1,7 @@
 import {CommentsAction, MemeServiceAction} from "../../generic/ApplicationInterface";
 import {constructMemeComment, constructMemePost} from "../generic/PostsMaker";
 import {getAuthorAndPermalink} from "../generic/SteemUtils";
-import {steemConnectAuthService} from "../steemConnect/SteemConnectAuthService";
+import {steemConnectAuthService} from "./SteemConnectAuthService";
 
 export class SteemConnectActionService implements MemeServiceAction, CommentsAction {
 

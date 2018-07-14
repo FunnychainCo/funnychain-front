@@ -4,8 +4,8 @@ import {USER_ENTRY_NO_VALUE, UserEntry} from "./UserEntry";
 import * as EventEmitter from "eventemitter3";
 import * as store from 'store';
 import {UserActionInterface} from "./ApplicationInterface";
-import {steemConnectActionService} from "../steem/action/SteemConnectActionService";
-import {dsteemActionService} from "../steem/action/DsteemActionService";
+import {steemConnectActionService} from "../steem/steemConnect/SteemConnectActionService";
+import {dsteemActionService} from "../steem/steemComunity/DsteemActionService";
 import {steemCommunityAccountService} from "../steem/steemComunity/SteemCommunityAccountService";
 
 export interface MailAuthServiceInterface {
