@@ -8,10 +8,6 @@ import * as React from 'react';
 import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import CardActions from "@material-ui/core/CardActions/CardActions";
-import {
-    ThumbUp
-} from "@material-ui/icons";
-import Button from "@material-ui/core/Button/Button";
 import CardContent from "@material-ui/core/CardContent/CardContent";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {authService} from "../../service/generic/AuthService";
@@ -24,6 +20,7 @@ import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
 import Waypoint from "react-waypoint";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
+import MemeUpvoteButton from "./MemeUpvoteButton";
 
 
 const styles = theme => ({
@@ -86,7 +83,7 @@ class MemeFullDisplay extends Component<{
         this.commentVisitor = this.memeLink.getCommentVisitor();
         this.removeListnerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concatResult: MemeComment[] = this.state.comments;
-            concatResult=concatResult.concat(comments);
+            concatResult = concatResult.concat(comments);
             this.setState({comments: concatResult, loadingComment: false});
         });
         //initialize
@@ -98,23 +95,6 @@ class MemeFullDisplay extends Component<{
         this.removeListenerMemeLink();
         this.removeListnerCommentVisitor();
     }
-
-    upvote = () => {
-        if (this.state.meme.currentUserVoted !== true) {
-            this.state.meme.currentUserVoted = true;
-            this.state.meme.voteNumber++;
-            this.setState({meme: this.state.meme});//update ui
-            authService.getUserAction().vote(this.state.meme.id).then(() => {
-                this.memeLink.refresh();//refresh meme on every action from user
-            }).catch(reason => {
-                console.log(reason);
-                //cancel previous operation
-                this.state.meme.currentUserVoted = false;
-                this.state.meme.voteNumber--;
-                this.setState({meme: this.state.meme});//update ui
-            });
-        }
-    };
 
     renderWaypoint = () => {
         if (this.state.displayWaypoint) {
@@ -139,14 +119,9 @@ class MemeFullDisplay extends Component<{
             />
             <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
             <CardActions className="memeElementStyleDivContainer">
-                <Button variant="outlined"
-                        color={this.state.meme.currentUserVoted ? "secondary" : "default"}
-                        aria-label="Upvote"
-                        disabled={!this.state.logged}
-                        onClick={this.upvote}>
-                    {this.state.meme.voteNumber}&nbsp;
-                    <ThumbUp style={{height: "0.7em"}}/>
-                </Button>
+                <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
+                    this.memeLink.refresh();
+                }}/>
                 <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue}</div>
             </CardActions>
             <CardContent style={{marginTop: 0, paddingTop: 0}}>
@@ -181,7 +156,7 @@ class MemeFullDisplay extends Component<{
                         this.state.comments.map((comment, index, array) => {
                             return <div key={index}>
                                 <UserComment key={index} comment={comment}/>
-                                {((index == array.length - 5) || (array.length<=5 && index==array.length-1)) &&
+                                {((index == array.length - 5) || (array.length <= 5 && index == array.length - 1)) &&
                                 this.renderWaypoint()
                                 }
                             </div>

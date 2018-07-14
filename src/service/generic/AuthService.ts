@@ -6,6 +6,7 @@ import * as store from 'store';
 import {UserActionInterface} from "./ApplicationInterface";
 import {steemConnectActionService} from "../steem/action/SteemConnectActionService";
 import {dsteemActionService} from "../steem/action/DsteemActionService";
+import {steemCommunityAccountService} from "../steem/steemComunity/SteemCommunityAccountService";
 
 export interface MailAuthServiceInterface {
     //specific email pasword auth
@@ -105,7 +106,7 @@ export class AuthService implements AuthServiceInterface {
                 firebaseAuthService.start();
                 this.removeAuthListener = firebaseAuthService.onAuthStateChanged((userDataReceived: UserEntry) => {
                     if (this.mode == this.MODE_EMAIL) {
-                        dsteemActionService.start(userDataReceived);
+                        steemCommunityAccountService.start(userDataReceived);
                         this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);
                     } else {
                         throw new Error("invalid mode");

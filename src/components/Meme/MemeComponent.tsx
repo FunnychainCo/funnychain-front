@@ -10,8 +10,7 @@ import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import CardActions from "@material-ui/core/CardActions/CardActions";
 import {
-    ChatBubbleOutline,
-    ThumbUp
+    ChatBubbleOutline
 } from "@material-ui/icons";
 import Button from "@material-ui/core/Button/Button";
 import Collapse from "@material-ui/core/Collapse/Collapse";
@@ -28,6 +27,7 @@ import {Link} from 'react-router-dom';
 import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
+import MemeUpvoteButton from "./MemeUpvoteButton";
 
 
 const styles = theme => ({
@@ -151,14 +151,9 @@ class MemeComponent extends Component<{
                                                                                src={this.state.meme.imageUrl}
                                                                                alt=""/></ButtonBase>
             <CardActions className="memeElementStyleDivContainer">
-                <Button variant="outlined"
-                        color={this.state.meme.currentUserVoted ? "secondary" : "default"}
-                        aria-label="Upvote"
-                        disabled={!this.state.logged}
-                        onClick={this.upvote}>
-                    {this.state.meme.voteNumber}&nbsp;
-                    <ThumbUp style={{height: "0.7em"}}/>
-                </Button>
+                <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
+                    this.memeLink.refresh();
+                }}/>
                 <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue}</div>
                 <div style={{marginLeft: 'auto'}}>
                     <Button variant="outlined"

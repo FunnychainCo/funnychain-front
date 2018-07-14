@@ -1,12 +1,12 @@
 import {firebaseAuthService} from "../firebase/FirebaseAuthService";
 import {steemUserService} from "../steem/SteemUserService";
 import {UserEntry} from "./UserEntry";
+import {steemCommunityAccountService} from "../steem/steemComunity/SteemCommunityAccountService";
 
 export class UserService {
 
     loadUserData(uid: string): Promise<UserEntry> {
-        //TODO find/make a better discriminent for uid
-        if(uid.length===28){
+        if(steemCommunityAccountService.isCommunityAccount(uid)){
             //firebase
             return firebaseAuthService.loadUserData(uid);
         }else{

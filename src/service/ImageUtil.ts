@@ -8,10 +8,17 @@ export function forceUrlToHttps(url:string):string{
     }
 }
 
+export function failIfNoHttps(url:string):void{
+    if(!url.startsWith("https")){
+        throw new Error("no https on url => "+url);
+    }
+}
+
 export function preLoadImage(src:string):Promise<string> {
     return new Promise<string>((resolve,reject) =>{
         let image = new Image();
-        src = forceUrlToHttps(src);
+        //src = forceUrlToHttps(src);
+        failIfNoHttps(src);
         image.src = src;
         image.onload = () => {
             //console.log("loaded image: "+src);
