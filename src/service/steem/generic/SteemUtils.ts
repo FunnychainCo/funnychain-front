@@ -5,6 +5,7 @@ import {PROVIDER_STEEM} from "../../generic/UserEntry";
 import {idService} from "../../IdService";
 import {authService} from "../../generic/AuthService";
 import {steemCommunityAccountService} from "../steemComunity/SteemCommunityAccountService";
+import {firebaseUpvoteService} from "../../firebase/FirebaseUpvoteService";
 
 export function getAvatarURLFromSteemUserAccount(steemUserAccount: string): string {
     return "https://steemitimages.com/u/" + steemUserAccount + "/avatar";
@@ -37,6 +38,34 @@ export function loadUserAvatar(user: string): Promise<string> {
     });
 }
 
+/*
+TODO use that to avoid confusion between ids
+interface SteemId extends String{
+
+}*/
+
+function hasVotedOnPost(steemPost: dsteem.Discussion): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+        authService.getLoggedUser().then(currentUserData => {
+            let currentUser = currentUserData.uid;
+            if (steemCommunityAccountService.isCommunityAccount(currentUser)) {
+                firebaseUpvoteService.hasVotedOnPost(steemPost.url, steemCommunityAccountService.delegateUserEntry.uid).then(value => {
+                    resolve(value);
+                })
+            } else {
+                //user can be "" in case user is not authed
+                let currentUserVoted = false;
+                steemPost.active_votes.forEach((vote: any) => {
+                    if (vote.voter === currentUser) {
+                        currentUserVoted = true;
+                    }
+                });
+                resolve(currentUserVoted)
+            }
+        });
+    });
+}
+
 export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): Promise<Meme> {
     let promise = new Promise<Meme>((resolve, reject) => {
         try {
@@ -47,62 +76,53 @@ export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): 
                 avatarURL = jsonMetaData.delegatedOwner.url;
             }
             preloadImageWithFallBackURL(avatarURL).then((avatarUrl => {
-                let currentUserVoted = false;
-                authService.getLoggedUser().then(currentUserData => {
-                    let currentUser = currentUserData.uid;
-                    if(steemCommunityAccountService.isCommunityAccount(currentUser)){
-                        currentUser = steemCommunityAccountService.getCommunitySteemAccountName();
-                    }
-                    //user can be "" in case user is not authed
-                    steemPost.active_votes.forEach((vote: any) => {
-                        if (vote.voter === currentUser) {
-                            currentUserVoted = true;
+                hasVotedOnPost(steemPost).then(currentUserVoted => {
+                    firebaseUpvoteService.countVote(steemPost.url).then((communityVoteCount:number) => {
+                        //json_metadata:"{"tags":["dmania","meme","funny","punchline","lol"],"image":["https://s3-eu-west-1.amazonaws.com/dmania-images/machine-learning-f4p3k2i.jpg"],"app":"dmania/0.7"}"
+                        let jsonMetadata: {
+                            tags: string[],
+                            image: string[],
+                            links: string[],
+                            app: string
+                        } = JSON.parse(steemPost.json_metadata);
+                        //check json format
+                        if (jsonMetadata.image == undefined) {
+                            resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                            return;
                         }
-                    });
-                    //json_metadata:"{"tags":["dmania","meme","funny","punchline","lol"],"image":["https://s3-eu-west-1.amazonaws.com/dmania-images/machine-learning-f4p3k2i.jpg"],"app":"dmania/0.7"}"
-                    let jsonMetadata: {
-                        tags: string[],
-                        image: string[],
-                        links: string[],
-                        app: string
-                    } = JSON.parse(steemPost.json_metadata);
-                    //check json format
-                    if (jsonMetadata.image == undefined) {
-                        resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                        return;
-                    }
-                    if (jsonMetadata.image.length != 1) {
-                        resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                        return;
-                    }
-                    let memeImgUrl = jsonMetadata.image[0];
-                    preLoadImage(memeImgUrl).then(memeImgUrl => {
-                        let newMeme: Meme = {
-                            id: steemPost.url,
-                            created: new Date(steemPost.created),
-                            title: steemPost.title,
-                            imageUrl: memeImgUrl,
-                            commentNumber: steemPost.children,
-                            voteNumber: steemPost.net_votes,
-                            dolarValue: Number(steemPost.pending_payout_value.toString().replace(" SBD", "")),
-                            user: {
-                                uid: steemPost.author,
-                                provider: PROVIDER_STEEM,
-                                email: "",
-                                displayName: steemPost.author,
-                                avatarUrl: avatarUrl
-                            },
-                            currentUserVoted: currentUserVoted,
-                            order: orderNumber
-                        };
-                        resolve(newMeme);
-                    }).catch(reason => {
-                        resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                        console.error(reason);//preload failed
-                    });
+                        if (jsonMetadata.image.length != 1) {
+                            resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                            return;
+                        }
+                        let memeImgUrl = jsonMetadata.image[0];
+                        preLoadImage(memeImgUrl).then(memeImgUrl => {
+                            let newMeme: Meme = {
+                                id: steemPost.url,
+                                created: new Date(steemPost.created),
+                                title: steemPost.title,
+                                imageUrl: memeImgUrl,
+                                commentNumber: steemPost.children,
+                                voteNumber: steemPost.net_votes + communityVoteCount,
+                                dolarValue: Number(steemPost.pending_payout_value.toString().replace(" SBD", "")),
+                                user: {
+                                    uid: steemPost.author,
+                                    provider: PROVIDER_STEEM,
+                                    email: "",
+                                    displayName: steemPost.author,
+                                    avatarUrl: avatarUrl
+                                },
+                                currentUserVoted: currentUserVoted,
+                                order: orderNumber
+                            };
+                            resolve(newMeme);
+                        }).catch(reason => {
+                            resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
+                            console.error(reason);//preload failed
+                        });
+                    })
                 }).catch(reason => {
                     resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                    console.error(reason);//preload failed
+                    console.error(reason);
                 });
             })).catch(reason => {
                 resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work

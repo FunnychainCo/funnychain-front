@@ -3,6 +3,7 @@ import {constructMemeComment, constructMemePost, makeDelegatedUserDataV1} from "
 import {getAuthorAndPermalink} from "../generic/SteemUtils";
 import {USER_ENTRY_NO_VALUE} from "../../generic/UserEntry";
 import {steemCommunityAccountService} from "./SteemCommunityAccountService";
+import {firebaseUpvoteService} from "../../firebase/FirebaseUpvoteService";
 
 export class DsteemService implements MemeServiceAction, CommentsAction {
 
@@ -64,12 +65,10 @@ export class DsteemService implements MemeServiceAction, CommentsAction {
         });
     }
 
-    vote(url: string): Promise<string> {
-        if(steemCommunityAccountService.delegateUserEntry===USER_ENTRY_NO_VALUE){
-            throw Error("invalid user");
-        }
+    performSteemCommunityVote(url: string):Promise<string>{
         return new Promise<string>((resolve, reject) => {
             let owner = steemCommunityAccountService.currentAccount;
+
             let authorAndPermalink = getAuthorAndPermalink(url);
             let privateKey = steemCommunityAccountService.accounts[steemCommunityAccountService.currentAccount].privateKey;
             steemCommunityAccountService.dSteemClient.broadcast.vote({
@@ -85,6 +84,23 @@ export class DsteemService implements MemeServiceAction, CommentsAction {
                 }
             });
         });
+    }
+
+    vote(url: string): Promise<string> {
+        if(steemCommunityAccountService.delegateUserEntry===USER_ENTRY_NO_VALUE){
+            throw Error("invalid user");
+        }
+        return new Promise<string>(resolve => {
+            let delegatedUserId = steemCommunityAccountService.delegateUserEntry.uid;
+            firebaseUpvoteService.vote(url,delegatedUserId).then(value => {
+                this.performSteemCommunityVote(url).then(value1 => {
+                    resolve("ok");
+                }).catch(reason => {
+                    //we do not care if this fail the firebase vote s the important one for the community
+                    resolve("ok");
+                })
+            });
+        })
     }
 
 }
