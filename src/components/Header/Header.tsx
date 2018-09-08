@@ -68,7 +68,7 @@ class Header extends Component<{
         //const TrendingTabLink = (props) => <Link to={"/trending"} {...props} />;
         const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
         return (
-            <AppBar position="static">
+            <AppBar position="sticky">
                 <Toolbar>
                     <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png" alt="logo"/>
                     <Typography variant="title" color="inherit" className={classes.flex}>
