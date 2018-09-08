@@ -71,10 +71,12 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                     memesComments.push(new Promise<MemeComment>((resolve) => {
                         let avatarURL = getAvatarURLFromSteemUserAccount(comment.author);
                         try {
-                            let jsonMetaData: any = JSON.parse(comment.json_metadata);
-                            if (jsonMetaData.delegatedOwner !== undefined) {
-                                comment.author = jsonMetaData.delegatedOwner.name;
-                                avatarURL = jsonMetaData.delegatedOwner.url;
+                            if(comment.json_metadata!=="") {
+                                let jsonMetaData: any = JSON.parse(comment.json_metadata);
+                                if (jsonMetaData.delegatedOwner !== undefined) {
+                                    comment.author = jsonMetaData.delegatedOwner.name;
+                                    avatarURL = jsonMetaData.delegatedOwner.url;
+                                }
                             }
                         }catch (e) {
                             console.error(e);
