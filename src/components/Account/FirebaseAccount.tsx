@@ -7,6 +7,9 @@ import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import AvatarAccountManagement from "./AvatarAccountManagement";
 import CommonAccountManagement from "./CommonAccountManagement";
 import EmailAccountManagement from "./EmailAccountManagement";
+import Divider from "@material-ui/core/Divider";
+import ExternalLinkAccount from "./ExternalLinkAccount";
+import WalletAccount from "./WalletAccount";
 
 export default class FirebaseAccount extends Component<{
     onLogout: () => void
@@ -49,8 +52,15 @@ export default class FirebaseAccount extends Component<{
                     </div>
                     <div className="fcLeftAlignContainer">
                         <div className="fcContent">
+                            <Divider />
+                            <WalletAccount/>
+                            <Divider />
                             <EmailAccountManagement/>
+                            <Divider/>
+                            <ExternalLinkAccount />
+                            <Divider />
                             <CommonAccountManagement onLogout={this.props.onLogout}/>
+                            <Divider />
                         </div>
                     </div>
                 </div>}

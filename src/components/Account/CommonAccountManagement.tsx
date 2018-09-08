@@ -5,8 +5,8 @@ import VpnKey from '@material-ui/icons/VpnKey';
 
 import "./Account.css";
 import {pwaService} from "../../service/mobile/PWAService";
-import Button from "@material-ui/core/Button/Button";
-import {ChatBubble} from "@material-ui/icons";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 
 export default class CommonAccountManagement extends Component<{ onLogout: () => void }, {
     displayAddToHomeButton: boolean
@@ -16,7 +16,7 @@ export default class CommonAccountManagement extends Component<{ onLogout: () =>
     }
     private removeListenerPWA: () => void;
 
-    componentWillMount(){
+    componentWillMount() {
         this.removeListenerPWA = pwaService.on((callback) => {
             this.setState({displayAddToHomeButton: callback == null ? false : true});
         });
@@ -28,23 +28,21 @@ export default class CommonAccountManagement extends Component<{ onLogout: () =>
 
     render() {
         return (
+
             <div className="fcContent">
-                <Button onClick={() => {
-                    window.location.href = "https://discord.gg/9NmfPXc"
-                }}>
-                    <ChatBubble/>&nbsp;&nbsp;Join on discord
-                </Button><br/>
-                <Button onClick={() => {
+                <ListItem button onClick={() => {
                     authService.logout().then(() => {
                         console.log("logout");
                         this.props.onLogout();
                     });
-                }}
-                ><VpnKey/>&nbsp;&nbsp;Logout</Button><br/>
+                }}><VpnKey/><ListItemText primary="Logout"/>
+                </ListItem>
+
                 {this.state.displayAddToHomeButton &&
-                <Button onClick={() => {
+                <ListItem button onClick={() => {
                     pwaService.triggerAddToHomeScreen();
-                }}><VpnKey/>&nbsp;&nbsp;Add app to Home Screen</Button>}
+                }}><VpnKey/><ListItemText primary="Add app to Home Screen"/>
+                </ListItem>}
             </div>
         )
     }

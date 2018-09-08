@@ -14,6 +14,8 @@ import TextField from "@material-ui/core/TextField/TextField";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import {userService} from "../../service/generic/UserService";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 
 export default class EmailAccountManagement extends Component<{}, {
     user:UserEntry,
@@ -166,9 +168,16 @@ export default class EmailAccountManagement extends Component<{}, {
     render() {
         return (
             <div className="fcContent">
-                <Button onClick={this.openChangeDisplayName}><ModeEdit/>&nbsp;&nbsp;{this.state.user.displayName}</Button><br/>
-                <Button onClick={this.openChangeEmail}><ModeEdit/>&nbsp;&nbsp;{this.state.user.email}</Button><br/>
-                <Button onClick={this.openChangePassword}><VpnKey/>&nbsp;&nbsp;Change password</Button><br/>
+
+                <ListItem button onClick={this.openChangeDisplayName}>
+                    <ModeEdit /><ListItemText primary={this.state.user.displayName} />
+                </ListItem>
+                <ListItem button onClick={this.openChangeEmail}>
+                    <ModeEdit /><ListItemText primary={this.state.user.email} />
+                </ListItem>
+                <ListItem button onClick={this.openChangePassword}>
+                    <VpnKey /><ListItemText primary="Change password" />
+                </ListItem>
                 <ModalPage
                     open={this.state.dialog.open}
                     onRequestClose={this.handleClose}
