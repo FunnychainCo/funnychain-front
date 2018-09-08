@@ -65,7 +65,7 @@ class Header extends Component<{
     render() {
         const {classes} = this.props;
         const HotTabLinkLink = (props) => <Link to={"/hot"} {...props} />;
-        const TrendingTabLink = (props) => <Link to={"/trending"} {...props} />;
+        //const TrendingTabLink = (props) => <Link to={"/trending"} {...props} />;
         const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
         return (
             <AppBar position="static">
@@ -80,7 +80,7 @@ class Header extends Component<{
                             indicatorColor="primary"
                         >
                             <Tab label="Hot" style={{minWidth: '30px'}} component={HotTabLinkLink}/>
-                            <Tab label="Trending" style={{minWidth: '30px'}}  component={TrendingTabLink}/>
+                            {/*<Tab label="Trending" style={{minWidth: '30px'}}  component={TrendingTabLink}/>*/}
                             <Tab label="Fresh" style={{minWidth: '30px'}}  component={FreshTabLink}/>
                         </Tabs>
                     </Typography>
