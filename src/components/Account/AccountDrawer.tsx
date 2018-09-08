@@ -34,8 +34,10 @@ export default class AccountDrawer extends Component<{
         return (
             <Drawer open={this.props.open}
                     onClose={() => this.props.onRequestChange(false)}>
-                {this.state.user.provider==PROVIDER_STEEM && <SteemAccount onLogout={() => this.props.onRequestChange(false)}/>}
-                {this.state.user.provider==PROVIDER_FIREBASE_MAIL && <FirebaseAccount onLogout={() => this.props.onRequestChange(false)}/>}
+                <div style={{minWidth:"40px"}}>
+                    {this.state.user.provider==PROVIDER_STEEM && <SteemAccount onLogout={() => this.props.onRequestChange(false)}/>}
+                    {this.state.user.provider==PROVIDER_FIREBASE_MAIL && <FirebaseAccount onLogout={() => this.props.onRequestChange(false)}/>}
+                </div>
             </Drawer>
         )
     }
