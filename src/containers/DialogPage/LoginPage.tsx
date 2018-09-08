@@ -1,6 +1,6 @@
 import {Component} from 'react'
 import * as React from 'react'
-import LoginRegisterDialog from "../../components/LoginDialog/LoginRegisterDialog";
+import LoginRegisterDialogV2 from "../../components/LoginDialog/LoginRegisterDialogV2";
 
 export default class LoginPage extends Component<{
     match: any,
@@ -13,6 +13,6 @@ export default class LoginPage extends Component<{
     }
 
     render() {
-        return (<LoginRegisterDialog open={true} onRequestClose={()=>{this.goBack()}}/>)
+        return (<LoginRegisterDialogV2 open={true} onRequestClose={()=>{this.goBack()}}/>)
     }
 }
