@@ -1,11 +1,12 @@
 import * as firebase from "firebase";
+import {DATABASE_UPVOTES} from "./shared/FireBaseDBDefinition";
 
 export class FirebaseUpvoteService {
-    dataBase = "upvotes"
+    dataBase = DATABASE_UPVOTES
 
-    hasVotedOnPost(url: string, uid: string): Promise<boolean> {
+    hasVotedOnPost(memeId: string, uid: string): Promise<boolean> {
         return new Promise<boolean>(resolve => {
-            firebase.database().ref(this.dataBase + "/" + this.makeDataBaseIdFromUrl(url)).once("value", (data) => {
+            firebase.database().ref(this.dataBase + "/" + memeId).once("value", (data) => {
                 let value: any[] = data.val();
                 let userHasVoted = false;
                 if(value!=null) {
@@ -20,9 +21,9 @@ export class FirebaseUpvoteService {
         });
     }
 
-    countVote(url: string): Promise<number> {
+    countVote(memeId: string): Promise<number> {
         return new Promise<number>(resolve => {
-            firebase.database().ref(this.dataBase + "/" + this.makeDataBaseIdFromUrl(url)).once("value", (data) => {
+            firebase.database().ref(this.dataBase + "/" + memeId).once("value", (data) => {
                 let value: any[] = data.val();
                 if(value==null){
                     resolve(0);
@@ -36,29 +37,9 @@ export class FirebaseUpvoteService {
         });
     }
 
-     static simpleHash(s:string):string {
-        /* Simple hash function. */
-        let a = 1, c = 0, h, o;
-        if (s) {
-            a = 0;
-            /*jshint plusplus:false bitwise:false*/
-            for (h = s.length - 1; h >= 0; h--) {
-                o = s.charCodeAt(h);
-                a = (a<<6&268435455) + o + (o<<14);
-                c = a & 266338304;
-                a = c!==0?a^c>>21:a;
-            }
-        }
-        return String(a);
-    }
-
-    makeDataBaseIdFromUrl(url: string): string {
-        return FirebaseUpvoteService.simpleHash(url);
-    }
-
-    vote(url: string, uid: string): Promise<string> {
+    vote(memeId: string, uid: string): Promise<string> {
         return new Promise<string>(resolve => {
-            firebase.database().ref(this.dataBase + '/' + this.makeDataBaseIdFromUrl(url)+"/"+uid).set(true).then(() => {
+            firebase.database().ref(this.dataBase + '/' + memeId+"/"+uid).set(new Date().getTime()).then(() => {
                 resolve("ok");
             });
         });

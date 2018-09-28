@@ -35,7 +35,7 @@ export class MemeLink implements MemeLinkInterface {
 
 
 
-    refresh(): Promise<any> {
+    refresh(): Promise<string> {
         if(this.lastValidMeme!==MEME_ENTRY_NO_VALUE) {
             this.eventEmitter.emit("onSingleMeme", this.lastValidMeme);
         }
@@ -46,6 +46,7 @@ export class MemeLink implements MemeLinkInterface {
                 promise.then(convertedMeme => {
                     this.lastValidMeme = convertedMeme;
                     this.eventEmitter.emit("onSingleMeme", convertedMeme);
+                    resolve("ok");
                 });
             });
         });

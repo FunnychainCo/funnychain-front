@@ -28,7 +28,7 @@ export default class ExternalLinkAccount extends Component<{}, {
                 </ListItem>
 
                 <ListItem button onClick={() => {
-                    window.location.href = "https://www.funnychain.co"
+                    window.location.href = "https://funnychain.co"
                 }}><Face/><ListItemText primary="Funnychain"/>
                 </ListItem>
 
@@ -63,8 +63,8 @@ export default class ExternalLinkAccount extends Component<{}, {
                 </ListItem>
 
                 <ListItem button onClick={() => {
-                    window.location.href = "https://www.funnychain.co"
-                }}><Reddit/><ListItemText primary="Reddit (soon)"/>
+                    window.location.href = "https://www.reddit.com/r/FunnyChain"
+                }}><Reddit/><ListItemText primary="Reddit"/>
                 </ListItem>
 
             </div>

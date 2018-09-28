@@ -9,7 +9,6 @@ import {authService} from "../../service/generic/AuthService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import Snackbar from "@material-ui/core/Snackbar/Snackbar";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
-//import {fileUploadService} from "../../service/generic/FileUploadService";
 
 export interface IState{
     files: any[],
@@ -30,8 +29,6 @@ export default class ImageUploaderDropZone extends Component<{
     maxSize?:number,
     onFileToUpload:(file:File)=>Promise<string>
 },any> {
-    storageBase = "images"
-    dataBase = "images"
     state:IState = {
         files: [],
         filename: '',
@@ -131,7 +128,7 @@ export default class ImageUploaderDropZone extends Component<{
                         onProgress={this.handleOnProgress}
                         onFail={this.handleOnFail}
                         done={this.handleDone}
-                        background=".image" // true or child selector
+                        background=".image"
                     >
                         <img className="fcImageContainerStyle" src={this.state.fileURL} alt=""/>
                     </ImagesLoaded>

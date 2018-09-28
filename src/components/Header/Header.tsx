@@ -41,7 +41,11 @@ class Header extends Component<{
     state = {
         currentSelected: false
     };
-    itemOrder = {"hot": 0, "trending": 1, "fresh": 2};
+    itemOrder = {
+        "hot": 0,
+        //"trending": 1,
+        "fresh": 1
+    };
 
     componentDidMount() {
         if(this.props.type!=="hot" && this.props.type!=="trending" && this.props.type!=="fresh"){

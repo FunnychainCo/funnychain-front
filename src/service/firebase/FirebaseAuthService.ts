@@ -1,10 +1,11 @@
 import {firebaseInitAuthService} from "../firebase/FirebaseInitAuthService";
 import axios from 'axios'
-import {firebaseMediaService} from "../firebase/FirebaseMediaService";
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import * as firebase from "firebase";
 import * as EventEmitter from "eventemitter3";
 import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
+import {fileUploadService} from "../generic/FileUploadService";
+import {DATABASE_USERS} from "./shared/FireBaseDBDefinition";
 
 export interface FireBaseUser {
     uid: string;
@@ -16,7 +17,7 @@ export interface FireBaseUser {
 }
 
 export class FirebaseAuthService {
-    userDataBaseName = "users";
+    userDataBaseName = DATABASE_USERS;
 
     eventEmitter = new EventEmitter<string>();
     currentUserUid: string = "";
@@ -97,14 +98,8 @@ export class FirebaseAuthService {
         return new Promise((resolve, reject) => {
             let user: any = firebase.auth().currentUser;
             delete this.userCache[user.uid];//invalidate cache
-            firebaseMediaService.createMediaEntry(newAvatarUrl,user.uid).then(newAvatarIid => {
-                firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
-                    .set(newAvatarIid)
-                    .then(() => {
-                        this.eventEmitter.emit('AuthStateChanged', user.uid);
-                        resolve("ok");
-                    });
-            })
+            this.eventEmitter.emit('AuthStateChanged', user.uid);
+            resolve("ok");
         });
     }
 
@@ -143,7 +138,9 @@ export class FirebaseAuthService {
             });
         };
         this.eventEmitter.on('AuthStateChanged', wrapedCallback);
-        wrapedCallback(this.currentUserUid);//initial call
+        if(this.currentUserUid!=="") {
+            wrapedCallback(this.currentUserUid);//initial call
+        }
         return () => {
             this.eventEmitter.off('AuthStateChanged', wrapedCallback)
         };
@@ -160,9 +157,9 @@ export class FirebaseAuthService {
                     reject("uid does not exsist in database");
                     return;
                 }
-                firebaseMediaService.loadMediaEntry(fireBaseUser.avatarIid).then((avatar) => {
+                fileUploadService.getMediaUrlFromImageID(fireBaseUser.avatarIid).then((avatarUrl) => {
                     let userData:UserEntry={
-                        avatarUrl: avatar.url,
+                        avatarUrl: avatarUrl,
                         email: fireBaseUser.email,
                         provider: PROVIDER_FIREBASE_MAIL,
                         displayName : fireBaseUser.displayName,
@@ -182,11 +179,25 @@ export class FirebaseAuthService {
         return firebaseInitAuthService.firebaseAuth().signOut()
     }
 
+    integrityAndMigrationScript(user:FireBaseUser) {
+        if(user.avatarIid.startsWith("0")){
+            this.generateUserAvatarIid(user).then(iid => {
+                firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid)
+                    .set({
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                        avatarIid: iid
+                    });
+            });
+        }
+    }
+
     login(email: string, pw: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             firebaseInitAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
                 firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
-                    let userValue = userData.val();
+                    let userValue:FireBaseUser = userData.val();
                     if (userValue === null) {
                         console.warn("user recreated : ", user);
                         this.saveUser(user).then(() => {
@@ -194,6 +205,7 @@ export class FirebaseAuthService {
                             resolve("ok");
                         });
                     } else {
+                        this.integrityAndMigrationScript(userValue);
                         resolve("ok");
                     }
                 });
@@ -234,27 +246,15 @@ export class FirebaseAuthService {
     generateUserAvatarIid(user: FireBaseUser):Promise<string>{
         let iidPromised;
         if (user.photoURL !== null) {
-            iidPromised = new Promise((resolve) => {
+            //TODO upload the user image to IPFS
+            /*iidPromised = new Promise((resolve) => {
                 firebaseMediaService.createMediaEntry(user.photoURL, user.uid).then((fileId) => {
                     resolve(fileId);
                 });
-            });
+            });*/
+            iidPromised = Promise.resolve("QmZv2L66Taw3gGZPSnmbFVb67AC4GkeFpCUeAKyesYXeYs");
         } else {
-            iidPromised = new Promise((resolve) => {
-                const httpClient = axios.create();
-                httpClient.defaults.timeout = 20000;//ms
-                httpClient.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
-                    let url = response.data;
-                    firebaseMediaService.createMediaEntry(url, user.uid).then((fileId) => {
-                        resolve(fileId);
-                    });
-                }).catch(error => {
-                    console.error("fail to generate avatar image");
-                    firebaseMediaService.createMediaEntry("https://avatar.admin.rphstudio.net/avatar/avatars/avatar-044.jpeg", user.uid).then((fileId) => {
-                        resolve(fileId);
-                    });
-                });
-            });
+            iidPromised = Promise.resolve("QmZv2L66Taw3gGZPSnmbFVb67AC4GkeFpCUeAKyesYXeYs");
         }
         return iidPromised;
     }

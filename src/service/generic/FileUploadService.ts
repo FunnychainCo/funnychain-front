@@ -11,6 +11,13 @@ export class FileUploadService implements FileUploadServiceInterface{
         return ipfsFileUploadService.uploadFile(file);
     }
 
+    getMediaUrlFromImageID(iid:string):Promise<string>{
+        /*if(iid.startsWith("0")){
+            //media service image
+        }*/
+        return Promise.resolve(ipfsFileUploadService.convertIPFSHashToIPFSLink(iid));
+    }
+
 }
 
 export let fileUploadService = new FileUploadService();

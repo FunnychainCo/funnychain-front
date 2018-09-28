@@ -1,15 +1,11 @@
 import * as firebase from 'firebase';
-import {idService} from "../IdService";
-import {preLoadImage} from "../ImageUtil";
-
-interface MediaEntry {
-    uid: string,
-    url: string
-}
+import {idService} from "../../IdService";
+import {preLoadImage} from "../../ImageUtil";
+import {DATABASE_MEDIA, MediaEntry} from "../shared/FireBaseDBDefinition";
 
 export default class MediaService {
 
-    imageDataBase = "images"
+    imageDataBase = DATABASE_MEDIA;
 
     createMediaEntry(url, ownerUid):Promise<string> {
         return new Promise((resolve) => {
