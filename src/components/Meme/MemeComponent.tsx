@@ -154,7 +154,7 @@ class MemeComponent extends Component<{
                 <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
                     this.memeLink.refresh();
                 }}/>
-                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue}</div>
+                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue.toFixed(2)}</div>
                 <div style={{marginLeft: 'auto'}}>
                     <Button variant="outlined"
                             onClick={this.handleExpandClick}

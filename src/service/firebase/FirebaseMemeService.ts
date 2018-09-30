@@ -7,7 +7,7 @@ import {
 } from "../generic/ApplicationInterface";
 import * as Q from 'q';
 import {UserEntry} from "../generic/UserEntry";
-import {IPFSMeme, Meme, MEME_ENTRY_NO_VALUE} from "../generic/Meme";
+import {IPFSMeme, Meme, MEME_ENTRY_NO_VALUE, MEME_TYPE_FRESH, MEME_TYPE_HOT} from "../generic/Meme";
 import axios from 'axios'
 import {ipfsFileUploadService} from "../IPFSFileUploader/IPFSFileUploadService";
 import {userService} from "../generic/UserService";
@@ -16,14 +16,14 @@ import {firebaseCommentService} from "./FirebaseCommentService";
 import * as EventEmitter from "eventemitter3";
 import {firebaseUpvoteService} from "./FirebaseUpvoteService";
 import {authService} from 'src/service/generic/AuthService';
-import {DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
+import {DATABASE_HOTS, DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
 
 export class FirebaseMemeService implements MemeServiceInterface {
     getMemeLink(id: string, order: number): MemeLinkInterface {
         return new MemeLink(id,order);
     }
     getMemeLoader(type: string, tags: string[]): MemeLoaderInterface {
-        return new MemeLoader();
+        return new MemeLoader(type,tags);
     }
 
 }
@@ -111,12 +111,17 @@ class MemeLink implements MemeLinkInterface{
 }
 
 class MemeLoader implements MemeLoaderInterface{
+
+
+    constructor(public type:string,public tags:string[]) {
+    }
+
     loadMore(limit: number) {
     }
 
     dataBase = DATABASE_MEMES;
 
-    onFirebaseItem(callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
+    onFirebaseFresh(callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
         let ref = firebase.database().ref(this.dataBase);
         let toremove = ref.on("value", (memes) => {
             if (memes == null) {
@@ -134,8 +139,38 @@ class MemeLoader implements MemeLoaderInterface{
         };
     }
 
+    onFirebaseHot(callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
+        let db = firebase.database();
+        let toremove = db.ref(DATABASE_HOTS).on("value", (hots) => {
+            if (hots == null) {
+                console.error(hots);
+                return;
+            }
+            let hotsList = hots.val() || {};
+            hotsList = Object.keys(hotsList);
+            hotsList.forEach( hotMeme => {
+                //read the hot meme
+                db.ref(DATABASE_MEMES+"/"+hotMeme).once("value",(memes) => {
+                    if (memes == null) {
+                        console.error(memes);
+                        return;
+                    }
+                    let memesValue: FirebaseMeme = memes.val() || {};
+                    let ret = {};
+                    ret[memesValue.memeIpfsHash] = memesValue;
+                    callback(ret);
+                });
+            });
+        }, (errorObject) => {
+            console.log("The read failed: " + errorObject.code);
+        });
+        return () => {
+            db.ref(DATABASE_HOTS).off("value", toremove);
+        };
+    }
+
     on(callback: (memes: MemeLinkInterface[]) => void): () => void {
-        return this.onFirebaseItem(memes => {
+        let convertor = (memes) => {
             let memesPromise: Promise<Meme>[] = [];
             Object.keys(memes).forEach(memeID => {
                 let meme:FirebaseMeme = memes[memeID];
@@ -150,9 +185,16 @@ class MemeLoader implements MemeLoaderInterface{
                 });
                 callback(memeLinkData);
             });
-        });
+        };
+        if(this.type===MEME_TYPE_HOT){
+            return this.onFirebaseHot(convertor);
+        }else if(this.type===MEME_TYPE_FRESH){
+            return this.onFirebaseFresh(convertor);
+        }else{
+            console.error("invalid meme loader type");
+            return this.onFirebaseFresh(convertor);
+        }
     }
-
 
     refresh() {
     }

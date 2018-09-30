@@ -109,7 +109,8 @@ export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): 
                                     provider: PROVIDER_STEEM,
                                     email: "",
                                     displayName: steemPost.author,
-                                    avatarUrl: avatarUrl
+                                    avatarUrl: avatarUrl,
+                                    wallet:0
                                 },
                                 currentUserVoted: currentUserVoted,
                                 order: orderNumber

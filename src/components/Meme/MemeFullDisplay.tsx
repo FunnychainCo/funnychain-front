@@ -122,7 +122,7 @@ class MemeFullDisplay extends Component<{
                 <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
                     this.memeLink.refresh();
                 }}/>
-                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue}</div>
+                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue.toFixed(2)}</div>
             </CardActions>
             <CardContent style={{marginTop: 0, paddingTop: 0}}>
                 <div className="memeCommentContainer"

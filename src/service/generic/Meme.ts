@@ -21,6 +21,10 @@ export interface Meme {
     order: number
 }
 
+export const MEME_TYPE_HOT:string = "hot";
+export const MEME_TYPE_FRESH:string = "fresh";
+export const MEME_TYPE_TRENDING:string = "trending";
+
 export const MEME_ENTRY_NO_VALUE: Meme = Object.freeze({
     id: "",
     user: USER_ENTRY_NO_VALUE,

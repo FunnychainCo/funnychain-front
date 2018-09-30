@@ -18,6 +18,10 @@ export interface FirebaseUser {
     email:string,
     displayName:string,
     avatarIid:string,//ipfs hash
+    wallet:{
+        balance:number,
+        lastUpdate:number
+    }
 }
 
 
@@ -25,3 +29,7 @@ export const DATABASE_COMMENTS = "comments";
 
 
 export const DATABASE_UPVOTES = "upvotes";
+
+export const DATABASE_HOTS = "hots";
+
+export const DATABASE_TRANSACTIONS = "transactions";

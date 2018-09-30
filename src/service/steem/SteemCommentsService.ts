@@ -91,7 +91,8 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                                     provider: PROVIDER_STEEM,
                                     email: "",
                                     displayName: comment.author,
-                                    avatarUrl: avatarUrl
+                                    avatarUrl: avatarUrl,
+                                    wallet:0
                                 },
                                 id: comment.url,
                                 parentId: this.id,

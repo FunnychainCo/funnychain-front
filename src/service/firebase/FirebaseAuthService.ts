@@ -5,34 +5,25 @@ import * as firebase from "firebase";
 import * as EventEmitter from "eventemitter3";
 import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
 import {fileUploadService} from "../generic/FileUploadService";
-import {DATABASE_USERS} from "./shared/FireBaseDBDefinition";
-
-export interface FireBaseUser {
-    uid: string;
-    photoURL: string;
-    avatarIid: string,
-    displayName: string,
-    email: string,
-    avatar: any
-}
+import {DATABASE_USERS, FirebaseUser} from "./shared/FireBaseDBDefinition";
 
 export class FirebaseAuthService {
     userDataBaseName = DATABASE_USERS;
 
     eventEmitter = new EventEmitter<string>();
     currentUserUid: string = "";
-    started:boolean = false;
+    started: boolean = false;
 
-    userCache:{ [id: string] : UserEntry; } = {};//{uid:userobj}
+    userCache: { [id: string]: UserEntry; } = {};//{uid:userobj}
 
     constructor() {
     }
 
-    start(){
-        if(this.started){
+    start() {
+        if (this.started) {
             return;
         }
-        this.started=true;
+        this.started = true;
         console.log("Firebase auth service started");
         firebaseInitAuthService.firebaseAuth().onAuthStateChanged((user) => {
             if (user == null) {
@@ -138,12 +129,18 @@ export class FirebaseAuthService {
             });
         };
         this.eventEmitter.on('AuthStateChanged', wrapedCallback);
-        if(this.currentUserUid!=="") {
+        if (this.currentUserUid !== "") {
             wrapedCallback(this.currentUserUid);//initial call
         }
         return () => {
             this.eventEmitter.off('AuthStateChanged', wrapedCallback)
         };
+    }
+
+    computeWalletValue(fireBaseUser:FirebaseUser):Promise<number>{
+        return new Promise<number>(resolve => {
+            resolve(fireBaseUser.wallet?fireBaseUser.wallet.balance:0)
+        });
     }
 
     loadUserData(uid: string): Promise<UserEntry> {
@@ -152,21 +149,24 @@ export class FirebaseAuthService {
                 resolve(this.userCache[uid]);//continue to update user
             }
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
-                let fireBaseUser = user.val();
+                let fireBaseUser:FirebaseUser = user.val();
                 if (fireBaseUser == null) {
                     reject("uid does not exsist in database");
                     return;
                 }
-                fileUploadService.getMediaUrlFromImageID(fireBaseUser.avatarIid).then((avatarUrl) => {
-                    let userData:UserEntry={
-                        avatarUrl: avatarUrl,
-                        email: fireBaseUser.email,
-                        provider: PROVIDER_FIREBASE_MAIL,
-                        displayName : fireBaseUser.displayName,
-                        uid : fireBaseUser.uid,
-                    };
-                    this.userCache[uid] = userData;
-                    resolve(userData);
+                this.computeWalletValue(fireBaseUser).then(balance =>{
+                    fileUploadService.getMediaUrlFromImageID(fireBaseUser.avatarIid).then((avatarUrl) => {
+                        let userData: UserEntry = {
+                            avatarUrl: avatarUrl,
+                            email: fireBaseUser.email,
+                            provider: PROVIDER_FIREBASE_MAIL,
+                            displayName: fireBaseUser.displayName,
+                            uid: fireBaseUser.uid,
+                            wallet:balance
+                        };
+                        this.userCache[uid] = userData;
+                        resolve(userData);
+                    });
                 });
             }).catch((error) => {
                 console.error(error);
@@ -179,8 +179,17 @@ export class FirebaseAuthService {
         return firebaseInitAuthService.firebaseAuth().signOut()
     }
 
-    integrityAndMigrationScript(user:FireBaseUser) {
-        if(user.avatarIid.startsWith("0")){
+    integrityAndMigrationScript(user: FirebaseUser) {
+        //////////////
+        if (user.wallet == undefined) {
+            user.wallet = {
+                balance: 0,
+                    lastUpdate: new Date().getTime()
+            }
+            firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + "/wallet").set(user.wallet);
+        }
+        ///////////
+        if (user.avatarIid.startsWith("0")) {
             this.generateUserAvatarIid(user).then(iid => {
                 firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid)
                     .set({
@@ -197,7 +206,7 @@ export class FirebaseAuthService {
         return new Promise<string>((resolve, reject) => {
             firebaseInitAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
                 firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
-                    let userValue:FireBaseUser = userData.val();
+                    let userValue: FirebaseUser = userData.val();
                     if (userValue === null) {
                         console.warn("user recreated : ", user);
                         this.saveUser(user).then(() => {
@@ -220,7 +229,7 @@ export class FirebaseAuthService {
         return firebaseInitAuthService.firebaseAuth().sendPasswordResetEmail(email)
     }
 
-    generateUserName(user: FireBaseUser):Promise<string>{
+    generateUserName(user: FirebaseUser): Promise<string> {
         let userNamePromised;
         if (user.displayName !== null) {
             userNamePromised = new Promise((resolve, reject) => {
@@ -243,27 +252,27 @@ export class FirebaseAuthService {
         return userNamePromised;
     }
 
-    generateUserAvatarIid(user: FireBaseUser):Promise<string>{
+    generateUserAvatarIid(user: FirebaseUser): Promise<string> {
         let iidPromised;
-        if (user.photoURL !== null) {
+        /*if (user.photoURL !== null) {
             //TODO upload the user image to IPFS
-            /*iidPromised = new Promise((resolve) => {
+            iidPromised = new Promise((resolve) => {
                 firebaseMediaService.createMediaEntry(user.photoURL, user.uid).then((fileId) => {
                     resolve(fileId);
                 });
-            });*/
+            });
             iidPromised = Promise.resolve("QmZv2L66Taw3gGZPSnmbFVb67AC4GkeFpCUeAKyesYXeYs");
-        } else {
-            iidPromised = Promise.resolve("QmZv2L66Taw3gGZPSnmbFVb67AC4GkeFpCUeAKyesYXeYs");
-        }
+        } else {*/
+        iidPromised = Promise.resolve("QmZv2L66Taw3gGZPSnmbFVb67AC4GkeFpCUeAKyesYXeYs");
+        //}
         return iidPromised;
     }
 
-    saveUser(user: FireBaseUser): Promise<string> {
+    saveUser(user: FirebaseUser): Promise<string> {
         return new Promise((resolve, reject) => {
             this.generateUserName(user).then(username => {
                 this.generateUserAvatarIid(user).then(iid => {
-                    console.log("saving generated user :"+username+" - "+iid);
+                    console.log("saving generated user :" + username + " - " + iid);
                     firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid)
                         .set({
                             uid: user.uid,
@@ -284,10 +293,12 @@ export class FirebaseAuthService {
         });
     }
 
-    getLoggedUser():Promise<UserEntry> {
+    getLoggedUser(): Promise<UserEntry> {
         if (this.currentUserUid == "" || this.currentUserUid == null) {
-            return new Promise<UserEntry>(resolve => {resolve(USER_ENTRY_NO_VALUE)});
-        }else {
+            return new Promise<UserEntry>(resolve => {
+                resolve(USER_ENTRY_NO_VALUE)
+            });
+        } else {
             return this.loadUserData(this.currentUserUid);
         }
     }
