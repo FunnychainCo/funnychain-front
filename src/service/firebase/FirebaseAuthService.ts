@@ -139,7 +139,11 @@ export class FirebaseAuthService {
 
     computeWalletValue(fireBaseUser:FirebaseUser):Promise<number>{
         return new Promise<number>(resolve => {
-            resolve(fireBaseUser.wallet?fireBaseUser.wallet.balance:0)
+            axios.get(backEndPropetiesProvider.getProperty("WALLET_SERVICE")+"/compute_wallet/"+fireBaseUser.uid).then(response => {
+                resolve(response.data.balance);
+            }).catch(reason => {
+                resolve(fireBaseUser.wallet?fireBaseUser.wallet.balance:0);
+            });
         });
     }
 
@@ -254,17 +258,18 @@ export class FirebaseAuthService {
 
     generateUserAvatarIid(user: FirebaseUser): Promise<string> {
         let iidPromised;
-        /*if (user.photoURL !== null) {
-            //TODO upload the user image to IPFS
-            iidPromised = new Promise((resolve) => {
-                firebaseMediaService.createMediaEntry(user.photoURL, user.uid).then((fileId) => {
-                    resolve(fileId);
-                });
+        iidPromised = new Promise((resolve, reject) => {
+            //configure default HTTP timeout
+            const httpClient = axios.create();
+            httpClient.defaults.timeout = 20000;//ms
+            httpClient.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
+                let avatarIPFSHash = response.data;
+                resolve(avatarIPFSHash);
+            }).catch(error => {
+                console.error("fail to generate user name");
+                resolve("QmZv2L66Taw3gGZPSnmbFVb67AC4GkeFpCUeAKyesYXeYs");
             });
-            iidPromised = Promise.resolve("QmZv2L66Taw3gGZPSnmbFVb67AC4GkeFpCUeAKyesYXeYs");
-        } else {*/
-        iidPromised = Promise.resolve("QmZv2L66Taw3gGZPSnmbFVb67AC4GkeFpCUeAKyesYXeYs");
-        //}
+        });
         return iidPromised;
     }
 
