@@ -1,7 +1,7 @@
 import {Component} from 'react'
 import * as React from 'react'
 import {authService} from "../../service/generic/AuthService";
-import ModeEdit from '@material-ui/icons/ModeEdit';
+import Edit from '@material-ui/icons/Edit';
 import VpnKey from '@material-ui/icons/VpnKey';
 
 import "./Account.css";
@@ -170,10 +170,10 @@ export default class EmailAccountManagement extends Component<{}, {
             <div className="fcContent">
 
                 <ListItem button onClick={this.openChangeDisplayName}>
-                    <ModeEdit /><ListItemText primary={this.state.user.displayName} />
+                    <Edit /><ListItemText primary={this.state.user.displayName} />
                 </ListItem>
                 <ListItem button onClick={this.openChangeEmail}>
-                    <ModeEdit /><ListItemText primary={this.state.user.email} />
+                    <Edit /><ListItemText primary={this.state.user.email} />
                 </ListItem>
                 <ListItem button onClick={this.openChangePassword}>
                     <VpnKey /><ListItemText primary="Change password" />

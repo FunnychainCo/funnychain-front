@@ -1,7 +1,7 @@
 import {Component} from 'react'
 import * as React from 'react'
 import {authService} from "../../service/generic/AuthService";
-import ModeEdit from '@material-ui/icons/ModeEdit';
+import Edit from '@material-ui/icons/Edit';
 
 import "./Account.css";
 import Avatar from "@material-ui/core/Avatar/Avatar";
@@ -59,7 +59,7 @@ export default class SteemAccount extends Component<{
                     <div className="fcLeftAlignContainer">
                         <div className="fcContent">
                             <Button onClick={this.openSteemAccount}>
-                                <ModeEdit/>&nbsp;&nbsp;{this.state.user.displayName}
+                                <Edit/>&nbsp;&nbsp;{this.state.user.displayName}
                                 </Button>
                         </div>
                         <CommonAccountManagement onLogout={this.props.onLogout}/>
