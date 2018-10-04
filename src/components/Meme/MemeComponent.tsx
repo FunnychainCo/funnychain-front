@@ -183,7 +183,6 @@ class MemeComponent extends Component<{
                         </div>
                         <div className="memeCommentContainerRight">
                             <strong>{this.state.meme.user.displayName}</strong><br/>
-                            <a href={"https://steemit.com" + this.state.meme.id}>SteemIt</a><br/>
                             {moment(this.state.meme.created).fromNow()}
                         </div>
                     </div>

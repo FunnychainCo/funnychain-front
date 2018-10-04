@@ -137,14 +137,23 @@ export class FirebaseAuthService {
         };
     }
 
-    computeWalletValue(fireBaseUser:FirebaseUser):Promise<number>{
-        return new Promise<number>(resolve => {
-            const httpClient = axios.create();
-            httpClient.defaults.timeout = 1000;//ms
-            httpClient.get(backEndPropetiesProvider.getProperty("WALLET_SERVICE")+"/compute_wallet/"+fireBaseUser.uid).then(response => {
-                resolve(response.data.balance);
-            }).catch(reason => {
-                resolve(fireBaseUser.wallet?fireBaseUser.wallet.balance:0);
+    computeWalletValue(uid: string): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
+                let fireBaseUser: FirebaseUser = user.val();
+                if (fireBaseUser == null) {
+                    console.error("uid does not exist in database");
+                    resolve(0);
+                    return;
+                }else {
+                    const httpClient = axios.create();
+                    httpClient.defaults.timeout = 1000;//ms
+                    httpClient.get(backEndPropetiesProvider.getProperty("WALLET_SERVICE") + "/compute_wallet/" + uid).then(response => {
+                        resolve(response.data.balance);
+                    }).catch(reason => {
+                        resolve(fireBaseUser.wallet ? fireBaseUser.wallet.balance : 0);
+                    });
+                }
             });
         });
     }
@@ -157,23 +166,20 @@ export class FirebaseAuthService {
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
                 let fireBaseUser:FirebaseUser = user.val();
                 if (fireBaseUser == null) {
-                    reject("uid does not exsist in database");
+                    reject("uid does not exist in database");
                     return;
                 }
-                //TODO do we really need to compute the wallet each time we load the user?
-                this.computeWalletValue(fireBaseUser).then(balance =>{
-                    fileUploadService.getMediaUrlFromImageID(fireBaseUser.avatarIid).then((avatarUrl) => {
-                        let userData: UserEntry = {
-                            avatarUrl: avatarUrl,
-                            email: fireBaseUser.email,
-                            provider: PROVIDER_FIREBASE_MAIL,
-                            displayName: fireBaseUser.displayName,
-                            uid: fireBaseUser.uid,
-                            wallet:balance
-                        };
-                        this.userCache[uid] = userData;
-                        resolve(userData);
-                    });
+                fileUploadService.getMediaUrlFromImageID(fireBaseUser.avatarIid).then((avatarUrl) => {
+                    let userData: UserEntry = {
+                        avatarUrl: avatarUrl,
+                        email: fireBaseUser.email,
+                        provider: PROVIDER_FIREBASE_MAIL,
+                        displayName: fireBaseUser.displayName,
+                        uid: fireBaseUser.uid,
+                        wallet:user["wallet"]?user.wallet:0
+                    };
+                    this.userCache[uid] = userData;
+                    resolve(userData);
                 });
             }).catch((error) => {
                 console.error(error);

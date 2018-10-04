@@ -12,6 +12,7 @@ import ModalPage from "../ModalPage/ModalPage";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import {userService} from "../../service/generic/UserService";
 //https://materialdesignicons.com/
 
 export default class WalletAccount extends Component<{}, {
@@ -34,6 +35,9 @@ export default class WalletAccount extends Component<{}, {
                     loading: true
                 });
             } else {
+                userService.computeWalletValue(user.uid).then(balance => {
+                    user.wallet = balance;
+                });
                 this.setState({
                     user: user,
                     loading: false

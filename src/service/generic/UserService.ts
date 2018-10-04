@@ -14,6 +14,10 @@ export class UserService {
             return steemUserService.loadUserData(uid);
         }
     }
+
+    computeWalletValue(uid: string): Promise<number>{
+        return firebaseAuthService.computeWalletValue(uid);
+    }
 }
 
 export let userService = new UserService();
