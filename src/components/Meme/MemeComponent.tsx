@@ -28,6 +28,7 @@ import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeUpvoteButton from "./MemeUpvoteButton";
+import MemeBetButton from "./MemeBetButton";
 
 
 const styles = theme => ({
@@ -152,6 +153,9 @@ class MemeComponent extends Component<{
                                                                                alt=""/></ButtonBase>
             <CardActions className="memeElementStyleDivContainer">
                 <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
+                    this.memeLink.refresh();
+                }}/>
+                <MemeBetButton meme={this.state.meme} logged={this.state.logged} onBetConfirmed={() => {
                     this.memeLink.refresh();
                 }}/>
                 <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue.toFixed(2)}</div>

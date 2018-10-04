@@ -27,6 +27,7 @@ export interface FirebaseUser {
 
 export const DATABASE_COMMENTS = "comments";
 
+export const DATABASE_BETS = "bets";
 
 export const DATABASE_UPVOTES = "upvotes";
 

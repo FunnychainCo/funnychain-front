@@ -66,6 +66,22 @@ export class SteemConnectActionService implements MemeServiceAction, CommentsAct
         });
     }
 
+    bet(url: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            let voter = steemConnectAuthService.currentUser.uid;
+            let authorAndPermalink = getAuthorAndPermalink(url);
+            steemConnectAuthService.sc2Api.vote(voter, authorAndPermalink.author, authorAndPermalink.permalink, 10000,
+                (err, res) => {
+                    if (res != null) {
+                        resolve("ok");
+                    } else {
+                        console.error(err);
+                        reject(err);
+                    }
+                });
+        });
+    }
+
 }
 
 export let steemConnectActionService = new SteemConnectActionService();

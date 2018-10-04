@@ -5,6 +5,7 @@ import {IPFSMeme} from "../generic/Meme";
 import {UserEntry} from "../generic/UserEntry";
 import {firebaseUpvoteService} from "./FirebaseUpvoteService";
 import {DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
+import {firebaseBetService} from "./FirebaseBetService";
 
 export class FirebaseActionService implements MemeServiceAction, CommentsAction {
     vote(memeID: string): Promise<string> {
@@ -15,6 +16,18 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
             }else {
                 let uid = currentUser.uid;
                 firebaseUpvoteService.vote(memeID,uid);
+            }
+        });
+    }
+
+    bet(memeID: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            let currentUser = firebase.auth().currentUser;
+            if(currentUser==null){
+                reject("error");
+            }else {
+                let uid = currentUser.uid;
+                firebaseBetService.bet(memeID,uid);
             }
         });
     }

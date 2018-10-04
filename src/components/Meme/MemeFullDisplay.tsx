@@ -21,6 +21,7 @@ import Waypoint from "react-waypoint";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeUpvoteButton from "./MemeUpvoteButton";
+import MemeBetButton from "./MemeBetButton";
 
 
 const styles = theme => ({
@@ -120,6 +121,9 @@ class MemeFullDisplay extends Component<{
             <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
             <CardActions className="memeElementStyleDivContainer">
                 <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
+                    this.memeLink.refresh();
+                }}/>
+                <MemeBetButton meme={this.state.meme} logged={this.state.logged} onBetConfirmed={() => {
                     this.memeLink.refresh();
                 }}/>
                 <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue.toFixed(2)}</div>

@@ -139,7 +139,9 @@ export class FirebaseAuthService {
 
     computeWalletValue(fireBaseUser:FirebaseUser):Promise<number>{
         return new Promise<number>(resolve => {
-            axios.get(backEndPropetiesProvider.getProperty("WALLET_SERVICE")+"/compute_wallet/"+fireBaseUser.uid).then(response => {
+            const httpClient = axios.create();
+            httpClient.defaults.timeout = 1000;//ms
+            httpClient.get(backEndPropetiesProvider.getProperty("WALLET_SERVICE")+"/compute_wallet/"+fireBaseUser.uid).then(response => {
                 resolve(response.data.balance);
             }).catch(reason => {
                 resolve(fireBaseUser.wallet?fireBaseUser.wallet.balance:0);
@@ -158,6 +160,7 @@ export class FirebaseAuthService {
                     reject("uid does not exsist in database");
                     return;
                 }
+                //TODO do we really need to compute the wallet each time we load the user?
                 this.computeWalletValue(fireBaseUser).then(balance =>{
                     fileUploadService.getMediaUrlFromImageID(fireBaseUser.avatarIid).then((avatarUrl) => {
                         let userData: UserEntry = {

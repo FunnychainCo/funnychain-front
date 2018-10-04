@@ -15,7 +15,8 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
         port: '5001',
         protocol: 'https'
     };
-    ipfsGatway = "https://ipfs.io/ipfs/";
+    //ipfsGatway = "https://ipfs.io/ipfs/";
+    ipfsGatway = "https://ipfs.infura.io/ipfs/";//faster since we pin to it ;)
     //https://globalupload.io
 
     start(): void {

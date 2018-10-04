@@ -18,6 +18,7 @@ export interface MemeLoaderInterface {
 
 export interface MemeServiceAction {
     vote(memeID: string): Promise<string>,
+    bet(memeID: string): Promise<string>,
     post(title:string,body:string):Promise<string>
 }
 
