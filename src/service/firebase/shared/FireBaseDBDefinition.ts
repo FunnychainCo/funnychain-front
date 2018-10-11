@@ -9,7 +9,8 @@ export const DATABASE_MEMES = "memes";
 export interface FirebaseMeme {
     memeIpfsHash: string,
     uid: string,
-    created: number
+    created: number,
+    value: number,
 }
 
 export const DATABASE_USERS = "users";
@@ -23,7 +24,6 @@ export interface FirebaseUser {
         lastUpdate:number
     }
 }
-
 
 export const DATABASE_COMMENTS = "comments";
 

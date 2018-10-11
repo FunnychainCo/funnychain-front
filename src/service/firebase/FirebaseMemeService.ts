@@ -31,31 +31,79 @@ export class FirebaseMemeService implements MemeServiceInterface {
 function loadMeme(meme:FirebaseMeme):Promise<Meme>{
     return new Promise<Meme>((resolve, reject) => {
         let memeIPFSLink = ipfsFileUploadService.convertIPFSHashToIPFSLink(meme.memeIpfsHash);
-        axios.get(memeIPFSLink, {responseType: 'arraybuffer'}).then((response) => {
-            let ipfsMeme:IPFSMeme = JSON.parse(new Buffer(response.data, 'binary').toString());
-            preLoadImage(ipfsFileUploadService.convertIPFSHashToIPFSLink(ipfsMeme.imageIPFSHash)).then((imgUrl:string) => {
-                userService.loadUserData(meme.uid).then((userValue: UserEntry) => {
-                    firebaseUpvoteService.countVote(meme.memeIpfsHash).then(voteNumber => {
-                        authService.getLoggedUser().then(currentUserData => {
-                            firebaseUpvoteService.hasVotedOnPost(meme.memeIpfsHash,currentUserData.uid).then(currentUserVoted => {
-                                resolve({
-                                    id: meme.memeIpfsHash,
-                                    title: ipfsMeme.title,
-                                    imageUrl: imgUrl,
-                                    created: new Date(meme.created),
-                                    user: userValue,
-                                    dolarValue: voteNumber*0.10,
-                                    commentNumber: 0,
-                                    voteNumber: voteNumber,
-                                    currentUserVoted: currentUserVoted,
-                                    order:-meme.created
-                                });
-                            });
-                        });
-                    });
+        let promiseArray:Promise<boolean>[] = [];
+
+        //(1) retreive IPFS meme and load its image data
+        let ipfsMeme:IPFSMeme;
+        let imgUrl;
+        promiseArray.push(new Promise<boolean>((resolve2) => {
+            axios.get(memeIPFSLink, {responseType: 'arraybuffer'}).then((response) => {
+                ipfsMeme = JSON.parse(new Buffer(response.data, 'binary').toString());
+                preLoadImage(ipfsFileUploadService.convertIPFSHashToIPFSLink(ipfsMeme.imageIPFSHash)).then((imgUrlValue:string) => {
+                    imgUrl = imgUrlValue;
+                    resolve2(true);
                 });
             });
-        });
+        }));
+
+        //(2) compute if current user voted
+        let currentUserVoted;
+        promiseArray.push(new Promise<boolean>((resolve2) => {
+            authService.getLoggedUser().then(currentUserData => {
+                firebaseUpvoteService.hasVotedOnPost(meme.memeIpfsHash, currentUserData.uid).then(currentUserVotedValue => {
+                    currentUserVoted=currentUserVotedValue;
+                    resolve2(true);
+                });
+            });
+        }));
+
+        //(3) compute number of vote
+        let voteNumber;
+        promiseArray.push(new Promise<boolean>((resolve2) => {
+            firebaseUpvoteService.countVote(meme.memeIpfsHash).then(voteNumberValue => {
+                voteNumber=voteNumberValue;
+                resolve2(true);
+            });
+        }));
+
+        //(4) retreive author data
+        let userValue;
+        promiseArray.push(new Promise<boolean>((resolve2) => {
+            userService.loadUserData(meme.uid).then((userValueValue: UserEntry) => {
+                userValue=userValueValue;
+                resolve2(true);
+            });
+        }));
+
+        //(6) compute meme hotness and meme value
+        let hot;
+        promiseArray.push(new Promise<boolean>((resolve2) => {
+            firebase.database().ref(DATABASE_HOTS + "/" + meme.memeIpfsHash).once("value", (meme) => {
+                meme = meme.val();
+                hot = meme!=null;
+                resolve2(true);
+            });
+        }));
+
+        //(7) compute comment number
+        let commentNumber=500;
+
+        //resolve the meme
+        Promise.all(promiseArray).then(value => {
+            resolve({
+                id: meme.memeIpfsHash,
+                title: ipfsMeme.title,
+                imageUrl: imgUrl,
+                created: new Date(meme.created),
+                user: userValue,
+                dolarValue: meme.value?meme.value:0,
+                commentNumber: commentNumber,
+                voteNumber: voteNumber,
+                currentUserVoted: currentUserVoted,
+                order:-meme.created,
+                hot:hot
+            });
+        })
     });
 }
 

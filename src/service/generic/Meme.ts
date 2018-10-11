@@ -18,7 +18,8 @@ export interface Meme {
     voteNumber: number,
     commentNumber: number,
     currentUserVoted: boolean,
-    order: number
+    order: number,
+    hot:boolean
 }
 
 export const MEME_TYPE_HOT:string = "hot";
@@ -36,4 +37,5 @@ export const MEME_ENTRY_NO_VALUE: Meme = Object.freeze({
     commentNumber: 0,
     currentUserVoted: false,
     order:0,
+    hot:false
 });

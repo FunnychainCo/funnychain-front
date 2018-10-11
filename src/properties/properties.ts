@@ -4,15 +4,15 @@ export const GLOBAL_PROPERTIES:GlobalAppProperties = {
     MODE:"DEV",
 
     //Web service properties
-    /*FUNNYCHAIN_SERVICE:"http://127.0.0.1:8085",
+    FUNNYCHAIN_SERVICE:"http://127.0.0.1:8085",
     WALLET_SERVICE:"http://127.0.0.1:8085"+"/api",
     AVATAR_GENERATION_SERVICE:"http://127.0.0.1:8085"+'/service/avatar'+'/avatar_ipfs',
-    USERNAME_GENERATION_SERVICE:"http://127.0.0.1:8085"+'/service/avatar'+'/name',*/
+    USERNAME_GENERATION_SERVICE:"http://127.0.0.1:8085"+'/service/avatar'+'/name',
 
-    FUNNYCHAIN_SERVICE:"https://api.funnychain.co",
+    /*FUNNYCHAIN_SERVICE:"https://api.funnychain.co",
     WALLET_SERVICE:"https://api.funnychain.co"+"/api",
     AVATAR_GENERATION_SERVICE:"https://api.funnychain.co"+'/service/avatar'+'/avatar_ipfs',
-    USERNAME_GENERATION_SERVICE:"https://api.funnychain.co"+'/service/avatar'+'/name',
+    USERNAME_GENERATION_SERVICE:"https://api.funnychain.co"+'/service/avatar'+'/name',*/
 
     //FIREBASE properties
     apiKey: "AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",

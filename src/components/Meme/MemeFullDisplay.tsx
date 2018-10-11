@@ -22,6 +22,7 @@ import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeUpvoteButton from "./MemeUpvoteButton";
 import MemeBetButton from "./MemeBetButton";
+import MemeUpvoteNoNumberButton from "./MemeUpvoteNoNumberButton";
 
 
 const styles = theme => ({
@@ -120,13 +121,26 @@ class MemeFullDisplay extends Component<{
             />
             <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
             <CardActions className="memeElementStyleDivContainer">
+
+                {this.state.meme.hot === true &&
                 <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
                     this.memeLink.refresh();
                 }}/>
+                }
+                {this.state.meme.hot === false &&
+                <MemeUpvoteNoNumberButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
+                    this.memeLink.refresh();
+                }}/>
+                }
+
+                {this.state.meme.hot === false &&
                 <MemeBetButton meme={this.state.meme} logged={this.state.logged} onBetConfirmed={() => {
                     this.memeLink.refresh();
                 }}/>
+                }
+                {this.state.meme.hot === true &&
                 <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue.toFixed(2)}</div>
+                }
             </CardActions>
             <CardContent style={{marginTop: 0, paddingTop: 0}}>
                 <div className="memeCommentContainer"
