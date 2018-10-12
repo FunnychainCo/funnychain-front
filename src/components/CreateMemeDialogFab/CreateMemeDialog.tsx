@@ -18,13 +18,15 @@ export default class CreateMemeDialog extends Component<{
 }, {
     title: string,
     imageURL: string,
-    valid: boolean
+    valid: boolean,
+    progress: number
 }> {
 
     state = {
         title: "",
         imageURL: "",
-        valid: false
+        valid: false,
+        progress: 0
     };
 
     titleValid: boolean = false;
@@ -87,10 +89,13 @@ export default class CreateMemeDialog extends Component<{
                     <br/>
                     <br/>
                     <ImageUploaderDropZone
+                        uploadProgress={this.state.progress}
                         onImageLoaded={this.onImageLoaded}
                         onFileToUpload={(file: File) => {
                             return new Promise<string>((resolve, reject) => {
-                                fileUploadService.uploadFile(file).then((data) => {
+                                fileUploadService.uploadFile(file, (progress) => {
+                                    this.setState({progress: progress})
+                                }).then((data) => {
                                     resolve(data.fileURL);
                                 });
                             });

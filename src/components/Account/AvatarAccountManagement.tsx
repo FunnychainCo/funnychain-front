@@ -141,6 +141,7 @@ export default class AvatarAccountManagement extends Component<any, any> {
                     <DialogTitle>{this.state.dialog.title}</DialogTitle>
                     <DialogContent>
                         <ImageUploaderDropZone
+                            uploadProgress={0}
                             onImageLoaded={
                                 (image: string) => {
                                     this.onImageLoaded(image);
@@ -148,7 +149,7 @@ export default class AvatarAccountManagement extends Component<any, any> {
                             }
                             onFileToUpload={(file: File) => {
                                 return new Promise<string>((resolve, reject) => {
-                                    fileUploadService.uploadFile(file).then((data:UploadedDataInterface) => {
+                                    fileUploadService.uploadFile(file,()=>{}).then((data:UploadedDataInterface) => {
                                         resolve(data.fileURL);
                                     });
                                 });

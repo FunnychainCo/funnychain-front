@@ -34,10 +34,13 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
         return link.replace(this.ipfsGatway, "");
     }
 
-    uploadBuffer(buffer: Buffer): Promise<UploadedDataInterface> {
+    uploadBuffer(buffer: Buffer,progress:(progressPercent:number)=>void): Promise<UploadedDataInterface> {
         return new Promise<UploadedDataInterface>((resolve, reject) => {
             let ipfsId;
-            this.ipfsApi.add(buffer, {progress: (prog) => console.log(`received: ${prog}`)})
+            progress(20);
+            this.ipfsApi.add(buffer, {
+                progress: (prog) => {progress(50);}
+            })
                 .then((response) => {
                     //console.log(response);
                     ipfsId = response[0].hash;
@@ -55,9 +58,15 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
                     const httpClient = axios.create();
                     httpClient.defaults.timeout = 20000;//ms
                     let url = this.ipfsHost.protocol + "://" + this.ipfsHost.host + ":" + this.ipfsHost.port + "/api/v0/pin/add?arg=" + ipfsId;
-                    httpClient.get(url).then(() => {
+                    httpClient.get(url,{
+                        onDownloadProgress: (progressEvent) =>{
+                            //console.log('download', progressEvent);
+                            progress(80);
+                        },
+                    }).then(() => {
                         let imageLink = this.ipfsGatway + ipfsId;
                         console.log(imageLink);
+                        progress(100);
                         resolve({
                             fileId: ipfsId,
                             fileURL: imageLink
@@ -69,12 +78,13 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
         });
     }
 
-    uploadFile(file: File): Promise<UploadedDataInterface> {
+    uploadFile(file: File,progress:(progressPercent:number)=>void): Promise<UploadedDataInterface> {
+        progress(10);
         return new Promise<UploadedDataInterface>((resolve, reject) => {
             let reader = new (<any>window).FileReader();
             reader.onloadend = () => {
                 const buffer = Buffer.from(reader.result);
-                this.uploadBuffer(buffer).then(value => {
+                this.uploadBuffer(buffer,progress).then(value => {
                     resolve(value);
                 });
             };

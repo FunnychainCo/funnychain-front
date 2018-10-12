@@ -70,11 +70,11 @@ export interface UserServiceInterface {
  */
 
 export interface FileUploadServiceInterface{
-    uploadFile(file:File):Promise<UploadedDataInterface>
+    uploadFile(file:File,progress:(progressPercent:number)=>void):Promise<UploadedDataInterface>
 }
 
 export interface UploadedDataInterface{
     fileURL:string,
-    fileId:string
+    fileId:string,
 }
 

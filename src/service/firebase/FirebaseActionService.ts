@@ -40,7 +40,12 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                 title: title,
                 imageIPFSHash: ipfsImageHash
             };
-            ipfsFileUploadService.uploadBuffer(Buffer.from(JSON.stringify(iPFSMeme))).then((value: UploadedDataInterface) => {
+            ipfsFileUploadService.uploadBuffer(
+                Buffer.from(JSON.stringify(iPFSMeme)),
+                progressPercent => {
+                    console.warn(progressPercent);
+                }
+            ).then((value: UploadedDataInterface) => {
                 let currentUser = firebase.auth().currentUser;
                 if (currentUser == null) {
                     console.error(currentUser);

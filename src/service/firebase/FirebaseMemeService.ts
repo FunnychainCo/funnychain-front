@@ -202,7 +202,7 @@ class MemeLoader implements MemeLoaderInterface{
                 console.error(hot);
                 return;
             }
-            let hotMeme = hot.val();
+            let hotMeme = hot.key;
             //read the hot meme
             db.ref(DATABASE_MEMES+"/"+hotMeme).once("value",(memes) => {
                 if (memes == null) {
