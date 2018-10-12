@@ -1,10 +1,11 @@
-import {steemCommentService} from "../steem/SteemCommentsService";
+//import {steemCommentService} from "../steem/SteemCommentsService";
 import {CommentServiceInterface, CommentsVisitor} from "./ApplicationInterface";
+import {firebaseCommentService} from "../firebase/FirebaseCommentService";
 
 export class CommentService implements CommentServiceInterface {
 
     getCommentVisitor(id): CommentsVisitor {
-        return steemCommentService.getCommentVisitor(id);
+        return firebaseCommentService.getCommentVisitor(id);
     }
 
 }

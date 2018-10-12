@@ -6,6 +6,7 @@ import {UserEntry} from "../generic/UserEntry";
 import {firebaseUpvoteService} from "./FirebaseUpvoteService";
 import {DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
 import {firebaseBetService} from "./FirebaseBetService";
+import {firebaseCommentService} from "./FirebaseCommentService";
 
 export class FirebaseActionService implements MemeServiceAction, CommentsAction {
     vote(memeID: string): Promise<string> {
@@ -58,8 +59,16 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
         });
     }
 
-    postComment(parentPostId: string, message: string): Promise<string> {
-        throw new Error();
+    postComment(memeId: string, message: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            let currentUser = firebase.auth().currentUser;
+            if(currentUser==null){
+                reject("error");
+            }else {
+                let uid = currentUser.uid;
+                firebaseCommentService.postComment(memeId,message,uid);
+            }
+        });
     }
 
     start(userDataReceived: UserEntry) {

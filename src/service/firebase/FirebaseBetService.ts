@@ -1,5 +1,5 @@
 import * as firebase from "firebase";
-import {DATABASE_BETS} from "./shared/FireBaseDBDefinition";
+import {DATABASE_BETPOOL, DATABASE_BETS} from "./shared/FireBaseDBDefinition";
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import axios from 'axios'
 
@@ -37,6 +37,17 @@ export class FirebaseBetService {
                 resolve(0);
             });
         });
+    }
+
+    getBetPool():Promise<number>{
+        return new Promise(resolve => {
+            firebase.database().ref(DATABASE_BETPOOL).once("value", (data) => {
+                resolve(data.val().balance);
+            }).catch(reason => {
+                console.error(reason);
+                resolve(0);
+            });
+        })
     }
 
     bet(memeId: string, uid: string): Promise<string> {

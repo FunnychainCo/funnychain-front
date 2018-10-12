@@ -9,6 +9,10 @@ import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
 import { Link } from 'react-router-dom';
 import LoginAccountIcon from "../LoginAccountIcon/LoginAccountIcon";
+import Chip from "@material-ui/core/Chip";
+import Avatar from "@material-ui/core/Avatar";
+import { Ethereum } from 'mdi-material-ui';
+import {firebaseBetService} from "../../service/firebase/FirebaseBetService";
 
 const styles = theme => ({
     root: {
@@ -36,10 +40,12 @@ class Header extends Component<{
     type:string,
     classes:any
 }, {
-    currentSelected: any
+    currentSelected: any,
+    betPoolBalance:number
 }> {
     state = {
-        currentSelected: false
+        currentSelected: false,
+        betPoolBalance:0
     };
     itemOrder = {
         "hot": 0,
@@ -53,6 +59,9 @@ class Header extends Component<{
         }else {
             this.setState({currentSelected:this.itemOrder[this.props.type]});
         }
+        firebaseBetService.getBetPool().then(balance => {
+            this.setState({betPoolBalance:balance});
+        })
     }
 
     componentWillUnmount() {
@@ -88,6 +97,8 @@ class Header extends Component<{
                             <Tab label="Fresh" style={{minWidth: '30px'}}  component={FreshTabLink}/>
                         </Tabs>
                     </Typography>
+
+                    <Chip label={"Bet Pool: "+this.state.betPoolBalance} color="secondary" avatar={<Avatar><Ethereum /></Avatar>} />&nbsp;&nbsp;
                     <LoginAccountIcon />
                 </Toolbar>
             </AppBar>

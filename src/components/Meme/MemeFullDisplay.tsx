@@ -86,6 +86,9 @@ class MemeFullDisplay extends Component<{
         this.removeListnerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concatResult: MemeComment[] = this.state.comments;
             concatResult = concatResult.concat(comments);
+            concatResult.sort((a:MemeComment, b:MemeComment) => {
+               return b.date.getTime() - a.date.getTime();
+            });
             this.setState({comments: concatResult, loadingComment: false});
         });
         //initialize

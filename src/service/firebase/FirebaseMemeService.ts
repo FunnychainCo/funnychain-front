@@ -86,7 +86,13 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
         }));
 
         //(7) compute comment number
-        let commentNumber=500;
+        let commentNumber=0;
+        promiseArray.push(new Promise<boolean>((resolve2) => {
+            firebaseCommentService.getCommentNumber(meme.memeIpfsHash).then( (nb:number) =>{
+                commentNumber=nb;
+                resolve2(true);
+            });
+        }));
 
         //resolve the meme
         Promise.all(promiseArray).then(value => {
@@ -171,13 +177,15 @@ class MemeLoader implements MemeLoaderInterface{
 
     onFirebaseFresh(callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
         let ref = firebase.database().ref(this.dataBase);
-        let toremove = ref.on("value", (memes) => {
-            if (memes == null) {
-                console.error(memes);
+        let toremove = ref.on("child_added", (meme) => {
+            if (meme == null) {
+                console.error(meme);
                 return;
             }
-            let memesValue: { [id: string]: FirebaseMeme } = memes.val() || {};
-            callback(memesValue);
+            let memeValue: FirebaseMeme = meme.val() || {};
+            let ret = {};
+            ret[memeValue.memeIpfsHash] = memeValue;
+            callback(ret);
         }, (errorObject) => {
             console.log("The read failed: " + errorObject.code);
         });
@@ -189,25 +197,22 @@ class MemeLoader implements MemeLoaderInterface{
 
     onFirebaseHot(callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
         let db = firebase.database();
-        let toremove = db.ref(DATABASE_HOTS).on("value", (hots) => {
-            if (hots == null) {
-                console.error(hots);
+        let toremove = db.ref(DATABASE_HOTS).on("child_added", (hot) => {
+            if (hot == null) {
+                console.error(hot);
                 return;
             }
-            let hotsList = hots.val() || {};
-            hotsList = Object.keys(hotsList);
-            hotsList.forEach( hotMeme => {
-                //read the hot meme
-                db.ref(DATABASE_MEMES+"/"+hotMeme).once("value",(memes) => {
-                    if (memes == null) {
-                        console.error(memes);
-                        return;
-                    }
-                    let memesValue: FirebaseMeme = memes.val() || {};
-                    let ret = {};
-                    ret[memesValue.memeIpfsHash] = memesValue;
-                    callback(ret);
-                });
+            let hotMeme = hot.val();
+            //read the hot meme
+            db.ref(DATABASE_MEMES+"/"+hotMeme).once("value",(memes) => {
+                if (memes == null) {
+                    console.error(memes);
+                    return;
+                }
+                let memesValue: FirebaseMeme = memes.val() || {};
+                let ret = {};
+                ret[memesValue.memeIpfsHash] = memesValue;
+                callback(ret);
             });
         }, (errorObject) => {
             console.log("The read failed: " + errorObject.code);

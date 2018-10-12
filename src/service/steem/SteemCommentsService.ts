@@ -94,6 +94,7 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                                     avatarUrl: avatarUrl,
                                     wallet:0
                                 },
+                                date:new Date(0),
                                 id: comment.url,
                                 parentId: this.id,
                                 text: markdownImageLink(comment.body),

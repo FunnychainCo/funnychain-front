@@ -26,6 +26,13 @@ export interface FirebaseUser {
 }
 
 export const DATABASE_COMMENTS = "comments";
+export interface FirebaseComment {
+    uid: string,
+    message: string,
+    date:number
+}
+
+export const DATABASE_BETPOOL = "bet_pool";
 
 export const DATABASE_BETS = "bets";
 

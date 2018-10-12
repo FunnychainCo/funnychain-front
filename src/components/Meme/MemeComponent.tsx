@@ -98,6 +98,9 @@ class MemeComponent extends Component<{
         this.commentVisitor = this.memeLink.getCommentVisitor();
         this.removeListenerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concat = comments.concat(this.state.comments);
+            concat.sort((a:MemeComment, b:MemeComment) => {
+                return b.date.getTime() - a.date.getTime();
+            });
             this.setState({comments: concat, loadingComment: false});
         });
     }
