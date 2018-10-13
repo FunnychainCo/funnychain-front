@@ -29,7 +29,6 @@ import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeUpvoteButton from "./MemeUpvoteButton";
 import MemeBetButton from "./MemeBetButton";
-import MemeUpvoteNoNumberButton from "./MemeUpvoteNoNumberButton";
 
 
 const styles = theme => ({
@@ -162,7 +161,7 @@ class MemeComponent extends Component<{
                 }}/>
                 }
                 {this.state.meme.hot === false &&
-                <MemeUpvoteNoNumberButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
+                <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
                     this.memeLink.refresh();
                 }}/>
                 }

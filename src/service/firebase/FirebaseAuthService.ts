@@ -192,29 +192,6 @@ export class FirebaseAuthService {
         return firebaseInitAuthService.firebaseAuth().signOut()
     }
 
-    integrityAndMigrationScript(user: FirebaseUser) {
-        //////////////
-        if (user.wallet == undefined) {
-            user.wallet = {
-                balance: 0,
-                    lastUpdate: new Date().getTime()
-            }
-            firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + "/wallet").set(user.wallet);
-        }
-        ///////////
-        if (user.avatarIid.startsWith("0")) {
-            this.generateUserAvatarIid(user).then(iid => {
-                firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid)
-                    .set({
-                        uid: user.uid,
-                        email: user.email,
-                        displayName: user.displayName,
-                        avatarIid: iid
-                    });
-            });
-        }
-    }
-
     login(email: string, pw: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             firebaseInitAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
@@ -227,7 +204,6 @@ export class FirebaseAuthService {
                             resolve("ok");
                         });
                     } else {
-                        this.integrityAndMigrationScript(userValue);
                         resolve("ok");
                     }
                 });
@@ -242,67 +218,15 @@ export class FirebaseAuthService {
         return firebaseInitAuthService.firebaseAuth().sendPasswordResetEmail(email)
     }
 
-    generateUserName(user: FirebaseUser): Promise<string> {
-        let userNamePromised;
-        if (user.displayName !== null) {
-            userNamePromised = new Promise((resolve, reject) => {
-                resolve(user.displayName);
-            });
-        } else {
-            userNamePromised = new Promise((resolve, reject) => {
-                //configure default HTTP timeout
-                const httpClient = axios.create();
-                httpClient.defaults.timeout = 20000;//ms
-                httpClient.get(backEndPropetiesProvider.getProperty('USERNAME_GENERATION_SERVICE')).then(response => {
-                    let username = response.data;
-                    resolve(username);
-                }).catch(error => {
-                    console.error("fail to generate user name");
-                    resolve("Toto");
-                });
-            });
-        }
-        return userNamePromised;
-    }
-
-    generateUserAvatarIid(user: FirebaseUser): Promise<string> {
-        let iidPromised;
-        iidPromised = new Promise((resolve, reject) => {
+    private saveUser(user: FirebaseUser): Promise<string> {
+        return new Promise((resolve, reject) => {
             //configure default HTTP timeout
             const httpClient = axios.create();
             httpClient.defaults.timeout = 20000;//ms
-            httpClient.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
-                let avatarIPFSHash = response.data;
-                resolve(avatarIPFSHash);
+            httpClient.get(backEndPropetiesProvider.getProperty('USER_SERVICE_INIT')).then(() => {
+                resolve("ok");
             }).catch(error => {
-                console.error("fail to generate user name");
-                resolve("QmZv2L66Taw3gGZPSnmbFVb67AC4GkeFpCUeAKyesYXeYs");
-            });
-        });
-        return iidPromised;
-    }
-
-    saveUser(user: FirebaseUser): Promise<string> {
-        return new Promise((resolve, reject) => {
-            this.generateUserName(user).then(username => {
-                this.generateUserAvatarIid(user).then(iid => {
-                    console.log("saving generated user :" + username + " - " + iid);
-                    firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid)
-                        .set({
-                            uid: user.uid,
-                            email: user.email,
-                            displayName: username,
-                            avatarIid: iid
-                        })
-                        .then(() => resolve("ok"))
-                        .catch(error => {
-                            reject(error);
-                        });
-                }).catch(error => {
-                    reject(error);
-                });
-            }).catch(error => {
-                reject(error);
+                console.error("fail to init user");
             });
         });
     }

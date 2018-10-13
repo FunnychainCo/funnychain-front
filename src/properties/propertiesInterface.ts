@@ -4,8 +4,11 @@ export interface GlobalAppProperties{
     //Web service properties
     AVATAR_GENERATION_SERVICE:string,
     USERNAME_GENERATION_SERVICE:string,
+    WALLET_SERVICE_UPVOTE:string,
     FUNNYCHAIN_SERVICE:string,
     WALLET_SERVICE:string,
+    USER_SERVICE:string,
+    USER_SERVICE_INIT:string,
 
     //FIREBASE properties
     apiKey: string,

@@ -1,5 +1,7 @@
 import * as firebase from "firebase";
 import {DATABASE_UPVOTES} from "./shared/FireBaseDBDefinition";
+import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
+import axios from 'axios'
 
 export class FirebaseUpvoteService {
     dataBase = DATABASE_UPVOTES
@@ -38,9 +40,15 @@ export class FirebaseUpvoteService {
     }
 
     vote(memeId: string, uid: string): Promise<string> {
-        return new Promise<string>(resolve => {
-            firebase.database().ref(this.dataBase + '/' + memeId+"/"+uid).set(new Date().getTime()).then(() => {
+        return new Promise<string>((resolve,reject) => {
+            /*firebase.database().ref(this.dataBase + '/' + memeId+"/"+uid).set(new Date().getTime()).then(() => {
                 resolve("ok");
+            });*/
+            axios.get(backEndPropetiesProvider.getProperty('WALLET_SERVICE_UPVOTE')+"/"+uid+"/"+memeId).then(response => {
+                resolve("ok");
+            }).catch(error => {
+                console.error("fail to upvote",error);
+                reject("fail to upvote");
             });
         });
     }
