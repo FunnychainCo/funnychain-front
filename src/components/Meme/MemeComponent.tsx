@@ -1,5 +1,4 @@
 import {Component} from 'react'
-//import * as ImagesLoaded from 'react-images-loaded';
 import "./Meme.css"
 import {
     CommentsVisitor,
@@ -149,6 +148,7 @@ class MemeComponent extends Component<{
             <ButtonBase component={MemeDisplayLink} style={{width: "100%", justifyContent: "left"}}>
                 <CardHeader
                     title={this.state.meme.title}
+                    disableTypography={true}
                 />
             </ButtonBase>
             <ButtonBase className="memeImage" component={MemeDisplayLink}><img className="memeImage"

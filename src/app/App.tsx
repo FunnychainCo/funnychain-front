@@ -26,6 +26,10 @@ class App extends React.Component<any,any> {
 
     render() {
         const theme = createMuiTheme({
+            typography: {
+                useNextVariants: true,
+                suppressDeprecationWarnings: true,
+            },
             palette: {
                 //type: 'dark'
                 //https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=212121&secondary.color=FF3D00

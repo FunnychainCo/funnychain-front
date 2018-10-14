@@ -16,7 +16,7 @@ import {firebaseCommentService} from "./FirebaseCommentService";
 import * as EventEmitter from "eventemitter3";
 import {firebaseUpvoteService} from "./FirebaseUpvoteService";
 import {authService} from 'src/service/generic/AuthService';
-import {DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
+import {DATABASE_MEMES, FirebaseMeme, FirebaseMemeDBStruct} from "./shared/FireBaseDBDefinition";
 
 export class FirebaseMemeService implements MemeServiceInterface {
     getMemeLink(id: string, order: number): MemeLinkInterface {
@@ -156,17 +156,52 @@ class MemeLink implements MemeLinkInterface{
 
 class MemeLoader implements MemeLoaderInterface{
 
+    readonly EVENT_ON_MEME = "onMeme";
+    eventEmitter = new EventEmitter();
+    lastPostDate: number = new Date().getTime();
 
     constructor(public type:string,public tags:string[]) {
     }
 
-    loadMore(limit: number) {
+    loadMore(limit: number):void {
+        if(limit<0){
+            console.error("negative limit");
+        }
+        if(limit<=0){
+            return;
+        }
+        let ref = firebase.database().ref(DATABASE_MEMES).orderByChild('created')
+            .endAt(this.lastPostDate-1)
+            .limitToLast(limit);
+        ref.once("value",(memes)=> {
+            let memesVal: FirebaseMemeDBStruct = memes.val() || {};
+            let firebaseMemes:FirebaseMeme[] = [];
+            Object.keys(memesVal).forEach(key => {
+                let memeVal = memesVal[key];
+                if(this.lastPostDate>memeVal.created){
+                    this.lastPostDate = memeVal.created;
+                }
+                if(this.type==MEME_TYPE_HOT && memeVal.hot){
+                    firebaseMemes.push(memeVal);
+                }
+                if(this.type==MEME_TYPE_FRESH && !memeVal.hot){
+                    firebaseMemes.push(memeVal);
+                }
+            });
+            this.loadMore(limit-firebaseMemes.length);//TODO find a better system to load type fresh and hot
+            //sort meme by creation time
+            firebaseMemes.sort((a, b) => {
+                return a.created - b.created;
+            });
+            this.convertor(firebaseMemes).then(memeLinkData => {
+                this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
+            });
+        });
+
     }
 
-    dataBase = DATABASE_MEMES;
-
     onFirebase(hot:boolean,callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
-        let ref = firebase.database().ref(DATABASE_MEMES).orderByChild('hot').equalTo(hot);
+        let ref = firebase.database().ref(DATABASE_MEMES).orderByChild('created').limitToFirst(2);
         let toremove = ref.on("child_added", (meme) => {
             if (meme == null) {
                 console.error(meme);
@@ -185,34 +220,39 @@ class MemeLoader implements MemeLoaderInterface{
         };
     }
 
-    on(callback: (memes: MemeLinkInterface[]) => void): () => void {
-        let convertor = (memes) => {
+    private convertor(memes:FirebaseMeme[]):Promise<MemeLinkInterface[]> {
+        return new Promise<MemeLinkInterface[]>(resolve => {
             let memesPromise: Promise<Meme>[] = [];
             Object.keys(memes).forEach(memeID => {
-                let meme:FirebaseMeme = memes[memeID];
+                let meme: FirebaseMeme = memes[memeID];
                 memesPromise.push(loadMeme(meme));
             });
             Q.all(memesPromise).then(memes => {
-                let memeLinkData:MemeLinkInterface[] = [];
-                memes.forEach((value:Meme) => {
-                    let memeLink = new MemeLink(value.id,value.order);
+                let memeLinkData: MemeLinkInterface[] = [];
+                memes.forEach((value: Meme) => {
+                    let memeLink = new MemeLink(value.id, value.order);
                     memeLink.setMeme(value);
                     memeLinkData.push(memeLink);
                 });
-                callback(memeLinkData);
+                resolve(memeLinkData);
             });
+        })
+    };
+
+    /**
+     * Callback are sorted by meme creation time and in the callback the list is sorted by meme creation time (newest first)
+     * @param {(memes: MemeLinkInterface[]) => void} callback
+     * @returns {() => void}
+     */
+    on(callback: (memes: MemeLinkInterface[]) => void): () => void {
+        this.eventEmitter.on(this.EVENT_ON_MEME, callback);
+        return () => {
+            this.eventEmitter.off(this.EVENT_ON_MEME, callback);
         };
-        if(this.type===MEME_TYPE_HOT){
-            return this.onFirebase(true,convertor);
-        }else if(this.type===MEME_TYPE_FRESH){
-            return this.onFirebase(false,convertor);
-        }else{
-            console.error("invalid meme loader type");
-            return this.onFirebase(false,convertor);
-        }
     }
 
     refresh() {
+        this.lastPostDate=0;
     }
 
 }
