@@ -13,7 +13,8 @@ export class SteemUserService implements UserServiceInterface {
                     provider:PROVIDER_STEEM,
                     email:"",
                     displayName: uid,
-                    avatarUrl: forceUrlToHttps(avatarUrl)
+                    avatarUrl: forceUrlToHttps(avatarUrl),
+                    wallet:0
                 });
             });
         });

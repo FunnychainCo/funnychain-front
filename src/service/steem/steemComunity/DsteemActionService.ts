@@ -103,6 +103,23 @@ export class DsteemService implements MemeServiceAction, CommentsAction {
         })
     }
 
+    bet(url: string): Promise<string> {
+        if(steemCommunityAccountService.delegateUserEntry===USER_ENTRY_NO_VALUE){
+            throw Error("invalid user");
+        }
+        return new Promise<string>(resolve => {
+            let delegatedUserId = steemCommunityAccountService.delegateUserEntry.uid;
+            firebaseUpvoteService.vote(url,delegatedUserId).then(value => {
+                this.performSteemCommunityVote(url).then(value1 => {
+                    resolve("ok");
+                }).catch(reason => {
+                    //we do not care if this fail the firebase vote s the important one for the community
+                    resolve("ok");
+                })
+            });
+        })
+    }
+
 }
 
 export let dsteemActionService = new DsteemService();

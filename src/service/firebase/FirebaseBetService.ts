@@ -1,12 +1,12 @@
 import * as firebase from "firebase";
-import {DATABASE_UPVOTES} from "./shared/FireBaseDBDefinition";
+import {DATABASE_BETS, DATABASE_META} from "./shared/FireBaseDBDefinition";
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import axios from 'axios'
 
-export class FirebaseUpvoteService {
-    dataBase = DATABASE_UPVOTES
+export class FirebaseBetService {
+    dataBase = DATABASE_BETS;
 
-    hasVotedOnPost(memeId: string, uid: string): Promise<boolean> {
+    hasBetOnPost(memeId: string, uid: string): Promise<boolean> {
         return new Promise<boolean>(resolve => {
             firebase.database().ref(this.dataBase + "/" + memeId).once("value", (data) => {
                 let value: any[] = data.val();
@@ -23,7 +23,7 @@ export class FirebaseUpvoteService {
         });
     }
 
-    countVote(memeId: string): Promise<number> {
+    countBet(memeId: string): Promise<number> {
         return new Promise<number>(resolve => {
             firebase.database().ref(this.dataBase + "/" + memeId).once("value", (data) => {
                 let value: any[] = data.val();
@@ -39,20 +39,31 @@ export class FirebaseUpvoteService {
         });
     }
 
-    vote(memeId: string, uid: string): Promise<string> {
+    getBetPool():Promise<number>{
+        return new Promise(resolve => {
+            firebase.database().ref(DATABASE_META+"/bet_pool").once("value", (data) => {
+                resolve(data.val()?data.val().balance:0);
+            }).catch(reason => {
+                console.error(reason);
+                resolve(0);
+            });
+        })
+    }
+
+    bet(memeId: string, uid: string): Promise<string> {
         return new Promise<string>((resolve,reject) => {
             /*firebase.database().ref(this.dataBase + '/' + memeId+"/"+uid).set(new Date().getTime()).then(() => {
                 resolve("ok");
             });*/
-            axios.get(backEndPropetiesProvider.getProperty('WALLET_SERVICE_UPVOTE')+"/"+uid+"/"+memeId).then(response => {
+            axios.get(backEndPropetiesProvider.getProperty('WALLET_SERVICE')+"/bet/"+uid+"/"+memeId).then(response => {
                 resolve("ok");
             }).catch(error => {
-                console.error("fail to upvote",error);
-                reject("fail to upvote");
+                console.error("fail to bet",error);
+                reject("fail to bet");
             });
         });
     }
 
 }
 
-export let firebaseUpvoteService = new FirebaseUpvoteService();
+export let firebaseBetService = new FirebaseBetService();

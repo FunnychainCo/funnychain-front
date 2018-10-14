@@ -28,6 +28,7 @@ import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeUpvoteButton from "./MemeUpvoteButton";
+import MemeBetButton from "./MemeBetButton";
 
 
 const styles = theme => ({
@@ -96,6 +97,9 @@ class MemeComponent extends Component<{
         this.commentVisitor = this.memeLink.getCommentVisitor();
         this.removeListenerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concat = comments.concat(this.state.comments);
+            concat.sort((a:MemeComment, b:MemeComment) => {
+                return b.date.getTime() - a.date.getTime();
+            });
             this.setState({comments: concat, loadingComment: false});
         });
     }
@@ -151,10 +155,23 @@ class MemeComponent extends Component<{
                                                                                src={this.state.meme.imageUrl}
                                                                                alt=""/></ButtonBase>
             <CardActions className="memeElementStyleDivContainer">
+                {this.state.meme.hot === true &&
                 <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
                     this.memeLink.refresh();
                 }}/>
-                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue}</div>
+                }
+                {this.state.meme.hot === false &&
+                <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
+                    this.memeLink.refresh();
+                }}/>
+                }
+                {this.state.meme.hot === false &&
+                <MemeBetButton meme={this.state.meme} logged={this.state.logged} onBetConfirmed={() => {
+                    this.memeLink.refresh();
+                }}/>}
+                {this.state.meme.hot === true &&
+                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue.toFixed(2)}</div>
+                }
                 <div style={{marginLeft: 'auto'}}>
                     <Button variant="outlined"
                             onClick={this.handleExpandClick}
@@ -179,7 +196,6 @@ class MemeComponent extends Component<{
                         </div>
                         <div className="memeCommentContainerRight">
                             <strong>{this.state.meme.user.displayName}</strong><br/>
-                            <a href={"https://steemit.com" + this.state.meme.id}>SteemIt</a><br/>
                             {moment(this.state.meme.created).fromNow()}
                         </div>
                     </div>

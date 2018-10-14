@@ -3,6 +3,11 @@ import {USER_ENTRY_NO_VALUE, UserEntry} from "./UserEntry";
 /**
  * MEME SERVICE
  */
+export interface IPFSMeme{
+    title: string,
+    imageIPFSHash: string,//ipfs hash only
+}
+
 export interface Meme {
     id: string,
     title: string,
@@ -13,18 +18,24 @@ export interface Meme {
     voteNumber: number,
     commentNumber: number,
     currentUserVoted: boolean,
-    order: number
+    order: number,
+    hot:boolean
 }
+
+export const MEME_TYPE_HOT:string = "hot";
+export const MEME_TYPE_FRESH:string = "fresh";
+export const MEME_TYPE_TRENDING:string = "trending";
 
 export const MEME_ENTRY_NO_VALUE: Meme = Object.freeze({
     id: "",
     user: USER_ENTRY_NO_VALUE,
     title: "",
     imageUrl: "",
-    created: new Date(),
-    dolarValue: 42.10,
-    voteNumber: 41,
-    commentNumber: 5,
+    created: new Date(2018, 11, 24, 10, 33, 30, 0),
+    dolarValue: 0.0,
+    voteNumber: 0,
+    commentNumber: 0,
     currentUserVoted: false,
     order:0,
+    hot:false
 });

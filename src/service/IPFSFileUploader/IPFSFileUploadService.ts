@@ -15,50 +15,78 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
         port: '5001',
         protocol: 'https'
     };
-    ipfsGatway = "https://ipfs.io/ipfs/";
+    //ipfsGatway = "https://ipfs.io/ipfs/";
+    ipfsGatway = "https://ipfs.infura.io/ipfs/";//faster since we pin to it ;)
+    //https://globalupload.io
 
     start(): void {
         this.ipfsApi = ipfsAPI(this.ipfsHost);
         this.ipfsApi.version((err, data) => {
-            console.log("ipfs service started version:", data.version);
+            console.log("ipfs service started / version :", data.version + " / gateway :"+this.ipfsGatway,this.ipfsHost);
         })
     }
 
-    uploadFile(file: File): Promise<UploadedDataInterface> {
+    convertIPFSHashToIPFSLink(hash:string){
+        return this.ipfsGatway+hash;
+    }
+
+    convertIPFSLinkToIPFSHash(link:string){
+        return link.replace(this.ipfsGatway, "");
+    }
+
+    uploadBuffer(buffer: Buffer,progress:(progressPercent:number)=>void): Promise<UploadedDataInterface> {
+        return new Promise<UploadedDataInterface>((resolve, reject) => {
+            let ipfsId;
+            progress(20);
+            this.ipfsApi.add(buffer, {
+                progress: (prog) => {progress(50);}
+            })
+                .then((response) => {
+                    //console.log(response);
+                    ipfsId = response[0].hash;
+                    //https://gateway.ipfs.io/ipfs/QmWBXMoP1ocSBkQNJcNuYR229vFDkymBQeBfUzwK78U2CT
+                    //INFO this fancy API is not working :/ => use HTTP
+                    /*this.ipfsApi.pin.add(
+                        {
+                            "hash":ipfsId
+                        }).then(()=>{
+                        resolve({
+                            fileId: ipfsId,
+                            fileURL: "https://gateway.ipfs.io/ipfs/"+ipfsId
+                        });
+                    });*/
+                    const httpClient = axios.create();
+                    httpClient.defaults.timeout = 20000;//ms
+                    let url = this.ipfsHost.protocol + "://" + this.ipfsHost.host + ":" + this.ipfsHost.port + "/api/v0/pin/add?arg=" + ipfsId;
+                    httpClient.get(url,{
+                        onDownloadProgress: (progressEvent) =>{
+                            //console.log('download', progressEvent);
+                            progress(80);
+                        },
+                    }).then(() => {
+                        let imageLink = this.ipfsGatway + ipfsId;
+                        console.log(imageLink);
+                        progress(100);
+                        resolve({
+                            fileId: ipfsId,
+                            fileURL: imageLink
+                        });
+                    });
+                }).catch((err) => {
+                console.error(err)
+            })
+        });
+    }
+
+    uploadFile(file: File,progress:(progressPercent:number)=>void): Promise<UploadedDataInterface> {
+        progress(10);
         return new Promise<UploadedDataInterface>((resolve, reject) => {
             let reader = new (<any>window).FileReader();
             reader.onloadend = () => {
-                let ipfsId;
                 const buffer = Buffer.from(reader.result);
-                this.ipfsApi.add(buffer, {progress: (prog) => console.log(`received: ${prog}`)})
-                    .then((response) => {
-                        //console.log(response);
-                        ipfsId = response[0].hash;
-                        //https://gateway.ipfs.io/ipfs/QmWBXMoP1ocSBkQNJcNuYR229vFDkymBQeBfUzwK78U2CT
-                        //INFO this fancy API is not working :/ => use HTTP
-                        /*this.ipfsApi.pin.add(
-                            {
-                                "hash":ipfsId
-                            }).then(()=>{
-                            resolve({
-                                fileId: ipfsId,
-                                fileURL: "https://gateway.ipfs.io/ipfs/"+ipfsId
-                            });
-                        });*/
-                        const httpClient = axios.create();
-                        httpClient.defaults.timeout = 20000;//ms
-                        let url = this.ipfsHost.protocol + "://" + this.ipfsHost.host + ":" + this.ipfsHost.port + "/api/v0/pin/add?arg=" + ipfsId;
-                        httpClient.get(url).then(() => {
-                            let imageLink = this.ipfsGatway + ipfsId;
-                            console.log(imageLink);
-                            resolve({
-                                fileId: ipfsId,
-                                fileURL: imageLink
-                            });
-                        });
-                    }).catch((err) => {
-                    console.error(err)
-                })
+                this.uploadBuffer(buffer,progress).then(value => {
+                    resolve(value);
+                });
             };
             reader.readAsArrayBuffer(file);
         })

@@ -1,37 +1,29 @@
 import {firebaseInitAuthService} from "../firebase/FirebaseInitAuthService";
 import axios from 'axios'
-import {firebaseMediaService} from "../firebase/FirebaseMediaService";
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import * as firebase from "firebase";
 import * as EventEmitter from "eventemitter3";
 import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
-
-export interface FireBaseUser {
-    uid: string;
-    photoURL: string;
-    avatarIid: string,
-    displayName: string,
-    email: string,
-    avatar: any
-}
+import {fileUploadService} from "../generic/FileUploadService";
+import {DATABASE_USERS, FirebaseUser} from "./shared/FireBaseDBDefinition";
 
 export class FirebaseAuthService {
-    userDataBaseName = "users";
+    userDataBaseName = DATABASE_USERS;
 
     eventEmitter = new EventEmitter<string>();
     currentUserUid: string = "";
-    started:boolean = false;
+    started: boolean = false;
 
-    userCache:{ [id: string] : UserEntry; } = {};//{uid:userobj}
+    userCache: { [id: string]: UserEntry; } = {};//{uid:userobj}
 
     constructor() {
     }
 
-    start(){
-        if(this.started){
+    start() {
+        if (this.started) {
             return;
         }
-        this.started=true;
+        this.started = true;
         console.log("Firebase auth service started");
         firebaseInitAuthService.firebaseAuth().onAuthStateChanged((user) => {
             if (user == null) {
@@ -97,14 +89,8 @@ export class FirebaseAuthService {
         return new Promise((resolve, reject) => {
             let user: any = firebase.auth().currentUser;
             delete this.userCache[user.uid];//invalidate cache
-            firebaseMediaService.createMediaEntry(newAvatarUrl,user.uid).then(newAvatarIid => {
-                firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/avatarIid')
-                    .set(newAvatarIid)
-                    .then(() => {
-                        this.eventEmitter.emit('AuthStateChanged', user.uid);
-                        resolve("ok");
-                    });
-            })
+            this.eventEmitter.emit('AuthStateChanged', user.uid);
+            resolve("ok");
         });
     }
 
@@ -143,10 +129,33 @@ export class FirebaseAuthService {
             });
         };
         this.eventEmitter.on('AuthStateChanged', wrapedCallback);
-        wrapedCallback(this.currentUserUid);//initial call
+        if (this.currentUserUid !== "") {
+            wrapedCallback(this.currentUserUid);//initial call
+        }
         return () => {
             this.eventEmitter.off('AuthStateChanged', wrapedCallback)
         };
+    }
+
+    computeWalletValue(uid: string): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
+                let fireBaseUser: FirebaseUser = user.val();
+                if (fireBaseUser == null) {
+                    console.error("uid does not exist in database");
+                    resolve(0);
+                    return;
+                }else {
+                    const httpClient = axios.create();
+                    httpClient.defaults.timeout = 1000;//ms
+                    httpClient.get(backEndPropetiesProvider.getProperty("WALLET_SERVICE") + "/compute_wallet/" + uid).then(response => {
+                        resolve(response.data.balance);
+                    }).catch(reason => {
+                        resolve(fireBaseUser.wallet ? fireBaseUser.wallet.balance : 0);
+                    });
+                }
+            });
+        });
     }
 
     loadUserData(uid: string): Promise<UserEntry> {
@@ -155,18 +164,19 @@ export class FirebaseAuthService {
                 resolve(this.userCache[uid]);//continue to update user
             }
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
-                let fireBaseUser = user.val();
+                let fireBaseUser:FirebaseUser = user.val();
                 if (fireBaseUser == null) {
-                    reject("uid does not exsist in database");
+                    reject("uid does not exist in database");
                     return;
                 }
-                firebaseMediaService.loadMediaEntry(fireBaseUser.avatarIid).then((avatar) => {
-                    let userData:UserEntry={
-                        avatarUrl: avatar.url,
+                fileUploadService.getMediaUrlFromImageID(fireBaseUser.avatarIid).then((avatarUrl) => {
+                    let userData: UserEntry = {
+                        avatarUrl: avatarUrl,
                         email: fireBaseUser.email,
                         provider: PROVIDER_FIREBASE_MAIL,
-                        displayName : fireBaseUser.displayName,
-                        uid : fireBaseUser.uid,
+                        displayName: fireBaseUser.displayName,
+                        uid: fireBaseUser.uid,
+                        wallet:user["wallet"]?user.wallet:0
                     };
                     this.userCache[uid] = userData;
                     resolve(userData);
@@ -186,7 +196,7 @@ export class FirebaseAuthService {
         return new Promise<string>((resolve, reject) => {
             firebaseInitAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
                 firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
-                    let userValue = userData.val();
+                    let userValue: FirebaseUser = userData.val();
                     if (userValue === null) {
                         console.warn("user recreated : ", user);
                         this.saveUser(user).then(() => {
@@ -208,86 +218,25 @@ export class FirebaseAuthService {
         return firebaseInitAuthService.firebaseAuth().sendPasswordResetEmail(email)
     }
 
-    generateUserName(user: FireBaseUser):Promise<string>{
-        let userNamePromised;
-        if (user.displayName !== null) {
-            userNamePromised = new Promise((resolve, reject) => {
-                resolve(user.displayName);
-            });
-        } else {
-            userNamePromised = new Promise((resolve, reject) => {
-                //configure default HTTP timeout
-                const httpClient = axios.create();
-                httpClient.defaults.timeout = 20000;//ms
-                httpClient.get(backEndPropetiesProvider.getProperty('USERNAME_GENERATION_SERVICE')).then(response => {
-                    let username = response.data;
-                    resolve(username);
-                }).catch(error => {
-                    console.error("fail to generate user name");
-                    resolve("Toto");
-                });
-            });
-        }
-        return userNamePromised;
-    }
-
-    generateUserAvatarIid(user: FireBaseUser):Promise<string>{
-        let iidPromised;
-        if (user.photoURL !== null) {
-            iidPromised = new Promise((resolve) => {
-                firebaseMediaService.createMediaEntry(user.photoURL, user.uid).then((fileId) => {
-                    resolve(fileId);
-                });
-            });
-        } else {
-            iidPromised = new Promise((resolve) => {
-                const httpClient = axios.create();
-                httpClient.defaults.timeout = 20000;//ms
-                httpClient.get(backEndPropetiesProvider.getProperty('AVATAR_GENERATION_SERVICE')).then(response => {
-                    let url = response.data;
-                    firebaseMediaService.createMediaEntry(url, user.uid).then((fileId) => {
-                        resolve(fileId);
-                    });
-                }).catch(error => {
-                    console.error("fail to generate avatar image");
-                    firebaseMediaService.createMediaEntry("https://avatar.admin.rphstudio.net/avatar/avatars/avatar-044.jpeg", user.uid).then((fileId) => {
-                        resolve(fileId);
-                    });
-                });
-            });
-        }
-        return iidPromised;
-    }
-
-    saveUser(user: FireBaseUser): Promise<string> {
+    private saveUser(user: FirebaseUser): Promise<string> {
         return new Promise((resolve, reject) => {
-            this.generateUserName(user).then(username => {
-                this.generateUserAvatarIid(user).then(iid => {
-                    console.log("saving generated user :"+username+" - "+iid);
-                    firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid)
-                        .set({
-                            uid: user.uid,
-                            email: user.email,
-                            displayName: username,
-                            avatarIid: iid
-                        })
-                        .then(() => resolve("ok"))
-                        .catch(error => {
-                            reject(error);
-                        });
-                }).catch(error => {
-                    reject(error);
-                });
+            //configure default HTTP timeout
+            const httpClient = axios.create();
+            httpClient.defaults.timeout = 20000;//ms
+            httpClient.get(backEndPropetiesProvider.getProperty('USER_SERVICE_INIT')+"/"+user.uid).then(() => {
+                resolve("ok");
             }).catch(error => {
-                reject(error);
+                console.error("fail to init user");
             });
         });
     }
 
-    getLoggedUser():Promise<UserEntry> {
+    getLoggedUser(): Promise<UserEntry> {
         if (this.currentUserUid == "" || this.currentUserUid == null) {
-            return new Promise<UserEntry>(resolve => {resolve(USER_ENTRY_NO_VALUE)});
-        }else {
+            return new Promise<UserEntry>(resolve => {
+                resolve(USER_ENTRY_NO_VALUE)
+            });
+        } else {
             return this.loadUserData(this.currentUserUid);
         }
     }

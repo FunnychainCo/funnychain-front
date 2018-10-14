@@ -21,6 +21,7 @@ import Waypoint from "react-waypoint";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeUpvoteButton from "./MemeUpvoteButton";
+import MemeBetButton from "./MemeBetButton";
 
 
 const styles = theme => ({
@@ -84,6 +85,9 @@ class MemeFullDisplay extends Component<{
         this.removeListnerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concatResult: MemeComment[] = this.state.comments;
             concatResult = concatResult.concat(comments);
+            concatResult.sort((a:MemeComment, b:MemeComment) => {
+               return b.date.getTime() - a.date.getTime();
+            });
             this.setState({comments: concatResult, loadingComment: false});
         });
         //initialize
@@ -119,10 +123,26 @@ class MemeFullDisplay extends Component<{
             />
             <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
             <CardActions className="memeElementStyleDivContainer">
+
+                {this.state.meme.hot === true &&
                 <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
                     this.memeLink.refresh();
                 }}/>
-                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue}</div>
+                }
+                {this.state.meme.hot === false &&
+                <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
+                    this.memeLink.refresh();
+                }}/>
+                }
+
+                {this.state.meme.hot === false &&
+                <MemeBetButton meme={this.state.meme} logged={this.state.logged} onBetConfirmed={() => {
+                    this.memeLink.refresh();
+                }}/>
+                }
+                {this.state.meme.hot === true &&
+                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue.toFixed(2)}</div>
+                }
             </CardActions>
             <CardContent style={{marginTop: 0, paddingTop: 0}}>
                 <div className="memeCommentContainer"
@@ -135,7 +155,6 @@ class MemeFullDisplay extends Component<{
                     </div>
                     <div className="memeCommentContainerRight">
                         <strong>{this.state.meme.user.displayName}</strong><br/>
-                        <a href={"https://steemit.com" + this.state.meme.id}>SteemIt</a><br/>
                         {moment(this.state.meme.created).fromNow()}
                     </div>
                 </div>

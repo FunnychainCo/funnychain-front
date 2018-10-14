@@ -4,7 +4,7 @@ import {convertMeme, getAuthorAndPermalink} from "./generic/SteemUtils";
 import {steemConnectAuthService} from "./steemConnect/SteemConnectAuthService";
 import * as EventEmitter from "eventemitter3";
 import * as Q from "q";
-import {Meme, MEME_ENTRY_NO_VALUE} from "../generic/Meme";
+import {Meme, MEME_ENTRY_NO_VALUE, MEME_TYPE_FRESH, MEME_TYPE_HOT, MEME_TYPE_TRENDING} from "../generic/Meme";
 import {MemeLink} from "./MemeLink";
 
 export class MemeLoader implements MemeLoaderInterface {
@@ -65,11 +65,11 @@ export class MemeLoader implements MemeLoaderInterface {
                 params.limit++;//for the skiped redundent post
             }
             let type: dsteem.DiscussionQueryCategory = "trending";
-            if (this.type == "hot") {
+            if (this.type == MEME_TYPE_HOT) {
                 type = "trending";
-            } else if (this.type == "trending") {
+            } else if (this.type == MEME_TYPE_TRENDING) {
                 type = "hot";
-            } else if (this.type == "fresh") {
+            } else if (this.type == MEME_TYPE_FRESH) {
                 type = "created";
             } else {
                 console.error("unkown type");

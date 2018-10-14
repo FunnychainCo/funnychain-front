@@ -11,11 +11,13 @@ import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {authService} from "../service/generic/AuthService";
 import HomePage from "../containers/HomePage";
+import {backEndPropetiesProvider} from "../service/BackEndPropetiesProvider";
 
 class App extends React.Component<any,any> {
     state = {};
 
     componentDidMount() {
+        console.log("MODE : "+backEndPropetiesProvider.getProperty("MODE"));
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();

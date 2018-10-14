@@ -6,10 +6,10 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './ImageUploaderDropZone.css';
 import * as MobileDetect from 'mobile-detect'
 import {authService} from "../../service/generic/AuthService";
-import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import Snackbar from "@material-ui/core/Snackbar/Snackbar";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
-//import {fileUploadService} from "../../service/generic/FileUploadService";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import {setInterval} from "timers";
 
 export interface IState{
     files: any[],
@@ -28,10 +28,9 @@ export default class ImageUploaderDropZone extends Component<{
     acceptedFiles?:string[],
     onImageLoaded:(state:string) => void,
     maxSize?:number,
-    onFileToUpload:(file:File)=>Promise<string>
+    onFileToUpload:(file:File)=>Promise<string>,
+    uploadProgress:number
 },any> {
-    storageBase = "images"
-    dataBase = "images"
     state:IState = {
         files: [],
         filename: '',
@@ -47,6 +46,7 @@ export default class ImageUploaderDropZone extends Component<{
 
     uid:string = "";
     private removeListener: () => void;
+    private removeInterval: NodeJS.Timer;
 
     componentDidMount() {
         let md = new MobileDetect(window.navigator.userAgent);
@@ -59,23 +59,33 @@ export default class ImageUploaderDropZone extends Component<{
                 this.uid = "";
             }
         });
+        this.removeInterval = setInterval(()=>{
+            if(this.state.progress<this.props.uploadProgress){
+                this.setState({progress:this.state.progress+1});
+            }
+        },100);
     }
 
     componentWillUnmount() {
+        clearInterval(this.removeInterval);
         this.removeListener();
     }
 
     handleUploadStart = () => this.setState({isUploading: true, progress: 0});
-    handleProgress = (progress) => this.setState({progress});
+    handleProgress = (progress) => {
+        console.warn(progress);
+        this.setState({progress});
+    };
     handleUploadError = (error) => {
         this.setState({isUploading: false});
         console.error(error);
-    }
+    };
 
     handleOnAlways = (instance) => {
     };
 
     handleOnProgress = (instance, image) => {
+        console.warn(instance,image);
     };
 
     handleOnFail = (instance) => {
@@ -118,12 +128,21 @@ export default class ImageUploaderDropZone extends Component<{
         });
     };
 
+
     render() {
         const fileSizeLimit = this.props.maxSize || 3000000;
         return (
             <div className="fcImageContainerStyle">
                 <form className="fcImageContainerStyle">
-                    {this.state.isUploading && <LoadingBlock />}
+                    {this.state.isUploading &&
+                    <div style={{flexDirection:"column",display:"flex",justifyContent:"center ",alignItems:"center",height:"100px"}}>
+                        <CircularProgress
+                            variant="static"
+                            size={50}
+                            value={this.state.progress}/>
+                        <div>Loading data</div>
+                    </div>
+                    }
                     {this.state.fileURL &&
                     <ImagesLoaded
                         className="fcImageContainerStyle"
@@ -131,7 +150,7 @@ export default class ImageUploaderDropZone extends Component<{
                         onProgress={this.handleOnProgress}
                         onFail={this.handleOnFail}
                         done={this.handleDone}
-                        background=".image" // true or child selector
+                        background=".image"
                     >
                         <img className="fcImageContainerStyle" src={this.state.fileURL} alt=""/>
                     </ImagesLoaded>

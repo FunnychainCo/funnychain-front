@@ -6,7 +6,7 @@ export interface MemeLinkInterface {
     id:string,
     order:number,
     on(callback: (meme: Meme) => void): () => void,
-    refresh():Promise<any>
+    refresh():Promise<string>
     getCommentVisitor():CommentsVisitor
 }
 
@@ -17,7 +17,8 @@ export interface MemeLoaderInterface {
 }
 
 export interface MemeServiceAction {
-    vote(url: string): Promise<string>,
+    vote(memeID: string): Promise<string>,
+    bet(memeID: string): Promise<string>,
     post(title:string,body:string):Promise<string>
 }
 
@@ -25,7 +26,9 @@ export interface MemeServiceView {
     getMemeLoader(type:string,tags:string[]):MemeLoaderInterface
 }
 
-export interface MemeServiceInterface extends MemeServiceView{}
+export interface MemeServiceInterface extends MemeServiceView{
+    getMemeLink(id: string,order:number): MemeLinkInterface;
+}
 
 /**
  * COMMENT SERVICE
@@ -67,11 +70,11 @@ export interface UserServiceInterface {
  */
 
 export interface FileUploadServiceInterface{
-    uploadFile(file:File):Promise<UploadedDataInterface>
+    uploadFile(file:File,progress:(progressPercent:number)=>void):Promise<UploadedDataInterface>
 }
 
 export interface UploadedDataInterface{
     fileURL:string,
-    fileId:string
+    fileId:string,
 }
 

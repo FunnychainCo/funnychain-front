@@ -25,3 +25,4 @@ yarn-error.log*
 /*.iml
 /*.ffs_db
 /package-lock.json
+/profile/properties.prod.ts

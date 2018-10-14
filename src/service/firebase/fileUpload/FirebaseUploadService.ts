@@ -1,10 +1,11 @@
 import * as firebase from 'firebase';
 import {firebaseMediaService} from "./FirebaseMediaService";
-import {idService} from "../IdService";
-import {FileUploadServiceInterface, UploadedDataInterface} from "../generic/ApplicationInterface";
+import {idService} from "../../IdService";
+import {FileUploadServiceInterface, UploadedDataInterface} from "../../generic/ApplicationInterface";
+import {DATABASE_MEDIA} from "../shared/FireBaseDBDefinition";
 
 export class FirebaseUploadService implements FileUploadServiceInterface{
-    storageBase = "images"
+    storageBase = DATABASE_MEDIA;
 
     uploadFile(file:File):Promise<UploadedDataInterface> {
         return new Promise<UploadedDataInterface>(((resolve, reject) => {

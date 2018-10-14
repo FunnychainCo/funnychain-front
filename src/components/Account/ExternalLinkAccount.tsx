@@ -21,40 +21,9 @@ export default class ExternalLinkAccount extends Component<{}, {
         return (
 
             <div className="fcContent">
-
                 <ListItem button onClick={() => {
-                    window.location.href = "https://discord.gg/9NmfPXc"
-                }}><Discord/><ListItemText primary="Join on discord"/>
-                </ListItem>
-
-                <ListItem button onClick={() => {
-                    window.location.href = "https://www.funnychain.co"
+                    window.location.href = "https://funnychain.co"
                 }}><Face/><ListItemText primary="Funnychain"/>
-                </ListItem>
-
-                <ListItem button onClick={() => {
-                    window.location.href = "https://medium.com/p/cff33aab1bcc/edit"
-                }}><HelpCircle/><ListItemText primary="FAQ"/>
-                </ListItem>
-
-                <ListItem button onClick={() => {
-                    window.location.href = "https://funnychain.typeform.com/to/VS9XlS"
-                }}><HelpCircle/><ListItemText primary="Feedback"/>
-                </ListItem>
-
-                <ListItem button onClick={() => {
-                    window.location.href = "https://twitter.com/funnychain_lol"
-                }}><Twitter/><ListItemText primary="Twitter"/>
-                </ListItem>
-
-                <ListItem button onClick={() => {
-                    window.location.href = "https://medium.com/@funnychain"
-                }}><Medium/><ListItemText primary="Medium"/>
-                </ListItem>
-
-                <ListItem button onClick={() => {
-                    window.location.href = "https://t.me/joinchat/G6O10E0dEZnSRFLycDgKjw"
-                }}><Telegram/><ListItemText primary="Telegram"/>
                 </ListItem>
 
                 <ListItem button onClick={() => {
@@ -63,8 +32,38 @@ export default class ExternalLinkAccount extends Component<{}, {
                 </ListItem>
 
                 <ListItem button onClick={() => {
-                    window.location.href = "https://www.funnychain.co"
-                }}><Reddit/><ListItemText primary="Reddit (soon)"/>
+                    window.location.href = "https://twitter.com/funnychain_lol"
+                }}><Twitter/><ListItemText primary="Twitter"/>
+                </ListItem>
+
+                <ListItem button onClick={() => {
+                    window.location.href = "https://t.me/joinchat/G6O10E0dEZnSRFLycDgKjw"
+                }}><Telegram/><ListItemText primary="Telegram"/>
+                </ListItem>
+
+                <ListItem button onClick={() => {
+                    window.location.href = "https://www.reddit.com/r/FunnyChain"
+                }}><Reddit/><ListItemText primary="Reddit"/>
+                </ListItem>
+
+                <ListItem button onClick={() => {
+                    window.location.href = "https://medium.com/@funnychain"
+                }}><Medium/><ListItemText primary="Medium"/>
+                </ListItem>
+
+                <ListItem button onClick={() => {
+                    window.location.href = "https://funnychain.typeform.com/to/VS9XlS"
+                }}><HelpCircle/><ListItemText primary="Feedback"/>
+                </ListItem>
+
+                <ListItem button onClick={() => {
+                    window.location.href = "https://medium.com/p/cff33aab1bcc/edit"
+                }}><HelpCircle/><ListItemText primary="FAQ"/>
+                </ListItem>
+
+                <ListItem button onClick={() => {
+                    window.location.href = "https://discord.gg/9NmfPXc"
+                }}><Discord/><ListItemText primary="Join on discord"/>
                 </ListItem>
 
             </div>

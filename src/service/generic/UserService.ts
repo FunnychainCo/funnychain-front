@@ -6,6 +6,9 @@ import {steemCommunityAccountService} from "../steem/steemComunity/SteemCommunit
 export class UserService {
 
     loadUserData(uid: string): Promise<UserEntry> {
+        if(uid===null || uid==undefined){
+            console.error(uid);
+        }
         if(steemCommunityAccountService.isCommunityAccount(uid)){
             //firebase
             return firebaseAuthService.loadUserData(uid);
@@ -13,6 +16,10 @@ export class UserService {
             //steam
             return steemUserService.loadUserData(uid);
         }
+    }
+
+    computeWalletValue(uid: string): Promise<number>{
+        return firebaseAuthService.computeWalletValue(uid);
     }
 }
 

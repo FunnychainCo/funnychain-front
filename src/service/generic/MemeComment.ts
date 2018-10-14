@@ -6,6 +6,7 @@ import {UserEntry,USER_ENTRY_NO_VALUE} from "./UserEntry";
 
 export interface MemeComment {
     id: string,
+    date: Date,
     parentId: string,
     author: UserEntry,
     text: string,
@@ -14,6 +15,7 @@ export interface MemeComment {
 
 class ImmutableMemeComment implements MemeComment{
     readonly id= "";
+    readonly date= new Date(0);
     readonly parentId= "";
     readonly author= USER_ENTRY_NO_VALUE;
     readonly text= "";
