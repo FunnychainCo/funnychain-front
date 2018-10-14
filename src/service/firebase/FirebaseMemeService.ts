@@ -188,13 +188,13 @@ class MemeLoader implements MemeLoaderInterface{
                     firebaseMemes.push(memeVal);
                 }
             });
-            this.loadMore(limit-firebaseMemes.length);//TODO find a better system to load type fresh and hot
             //sort meme by creation time
             firebaseMemes.sort((a, b) => {
                 return a.created - b.created;
             });
             this.convertor(firebaseMemes).then(memeLinkData => {
                 this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
+                this.loadMore(limit-firebaseMemes.length);//TODO find a better system to load type fresh and hot
             });
         });
 
