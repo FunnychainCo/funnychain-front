@@ -223,7 +223,7 @@ export class FirebaseAuthService {
             //configure default HTTP timeout
             const httpClient = axios.create();
             httpClient.defaults.timeout = 20000;//ms
-            httpClient.get(backEndPropetiesProvider.getProperty('USER_SERVICE_INIT')).then(() => {
+            httpClient.get(backEndPropetiesProvider.getProperty('USER_SERVICE_INIT')+"/"+user.uid).then(() => {
                 resolve("ok");
             }).catch(error => {
                 console.error("fail to init user");

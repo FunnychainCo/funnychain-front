@@ -16,7 +16,7 @@ import {firebaseCommentService} from "./FirebaseCommentService";
 import * as EventEmitter from "eventemitter3";
 import {firebaseUpvoteService} from "./FirebaseUpvoteService";
 import {authService} from 'src/service/generic/AuthService';
-import {DATABASE_HOTS, DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
+import {DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
 
 export class FirebaseMemeService implements MemeServiceInterface {
     getMemeLink(id: string, order: number): MemeLinkInterface {
@@ -75,16 +75,6 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
             });
         }));
 
-        //(6) compute meme hotness and meme value
-        let hot;
-        promiseArray.push(new Promise<boolean>((resolve2) => {
-            firebase.database().ref(DATABASE_HOTS + "/" + meme.memeIpfsHash).once("value", (meme) => {
-                meme = meme.val();
-                hot = meme!=null;
-                resolve2(true);
-            });
-        }));
-
         //(7) compute comment number
         let commentNumber=0;
         promiseArray.push(new Promise<boolean>((resolve2) => {
@@ -107,7 +97,7 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
                 voteNumber: voteNumber,
                 currentUserVoted: currentUserVoted,
                 order:-meme.created,
-                hot:hot
+                hot:meme.hot
             });
         })
     });
@@ -175,8 +165,8 @@ class MemeLoader implements MemeLoaderInterface{
 
     dataBase = DATABASE_MEMES;
 
-    onFirebaseFresh(callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
-        let ref = firebase.database().ref(this.dataBase);
+    onFirebase(hot:boolean,callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
+        let ref = firebase.database().ref(DATABASE_MEMES).orderByChild('hot').equalTo(hot);
         let toremove = ref.on("child_added", (meme) => {
             if (meme == null) {
                 console.error(meme);
@@ -192,33 +182,6 @@ class MemeLoader implements MemeLoaderInterface{
         //return remove listener function
         return () => {
             ref.off("value", toremove);
-        };
-    }
-
-    onFirebaseHot(callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
-        let db = firebase.database();
-        let toremove = db.ref(DATABASE_HOTS).on("child_added", (hot) => {
-            if (hot == null) {
-                console.error(hot);
-                return;
-            }
-            let hotMeme = hot.key;
-            //read the hot meme
-            db.ref(DATABASE_MEMES+"/"+hotMeme).once("value",(memes) => {
-                if (memes == null) {
-                    console.error(memes);
-                    return;
-                }
-                let memesValue: FirebaseMeme = memes.val() || {};
-                let ret = {};
-                ret[memesValue.memeIpfsHash] = memesValue;
-                callback(ret);
-            });
-        }, (errorObject) => {
-            console.log("The read failed: " + errorObject.code);
-        });
-        return () => {
-            db.ref(DATABASE_HOTS).off("value", toremove);
         };
     }
 
@@ -240,12 +203,12 @@ class MemeLoader implements MemeLoaderInterface{
             });
         };
         if(this.type===MEME_TYPE_HOT){
-            return this.onFirebaseHot(convertor);
+            return this.onFirebase(true,convertor);
         }else if(this.type===MEME_TYPE_FRESH){
-            return this.onFirebaseFresh(convertor);
+            return this.onFirebase(false,convertor);
         }else{
             console.error("invalid meme loader type");
-            return this.onFirebaseFresh(convertor);
+            return this.onFirebase(false,convertor);
         }
     }
 

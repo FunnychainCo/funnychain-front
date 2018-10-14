@@ -37,10 +37,10 @@ export default class WalletAccount extends Component<{}, {
             } else {
                 userService.computeWalletValue(user.uid).then(balance => {
                     user.wallet = balance;
-                });
-                this.setState({
-                    user: user,
-                    loading: false
+                    this.setState({
+                        user: user,
+                        loading: false
+                    });
                 });
             }
         });
