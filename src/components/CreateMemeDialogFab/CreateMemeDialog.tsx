@@ -10,29 +10,36 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import TextField from "@material-ui/core/TextField/TextField";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import {authService} from "../../service/generic/AuthService";
+import {withStyles} from '@material-ui/core/styles';
+import LoadingButton from "./LoadingButton";
 
+const styles: any = theme => ({});
 
-export default class CreateMemeDialog extends Component<{
+class CreateMemeDialog extends Component<{
+    classes: any
     open: boolean,
     handleClose: () => void
 }, {
     title: string,
     imageURL: string,
     valid: boolean,
-    progress: number
+    progress: number,
+    postLoading: boolean
 }> {
 
     state = {
         title: "",
         imageURL: "",
         valid: false,
-        progress: 0
+        progress: 0,
+        postLoading: false
     };
 
     titleValid: boolean = false;
     imageValid: boolean = false;
 
     post = () => { //use this form to have acces to this
+        this.setState({postLoading: true});
         if (this.state.imageURL === null || this.state.imageURL === "") {
             userNotificationService.notifyUser("A image is required");
         }
@@ -41,6 +48,7 @@ export default class CreateMemeDialog extends Component<{
         }
 
         authService.getUserAction().post(this.state.title, this.state.imageURL).then(() => {
+            this.setState({postLoading: false});
             this.props.handleClose();
         });
     };
@@ -105,13 +113,17 @@ export default class CreateMemeDialog extends Component<{
 
                 <DialogActions>
                     <Button onClick={this.props.handleClose}>Cancel</Button>
-                    <Button onClick={() => {
-                        this.post();
-                    }}
-                            disabled={!this.state.valid}
-                    >Submit</Button>
+                    <LoadingButton
+                        onValidation={() => {
+                            this.post();
+                        }}
+                        loading={this.state.postLoading}
+                        valid={this.state.valid}
+                    />
                 </DialogActions>
             </ModalPage>
         )
     }
 }
+
+export default withStyles(styles)(CreateMemeDialog);
