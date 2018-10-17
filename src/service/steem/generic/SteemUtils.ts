@@ -113,6 +113,7 @@ export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): 
                                     wallet:0
                                 },
                                 currentUserVoted: currentUserVoted,
+                                currentUserBet:false,
                                 order: orderNumber,
                                 hot:false
                             };

@@ -16,19 +16,23 @@ class MemeBetButton extends Component<{
     classes: any,
 }, {}> {
 
-    state={
-        currentUserBet:false
-    };
 
     bet = () => {
-        if (this.state.currentUserBet !== true) {
-            this.setState({currentUserBet: true});//update ui
+        if (this.props.meme.currentUserBet !== true) {
+            this.props.meme.currentUserBet = true;
+            //also upvote
+            if (this.props.meme.currentUserVoted !== true) {
+                this.props.meme.currentUserVoted = true;
+                this.props.meme.voteNumber++;
+            }
+            this.setState({meme: this.props.meme});//update ui
             authService.getUserAction().bet(this.props.meme.id).then(() => {
                 this.props.onBetConfirmed();
             }).catch(reason => {
                 console.log(reason);
                 //cancel previous operation
-                this.setState({currentUserBet: false});//update ui
+                //upvote not canceled
+                this.props.meme.currentUserBet = false;
                 this.setState({meme: this.props.meme});//update ui
             });
         }
@@ -37,7 +41,7 @@ class MemeBetButton extends Component<{
     render() {
         //const {classes} = this.props;
         return <Button variant="outlined"
-                       color={this.state.currentUserBet ? "secondary" : "default"}
+                       color={this.props.meme.currentUserBet ? "secondary" : "default"}
                        aria-label="Bet"
                        disabled={!this.props.logged}
                        onClick={this.bet}>

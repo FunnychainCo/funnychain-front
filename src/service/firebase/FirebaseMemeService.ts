@@ -17,6 +17,7 @@ import * as EventEmitter from "eventemitter3";
 import {firebaseUpvoteService} from "./FirebaseUpvoteService";
 import {authService} from 'src/service/generic/AuthService';
 import {DATABASE_MEMES, FirebaseMeme, FirebaseMemeDBStruct} from "./shared/FireBaseDBDefinition";
+import {firebaseBetService} from "./FirebaseBetService";
 
 export class FirebaseMemeService implements MemeServiceInterface {
     getMemeLink(id: string, order: number): MemeLinkInterface {
@@ -52,6 +53,17 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
             authService.getLoggedUser().then(currentUserData => {
                 firebaseUpvoteService.hasVotedOnPost(meme.memeIpfsHash, currentUserData.uid).then(currentUserVotedValue => {
                     currentUserVoted=currentUserVotedValue;
+                    resolve2(true);
+                });
+            });
+        }));
+
+        //(2.5) compute if current user bet
+        let currentUserBet;
+        promiseArray.push(new Promise<boolean>((resolve2) => {
+            authService.getLoggedUser().then(currentUserData => {
+                firebaseBetService.hasBetOnPost(meme.memeIpfsHash, currentUserData.uid).then(currentUserBetValue => {
+                    currentUserBet=currentUserBetValue;
                     resolve2(true);
                 });
             });
@@ -96,6 +108,7 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
                 commentNumber: commentNumber,
                 voteNumber: voteNumber,
                 currentUserVoted: currentUserVoted,
+                currentUserBet:currentUserBet,
                 order:-meme.created,
                 hot:meme.hot
             });
