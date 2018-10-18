@@ -5,7 +5,7 @@ import Button from "@material-ui/core/Button/Button";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {authService} from "../../service/generic/AuthService";
 import {Meme} from "../../service/generic/Meme";
-import { CashMultiple } from 'mdi-material-ui';
+import {CashMultiple} from 'mdi-material-ui';
 
 const styles = theme => ({});
 
@@ -40,14 +40,15 @@ class MemeBetButton extends Component<{
 
     render() {
         //const {classes} = this.props;
-        return <Button variant="outlined"
-                       color={this.props.meme.currentUserBet ? "secondary" : "default"}
-                       aria-label="Bet"
-                       disabled={!this.props.logged}
-                       onClick={this.bet}>
+        return <div>{this.props.meme.betable &&
+        <Button variant="outlined"
+                color={this.props.meme.currentUserBet ? "secondary" : "default"}
+                aria-label="Bet"
+                disabled={!this.props.logged}
+                onClick={this.bet}>
             Bet !&nbsp;
             <CashMultiple style={{height: "0.7em"}}/>
-        </Button>
+        </Button>}</div>
     }
 
 }

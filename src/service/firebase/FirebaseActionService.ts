@@ -56,7 +56,7 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                     uid: currentUser.uid,
                     created: new Date().getTime(),
                     value:0,
-                    hot:false
+                    hot:0
                 };
                 firebase.database().ref(DATABASE_MEMES + '/' + value.fileId).set(meme).then(()=>{
                     resolve("ok");

@@ -50,6 +50,17 @@ export class FirebaseBetService {
         })
     }
 
+    isBetEnableOnPost(memeId: string): Promise<boolean> {
+        return new Promise<boolean>((resolve,reject) => {
+            axios.get(backEndPropetiesProvider.getProperty('WALLET_SERVICE')+"/isBetEnabledOnPost/"+memeId).then(response => {
+                resolve(response.data);
+            }).catch(error => {
+                console.error(error);
+                resolve(false);
+            });
+        });
+    }
+
     bet(memeId: string, uid: string): Promise<string> {
         return new Promise<string>((resolve,reject) => {
             /*firebase.database().ref(this.dataBase + '/' + memeId+"/"+uid).set(new Date().getTime()).then(() => {

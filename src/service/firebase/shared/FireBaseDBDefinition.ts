@@ -16,7 +16,7 @@ export const DATABASE_MEMES = "memes";
 export interface FirebaseMeme {
     memeIpfsHash: string,
     uid: string,
-    hot: boolean,
+    hot: number,
     created: number,
     value: number,
 }
@@ -51,7 +51,10 @@ export interface FirebaseUserDBStruct {
 export const DATABASE_META = "meta";
 
 export interface FirebaseMeta {
-    hotest: string,
+    hotest:{
+        hash:string,
+        date:number
+    },
     bet_pool: {
         balance: number,
         lastUpdate: number

@@ -87,6 +87,16 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
             });
         }));
 
+
+        //(6) is meme betable
+        let betable = false;
+        promiseArray.push(new Promise<boolean>((resolve2) => {
+            firebaseBetService.isBetEnableOnPost(meme.memeIpfsHash).then(betableRes => {
+                betable = betableRes;
+                resolve2(true);
+            });
+        }));
+
         //(7) compute comment number
         let commentNumber=0;
         promiseArray.push(new Promise<boolean>((resolve2) => {
@@ -110,7 +120,9 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
                 currentUserVoted: currentUserVoted,
                 currentUserBet:currentUserBet,
                 order:-meme.created,
-                hot:meme.hot
+                hot:meme.hot!=0,
+                hotDate:new Date(meme.hot),
+                betable:betable
             });
         })
     });
@@ -183,7 +195,8 @@ class MemeLoader implements MemeLoaderInterface{
         if(limit<=0){
             return;
         }
-        let ref = firebase.database().ref(DATABASE_MEMES).orderByChild('created')
+        let hot = this.type==MEME_TYPE_HOT;
+        let ref = firebase.database().ref(DATABASE_MEMES).orderByChild(hot?'hot':'created')
             .endAt(this.lastPostDate-1)
             .limitToLast(limit);
         ref.once("value",(memes)=> {
@@ -214,7 +227,7 @@ class MemeLoader implements MemeLoaderInterface{
     }
 
     onFirebase(hot:boolean,callback: (memes: { [id: string]: FirebaseMeme }) => void): () => void {
-        let ref = firebase.database().ref(DATABASE_MEMES).orderByChild('created').limitToFirst(2);
+        let ref = firebase.database().ref(DATABASE_MEMES).orderByChild(hot?'hot':'created').limitToFirst(2);
         let toremove = ref.on("child_added", (meme) => {
             if (meme == null) {
                 console.error(meme);

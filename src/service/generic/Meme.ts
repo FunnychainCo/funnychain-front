@@ -20,7 +20,9 @@ export interface Meme {
     currentUserVoted: boolean,
     currentUserBet: boolean,
     order: number,
-    hot:boolean
+    hot:boolean,
+    hotDate:Date,
+    betable:boolean
 }
 
 export const MEME_TYPE_HOT:string = "hot";
@@ -39,5 +41,7 @@ export const MEME_ENTRY_NO_VALUE: Meme = Object.freeze({
     currentUserVoted: false,
     currentUserBet: false,
     order:0,
-    hot:false
+    hot:false,
+    hotDate: new Date(2018, 11, 24, 10, 33, 30, 0),
+    betable:false
 });

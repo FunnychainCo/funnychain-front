@@ -5,7 +5,7 @@ import {backEndPropetiesProvider} from "../../service/BackEndPropetiesProvider";
 
 export default class Version extends Component {
 
-    VERSION = "1.1.5";
+    VERSION = "1.1.6";
 
     componentDidMount(){
         console.log("funnychain version: "+this.VERSION);

@@ -115,7 +115,9 @@ export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): 
                                 currentUserVoted: currentUserVoted,
                                 currentUserBet:false,
                                 order: orderNumber,
-                                hot:false
+                                hot:false,
+                                hotDate:new Date(),
+                                betable:false
                             };
                             resolve(newMeme);
                         }).catch(reason => {
