@@ -11,8 +11,9 @@ import { Link } from 'react-router-dom';
 import LoginAccountIcon from "../LoginAccountIcon/LoginAccountIcon";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
-import { Ethereum } from 'mdi-material-ui';
+//import { Ethereum } from 'mdi-material-ui';
 import {firebaseBetService} from "../../service/firebase/FirebaseBetService";
+import DogeIcon from "../Icon/DogeIcon";
 
 const styles = theme => ({
     root: {
@@ -98,7 +99,7 @@ class Header extends Component<{
                         </Tabs>
                     </Typography>
 
-                    <Chip label={"Bet Pool: "+this.state.betPoolBalance.toFixed(2)} color="secondary" avatar={<Avatar><Ethereum /></Avatar>} />&nbsp;&nbsp;
+                    <Chip label={"Bet Pool: "+this.state.betPoolBalance.toFixed(2)} color="secondary" avatar={<Avatar><DogeIcon /></Avatar>} />&nbsp;&nbsp;
                     <LoginAccountIcon />
                 </Toolbar>
             </AppBar>

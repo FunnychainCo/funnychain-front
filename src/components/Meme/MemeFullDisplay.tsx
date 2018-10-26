@@ -22,6 +22,7 @@ import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeUpvoteButton from "./MemeUpvoteButton";
 import MemeBetButton from "./MemeBetButton";
+import DogeIcon from "../Icon/DogeIcon";
 
 
 const styles = theme => ({
@@ -141,7 +142,7 @@ class MemeFullDisplay extends Component<{
                 }}/>
                 }
                 {this.state.meme.hot === true &&
-                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue.toFixed(2)}</div>
+                <div className="memeElementStyleDiv"><DogeIcon/> {this.state.meme.dolarValue.toFixed(2)}</div>
                 }
             </CardActions>
             <CardContent style={{marginTop: 0, paddingTop: 0}}>

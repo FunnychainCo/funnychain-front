@@ -28,6 +28,7 @@ import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeUpvoteButton from "./MemeUpvoteButton";
 import MemeBetButton from "./MemeBetButton";
+import DogeIcon from "../Icon/DogeIcon";
 
 
 const styles = theme => ({
@@ -170,7 +171,7 @@ class MemeComponent extends Component<{
                     this.memeLink.refresh();
                 }}/>}
                 {this.state.meme.hot === true &&
-                <div className="memeElementStyleDiv">$ {this.state.meme.dolarValue.toFixed(2)}</div>
+                <div className="memeElementStyleDiv"><DogeIcon/> {this.state.meme.dolarValue.toFixed(2)}</div>
                 }
                 <div style={{marginLeft: 'auto'}}>
                     <Button variant="outlined"

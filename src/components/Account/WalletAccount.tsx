@@ -1,7 +1,7 @@
 import {Component} from 'react'
 import * as React from 'react'
 import "./Account.css";
-import {Ethereum} from 'mdi-material-ui';
+//import {Ethereum} from 'mdi-material-ui';
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
@@ -18,6 +18,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import InboxIcon from '@material-ui/icons/Inbox';
 import {walletService} from "../../service/firebase/WalletService";
 import {FirebaseTransaction} from "../../service/firebase/shared/FireBaseDBDefinition";
+import DogeIcon from "../Icon/DogeIcon";
 //https://materialdesignicons.com/
 
 export default class WalletAccount extends Component<{}, {}> {
@@ -31,7 +32,7 @@ export default class WalletAccount extends Component<{}, {}> {
 
     private removeListener: () => void;
     dialogAddrDest: string;
-    dialogAmmount: string;
+    dialogAmount: string;
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
@@ -59,7 +60,7 @@ export default class WalletAccount extends Component<{}, {}> {
         this.setState({dialogOpen: false});
     };
     handleSaveAndClose = () => {
-        console.warn("send " + this.dialogAmmount + " to " + this.dialogAddrDest);
+        console.warn("send " + this.dialogAmount + " to " + this.dialogAddrDest);
         this.setState({dialogOpen: false});
     };
 
@@ -81,7 +82,7 @@ export default class WalletAccount extends Component<{}, {}> {
                 <ListItem button onClick={() => {
                     this.setState({dialogOpen: true});
                     this.loadWalletTransaction();
-                }}><Ethereum/><ListItemText primary={(this.state.user.wallet).toFixed(2) + " LOL"}/></ListItem>
+                }}><DogeIcon/><ListItemText primary={(this.state.user.wallet).toFixed(2) + ""}/></ListItem>
                 <ModalPage
                     open={this.state.dialogOpen}
                     onRequestClose={this.handleClose}
@@ -103,11 +104,11 @@ export default class WalletAccount extends Component<{}, {}> {
                         <TextField
                             variant="outlined"
                             onChange={(event) => {
-                                this.dialogAmmount = event.target.value;
+                                this.dialogAmount = event.target.value;
                                 this.checkValidity();
                             }}
                             type={"text"}
-                            label={"ammount"}
+                            label={"amount"}
                             fullWidth={true}/>
                     </DialogContent>
                     <DialogActions>

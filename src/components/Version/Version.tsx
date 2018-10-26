@@ -5,7 +5,7 @@ import {backEndPropetiesProvider} from "../../service/BackEndPropetiesProvider";
 
 export default class Version extends Component {
 
-    VERSION = "1.1.6";
+    VERSION = "1.1.7";
 
     componentDidMount(){
         console.log("funnychain version: "+this.VERSION);
@@ -14,7 +14,7 @@ export default class Version extends Component {
 
     getServerVersion(){
         axios.get(backEndPropetiesProvider.getProperty('FUNNYCHAIN_SERVICE')+"/service/version").then(response => {
-            console.log("funnychain backend version: "+response.data);
+            console.log("funnychain backend version: "+response.data+" ("+backEndPropetiesProvider.getProperty('FUNNYCHAIN_SERVICE')+")");
         }).catch(error => {
             console.error(error);
         });
