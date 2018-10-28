@@ -11,18 +11,22 @@ import LoadingBlock from "../LoadingBlock/LoadingBlock";
 
 interface State {
     memes: { [id: string]: MemeLinkInterface },
+    memesOrder: string[];
     displayWaypoint: boolean
 }
 
 export default class MemeListV2 extends Component<{
-    type:string
+    type: string
 }, State> {
-    state:State = {
+    state: State = {
         memes: {},
+        memesOrder: [],
         displayWaypoint: true
     };
 
-    private removeCallback: (() => void) = () => {
+    private removeCallbackOnMemeData: (() => void) = () => {
+    };
+    private removeCallbackOnMemeOrder: (() => void) = () => {
     };
 
     private memeLoader: MemeLoaderInterface;
@@ -34,52 +38,45 @@ export default class MemeListV2 extends Component<{
 
     restartMemeLoader(type: string, tags: string[]) {
         this.memeLoader = memeService.getMemeLoader(type, tags);
-        this.removeCallback();
-        this.setState({memes: {}});//reset view
-        this.removeCallback = this.memeLoader.on((memes: MemeLinkInterface[]) => {
+        this.setState({memesOrder: []});//reset meme order
+        this.removeCallbackOnMemeData();
+        this.removeCallbackOnMemeData = this.memeLoader.onMemeData((meme: MemeLinkInterface) => {
             let tmpState = {};
-            memes.forEach((meme: MemeLinkInterface) => {
-                tmpState[meme.id] = meme;
-            });
-            this.setState((state)=>({memes: {...tmpState,...state.memes}}));//reset view
+            tmpState[meme.id] = meme;
+            this.setState((state) => ({memes: {...tmpState, ...state.memes}}));//reset view
         });
-        this.memeLoader.loadMore(10);
+        this.removeCallbackOnMemeOrder();
+        this.removeCallbackOnMemeOrder = this.memeLoader.onMemeOrder((memesKey: string[]) => {
+            this.state.memesOrder = this.state.memesOrder.concat(memesKey.reverse());
+            this.setState({memesOrder: this.state.memesOrder});//update view
+        });
+        this.memeLoader.loadMore(5);
     }
 
     componentWillUnmount() {
-        this.removeCallback();
-    }
-
-    getKeyList() {
-        let keys = Object.keys(this.state.memes)
-        keys = keys.sort((aKey, bKey) => {
-            /*let a = new Date(this.state.memes[aKey].created).getTime();
-            let b = new Date(this.state.memes[bKey].created).getTime();
-            return b - a;//b-a means reversed*/
-            let a = this.state.memes[aKey].order;
-            let b = this.state.memes[bKey].order;
-            return a - b;
-        });
-        return keys;
+        this.removeCallbackOnMemeData();
+        this.removeCallbackOnMemeOrder();
     }
 
     renderWaypoint = (key) => {
         //console.log("create waypoint "+key + " => "+this.state.memes[key].title);
-        //<div style={{minHeight:"100px",backgroundColor:"red"}}></div>
         if (this.state.displayWaypoint) {
             return (
-                <Waypoint
-                    key = {"waypoint"+key}
-                    scrollableAncestor={window}
-                    onEnter={() => {
-                        console.log("waypoint triggered => load more");
-                        this.memeLoader.loadMore(4);
-                    }}
-                >
-                </Waypoint>
+                /*<div style={{minHeight: "100px", width: "100%", backgroundColor: "red"}}>*/
+                    <Waypoint
+                        key={"waypoint" + key}
+                        scrollableAncestor={window}
+                        onEnter={() => {
+                            console.log("waypoint triggered => load more");
+                            this.memeLoader.loadMore(4);
+                        }}
+                    >
+                    </Waypoint>
+                /*</div>*/
             );
+        } else {
+            return <div></div>
         }
-        return <div></div>
     };
 
     render() {
@@ -87,12 +84,16 @@ export default class MemeListV2 extends Component<{
             <div className="fcContainerScroll scrollbar">
                 <div className="memes fcContentScroll">
                     {
-                        this.getKeyList().map((value, index, array) => {
-                            let key = value;
-                            return <div key={key}>
-                                <MemeComponent key={key} meme={this.state.memes[key]}/>
-                                {((index == array.length - 4) || (index == 0)) &&
-                                this.renderWaypoint(key)
+                        this.state.memesOrder.map((memeKey, index, array) => {
+                            let mapKey = memeKey;
+                            let waypointDistanceFromTheEnd = 4;
+                            return <div key={mapKey}>
+                                {!this.state.memes[memeKey] && <img className="memeImage"
+                                                                    src="/static/image/placeholder-image.png"
+                                                                    alt=""/>}
+                                {this.state.memes[memeKey] && <MemeComponent meme={this.state.memes[memeKey]}/>}
+                                {(this.state.memes[memeKey] && ((index == array.length - waypointDistanceFromTheEnd) || (index == array.length-1))) &&
+                                this.renderWaypoint(mapKey)
                                 }
                             </div>
                         })
@@ -105,75 +106,3 @@ export default class MemeListV2 extends Component<{
     }
 
 }
-
-/**
- *
- *
- * import {
-    InfiniteLoader,
-    List,
-    WindowScroller
-} from "react-virtualized";
- *     /////
- /////
- /////
-
- list: any = {};
- // This example assumes you have a way to know/load this information
- remoteRowCount = 100000;
-
-
- isRowLoaded = ({index}) => {
-        return !!this.list[index + ""];
-    }
-
- loadMoreRows = ({startIndex, stopIndex}) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                for (let i = startIndex; i <= stopIndex; i++) {
-                    this.list[i + ""] = "txt" + i;
-                }
-                resolve("ok");
-            }, 1000);
-        });
-    }
-
- rowRenderer = ({key, index, style}) => {
-        return (
-            <div
-                key={key}
-                style={style}
-            >
-                {this.list[index + ""]}
-            </div>
-        )
-    }
-
- ////
- ////
- ////
- * <div>
- <InfiniteLoader
- isRowLoaded={this.isRowLoaded}
- loadMoreRows={this.loadMoreRows}
- rowCount={this.remoteRowCount}
- >
- {({onRowsRendered, registerChild}) => (
-     <WindowScroller ref={registerChild}>
-         {({height, isScrolling, registerChild, scrollTop}) => (
-             <List
-                 autoHeight
-                 height={height}
-                 onRowsRendered={onRowsRendered}
-                 ref={registerChild}
-                 rowCount={this.remoteRowCount}
-                 rowHeight={20}
-                 rowRenderer={this.rowRenderer}
-                 style={{width:"100%"}}
-             />
-         )}
-     </WindowScroller>
- )}
- </InfiniteLoader>
- </div>
- */

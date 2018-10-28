@@ -4,14 +4,32 @@ import {MemeComment} from "./MemeComment";
 
 export interface MemeLinkInterface {
     id:string,
-    order:number,
     on(callback: (meme: Meme) => void): () => void,
     refresh():Promise<string>
     getCommentVisitor():CommentsVisitor
 }
 
 export interface MemeLoaderInterface {
+    /**
+     * Callback are sorted by meme creation time and in the callback the list is sorted by meme creation time (newest first)
+     * @param {(memes: MemeLinkInterface[]) => void} callback
+     * @returns {() => void}
+     */
     on(callback: (memes: MemeLinkInterface[]) => void): () => void,
+
+    /**
+     * Called randomlly as meme data are loaded (no order guaranted)
+     * @param {(meme: MemeLinkInterface) => void} callback
+     * @returns {() => void}
+     */
+    onMemeData(callback: (meme: MemeLinkInterface) => void): () => void,
+
+    /**
+     * Ordoned List Of Meme IDs
+     * @param {(memesId: string[]) => void} callback
+     * @returns {() => void}
+     */
+    onMemeOrder(callback: (memesId: string[]) => void): () => void,
     loadMore(limit:number),
     refresh()
 }
@@ -27,7 +45,7 @@ export interface MemeServiceView {
 }
 
 export interface MemeServiceInterface extends MemeServiceView{
-    getMemeLink(id: string,order:number): MemeLinkInterface;
+    getMemeLink(id: string): MemeLinkInterface;
 }
 
 /**

@@ -19,7 +19,6 @@ export interface Meme {
     commentNumber: number,
     currentUserVoted: boolean,
     currentUserBet: boolean,
-    order: number,
     hot:boolean,
     hotDate:Date,
     betable:boolean

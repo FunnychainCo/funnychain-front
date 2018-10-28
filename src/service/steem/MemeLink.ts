@@ -12,7 +12,7 @@ export class MemeLink implements MemeLinkInterface {
     private lastValidMeme:Meme = MEME_ENTRY_NO_VALUE;
     commentVisitor:CommentsVisitor;
 
-    constructor(public id: string,public order:number) {
+    constructor(public id: string) {
         this.dSteemClient = steemConnectAuthService.dSteemClient;
         this.commentVisitor = steemCommentService.getCommentVisitor(id);
     }
@@ -42,7 +42,7 @@ export class MemeLink implements MemeLinkInterface {
         return new Promise(resolve => {
             this.dSteemClient.database.getState(this.id).then(value => {
                 let subId = this.id.split("@")[1];
-                let promise = convertMeme(value.content[subId],this.order);
+                let promise = convertMeme(value.content[subId]);
                 promise.then(convertedMeme => {
                     this.lastValidMeme = convertedMeme;
                     this.eventEmitter.emit("onSingleMeme", convertedMeme);

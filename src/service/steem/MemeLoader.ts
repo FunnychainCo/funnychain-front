@@ -24,6 +24,14 @@ export class MemeLoader implements MemeLoaderInterface {
         this.tags = tags;
     }
 
+    onMemeData(callback: (meme: MemeLinkInterface) => void): () => void {
+        return ()=>{};
+    }
+
+    onMemeOrder(callback: (memesId: string[]) => void): () => void {
+        return ()=>{};
+    }
+
 //id is url
     on(callback: (memes: MemeLinkInterface[]) => void): () => void {
         //https://www.npmjs.com/package/steem
@@ -94,7 +102,7 @@ export class MemeLoader implements MemeLoaderInterface {
                         return;
                     }*/
                     //create a promise and load
-                    let promise = convertMeme(steemPost, this.orderNumber);
+                    let promise = convertMeme(steemPost);
                     memesPromise.push(promise);
                 });
                 Q.all(memesPromise).then(memesData => {
@@ -103,7 +111,7 @@ export class MemeLoader implements MemeLoaderInterface {
                     });
                     let memeLinkData:MemeLinkInterface[] = [];
                     memesData.forEach((value:Meme) => {
-                        let memeLink = new MemeLink(value.id,value.order);
+                        let memeLink = new MemeLink(value.id);
                         memeLink.setMeme(value);
                         memeLinkData.push(memeLink);
                     });

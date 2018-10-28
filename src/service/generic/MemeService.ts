@@ -13,8 +13,8 @@ export class MemeService implements MemeServiceInterface {
         return firebaseMemeService.getMemeLoader(type,tags);
     }
 
-    getMemeLink(id: string,order:number): MemeLinkInterface {
-        return firebaseMemeService.getMemeLink(id,order);
+    getMemeLink(id: string): MemeLinkInterface {
+        return firebaseMemeService.getMemeLink(id);
     }
 
 }

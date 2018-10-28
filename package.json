@@ -18,6 +18,7 @@
     "microlinkjs": "^2.2.5",
     "mobile-detect": "^1.4.3",
     "moment": "^2.22.2",
+    "promise-pool-executor": "^1.1.1",
     "prop-types": "^15.6.2",
     "q": "^1.5.1",
     "react": "^16.5.2",

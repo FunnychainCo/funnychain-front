@@ -66,7 +66,7 @@ function hasVotedOnPost(steemPost: dsteem.Discussion): Promise<boolean> {
     });
 }
 
-export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): Promise<Meme> {
+export function convertMeme(steemPost: dsteem.Discussion): Promise<Meme> {
     let promise = new Promise<Meme>((resolve, reject) => {
         try {
             let avatarURL = getAvatarURLFromSteemUserAccount(steemPost.author);
@@ -114,7 +114,7 @@ export function convertMeme(steemPost: dsteem.Discussion, orderNumber: number): 
                                 },
                                 currentUserVoted: currentUserVoted,
                                 currentUserBet:false,
-                                order: orderNumber,
+                                //order: orderNumber,
                                 hot:false,
                                 hotDate:new Date(),
                                 betable:false

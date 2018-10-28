@@ -20,7 +20,7 @@ export default class MemeDisplayPage extends Component<{
         url:"/meme/toto"}*/
         let memeID = match.params.memeid;
         memeID = decodeURIComponent(memeID);
-        this.memeLink = memeService.getMemeLink(memeID, NaN);
+        this.memeLink = memeService.getMemeLink(memeID);
         this.removeListener = this.memeLink.on(meme => {
             this.setState({meme: meme});
         });
