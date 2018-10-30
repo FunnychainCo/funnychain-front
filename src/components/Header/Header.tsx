@@ -42,11 +42,13 @@ class Header extends Component<{
     classes:any
 }, {
     currentSelected: any,
-    betPoolBalance:number
+    betPoolBalance:number,
+    compact:boolean
 }> {
     state = {
         currentSelected: false,
-        betPoolBalance:0
+        betPoolBalance:0,
+        compact:true
     };
     itemOrder = {
         "hot": 0,
@@ -55,6 +57,8 @@ class Header extends Component<{
     };
 
     componentDidMount() {
+        window.addEventListener('resize', this.throttledHandleWindowResize);
+        this.throttledHandleWindowResize();
         if(this.props.type!=="hot" && this.props.type!=="trending" && this.props.type!=="fresh"){
             this.setState({currentSelected:false});
         }else {
@@ -66,7 +70,12 @@ class Header extends Component<{
     }
 
     componentWillUnmount() {
+        window.removeEventListener('resize', this.throttledHandleWindowResize);
     }
+
+    throttledHandleWindowResize = () => {
+        this.setState({ compact: window.innerWidth < 480 });
+    };
 
     onLeftIconButtonClick() {
         leftMenuService.requestOpening();
@@ -82,7 +91,8 @@ class Header extends Component<{
         //const TrendingTabLink = (props) => <Link to={"/trending"} {...props} />;
         const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
         return (
-            <AppBar position="sticky">
+            // overflow: "hidden" to ensure scroll-x is not activated on small device (looks ugly)
+            <AppBar style={{overflow: "hidden"}} position="sticky">
                 <Toolbar>
                     <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png" alt="logo"/>
                     <Typography variant="title" color="inherit" className={classes.flex}>
@@ -99,7 +109,7 @@ class Header extends Component<{
                         </Tabs>
                     </Typography>
 
-                    <Chip label={"Bet Pool: "+this.state.betPoolBalance.toFixed(2)} color="secondary" avatar={<Avatar><DogeIcon /></Avatar>} />&nbsp;&nbsp;
+                    <Chip label={(this.state.compact?"":"Bet Pool: ")+this.state.betPoolBalance.toFixed(2)} color="secondary" avatar={<Avatar><DogeIcon /></Avatar>} />&nbsp;&nbsp;
                     <LoginAccountIcon />
                 </Toolbar>
             </AppBar>
