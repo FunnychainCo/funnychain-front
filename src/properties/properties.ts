@@ -1,7 +1,7 @@
 import {GlobalAppProperties} from "./propertiesInterface";
 
-//const hostAPI = "http://127.0.0.1:8085";
-const hostAPI = "https://api.funnychain.co";
+const hostAPI = "http://127.0.0.1:8085";
+//const hostAPI = "https://api.funnychain.co";
 
 const serviceAvatar = '/service/avatar';
 const serviceUser = '/service/user';

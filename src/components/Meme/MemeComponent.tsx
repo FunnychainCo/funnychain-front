@@ -145,9 +145,12 @@ class MemeComponent extends Component<{
     render() {
         //const {classes} = this.props;
         const MemeDisplayLink = (props) => <Link to={"/meme/" + encodeURIComponent(this.state.meme.id)} {...props} />
-        return <Card>
+        return <Card
+            elevation={5}
+            style={{"marginBottom":"15px"}}>
             <ButtonBase component={MemeDisplayLink} style={{width: "100%", justifyContent: "left"}}>
                 <CardHeader
+                    style={{"fontSize": "1.5em","fontWeight": "bold"}}
                     title={this.state.meme.title}
                     disableTypography={true}
                 />
