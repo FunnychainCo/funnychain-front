@@ -18,17 +18,14 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import {authService} from "../../service/generic/AuthService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import UserComment from "./UserComment";
-import * as moment from 'moment';
-import Avatar from "@material-ui/core/Avatar/Avatar";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
 import {Link} from 'react-router-dom';
 import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
-import MemeUpvoteButton from "./MemeUpvoteButton";
-import MemeBetButton from "./MemeBetButton";
-import DogeIcon from "../Icon/DogeIcon";
+import MemeAvatarInfo from "./MemeAvatarInfo";
+import MemeActionButton from "./MemeActionButton";
 
 
 const styles = theme => ({
@@ -159,23 +156,7 @@ class MemeComponent extends Component<{
                                                                                src={this.state.meme.imageUrl}
                                                                                alt=""/></ButtonBase>
             <CardActions className="memeElementStyleDivContainer">
-                {this.state.meme.hot === true &&
-                <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
-                    this.memeLink.refresh();
-                }}/>
-                }
-                {this.state.meme.hot === false &&
-                <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
-                    this.memeLink.refresh();
-                }}/>
-                }
-                {this.state.meme.hot === false &&
-                <MemeBetButton meme={this.state.meme} logged={this.state.logged} onBetConfirmed={() => {
-                    this.memeLink.refresh();
-                }}/>}
-                {this.state.meme.hot === true &&
-                <div className="memeElementStyleDiv"><DogeIcon/> {this.state.meme.dolarValue.toFixed(2)}</div>
-                }
+                <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
                 <div style={{marginLeft: 'auto'}}>
                     <Button variant="outlined"
                             onClick={this.handleExpandClick}
@@ -190,19 +171,7 @@ class MemeComponent extends Component<{
             </CardActions>
             <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
                 <CardContent style={{marginTop: 0, paddingTop: 0}}>
-                    <div className="memeCommentContainer"
-                         style={{marginTop: 0, marginBottom: 0, paddingBottom: 0, paddingTop: 0}}>
-                        <div className="memeCommentContainerLeft">
-                            <Avatar alt={this.state.meme.user.displayName}
-                                    src={this.state.meme.user.avatarUrl}
-                                    style={{width: 55, height: 55}}
-                            />
-                        </div>
-                        <div className="memeCommentContainerRight">
-                            <strong>{this.state.meme.user.displayName}</strong><br/>
-                            {moment(this.state.meme.created).fromNow()}
-                        </div>
-                    </div>
+                    <MemeAvatarInfo meme={this.state.meme} />
                     {this.state.loadingComment && <LoadingBlock/>}
                     {!this.state.loadingComment && <div>
                         <CommentPoster memeLink={this.props.meme}

@@ -13,16 +13,13 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import {authService} from "../../service/generic/AuthService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import UserComment from "./UserComment";
-import * as moment from 'moment';
-import Avatar from "@material-ui/core/Avatar/Avatar";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
 import Waypoint from "react-waypoint";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
-import MemeUpvoteButton from "./MemeUpvoteButton";
-import MemeBetButton from "./MemeBetButton";
-import DogeIcon from "../Icon/DogeIcon";
+import MemeAvatarInfo from "./MemeAvatarInfo";
+import MemeActionButton from "./MemeActionButton";
 
 
 const styles = theme => ({
@@ -86,8 +83,8 @@ class MemeFullDisplay extends Component<{
         this.removeListnerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concatResult: MemeComment[] = this.state.comments;
             concatResult = concatResult.concat(comments);
-            concatResult.sort((a:MemeComment, b:MemeComment) => {
-               return b.date.getTime() - a.date.getTime();
+            concatResult.sort((a: MemeComment, b: MemeComment) => {
+                return b.date.getTime() - a.date.getTime();
             });
             this.setState({comments: concatResult, loadingComment: false});
         });
@@ -123,42 +120,11 @@ class MemeFullDisplay extends Component<{
                 title={this.state.meme.title}
             />
             <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
-            <CardActions className="memeElementStyleDivContainer">
-
-                {this.state.meme.hot === true &&
-                <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
-                    this.memeLink.refresh();
-                }}/>
-                }
-                {this.state.meme.hot === false &&
-                <MemeUpvoteButton meme={this.state.meme} logged={this.state.logged} onUpvoteConfirmed={() => {
-                    this.memeLink.refresh();
-                }}/>
-                }
-
-                {this.state.meme.hot === false &&
-                <MemeBetButton meme={this.state.meme} logged={this.state.logged} onBetConfirmed={() => {
-                    this.memeLink.refresh();
-                }}/>
-                }
-                {this.state.meme.hot === true &&
-                <div className="memeElementStyleDiv"><DogeIcon/> {this.state.meme.dolarValue.toFixed(2)}</div>
-                }
+            <CardActions>
+                <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
             </CardActions>
             <CardContent style={{marginTop: 0, paddingTop: 0}}>
-                <div className="memeCommentContainer"
-                     style={{marginTop: 0, marginBottom: 0, paddingBottom: 0, paddingTop: 0}}>
-                    <div className="memeCommentContainerLeft">
-                        <Avatar alt={this.state.meme.user.displayName}
-                                src={this.state.meme.user.avatarUrl}
-                                style={{width: 55, height: 55}}
-                        />
-                    </div>
-                    <div className="memeCommentContainerRight">
-                        <strong>{this.state.meme.user.displayName}</strong><br/>
-                        {moment(this.state.meme.created).fromNow()}
-                    </div>
-                </div>
+                <MemeAvatarInfo meme={this.state.meme}/>
                 {this.state.loadingComment && <LoadingBlock/>}
                 {!this.state.loadingComment && <div>
                     <CommentPoster memeLink={this.props.meme}

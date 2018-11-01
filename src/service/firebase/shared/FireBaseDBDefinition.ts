@@ -51,9 +51,9 @@ export interface FirebaseUserDBStruct {
 export const DATABASE_META = "meta";
 
 export interface FirebaseMeta {
-    hotest:{
-        hash:string,
-        date:number
+    hotest: {
+        hash: string,
+        date: number
     },
     bet_pool: {
         balance: number,
@@ -79,7 +79,8 @@ export const DATABASE_BETS = "bets";
 
 export interface FirebaseBetDBStruct {
     [id: string]: { // id => meme id
-        [id: string]: number }// id => user id
+        [id: string]: number
+    }// id => user id
 }
 
 ///////////////////
@@ -90,7 +91,8 @@ export const DATABASE_UPVOTES = "upvotes";
 
 export interface FirebaseUpvoteDBStruct {
     [id: string]: {// id => meme id
-        [id: string]: number }// id => user id
+        [id: string]: number
+    }// id => user id
 }
 
 ///////////////////
@@ -106,8 +108,32 @@ export interface FirebaseTransaction {
 
 export interface FirebaseTransactionDBStruct {
     [id: string]: {// id => transaction time
-        [id: string]: FirebaseTransaction }// id => internal transaction id
+        [id: string]: FirebaseTransaction
+    }// id => internal transaction id
 }
+
+export let rules = {
+    "rules": {
+        ".read": "true",
+        "transactions": {
+            "$key": {
+                ".indexOn": ["dst", "src"]
+            }
+        },
+        "memes": {
+            ".write": "true",
+            ".indexOn": ["created", "hot"]
+        },
+        "comments": {
+            ".write": "true",
+        },
+        "users": {
+            "$user_id": {
+                ".write": "$user_id === auth.uid",
+            }
+        }
+    }
+};
 
 ///////////////////
 // DB
