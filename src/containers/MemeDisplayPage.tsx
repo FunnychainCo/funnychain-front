@@ -1,23 +1,20 @@
 import {Component} from 'react'
 import * as React from 'react'
 import {memeService} from "../service/generic/MemeService";
-import MemeFullDisplay from "../components/Meme/MemeFullDisplay";
 import {MemeLinkInterface} from "../service/generic/ApplicationInterface";
-import Header from "../components/Header/Header";
+import MemeFullDisplayModal from "../components/Meme/MemeFullDisplayModal";
 
 export default class MemeDisplayPage extends Component<{
     match: any,
-    history: any
+    history: any,
+    location:any
 }, void> {
     private removeListener: () => void;
     private memeLink: MemeLinkInterface;
 
     componentWillMount() {
         const match = this.props.match; // coming from React Router.
-        /*{isExact:true
-        params:{memeid: "toto"}
-        path:"/meme/:memeid"
-        url:"/meme/toto"}*/
+        /*{isExact:true,params:{memeid: "toto"},path:"/meme/:memeid",url:"/meme/toto"}*/
         let memeID = match.params.memeid;
         memeID = decodeURIComponent(memeID);
         this.memeLink = memeService.getMemeLink(memeID);
@@ -36,10 +33,7 @@ export default class MemeDisplayPage extends Component<{
     }
 
     render() {
-        return (<div>
-                <Header type=""/>
-                <MemeFullDisplay meme={this.memeLink}/>
-            </div>
-        )
+        return <MemeFullDisplayModal meme={this.memeLink} open={true} onRequestClose={()=>{this.goBack()}}/>
+        //return (<MemeFullDisplay meme={this.memeLink}/>)
     }
 }

@@ -36,6 +36,12 @@ export default class MemeListV2 extends Component<{
         this.restartMemeLoader(this.props.type, memeService.getTags());
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps.type!=this.props.type) {
+            this.restartMemeLoader(this.props.type, memeService.getTags());
+        }
+    }
+
     restartMemeLoader(type: string, tags: string[]) {
         this.memeLoader = memeService.getMemeLoader(type, tags);
         this.setState({memesOrder: []});//reset meme order

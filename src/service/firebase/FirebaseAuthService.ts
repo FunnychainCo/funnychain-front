@@ -165,7 +165,7 @@ export class FirebaseAuthService {
             }
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
                 let fireBaseUser:FirebaseUser = user.val();
-                let fireBaseUserId:string = user.key();
+                let fireBaseUserId:string = user.key;
                 if (fireBaseUser == null) {
                     reject("uid does not exist in database");
                     return;

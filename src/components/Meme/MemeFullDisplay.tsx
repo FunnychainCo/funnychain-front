@@ -115,42 +115,43 @@ class MemeFullDisplay extends Component<{
 
     render() {
         //const {classes} = this.props;
-        return <div className="fcCenteredContainer fcFullWidth"><Card className="fcCenteredContent fcDynamicWidth">
-            <CardHeader
-                title={this.state.meme.title}
-            />
-            <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
-            <CardActions>
-                <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
-            </CardActions>
-            <CardContent style={{marginTop: 0, paddingTop: 0}}>
-                <MemeAvatarInfo meme={this.state.meme}/>
-                {this.state.loadingComment && <LoadingBlock/>}
-                {!this.state.loadingComment && <div>
-                    <CommentPoster memeLink={this.props.meme}
-                                   onPost={() => {
-                                       this.state.meme.commentNumber++;
-                                       this.setState({meme: this.state.meme});//update ui
-                                   }}
-                                   onPostValidated={() => {
-                                   }}
-                                   onPostCanceled={() => {
-                                       this.state.meme.commentNumber++;
-                                       this.setState({meme: this.state.meme});//update ui
-                                   }}/>
-                    {
-                        this.state.comments.map((comment, index, array) => {
-                            return <div key={index}>
-                                <UserComment key={index} comment={comment}/>
-                                {((index == array.length - 5) || (array.length <= 5 && index == array.length - 1)) &&
-                                this.renderWaypoint()
-                                }
-                            </div>
-                        })
-                    }
-                </div>}
-            </CardContent>
-        </Card></div>
+        return <div className="fcCenteredContainer fcFullWidth">
+            <Card className="fcCenteredContent fcDynamicWidth">
+                <CardHeader
+                    title={this.state.meme.title}
+                />
+                <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
+                <CardActions>
+                    <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
+                </CardActions>
+                <CardContent style={{marginTop: 0, paddingTop: 0}}>
+                    <MemeAvatarInfo meme={this.state.meme}/>
+                    {this.state.loadingComment && <LoadingBlock/>}
+                    {!this.state.loadingComment && <div>
+                        <CommentPoster memeLink={this.props.meme}
+                                       onPost={() => {
+                                           this.state.meme.commentNumber++;
+                                           this.setState({meme: this.state.meme});//update ui
+                                       }}
+                                       onPostValidated={() => {
+                                       }}
+                                       onPostCanceled={() => {
+                                           this.state.meme.commentNumber++;
+                                           this.setState({meme: this.state.meme});//update ui
+                                       }}/>
+                        {
+                            this.state.comments.map((comment, index, array) => {
+                                return <div key={index}>
+                                    <UserComment key={index} comment={comment}/>
+                                    {((index == array.length - 5) || (array.length <= 5 && index == array.length - 1)) &&
+                                    this.renderWaypoint()
+                                    }
+                                </div>
+                            })
+                        }
+                    </div>}
+                </CardContent>
+            </Card></div>
     }
 
 }

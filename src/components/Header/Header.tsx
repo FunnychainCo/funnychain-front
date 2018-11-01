@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom';
 import LoginAccountIcon from "../LoginAccountIcon/LoginAccountIcon";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
-//import { Ethereum } from 'mdi-material-ui';
 import {firebaseBetService} from "../../service/firebase/FirebaseBetService";
 import DogeIcon from "../Icon/DogeIcon";
 
@@ -39,6 +38,7 @@ const styles = theme => ({
 
 class Header extends Component<{
     type:string,
+    onTypeChange:(type:string)=>void,
     classes:any
 }, {
     currentSelected: any,
@@ -52,14 +52,13 @@ class Header extends Component<{
     };
     itemOrder = {
         "hot": 0,
-        //"trending": 1,
         "fresh": 1
     };
 
     componentDidMount() {
         window.addEventListener('resize', this.throttledHandleWindowResize);
         this.throttledHandleWindowResize();
-        if(this.props.type!=="hot" && this.props.type!=="trending" && this.props.type!=="fresh"){
+        if(this.props.type!=="hot" && this.props.type!=="fresh"){
             this.setState({currentSelected:false});
         }else {
             this.setState({currentSelected:this.itemOrder[this.props.type]});
@@ -82,13 +81,13 @@ class Header extends Component<{
     }
 
     handleFeedButton(feed: number) {
+        this.props.onTypeChange(feed==0?"hot":"fresh");
         this.setState({currentSelected: feed});
     }
 
     render() {
         const {classes} = this.props;
         const HotTabLinkLink = (props) => <Link to={"/hot"} {...props} />;
-        //const TrendingTabLink = (props) => <Link to={"/trending"} {...props} />;
         const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
         return (
             // overflow: "hidden" to ensure scroll-x is not activated on small device (looks ugly)
@@ -103,8 +102,7 @@ class Header extends Component<{
                             }}
                             indicatorColor="primary"
                         >
-                            <Tab label="Hot" style={{minWidth: '30px'}} component={HotTabLinkLink}/>
-                            {/*<Tab label="Trending" style={{minWidth: '30px'}}  component={TrendingTabLink}/>*/}
+                            <Tab label="Hot" style={{minWidth: '30px'}}  component={HotTabLinkLink}/>
                             <Tab label="Fresh" style={{minWidth: '30px'}}  component={FreshTabLink}/>
                         </Tabs>
                     </Typography>
@@ -117,25 +115,4 @@ class Header extends Component<{
     }
 }
 
-/**
- *
- <Button
- variant={this.state.currentSelected=="hot"?"raised":undefined}
- className={classes.feedButton}
- onClick={()=>{this.handleFeedButton("hot")}}>
- Hot
- </Button>
- <Button
- variant={this.state.currentSelected=="trending"?"raised":undefined}
- className={classes.feedButton}
- onClick={()=>{this.handleFeedButton("trending")}}>
- Trending
- </Button>
- <Button
- variant={this.state.currentSelected=="fresh"?"raised":undefined}
- className={classes.feedButton}
- onClick={()=>{this.handleFeedButton("fresh")}}>
- Fresh
- </Button>
- */
 export default withStyles(styles)(Header);

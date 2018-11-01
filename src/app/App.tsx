@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {BrowserRouter, Switch} from 'react-router-dom'
+import {BrowserRouter} from 'react-router-dom'
 
 import "./App.css"
 
@@ -13,15 +13,17 @@ import {authService} from "../service/generic/AuthService";
 import HomePage from "../containers/HomePage";
 import {backEndPropetiesProvider} from "../service/BackEndPropetiesProvider";
 
-class App extends React.Component<any,any> {
+class App extends React.Component<any, any> {
     state = {};
 
     componentDidMount() {
-        console.log("MODE : "+backEndPropetiesProvider.getProperty("MODE"));
+        console.log("MODE : " + backEndPropetiesProvider.getProperty("MODE"));
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();
-        userNotificationService.registerCallBack((message) => {console.log(message);});
+        userNotificationService.registerCallBack((message) => {
+            console.log(message);
+        });
     }
 
     render() {
@@ -36,24 +38,20 @@ class App extends React.Component<any,any> {
                 primary: {
                     light: '#484848',
                     main: '#212121',
-                    dark:  '#000000',
+                    dark: '#000000',
                 },
                 secondary: {
                     light: '#FF7539',
                     main: '#FF3D00',
-                    dark:  '#C30000',
+                    dark: '#C30000',
                 },
             },
         });
         return (
             <BrowserRouter>
                 <MuiThemeProvider theme={theme}>
-                    <div className="fullSpace">
-                        <Switch className="fullSpace">
-                            <HomePage />
-                        </Switch>
-                        <Version/>
-                    </div>
+                    <HomePage/>
+                    <Version/>
                 </MuiThemeProvider>
             </BrowserRouter>
         );
