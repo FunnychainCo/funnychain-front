@@ -55,7 +55,7 @@ export default class LoginRegisterDialogV2 extends Component<{
                                 onClick={() => {
                                     this.setState({aboutUsOpen: true})
                                 }}
-                                variant="raised"
+                                variant="contained"
                                 fullWidth
                             ><EmoticonCool/><ListItemText primary="About Funnychain"/>
                             </Button>
@@ -65,7 +65,7 @@ export default class LoginRegisterDialogV2 extends Component<{
                                 onClick={() => {
                                     this.setState({userPasswordLoginDialogOpen: true})
                                 }}
-                                variant="raised"
+                                variant="contained"
                                 fullWidth
                             ><MailOutline/><ListItemText primary="Login"/>
                             </Button>
@@ -75,7 +75,7 @@ export default class LoginRegisterDialogV2 extends Component<{
                                 onClick={() => {
                                     this.setState({userPasswordRegisterDialogOpen: true})
                                 }}
-                                variant="raised"
+                                variant="contained"
                                 fullWidth
                             ><MailOutline/><ListItemText primary="Create an account"/>
                             </Button>

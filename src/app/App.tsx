@@ -4,7 +4,6 @@ import {BrowserRouter} from 'react-router-dom'
 import "./App.css"
 
 import Version from "../components/Version/Version";
-import {userNotificationService} from "../service/UserNotificationService";
 import {pwaService} from "../service/mobile/PWAService";
 import {ipfsFileUploadService} from "../service/IPFSFileUploader/IPFSFileUploadService";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
@@ -12,6 +11,7 @@ import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {authService} from "../service/generic/AuthService";
 import HomePage from "../containers/HomePage";
 import {backEndPropetiesProvider} from "../service/BackEndPropetiesProvider";
+import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
 
 class App extends React.Component<any, any> {
     state = {};
@@ -21,9 +21,6 @@ class App extends React.Component<any, any> {
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();
-        userNotificationService.registerCallBack((message) => {
-            console.log(message);
-        });
     }
 
     render() {
@@ -52,6 +49,7 @@ class App extends React.Component<any, any> {
                 <MuiThemeProvider theme={theme}>
                     <HomePage/>
                     <Version/>
+                    <GlobalNotification/>
                 </MuiThemeProvider>
             </BrowserRouter>
         );

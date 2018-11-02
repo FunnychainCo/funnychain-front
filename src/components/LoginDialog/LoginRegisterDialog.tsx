@@ -55,7 +55,7 @@ export default class LoginRegisterDialog extends Component<
                                 onClick={() => {
                                     this.setState({userPasswordLoginDialogOpen: true})
                                 }}
-                                variant="raised"
+                                variant="contained"
                                 fullWidth
                             >
                                 <MailOutline/>
@@ -67,7 +67,7 @@ export default class LoginRegisterDialog extends Component<
                                 onClick={() => {
                                     window.location.href = steemConnectAuthService.getLoginURL();
                                 }}
-                                variant="raised"
+                                variant="contained"
                                 fullWidth
                                 style={{marginBottom: "20px", backgroundColor: "#4556e9"}}
                             >
@@ -85,7 +85,7 @@ export default class LoginRegisterDialog extends Component<
                                 onClick={() => {
                                     this.setState({userPasswordRegisterDialogOpen: true})
                                 }}
-                                variant="raised"
+                                variant="contained"
                                 fullWidth
                             >
                                 <MailOutline/>
@@ -98,7 +98,7 @@ export default class LoginRegisterDialog extends Component<
                                 onClick={() => {
                                     window.location.href = "https://signup.steemit.com/?ref=funnychain"
                                 }}
-                                variant="raised"
+                                variant="contained"
                                 fullWidth
                                 style={{marginBottom: "20px", backgroundColor: "#4556e9"}}
                             >

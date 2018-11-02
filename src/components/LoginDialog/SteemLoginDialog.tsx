@@ -33,7 +33,7 @@ export default class SteemLoginDialog extends Component<any,any> {
                 {!this.state.loading && <DialogContent>
                     <Button
                         onClick={()=>{window.location.href = "https://signup.steemit.com/?ref=funnychain"}}
-                        variant="raised"
+                        variant="contained"
                         fullWidth
                         style={{marginBottom:"20px",backgroundColor:"#4556e9"}}
                     >
@@ -42,7 +42,7 @@ export default class SteemLoginDialog extends Component<any,any> {
                     </Button>
                     <Button
                         onClick={this.handleSubmit}
-                        variant="raised"
+                        variant="contained"
                         fullWidth
                         style={{marginBottom:"20px",backgroundColor:"#4556e9"}}
                     >

@@ -41,10 +41,10 @@ class CreateMemeDialog extends Component<{
     post = () => { //use this form to have acces to this
         this.setState({postLoading: true});
         if (this.state.imageURL === null || this.state.imageURL === "") {
-            userNotificationService.notifyUser("A image is required");
+            userNotificationService.notifyUIToNotifyUser("A image is required");
         }
         if (this.state.title === null || this.state.title.replace(" ", "") === "") {
-            userNotificationService.notifyUser("A title is required");
+            userNotificationService.notifyUIToNotifyUser("A title is required");
         }
 
         authService.getUserAction().post(this.state.title, this.state.imageURL).then(() => {

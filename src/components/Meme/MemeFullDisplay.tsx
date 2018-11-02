@@ -118,7 +118,9 @@ class MemeFullDisplay extends Component<{
         return <div className="fcCenteredContainer fcFullWidth">
             <Card className="fcCenteredContent fcDynamicWidth">
                 <CardHeader
+                    style={{"fontSize": "1.5em", "fontWeight": "bold"}}
                     title={this.state.meme.title}
+                    disableTypography={true}
                 />
                 <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
                 <CardActions>
