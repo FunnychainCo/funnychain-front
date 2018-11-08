@@ -1,6 +1,8 @@
 // tslint:disable:no-console
 // TODO check https://developers.google.com/web/tools/workbox/
 
+import {backEndPropetiesProvider} from "./service/BackEndPropetiesProvider";
+
 let lifeData:any = {};
 
 const isLocalhost = Boolean(
@@ -38,8 +40,8 @@ export function unregisterPushNotification() {
 }
 
 export function registerPushNotification(uid) {
-    let subscribeAdresse = "http://localhost:8085/subscribe/";//TODO serve on same origine?
-    const publicVapidKey = 'BO7gTNODQ9ECFWDZfbDDRcM_jKfc63qS5jREcz8y-BnFsQz5ooPvPmUNsbx3vXvHXXDAQ9XxzvyHTRMrrnzg92I';//TODO get from distant adress
+    let subscribeAdresse = backEndPropetiesProvider.getProperty("PUSH_NOTIFICATION_SERVICE")+"/subscribe/";
+    const publicVapidKey = backEndPropetiesProvider.getProperty("vapidPublicKey");
     navigator.serviceWorker.ready.then(registration => {
         registration.pushManager.subscribe({
             userVisibleOnly: true,

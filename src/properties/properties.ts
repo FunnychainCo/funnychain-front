@@ -9,6 +9,7 @@ const serviceWallet = '/service/api';
 
 export const GLOBAL_PROPERTIES:GlobalAppProperties = {
     MODE:"DEV",
+    VERSION:"1.2.2",
 
     //Web service properties
     FUNNYCHAIN_SERVICE:hostAPI,
@@ -18,6 +19,9 @@ export const GLOBAL_PROPERTIES:GlobalAppProperties = {
     USERNAME_GENERATION_SERVICE:hostAPI+serviceAvatar+'/name',
     USER_SERVICE:hostAPI+serviceUser,
     USER_SERVICE_INIT:hostAPI+serviceUser+"/init",
+    PUSH_NOTIFICATION_SERVICE:hostAPI,
+
+    vapidPublicKey:"BO7gTNODQ9ECFWDZfbDDRcM_jKfc63qS5jREcz8y-BnFsQz5ooPvPmUNsbx3vXvHXXDAQ9XxzvyHTRMrrnzg92I",//TODO get from distant address
 
     //FIREBASE properties
     apiKey: "AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",

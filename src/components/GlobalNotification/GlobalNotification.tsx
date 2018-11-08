@@ -82,7 +82,7 @@ class GlobalNotification extends Component<{ classes: any }, IState> {
                     horizontal: 'left',
                 }}
                 open={this.state.open}
-                autoHideDuration={6000}
+                autoHideDuration={undefined}
                 onClose={this.handleClose}
                 onExited={this.handleExited}
                 ContentProps={{

@@ -7,6 +7,7 @@ import {firebaseUpvoteService} from "./FirebaseUpvoteService";
 import {DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
 import {firebaseBetService} from "./FirebaseBetService";
 import {firebaseCommentService} from "./FirebaseCommentService";
+import {audit} from "../Audit";
 
 export class FirebaseActionService implements MemeServiceAction, CommentsAction {
     vote(memeID: string): Promise<string> {
@@ -16,7 +17,11 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                 reject("error");
             }else {
                 let uid = currentUser.uid;
-                firebaseUpvoteService.vote(memeID,uid);
+                firebaseUpvoteService.vote(memeID,uid).then(value => {
+                    audit.track("user/vote",{
+                        uid:uid
+                    });
+                });
             }
         });
     }
@@ -28,7 +33,12 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                 reject("error");
             }else {
                 let uid = currentUser.uid;
-                firebaseBetService.bet(memeID,uid);
+                firebaseBetService.bet(memeID,uid).then(value => {
+                    audit.track("user/bet",{
+                        value:1,
+                        uid:uid
+                    });
+                });
             }
         });
     }
@@ -51,14 +61,18 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                     console.error(currentUser);
                     return;
                 }
+                let userUID = currentUser.uid;
                 let meme:FirebaseMeme = {
                     memeIpfsHash: value.fileId,
-                    uid: currentUser.uid,
+                    uid: userUID,
                     created: new Date().getTime(),
                     value:0,
                     hot:0
                 };
                 firebase.database().ref(DATABASE_MEMES + '/' + value.fileId).set(meme).then(()=>{
+                    audit.track("user/post/meme",{
+                        uid:userUID
+                    });
                     resolve("ok");
                 });
             });
@@ -72,7 +86,11 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                 reject("error");
             }else {
                 let uid = currentUser.uid;
-                firebaseCommentService.postComment(memeId,message,uid);
+                firebaseCommentService.postComment(memeId,message,uid).then(value => {
+                    audit.track("user/post/comment",{
+                        uid:uid
+                    });
+                });
             }
         });
     }

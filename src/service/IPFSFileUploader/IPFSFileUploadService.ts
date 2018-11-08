@@ -10,13 +10,19 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
     //this.ipfsApi = ipfsAPI({host: 'ipfs.funnychain.co', port: '80', protocol: 'http'});
     //this.ipfsApi = ipfsAPI({host: 'localhost',port: '5001',protocol: 'http'});
     //https://ipfs.funnychain.co:443/api/v0/version?stream-channels=true
-    ipfsHost: { host: string, port: string, protocol: string } = {
+    /*ipfsHost: { host: string, port: string, protocol: string } = {
         host: 'ipfs.infura.io',
+        port: '5001',
+        protocol: 'https'
+    };*/
+    ipfsHost: { host: string, port: string, protocol: string } = {
+        host: 'ipfs.funnychain.co',
         port: '5001',
         protocol: 'https'
     };
     //ipfsGatway = "https://ipfs.io/ipfs/";
-    ipfsGatway = "https://ipfs.infura.io/ipfs/";//faster since we pin to it ;)
+    //ipfsGatway = "https://ipfs.infura.io/ipfs/";//faster since we pin to it ;)
+    ipfsGatway = "https://ipfs.funnychain.co/ipfs/";//faster since we pin to it ;)
     //https://globalupload.io
 
     start(): void {

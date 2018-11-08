@@ -1,5 +1,6 @@
 // tslint:disable:no-console
 console.log('app service worker V1.0');
+let url = '/';
 
 function init() {
     self.addEventListener('message', (event) => {
@@ -12,6 +13,25 @@ function init() {
             const data = event.data.json();
             event.waitUntil(processCommand(data));
         }
+    });
+    self.addEventListener('notificationclick', (event) => {
+        event.notification.close(); // Android needs explicit close.
+        event.waitUntil(
+            clients.matchAll({type: 'window'}).then( windowClients => {
+                // Check if there is already a window/tab open with the target URL
+                for (var i = 0; i < windowClients.length; i++) {
+                    var client = windowClients[i];
+                    // If so, just focus it.
+                    if (client.url === url && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                // If not, then open the target URL in a new window/tab.
+                if (clients.openWindow) {
+                    return clients.openWindow(url);
+                }
+            })
+        );
     });
 }
 
@@ -88,7 +108,8 @@ function processNotification(title, message) {
         //https://twitter.com/push_service_worker.js
         //sendMessageToAllClients("SW_REQ_NOTIFICATION_PERMISSION");
         self.registration.showNotification(title, {
-            body:message
+            body:message,
+            icon:"/static/image/push_notif_icon.png"
         }).then((NotificationEvent) => {
             resolve(NotificationEvent);
         });

@@ -6,6 +6,8 @@ import * as EventEmitter from "eventemitter3";
 import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
 import {fileUploadService} from "../generic/FileUploadService";
 import {DATABASE_USERS, FirebaseUser} from "./shared/FireBaseDBDefinition";
+import {audit} from "../Audit";
+
 
 export class FirebaseAuthService {
     userDataBaseName = DATABASE_USERS;
@@ -101,6 +103,7 @@ export class FirebaseAuthService {
                     this.saveUser(user)
                         .then(() => {
                             this.eventEmitter.emit('AuthStateChanged', user.uid);
+                            audit.track("user/register",{uid:user.uid});
                             resolve("ok");
                         })
                         .catch(error => {
@@ -190,7 +193,9 @@ export class FirebaseAuthService {
     }
 
     logout(): Promise<string> {
-        return firebaseInitAuthService.firebaseAuth().signOut()
+        let ret = firebaseInitAuthService.firebaseAuth().signOut();
+        audit.track("user/logout",{uid:this.currentUserUid});
+        return ret;
     }
 
     login(email: string, pw: string): Promise<string> {
@@ -202,6 +207,7 @@ export class FirebaseAuthService {
                         console.warn("user recreated : ", user);
                         this.saveUser(user).then(() => {
                             this.eventEmitter.emit('AuthStateChanged', user.uid);
+                            audit.track("user/login",{uid:user.uid});
                             resolve("ok");
                         });
                     } else {

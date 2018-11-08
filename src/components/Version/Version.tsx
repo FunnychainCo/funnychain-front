@@ -5,10 +5,10 @@ import {backEndPropetiesProvider} from "../../service/BackEndPropetiesProvider";
 
 export default class Version extends Component {
 
-    VERSION = "1.2.0";
+    version = backEndPropetiesProvider.getProperty("VERSION");
 
     componentDidMount(){
-        console.log("funnychain version: "+this.VERSION);
+        console.log("funnychain version: "+this.version);
         this.getServerVersion();
     }
 
@@ -30,7 +30,7 @@ export default class Version extends Component {
                 fontSize: '0.5em',
                 left: 2,
                 position: 'fixed',
-            }}>{this.VERSION}</span>
+            }}>{this.version}</span>
         )
     }
 }

@@ -4,12 +4,15 @@ import ContentAdd from '@material-ui/icons/Add';
 import {authService} from "../../service/generic/AuthService";
 import Button from "@material-ui/core/Button/Button";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
-import { Link } from 'react-router-dom';
+import CreateMemeDialog from "./CreateMemeDialog";
 
-declare var window:any;
 
-export default class CreateMemeDialogFab extends Component {
+export default class CreateMemeDialogFab extends Component<{},{
+    open:boolean,
+    logged: boolean
+}> {
     state = {
+        open:false,
         logged: false
     };
 
@@ -28,7 +31,6 @@ export default class CreateMemeDialogFab extends Component {
     }
 
     render() {
-        const PostDialogDisplayLink = (props) => <Link to={window.location.pathname+"/post"} {...props} />;
         const style:any = {
             margin: 0,
             top: 'auto',
@@ -43,10 +45,13 @@ export default class CreateMemeDialogFab extends Component {
                 <Button
                     variant="fab"
                     style={style}
-                    component={PostDialogDisplayLink}
+                    onClick={()=>{this.setState({open:true})}}
                 >
                     <ContentAdd/>
                 </Button>
+                }
+                {this.state.logged &&
+                <CreateMemeDialog open={this.state.open} handleClose={()=>{this.setState({open:false})}}/>
                 }
             </div>
         )

@@ -242,8 +242,8 @@ class MemeLoader implements MemeLoaderInterface{
                         }
                         this.convertor(firebaseMemes).then(memeLinkData => {
                             this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
-                            if (firebaseMemes.length != 0) {//no more meme to load in database
-                                resolve(true);
+                            resolve(true);
+                            if (firebaseMemes.length != 0) {
                                 this.loadMore(limit - firebaseMemes.length);//TODO find a better system to load type fresh and hot
                             }
                         });

@@ -1,4 +1,5 @@
 import * as EventEmitter from "eventemitter3/index";
+import {audit} from "../Audit";
 
 declare let window:any;
 
@@ -41,6 +42,7 @@ export class PWAService {
     start(){
         if (window.matchMedia('(display-mode: standalone)').matches) {
             console.log("PWA service started: running from installed PWA");
+            audit.additionalData.pwa="true";
         }else{
             console.log("PWA service started: running from browser");
         }
@@ -53,6 +55,7 @@ export class PWAService {
             this._promptEvent.userChoice
                 .then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
+                        audit.track("user/pwa/install/auto",{});
                         console.log('User accepted the A2HS prompt');
                     } else {
                         console.log('User dismissed the A2HS prompt');
