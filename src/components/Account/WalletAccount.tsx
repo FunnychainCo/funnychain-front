@@ -19,6 +19,7 @@ import InboxIcon from '@material-ui/icons/Inbox';
 import {walletService} from "../../service/firebase/WalletService";
 import {FirebaseTransaction} from "../../service/firebase/shared/FireBaseDBDefinition";
 import DogeIcon from "../Icon/DogeIcon";
+import {audit} from "../../service/Audit";
 //https://materialdesignicons.com/
 
 export default class WalletAccount extends Component<{}, {}> {
@@ -131,7 +132,7 @@ export default class WalletAccount extends Component<{}, {}> {
                                 } else if (value.dst === this.state.user.uid) {
                                     addreseMessage = "From " + value.src;
                                 } else {
-                                    console.error(value);
+                                    audit.reportError(value);
                                 }
                                 return <ListItem key={index}>
                                     <ListItemIcon>

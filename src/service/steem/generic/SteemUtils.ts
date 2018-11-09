@@ -6,6 +6,7 @@ import {idService} from "../../IdService";
 import {authService} from "../../generic/AuthService";
 import {steemCommunityAccountService} from "../steemComunity/SteemCommunityAccountService";
 import {firebaseUpvoteService} from "../../firebase/FirebaseUpvoteService";
+import {audit} from "../../Audit";
 
 export function getAvatarURLFromSteemUserAccount(steemUserAccount: string): string {
     return "https://steemitimages.com/u/" + steemUserAccount + "/avatar";
@@ -122,24 +123,24 @@ export function convertMeme(steemPost: dsteem.Discussion): Promise<Meme> {
                             resolve(newMeme);
                         }).catch(reason => {
                             resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                            console.error(reason);//preload failed
+                            audit.reportError(reason);//preload failed
                         });
                     })
                 }).catch(reason => {
                     resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                    console.error(reason);
+                    audit.reportError(reason);
                 });
             })).catch(reason => {
                 resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-                console.error(reason);
+                audit.reportError(reason);
             });
         } catch (reason) {
             resolve(MEME_ENTRY_NO_VALUE);//resolve for q.all to work
-            console.error(reason);
+            audit.reportError(reason);
         }
     });
     promise.catch(reason => {
-        console.error(reason);
+        audit.reportError(reason);
     });
     return promise;
 }

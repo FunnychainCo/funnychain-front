@@ -1,3 +1,5 @@
+import {audit} from "./Audit";
+
 declare let navigator:any;
 declare let window:any;
 export class UserNotificationService {
@@ -33,7 +35,7 @@ export class UserNotificationService {
                         });
                     }
                 }else{
-                    console.error("unknown command : ",event);
+                    audit.reportError("unknown command : ",event);
                 }
             });
         }

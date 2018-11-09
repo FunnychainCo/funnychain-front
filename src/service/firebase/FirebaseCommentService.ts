@@ -5,6 +5,7 @@ import {MemeComment} from "../generic/MemeComment";
 import {DATABASE_COMMENTS, FirebaseComment} from "./shared/FireBaseDBDefinition";
 import * as firebase from "firebase";
 import {userService} from "../generic/UserService";
+import {audit} from "../Audit";
 
 export class FirebaseCommentService implements CommentServiceInterface{
     getCommentVisitor(id): CommentsVisitor {
@@ -22,7 +23,7 @@ export class FirebaseCommentService implements CommentServiceInterface{
                     resolve(value);
                 }
             }).catch(reason => {
-                console.error(reason);
+                audit.reportError(reason);
                 resolve(0);
             });
         });
@@ -56,7 +57,7 @@ export class FireBaseCommentVisitor implements CommentsVisitor{
     on(callback: (comments: MemeComment[]) => void): () => void {
         let toremove = firebase.database().ref(DATABASE_COMMENTS + '/' + this.memeId).on("child_added",(comments) => {
             if (comments == null) {
-                console.error(comments);
+                audit.reportError(comments);
                 return;
             }
             //let commentsValue:{[id:string] : FirebaseComment;} = comments.val();

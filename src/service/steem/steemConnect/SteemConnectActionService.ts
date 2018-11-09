@@ -2,6 +2,7 @@ import {CommentsAction, MemeServiceAction} from "../../generic/ApplicationInterf
 import {constructMemeComment, constructMemePost} from "../generic/PostsMaker";
 import {getAuthorAndPermalink} from "../generic/SteemUtils";
 import {steemConnectAuthService} from "./SteemConnectAuthService";
+import {audit} from "../../Audit";
 
 export class SteemConnectActionService implements MemeServiceAction, CommentsAction {
 
@@ -24,7 +25,7 @@ export class SteemConnectActionService implements MemeServiceAction, CommentsAct
                     if (res != null) {
                         resolve("ok");
                     } else {
-                        console.error(err);
+                        audit.reportError(err);
                         reject(err);
                     }
                 });
@@ -42,7 +43,7 @@ export class SteemConnectActionService implements MemeServiceAction, CommentsAct
                         console.log("message posted", res);
                         resolve("ok");
                     } else {
-                        console.error(err);
+                        audit.reportError(err);
                         reject(err);
                     }
                 });
@@ -59,7 +60,7 @@ export class SteemConnectActionService implements MemeServiceAction, CommentsAct
                     if (res != null) {
                         resolve("ok");
                     } else {
-                        console.error(err);
+                        audit.reportError(err);
                         reject(err);
                     }
                 });
@@ -75,7 +76,7 @@ export class SteemConnectActionService implements MemeServiceAction, CommentsAct
                     if (res != null) {
                         resolve("ok");
                     } else {
-                        console.error(err);
+                        audit.reportError(err);
                         reject(err);
                     }
                 });

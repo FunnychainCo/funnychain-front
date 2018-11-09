@@ -2,6 +2,7 @@ import * as firebase from "firebase";
 import {DATABASE_BETS, DATABASE_META} from "./shared/FireBaseDBDefinition";
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import axios from 'axios'
+import {audit} from "../Audit";
 
 export class FirebaseBetService {
     dataBase = DATABASE_BETS;
@@ -33,7 +34,7 @@ export class FirebaseBetService {
                     resolve(Object.keys(value).length);
                 }
             }).catch(reason => {
-                console.error(reason);
+                audit.reportError(reason);
                 resolve(0);
             });
         });
@@ -44,7 +45,7 @@ export class FirebaseBetService {
             firebase.database().ref(DATABASE_META+"/bet_pool").once("value", (data) => {
                 resolve(data.val()?data.val().balance:0);
             }).catch(reason => {
-                console.error(reason);
+                audit.reportError(reason);
                 resolve(0);
             });
         })
@@ -55,7 +56,7 @@ export class FirebaseBetService {
             axios.get(backEndPropetiesProvider.getProperty('WALLET_SERVICE')+"/isBetEnabledOnPost/"+memeId).then(response => {
                 resolve(response.data);
             }).catch(error => {
-                console.error(error);
+                audit.reportError(error);
                 resolve(false);
             });
         });
@@ -69,7 +70,7 @@ export class FirebaseBetService {
             axios.get(backEndPropetiesProvider.getProperty('WALLET_SERVICE')+"/bet/"+uid+"/"+memeId).then(response => {
                 resolve("ok");
             }).catch(error => {
-                console.error("fail to bet",error);
+                audit.reportError("fail to bet",error);
                 reject("fail to bet");
             });
         });

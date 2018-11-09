@@ -64,7 +64,7 @@ export class PWAService {
                     this.eventEmitter.emit(this.installPromptChange, null);
                 });
         }else {
-            console.error("no PWA callback registered");
+            audit.reportError("no PWA callback registered");
         }
     }
 

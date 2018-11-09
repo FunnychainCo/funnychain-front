@@ -21,7 +21,7 @@ export default class FirebaseImageUploader extends Component {
     handleProgress = (progress) => this.setState({progress});
     handleUploadError = (error) => {
         this.setState({isUploading: false});
-        console.error(error);
+        console.log(error);
     }
     handleUploadSuccess = (filename) => {
         this.setState({filename: filename, progress: 100});

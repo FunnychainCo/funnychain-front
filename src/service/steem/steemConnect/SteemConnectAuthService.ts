@@ -5,6 +5,7 @@ import {AuthServiceInterface} from "../../generic/AuthService";
 import {steemUserService} from "../SteemUserService";
 import * as dsteem from "dsteem";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../generic/UserEntry";
+import {audit} from "../../Audit";
 
 export interface SteemToken {
     access_token: string,
@@ -152,7 +153,7 @@ export class SteemConnectAuthService implements AuthServiceInterface {
                     callback(data);
                     this._currentUser = data;//update cache
                 }).catch(reason => {
-                    console.error(reason);
+                    audit.reportError(reason);
                 });
             } else {
                 //update for future use
@@ -160,7 +161,7 @@ export class SteemConnectAuthService implements AuthServiceInterface {
                     if(data!==undefined && data!==null) {
                         this._currentUser = data;//update cache
                     }else{
-                        console.error(data);
+                        audit.reportError(data);
                     }
                 });
                 callback(Object.assign({}, this.currentUser));//TODO maybe a better way to deepcopy

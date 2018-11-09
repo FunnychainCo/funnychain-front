@@ -16,6 +16,7 @@ import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import {userService} from "../../service/generic/UserService";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import {audit} from "../../service/Audit";
 
 export default class EmailAccountManagement extends Component<{}, {
     user:UserEntry,
@@ -113,7 +114,7 @@ export default class EmailAccountManagement extends Component<{}, {
                 this.dialogValueCurrentPassword = "";
                 break;
             default:
-                console.error("error");
+                audit.reportError("error");
         }
         this.handleClose();
     };

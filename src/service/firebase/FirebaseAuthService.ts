@@ -54,7 +54,7 @@ export class FirebaseAuthService {
                         resolve("ok")
                     });
             }).catch((error) => {
-                console.error(error);
+                audit.reportError(error);
             });
         });
     }
@@ -109,7 +109,7 @@ export class FirebaseAuthService {
                         .catch(error => {
                             this.eventEmitter.emit('AuthStateChanged', user.uid);
                             //Save process did fail but register succeeded => user will just have to login again after page is closed
-                            console.error(error);
+                            audit.reportError(error);
                             resolve("ok");
                         });
                 })
@@ -128,7 +128,7 @@ export class FirebaseAuthService {
             this.loadUserData(uid).then((data) => {
                 callback(data);
             }).catch(reason => {
-                console.error(reason);
+                audit.reportError(reason);
             });
         };
         this.eventEmitter.on('AuthStateChanged', wrapedCallback);
@@ -145,7 +145,7 @@ export class FirebaseAuthService {
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
                 let fireBaseUser: FirebaseUser = user.val();
                 if (fireBaseUser == null) {
-                    console.error("uid does not exist in database");
+                    audit.reportError("uid does not exist in database");
                     resolve(0);
                     return;
                 }else {
@@ -186,7 +186,7 @@ export class FirebaseAuthService {
                     resolve(userData);
                 });
             }).catch((error) => {
-                console.error(error);
+                audit.reportError(error);
                 reject(error);
             });
         });
@@ -233,7 +233,7 @@ export class FirebaseAuthService {
             httpClient.get(backEndPropetiesProvider.getProperty('USER_SERVICE_INIT')+"/"+user.uid).then(() => {
                 resolve("ok");
             }).catch(error => {
-                console.error("fail to init user");
+                audit.reportError("fail to init user");
             });
         });
     }

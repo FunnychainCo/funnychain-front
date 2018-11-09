@@ -58,7 +58,7 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
             ).then((value: UploadedDataInterface) => {
                 let currentUser = firebase.auth().currentUser;
                 if (currentUser == null) {
-                    console.error(currentUser);
+                    audit.reportError(currentUser);
                     return;
                 }
                 let userUID = currentUser.uid;

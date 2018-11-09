@@ -19,6 +19,7 @@ import {authService} from 'src/service/generic/AuthService';
 import {DATABASE_MEMES, FirebaseMeme, FirebaseMemeDBStruct} from "./shared/FireBaseDBDefinition";
 import {firebaseBetService} from "./FirebaseBetService";
 import {PromisePoolExecutor} from "promise-pool-executor";
+import {audit} from "../Audit";
 
 export class FirebaseMemeService implements MemeServiceInterface {
 
@@ -162,7 +163,7 @@ class MemeLink implements MemeLinkInterface{
         return new Promise<string>((resolve, reject) => {
             firebase.database().ref(DATABASE_MEMES + "/" + this.id).once("value", (memes) => {
                 if (memes == null) {
-                    console.error(memes);
+                    audit.reportError(memes);
                     return;
                 }
                 let meme:FirebaseMeme = memes.val() || {};
@@ -204,7 +205,7 @@ class MemeLoader implements MemeLoaderInterface{
                 return new Promise(resolve => {
                     if (limit < 0) {
                         resolve(true);
-                        console.error("negative limit");
+                        audit.reportError("negative limit");
                     }
                     if (limit <= 0) {
                         resolve(true);

@@ -1,6 +1,7 @@
 import {FileUploadServiceInterface, UploadedDataInterface} from "../generic/ApplicationInterface";
 import * as ipfsAPI from "ipfs-api";
 import axios from 'axios'
+import {audit} from "../Audit";
 
 export class IPFSFileUploadService implements FileUploadServiceInterface {
 
@@ -79,7 +80,7 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
                         });
                     });
                 }).catch((err) => {
-                console.error(err)
+                audit.reportError(err)
             })
         });
     }

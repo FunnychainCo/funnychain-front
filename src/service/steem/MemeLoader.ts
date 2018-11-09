@@ -6,6 +6,7 @@ import * as EventEmitter from "eventemitter3";
 import * as Q from "q";
 import {Meme, MEME_ENTRY_NO_VALUE, MEME_TYPE_FRESH, MEME_TYPE_HOT, MEME_TYPE_TRENDING} from "../generic/Meme";
 import {MemeLink} from "./MemeLink";
+import {audit} from "../Audit";
 
 export class MemeLoader implements MemeLoaderInterface {
     lastPostUrl: string = "";
@@ -80,11 +81,11 @@ export class MemeLoader implements MemeLoaderInterface {
             } else if (this.type == MEME_TYPE_FRESH) {
                 type = "created";
             } else {
-                console.error("unkown type");
+                audit.reportError("unkown type");
             }
             this.dSteemClient.database.getDiscussions(type, params).then((result: dsteem.Discussion[]) => {
                 if (result == undefined) {
-                    console.error(result);
+                    audit.reportError(result);
                     return;
                 }
                 result.forEach((steemPost: dsteem.Discussion, index, array) => {

@@ -2,6 +2,7 @@ import * as firebase from "firebase";
 import {DATABASE_UPVOTES} from "./shared/FireBaseDBDefinition";
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import axios from 'axios'
+import {audit} from "../Audit";
 
 export class FirebaseUpvoteService {
     dataBase = DATABASE_UPVOTES
@@ -33,7 +34,7 @@ export class FirebaseUpvoteService {
                     resolve(Object.keys(value).length);
                 }
             }).catch(reason => {
-                console.error(reason);
+                audit.reportError(reason);
                 resolve(0);
             });
         });
@@ -47,7 +48,7 @@ export class FirebaseUpvoteService {
             axios.get(backEndPropetiesProvider.getProperty('WALLET_SERVICE_UPVOTE')+"/"+uid+"/"+memeId).then(response => {
                 resolve("ok");
             }).catch(error => {
-                console.error("fail to upvote",error);
+                audit.reportError("fail to upvote",error);
                 reject("fail to upvote");
             });
         });

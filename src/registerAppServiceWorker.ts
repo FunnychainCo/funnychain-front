@@ -2,6 +2,7 @@
 // TODO check https://developers.google.com/web/tools/workbox/
 
 import {backEndPropetiesProvider} from "./service/BackEndPropetiesProvider";
+import {audit} from "./service/Audit";
 
 let lifeData:any = {};
 
@@ -121,7 +122,7 @@ function registerValidSW(swUrl: string) {
             };
         })
         .catch(error => {
-            console.error('Error during service worker registration:', error);
+            audit.reportError('Error during service worker registration:', error);
         });
 }
 

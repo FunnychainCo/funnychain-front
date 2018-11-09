@@ -56,7 +56,7 @@ function processCommand(cmd){
                         });
                         if(respOK>0){
                             //notification has been proceced by a client (displayed as a toast)
-                            reject("not an error");//Here we reject the promise to avoid getting the chrom notification "The website has been updated in background"
+                            reject("Push notification: not an error");//Here we reject the promise to avoid getting the chrom notification "The website has been updated in background"
                         }else{
                             //nobody is viewing the client
                             // no one is here to process the command so we perform external notification
@@ -107,11 +107,19 @@ function processNotification(title, message) {
         //https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/showNotification
         //https://twitter.com/push_service_worker.js
         //sendMessageToAllClients("SW_REQ_NOTIFICATION_PERMISSION");
-        self.registration.showNotification(title, {
-            body:message,
-            icon:"/static/image/push_notif_icon.png"
-        }).then((NotificationEvent) => {
-            resolve(NotificationEvent);
+        self.registration.getNotifications().then((notifications)=> {
+            //remove old notification
+            notifications.forEach( notification =>{
+                //https://developer.mozilla.org/en-US/docs/Web/API/Notification
+                notification.close();
+            });
+            //Show new notification
+            self.registration.showNotification(title, {
+                body:message,
+                icon:"/static/image/push_notif_icon.png"
+            }).then((NotificationEvent) => {
+                resolve(NotificationEvent);
+            });
         });
     });
 }

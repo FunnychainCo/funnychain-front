@@ -10,6 +10,7 @@ import Snackbar from "@material-ui/core/Snackbar/Snackbar";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {setInterval} from "timers";
+import {audit} from "../../service/Audit";
 
 export interface IState{
     files: any[],
@@ -78,7 +79,7 @@ export default class ImageUploaderDropZone extends Component<{
     };
     handleUploadError = (error) => {
         this.setState({isUploading: false});
-        console.error(error);
+        audit.reportError(error);
     };
 
     handleOnAlways = (instance) => {

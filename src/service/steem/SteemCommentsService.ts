@@ -9,6 +9,7 @@ import {
 } from "./generic/SteemUtils";
 import {PROVIDER_STEEM} from "../generic/UserEntry";
 import {MEME_COMMENT_NO_VALUE, MemeComment} from "../generic/MemeComment";
+import {audit} from "../Audit";
 
 export class SteemCommentService implements CommentServiceInterface {
 
@@ -79,7 +80,7 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                                 }
                             }
                         }catch (e) {
-                            console.error(e);
+                            audit.reportError(e);
                             //continue
                         }
                         preloadImageWithFallBackURL(avatarURL).then((avatarUrl => {
@@ -102,7 +103,7 @@ export class SteemCommentsVisitor implements CommentsVisitor {
                             };
                             resolve(memeComment);
                         })).catch(reason => {
-                            console.error(reason);
+                            audit.reportError(reason);
                             resolve(MEME_COMMENT_NO_VALUE);
                         });
                     }));

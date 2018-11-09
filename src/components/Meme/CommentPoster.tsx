@@ -7,6 +7,7 @@ import {Send} from "@material-ui/icons";
 import {authService} from "../../service/generic/AuthService";
 import {MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
+import {audit} from "../../service/Audit";
 
 interface State {
     logged: boolean,
@@ -47,7 +48,7 @@ export default class CommentPoster extends Component<{
             });
         }).catch(reason => {
             //cancel previous operation
-            console.error("post canceled",reason);
+            audit.reportError("post canceled",reason);
             this.props.onPostCanceled();
         });
         this.setState({commentToPost: ""});//errase old comment value

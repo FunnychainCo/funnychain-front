@@ -2,6 +2,7 @@ import {Component} from 'react';
 import * as React from 'react';
 import axios from 'axios'
 import {backEndPropetiesProvider} from "../../service/BackEndPropetiesProvider";
+import {audit} from "../../service/Audit";
 
 export default class Version extends Component {
 
@@ -16,7 +17,7 @@ export default class Version extends Component {
         axios.get(backEndPropetiesProvider.getProperty('FUNNYCHAIN_SERVICE')+"/service/version").then(response => {
             console.log("funnychain backend version: "+response.data+" ("+backEndPropetiesProvider.getProperty('FUNNYCHAIN_SERVICE')+")");
         }).catch(error => {
-            console.error(error);
+            audit.reportError(error);
         });
     }
 

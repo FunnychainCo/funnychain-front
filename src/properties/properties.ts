@@ -9,7 +9,7 @@ const serviceWallet = '/service/api';
 
 export const GLOBAL_PROPERTIES:GlobalAppProperties = {
     MODE:"DEV",
-    VERSION:"1.2.2",
+    VERSION:"1.2.3",
 
     //Web service properties
     FUNNYCHAIN_SERVICE:hostAPI,
