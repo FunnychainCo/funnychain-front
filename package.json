@@ -39,12 +39,13 @@
     "sc2-sdk": "^1.1.0",
     "store": "^2.0.12",
     "suggest-username": "^0.1.2",
+    "sw-precache": "^5.2.1",
     "typeface-roboto": "0.0.54"
   },
   "scripts": {
     "dev": "react-scripts-ts start",
     "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
+    "build": "react-scripts-ts build && sw-precache --config=sw-precache-config.js",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject"
   },

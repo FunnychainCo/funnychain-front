@@ -6,7 +6,7 @@ import * as store from 'store';
 import {UserActionInterface} from "./ApplicationInterface";
 import {steemConnectActionService} from "../steem/steemConnect/SteemConnectActionService";
 import {firebaseActionService} from "../firebase/FirebaseActionService";
-import {registerPushNotification, unregisterPushNotification} from "../../registerAppServiceWorker";
+import {pushNotificationService} from "../PushNotificationService";
 
 export interface MailAuthServiceInterface {
     //specific email pasword auth
@@ -99,8 +99,8 @@ export class AuthService implements AuthServiceInterface {
 
     pushRegistrationNotification(userDataReceived: UserEntry){
         if(userDataReceived!=USER_ENTRY_NO_VALUE){
-            unregisterPushNotification();
-            registerPushNotification(userDataReceived.uid);
+            pushNotificationService.unregisterPushNotification();
+            pushNotificationService.registerPushNotification(userDataReceived.uid);
         }
     };
 
