@@ -1,8 +1,11 @@
+import * as EventEmitter from "eventemitter3/index";
 import {audit} from "./Audit";
+import {pushNotificationService} from "./PushNotificationService";
 
 declare let navigator:any;
 declare let window:any;
 export class UserNotificationService {
+    eventEmitter = new EventEmitter();
     visible:boolean = true;
     callback = (message) => {
     };
@@ -31,6 +34,7 @@ export class UserNotificationService {
                     event.ports[0].postMessage("OK");
                     if(this.needsPermission()) {
                         window.Notification.requestPermission((perm) => {
+                            this.eventEmitter.emit("new_notification_state",this.getNotificationState());
                             console.log("requestPermission => " + perm);
                         });
                     }
@@ -45,9 +49,39 @@ export class UserNotificationService {
         },3000);*/
     }
 
+
+    onNotificationState(callback:(granted:boolean)=>void):()=>void{
+        this.eventEmitter.on("new_notification_state",callback);
+        this.eventEmitter.emit("new_notification_state",this.getNotificationState());
+        return ()=>{
+            this.eventEmitter.off("new_notification_state",callback);
+        }
+    }
+
+    getNotificationState():boolean{
+        return !this.needsPermission();
+    }
+
+    setNotificationState(granted:boolean){
+        if(granted) {
+            Notification.requestPermission().then((permission)=> {
+                this.eventEmitter.emit("new_notification_state",this.getNotificationState());
+            });
+        }else{
+            //TODO store in nvm to disable notification
+        }
+    }
+
     needsPermission(){
         let N = window.Notification;
         return N && N.permission && N.permission === 'granted' ? false : true;
+    }
+
+    updateNotification(uid:string){
+        if(!this.needsPermission()) {
+            pushNotificationService.unregisterPushNotification();
+            pushNotificationService.registerPushNotification(uid);
+        }
     }
 
     notifyUserExternal(title,message) {
@@ -57,8 +91,6 @@ export class UserNotificationService {
     notifyUIToNotifyUser(message) {
         this.callback(message);
     }
-
-
 
 }
 

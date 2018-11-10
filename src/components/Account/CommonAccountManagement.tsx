@@ -7,6 +7,7 @@ import "./Account.css";
 import {pwaService} from "../../service/mobile/PWAService";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import NotificationAccount from "./NotificationAccount";
 
 export default class CommonAccountManagement extends Component<{ onLogout: () => void }, {
     displayAddToHomeButton: boolean
@@ -30,6 +31,8 @@ export default class CommonAccountManagement extends Component<{ onLogout: () =>
         return (
 
             <div className="fcContent">
+                <NotificationAccount />
+
                 <ListItem button onClick={() => {
                     authService.logout().then(() => {
                         console.log("logout");

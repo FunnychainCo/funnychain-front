@@ -6,7 +6,7 @@ import * as store from 'store';
 import {UserActionInterface} from "./ApplicationInterface";
 import {steemConnectActionService} from "../steem/steemConnect/SteemConnectActionService";
 import {firebaseActionService} from "../firebase/FirebaseActionService";
-import {pushNotificationService} from "../PushNotificationService";
+import {userNotificationService} from "../UserNotificationService";
 
 export interface MailAuthServiceInterface {
     //specific email pasword auth
@@ -97,10 +97,9 @@ export class AuthService implements AuthServiceInterface {
         }
     }
 
-    pushRegistrationNotification(userDataReceived: UserEntry){
+    updateNotificationStatus(userDataReceived: UserEntry){
         if(userDataReceived!=USER_ENTRY_NO_VALUE){
-            pushNotificationService.unregisterPushNotification();
-            pushNotificationService.registerPushNotification(userDataReceived.uid);
+            userNotificationService.updateNotification(userDataReceived.uid);
         }
     };
 
@@ -112,7 +111,7 @@ export class AuthService implements AuthServiceInterface {
             case this.MODE_EMAIL:
                 firebaseAuthService.start();
                 this.removeAuthListener = firebaseAuthService.onAuthStateChanged((userDataReceived: UserEntry) => {
-                    this.pushRegistrationNotification(userDataReceived);
+                    this.updateNotificationStatus(userDataReceived);
                     if (this.mode == this.MODE_EMAIL) {
                         firebaseActionService.start(userDataReceived);
                         this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);

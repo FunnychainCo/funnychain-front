@@ -17,7 +17,6 @@ export default class BackListener extends Component<{
             }
         });
         backService.setRequestBackCalback(() => {
-            console.warn("back");
             this.props.history.goBack();
         })
     }
