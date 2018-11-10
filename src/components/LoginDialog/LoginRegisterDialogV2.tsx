@@ -38,7 +38,6 @@ export default class LoginRegisterDialogV2 extends Component<{
     componentDidMount() {
         this.removeListener = backService.onBack(() => {
             this.setState({userPasswordLoginDialogOpen: false, userPasswordRegisterDialogOpen: false,aboutUsOpen:false});
-            this.props.onRequestClose();
         });
     }
 
@@ -47,7 +46,8 @@ export default class LoginRegisterDialogV2 extends Component<{
     }
 
     handleClose = () => {
-        backService.goBack();
+        this.setState({userPasswordLoginDialogOpen: false, userPasswordRegisterDialogOpen: false,aboutUsOpen:false});
+        this.props.onRequestClose();
     };
 
     render() {

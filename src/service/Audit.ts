@@ -29,6 +29,10 @@ export class Audit {
         console.error(finalData);
     }
 
+    error(...data:any[]){
+        this.reportError(data);
+    }
+
 }
 
 export let audit = new Audit();

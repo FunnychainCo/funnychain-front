@@ -1,10 +1,15 @@
 module.exports = {
-    handleFetch: false,
     importScripts: (['./service-worker-custom.js']),
-    staticFileGlobs: [
-        'build/static/css/**.css',
-        'build/static/js/**.js'
-    ],
+    staticFileGlobs: ['build/**/*.{js,html,css,png,jpg,gif}'],
+    navigateFallback: 'index.html',
     stripPrefix: 'build/',
-    swFilePath: './build/service-worker.js'
+    minify: true,
+    swFilePath: './build/service-worker.js',
+    runtimeCaching: [{
+        urlPattern: /https?:\/\/fonts.+/,
+        handler: 'fastest',
+    }, {
+        urlPattern: /https?:\/\/images.+/,
+        handler: 'fastest',
+    }],
 }

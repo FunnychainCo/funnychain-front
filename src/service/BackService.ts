@@ -1,7 +1,9 @@
 import * as EventEmitter from "eventemitter3/index";
+import {audit} from "./Audit";
 
 export class BackService {
     eventEmitter = new EventEmitter();
+    backCallBack = ()=>{audit.reportError("no callback set")}
 
     notifyBack(){
         this.eventEmitter.emit("back_event",{});
@@ -15,14 +17,11 @@ export class BackService {
     }
 
     goBack(){
-        this.eventEmitter.emit("request_back",{});
+        this.backCallBack();
     }
 
-    onRequestBack(callback:()=>void):()=>void{
-        this.eventEmitter.on("request_back",callback);
-        return ()=>{
-            this.eventEmitter.off("request_back",callback);
-        }
+    setRequestBackCalback(callback:()=>void):void{
+        this.backCallBack = callback;
     }
 }
 

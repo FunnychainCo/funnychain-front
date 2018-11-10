@@ -21,8 +21,11 @@
   "exclude": [
     "node_modules",
     "build",
+    "build_docker",
     "profile",
+    "docker",
     "scripts",
+    "sw-precache-config.js",
     "acceptance-tests",
     "webpack",
     "jest",
