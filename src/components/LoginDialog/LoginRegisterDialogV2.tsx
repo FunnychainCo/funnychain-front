@@ -13,6 +13,7 @@ import UserPasswordRegisterDialog from "./UserPasswordRegisterDialog";
 import {EmoticonCool} from 'mdi-material-ui';
 import ListItemText from "@material-ui/core/ListItemText";
 import AboutUsDialog from "./AboutUsDialog";
+import {backService} from "../../service/BackService";
 
 interface State {
     loading: boolean,
@@ -31,15 +32,22 @@ export default class LoginRegisterDialogV2 extends Component<{
         userPasswordRegisterDialogOpen: false,
         aboutUsOpen:false,
     };
+    private removeListener: () => void;
 
 
     componentDidMount() {
+        this.removeListener = backService.onBack(() => {
+            this.setState({userPasswordLoginDialogOpen: false, userPasswordRegisterDialogOpen: false,aboutUsOpen:false});
+            this.props.onRequestClose();
+        });
+    }
+
+    componentWillUnmount(){
+        this.removeListener();
     }
 
     handleClose = () => {
-        this.setState({userPasswordLoginDialogOpen: false, userPasswordRegisterDialogOpen: false,aboutUsOpen:false});
-        this.props.onRequestClose();
-        console.log("ici");
+        backService.goBack();
     };
 
     render() {

@@ -4,8 +4,12 @@ import {Component} from "react";
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import {Menu} from "@material-ui/icons";
+import ButtonBase from "@material-ui/core/ButtonBase";
 
-export default class Logged extends Component<any,
+export default class Logged extends Component<{
+    component: any,
+    onAccountClick: () => void
+},
     {
         user: UserEntry
     }> {
@@ -25,13 +29,15 @@ export default class Logged extends Component<any,
     }
 
     render() {
-        return <div onClick={this.props.onAccountClick}>
+        return <ButtonBase
+            component={this.props.component}
+            onClick={this.props.onAccountClick}>
             {(this.state.user.avatarUrl !== "") &&
             <Avatar src={this.state.user.avatarUrl}/>
             }
             {(this.state.user.avatarUrl === "") &&
             <Menu/>
             }
-        </div>
+        </ButtonBase>
     }
 }

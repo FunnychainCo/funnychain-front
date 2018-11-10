@@ -1,6 +1,6 @@
 import * as dsteem from "dsteem";
 import {UserEntry} from "../../generic/UserEntry";
-import {debugService} from "../../debugService";
+import {debugService} from "../../DebugService";
 import {USER_ENTRY_NO_VALUE} from "../../generic/UserEntry";
 
 export class SteemCommunityAccountService {

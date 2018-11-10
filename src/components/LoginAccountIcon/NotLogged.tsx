@@ -3,7 +3,10 @@ import * as React from 'react';
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import {Menu} from "@material-ui/icons";
 
-export default class NotLogged extends Component<any,{
+export default class NotLogged extends Component<{
+    component:any,
+    onDialogLogin:()=>void
+},{
     anchorEl:any
 }> {
     state = {
@@ -22,6 +25,7 @@ export default class NotLogged extends Component<any,{
         return (
             <div>
                 <IconButton
+                    component={this.props.component}
                     aria-owns={this.state.anchorEl ? 'simple-menu' : ""}
                     aria-haspopup="true"
                     onClick={()=>{this.handleClose();this.props.onDialogLogin();}}

@@ -108,7 +108,7 @@ class Header extends Component<{
                     </Typography>
 
                     <Chip label={(this.state.compact?"":"Bet Pool: ")+this.state.betPoolBalance.toFixed(2)} color="secondary" avatar={<Avatar><DogeIcon /></Avatar>} />&nbsp;&nbsp;
-                    <LoginAccountIcon />
+                    <LoginAccountIcon/>
                 </Toolbar>
             </AppBar>
         )

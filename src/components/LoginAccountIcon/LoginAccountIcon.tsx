@@ -7,6 +7,8 @@ import NotLogged from "./NotLogged";
 import {withRouter} from 'react-router-dom'
 import AccountDrawer from "../Account/AccountDrawer";
 import LoginRegisterDialogV2 from "../LoginDialog/LoginRegisterDialogV2";
+import { Link } from 'react-router-dom';
+import {backService} from "../../service/BackService";
 
 interface State {
     user: UserEntry,
@@ -20,16 +22,23 @@ class LoginAccountIcon extends Component<{history:any}, State> {
         dialogLogin: false,
         drawerOpen: false,
     };
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
+    private removeBackListener: () => void = ()=>{};
 
     componentDidMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({user: user});
         })
+
+        this.removeBackListener = backService.onBack(() => {
+            this.setState({drawerOpen:false});
+            this.setState({dialogLogin:false});
+        })
     }
 
     componentWillUnmount() {
         this.removeListener();
+        this.removeBackListener();
     }
 
     openDialogLogin = () => {
@@ -37,22 +46,27 @@ class LoginAccountIcon extends Component<{history:any}, State> {
     };
 
     render() {
+
+        const AccountLink = (props) => <Link to={"/account"} {...props} />;
+        const LogLink = (props) => <Link to={"/log"} {...props} />;
         const LoggedButton =
-            <Logged onAccountClick={() => {
-                //this.props.history.push(window.location.pathname + "/account");
+            <Logged
+                component={AccountLink}
+                onAccountClick={() => {
                 this.setState({drawerOpen:true});
             }}/>;
        const NotLoggedButton =
-                <NotLogged onDialogLogin={() => {
-                    //this.props.history.push(window.location.pathname + "/login");
+                <NotLogged
+                    component={LogLink}
+                    onDialogLogin={() => {
                     this.setState({dialogLogin:true});
                 }}/>;
         return (
             <div>
                 {(this.state.user !== USER_ENTRY_NO_VALUE ? true : false) ?
                     LoggedButton : NotLoggedButton}
-                <AccountDrawer open={this.state.drawerOpen} onRequestChange={()=>{this.setState({drawerOpen:false})}}/>
-                <LoginRegisterDialogV2 open={this.state.dialogLogin} onRequestClose={()=>{this.setState({dialogLogin:false})}}/>
+                <AccountDrawer open={this.state.drawerOpen} onRequestChange={()=>{backService.goBack()}}/>
+                <LoginRegisterDialogV2 open={this.state.dialogLogin} onRequestClose={()=>{backService.goBack()}}/>
             </div>)
     }
 }

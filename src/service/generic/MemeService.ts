@@ -1,7 +1,7 @@
 import {firebaseMemeService} from "../firebase/FirebaseMemeService";
 //import {steemMemeService} from "../steem/SteemMemeService";
 import {MemeLinkInterface, MemeLoaderInterface, MemeServiceInterface} from "./ApplicationInterface";
-import {debugService} from "../debugService";
+import {debugService} from "../DebugService";
 
 export class MemeService implements MemeServiceInterface {
 
