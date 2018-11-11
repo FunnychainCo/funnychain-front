@@ -1,4 +1,3 @@
-import {firebaseInitAuthService} from "../firebase/FirebaseInitAuthService";
 import axios from 'axios'
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import * as firebase from "firebase";
@@ -27,7 +26,7 @@ export class FirebaseAuthService {
         }
         this.started = true;
         console.log("Firebase auth service started");
-        firebaseInitAuthService.firebaseAuth().onAuthStateChanged((user) => {
+        firebase.auth().onAuthStateChanged((user) => {
             if (user == null) {
                 this.currentUserUid = "";
                 this.eventEmitter.emit('AuthStateChanged', null);
@@ -47,7 +46,7 @@ export class FirebaseAuthService {
             }
             delete this.userCache[user.uid];//invalidate cache
             user.updateEmail(newEmail).then(() => {
-                firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/email')
+                firebase.database().ref().child(this.userDataBaseName + '/' + user.uid + '/email')
                     .set(newEmail)
                     .then(() => {
                         this.eventEmitter.emit('AuthStateChanged', user.uid);
@@ -66,7 +65,7 @@ export class FirebaseAuthService {
                 reject("user is null");
                 return;
             }
-            return firebaseInitAuthService.firebaseAuth().signInWithEmailAndPassword(user.email, currentPassword).then((user) => {
+            return firebase.auth().signInWithEmailAndPassword(user.email, currentPassword).then((user) => {
                 user.updatePassword(newTextValue).then(function () {
                     resolve("ok");
                 });
@@ -78,7 +77,7 @@ export class FirebaseAuthService {
         return new Promise((resolve, reject) => {
             let user: any = firebase.auth().currentUser;
             delete this.userCache[user.uid];//invalidate cache
-            firebaseInitAuthService.ref.child(this.userDataBaseName + '/' + user.uid + '/displayName')
+            firebase.database().ref().child(this.userDataBaseName + '/' + user.uid + '/displayName')
                 .set(newDisplayName)
                 .then(() => {
                     this.eventEmitter.emit('AuthStateChanged', user.uid);
@@ -98,7 +97,7 @@ export class FirebaseAuthService {
 
     register(email: string, pw: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            firebaseInitAuthService.firebaseAuth().createUserWithEmailAndPassword(email, pw)
+            firebase.auth().createUserWithEmailAndPassword(email, pw)
                 .then((user) => {
                     this.saveUser(user)
                         .then(() => {
@@ -193,14 +192,14 @@ export class FirebaseAuthService {
     }
 
     logout(): Promise<string> {
-        let ret = firebaseInitAuthService.firebaseAuth().signOut();
+        let ret = firebase.auth().signOut();
         audit.track("user/logout",{uid:this.currentUserUid});
         return ret;
     }
 
     login(email: string, pw: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            firebaseInitAuthService.firebaseAuth().signInWithEmailAndPassword(email, pw).then((user) => {
+            firebase.auth().signInWithEmailAndPassword(email, pw).then((user) => {
                 firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
                     let userValue: FirebaseUser = userData.val();
                     if (userValue === null) {
@@ -222,7 +221,7 @@ export class FirebaseAuthService {
     }
 
     resetPassword(email: string): Promise<string> {
-        return firebaseInitAuthService.firebaseAuth().sendPasswordResetEmail(email)
+        return firebase.auth().sendPasswordResetEmail(email)
     }
 
     private saveUser(user: FirebaseUser): Promise<string> {

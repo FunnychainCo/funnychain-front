@@ -40,7 +40,7 @@
     "store": "^2.0.12",
     "suggest-username": "^0.1.2",
     "sw-precache": "^5.2.1",
-    "typeface-roboto": "0.0.54"
+    "webfontloader": "^1.6.28"
   },
   "scripts": {
     "dev": "react-scripts-ts start",
