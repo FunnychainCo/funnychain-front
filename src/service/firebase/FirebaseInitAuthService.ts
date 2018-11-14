@@ -2,7 +2,10 @@ import * as firebase from 'firebase'
 import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 
 export class FirebaseInitAuthService {
-    constructor() {
+    constructor()
+    {
+    }
+    start(){
         let config = {
             apiKey: backEndPropetiesProvider.getProperty('apiKey'),
             authDomain: backEndPropetiesProvider.getProperty('authDomain'),

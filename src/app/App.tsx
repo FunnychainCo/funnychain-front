@@ -12,11 +12,13 @@ import {authService} from "../service/generic/AuthService";
 import HomePage from "../containers/HomePage";
 import {backEndPropetiesProvider} from "../service/BackEndPropetiesProvider";
 import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
+import {firebaseInitAuthService} from "../service/firebase/FirebaseInitAuthService";
 
 class App extends React.Component<any, any> {
     state = {};
 
-    componentDidMount() {
+    componentWillMount() {
+        firebaseInitAuthService.start();
         console.log("MODE : " + backEndPropetiesProvider.getProperty("MODE"));
         pwaService.start();
         authService.start();

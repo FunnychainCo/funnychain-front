@@ -62,7 +62,7 @@ export default class SteemAccount extends Component<{
                                 <Edit/>&nbsp;&nbsp;{this.state.user.displayName}
                                 </Button>
                         </div>
-                        <CommonAccountManagement onLogout={this.props.onLogout}/>
+                        <CommonAccountManagement/>
                     </div>
                 </div>}
                 {this.state.loading && <CircularProgress size={80} thickness={5}/>}

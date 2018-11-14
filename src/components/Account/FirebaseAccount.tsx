@@ -11,9 +11,7 @@ import Divider from "@material-ui/core/Divider";
 import ExternalLinkAccount from "./ExternalLinkAccount";
 import WalletAccount from "./WalletAccount";
 
-export default class FirebaseAccount extends Component<{
-    onLogout: () => void
-}, {
+export default class FirebaseAccount extends Component<{}, {
     user: UserEntry,
     loading: boolean,
 }> {
@@ -59,7 +57,7 @@ export default class FirebaseAccount extends Component<{
                             <Divider/>
                             <ExternalLinkAccount />
                             <Divider />
-                            <CommonAccountManagement onLogout={this.props.onLogout}/>
+                            <CommonAccountManagement/>
                             <Divider />
                         </div>
                     </div>

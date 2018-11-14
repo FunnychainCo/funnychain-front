@@ -17,7 +17,7 @@ class ModalPage extends Component<{
                 open={this.props.open}
                 onClose={this.props.onRequestClose}
             >
-                <div>{/*add div to have the button right after the text field*/}
+                <div style={{minHeight:"100%",display:"flex",flexDirection: "column"}}>{/*add div to have the button right after the text field*/}
                     {this.props.children}
                 </div>
             </Dialog>

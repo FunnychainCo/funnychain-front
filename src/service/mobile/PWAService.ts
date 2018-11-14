@@ -9,6 +9,7 @@ export class PWAService {
 
     installPromptChange = 'PWAService.installpromptchange';
     eventEmitter = new EventEmitter();
+    runningFromPWA:boolean = false;
 
     /**
      * ADD this script as soon as possible
@@ -42,8 +43,10 @@ export class PWAService {
     start(){
         if (window.matchMedia('(display-mode: standalone)').matches) {
             console.log("PWA service started: running from installed PWA");
+            this.runningFromPWA=true;
             audit.additionalData.pwa="true";
         }else{
+            this.runningFromPWA=false;
             console.log("PWA service started: running from browser");
         }
         this.eventEmitter.emit(this.installPromptChange, null);
