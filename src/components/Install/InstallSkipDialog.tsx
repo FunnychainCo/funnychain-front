@@ -65,6 +65,7 @@ class InstallSkipDialog extends Component<{
                 <DialogContent>
                     {this.state.displayAddToHomeButton &&
                     <Button
+                        style={{fontSize:"0.8em"}}
                         onClick={() => {
                             this.doNotShowPopupAgain();
                             pwaService.triggerAddToHomeScreen();
@@ -74,6 +75,7 @@ class InstallSkipDialog extends Component<{
                     }
                     {!this.state.displayAddToHomeButton &&
                     <Button
+                        style={{fontSize:"0.8em"}}
                         onClick={() => {
                             this.doNotShowPopupAgain();
                             pwaService.triggerAddToHomeScreen();

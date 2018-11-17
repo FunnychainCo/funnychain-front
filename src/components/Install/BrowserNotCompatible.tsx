@@ -18,12 +18,12 @@ class BrowserNotCompatible extends Component<{
 
     render() {
         return (<Typography style={{flexGrow: 1, display: "flex", justifyContent: "center", flexDirection: "column",margin:"10%"}}>
-                <div style={{textAlign: "center", fontSize: "1.1em"}}>
+                <span style={{textAlign: "center", fontSize: "1.1em"}}>
                     <Cancel style={{fontSize: 92}}/><br/>
                     <b style={{fontSize: "1.3em"}}>Your browser is not compatible</b><br/>
                     Our application is not compatible with your browser.<br/>
                     Please use Safari on IOS or Google Chrome on Android
-                </div>
+                </span>
             </Typography>
         )
     }

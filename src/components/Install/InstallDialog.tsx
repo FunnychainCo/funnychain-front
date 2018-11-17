@@ -10,16 +10,25 @@ import BrowserNotCompatible from "./BrowserNotCompatible";
 import AndroidInstall from "./AndroidInstall";
 import IOSInstall from "./IOSInstall";
 const styles: any = theme => ({});
+import * as MobileDetect from "mobile-detect";
 
+declare let window:any;
 class InstallDialog extends Component<{
     classes: any
     open: boolean,
     handleClose: () => void
 }, { }> {
 
-    state = { };
+    state = {
+    };
+
+    ios = false;
+    android = false;
 
     componentWillMount() {
+        let md = new MobileDetect(window.navigator.userAgent);
+        this.ios = md.is('iOS');
+        this.android = md.is('AndroidOS');
     }
 
     componentWillUnmount() {
@@ -34,9 +43,9 @@ class InstallDialog extends Component<{
                 <DialogTitle>Install</DialogTitle>
                 <DialogContent style={{display: "flex",flexDirection:"row",margin:0,padding:0}}>
                     <div style={{flexGrow:1,display: "flex",flexDirection:"column"}}>
-                        {false&&<BrowserNotCompatible />}
-                        {false&&<AndroidInstall />}
-                        {true&&<IOSInstall />}
+                        {(!this.ios && !this.android)&&<BrowserNotCompatible />}
+                        {this.android&&<AndroidInstall />}
+                        {this.ios&&<IOSInstall />}
                     </div>
                 </DialogContent>
                 <DialogActions>
