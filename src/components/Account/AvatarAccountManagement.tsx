@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import {authService} from "../../service/generic/AuthService";
 import "./Account.css";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
@@ -14,6 +14,7 @@ import Button from "@material-ui/core/Button/Button";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {userService} from "../../service/generic/UserService";
 import {UploadedDataInterface} from "../../service/generic/ApplicationInterface";
+import {ipfsFileUploadService} from "../../service/IPFSFileUploader/IPFSFileUploadService";
 
 export default class AvatarAccountManagement extends Component<any, any> {
     state = {
@@ -90,7 +91,7 @@ export default class AvatarAccountManagement extends Component<any, any> {
 
     handleSaveAndClose = () => {
         this.dialogValue = "";
-        authService.changeAvatar(this.url).then(() => {
+        authService.changeAvatar(ipfsFileUploadService.convertHttpsLinkToIpfsLink(this.url)).then(() => {
             this.updateUser();
         });
         this.url = "";

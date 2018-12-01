@@ -1,6 +1,6 @@
+import * as React from 'react'
 import {Component} from 'react'
 import "./Meme.css"
-import * as React from 'react';
 import Button from "@material-ui/core/Button/Button";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {authService} from "../../service/generic/AuthService";
@@ -43,10 +43,10 @@ class MemeBetButton extends Component<{
         return <div>{this.props.meme.betable &&
         <Button variant="outlined"
                 color={this.props.meme.currentUserBet ? "secondary" : "default"}
-                aria-label="Bet"
+                aria-label="Invest"
                 disabled={!this.props.logged}
                 onClick={this.bet}>
-            Bet !&nbsp;
+            Invest !&nbsp;
             <CashMultiple style={{height: "0.7em"}}/>
         </Button>}</div>
     }

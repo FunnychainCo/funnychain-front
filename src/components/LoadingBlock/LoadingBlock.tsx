@@ -1,5 +1,5 @@
-import {Component} from 'react';
 import * as React from 'react';
+import {Component} from 'react';
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 
 export default class LoadingBlock extends Component {

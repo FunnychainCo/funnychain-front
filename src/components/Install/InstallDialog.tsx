@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import ModalPage from "../ModalPage/ModalPage";
 import Button from "@material-ui/core/Button/Button";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
@@ -9,8 +9,9 @@ import {withStyles} from '@material-ui/core/styles';
 import BrowserNotCompatible from "./BrowserNotCompatible";
 import AndroidInstall from "./AndroidInstall";
 import IOSInstall from "./IOSInstall";
-const styles: any = theme => ({});
 import * as MobileDetect from "mobile-detect";
+
+const styles: any = theme => ({});
 
 declare let window:any;
 class InstallDialog extends Component<{

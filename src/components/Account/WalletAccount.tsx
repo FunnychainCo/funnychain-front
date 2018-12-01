@@ -1,7 +1,6 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import "./Account.css";
-//import {Ethereum} from 'mdi-material-ui';
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
@@ -18,9 +17,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import InboxIcon from '@material-ui/icons/Inbox';
 import {walletService} from "../../service/firebase/WalletService";
 import {FirebaseTransaction} from "../../service/firebase/shared/FireBaseDBDefinition";
-import DogeIcon from "../Icon/DogeIcon";
 import {audit} from "../../service/Audit";
-//https://materialdesignicons.com/
+import LolTokenIcon from "../Icon/LolTokenIcon";
 
 export default class WalletAccount extends Component<{}, {}> {
     state = {
@@ -83,7 +81,7 @@ export default class WalletAccount extends Component<{}, {}> {
                 <ListItem button onClick={() => {
                     this.setState({dialogOpen: true});
                     this.loadWalletTransaction();
-                }}><DogeIcon/><ListItemText primary={(this.state.user.wallet).toFixed(2) + ""}/></ListItem>
+                }}><LolTokenIcon/><ListItemText primary={(this.state.user.wallet).toFixed(2) + ""}/></ListItem>
                 <ModalPage
                     open={this.state.dialogOpen}
                     onRequestClose={this.handleClose}

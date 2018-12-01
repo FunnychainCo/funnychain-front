@@ -1,13 +1,12 @@
 import * as React from 'react';
+import {Component} from 'react';
 import {authService} from "../../service/generic/AuthService";
-import {Component} from "react";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import Logged from "./Logged";
 import NotLogged from "./NotLogged";
-import {withRouter} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 import AccountDrawer from "../Account/AccountDrawer";
 import LoginRegisterDialogV2 from "../LoginDialog/LoginRegisterDialogV2";
-import { Link } from 'react-router-dom';
 import {backService} from "../../service/BackService";
 
 interface State {

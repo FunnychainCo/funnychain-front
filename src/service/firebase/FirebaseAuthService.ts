@@ -89,9 +89,16 @@ export class FirebaseAuthService {
     changeAvatar(newAvatarUrl: string): Promise<string> {
         return new Promise((resolve, reject) => {
             let user: any = firebase.auth().currentUser;
-            delete this.userCache[user.uid];//invalidate cache
-            this.eventEmitter.emit('AuthStateChanged', user.uid);
-            resolve("ok");
+            const httpClient = axios.create();
+            httpClient.defaults.timeout = 1000;//ms
+            newAvatarUrl = encodeURIComponent(newAvatarUrl);
+            httpClient.get(
+                backEndPropetiesProvider.getProperty("USER_SERVICE") + "/avatar/change/" + user.uid + "/" + newAvatarUrl)
+                .then(response => {
+                delete this.userCache[user.uid];//invalidate cache
+                this.eventEmitter.emit('AuthStateChanged', user.uid);
+                resolve("ok");
+            });
         });
     }
 
@@ -102,7 +109,7 @@ export class FirebaseAuthService {
                     this.saveUser(user)
                         .then(() => {
                             this.eventEmitter.emit('AuthStateChanged', user.uid);
-                            audit.track("user/register",{uid:user.uid});
+                            audit.track("user/register", {uid: user.uid});
                             resolve("ok");
                         })
                         .catch(error => {
@@ -147,7 +154,7 @@ export class FirebaseAuthService {
                     audit.reportError("uid does not exist in database");
                     resolve(0);
                     return;
-                }else {
+                } else {
                     const httpClient = axios.create();
                     httpClient.defaults.timeout = 1000;//ms
                     httpClient.get(backEndPropetiesProvider.getProperty("WALLET_SERVICE") + "/compute_wallet/" + uid).then(response => {
@@ -166,8 +173,8 @@ export class FirebaseAuthService {
                 resolve(this.userCache[uid]);//continue to update user
             }
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
-                let fireBaseUser:FirebaseUser = user.val();
-                let fireBaseUserId:string = user.key;
+                let fireBaseUser: FirebaseUser = user.val();
+                let fireBaseUserId: string = user.key;
                 if (fireBaseUser == null) {
                     reject("uid does not exist in database");
                     return;
@@ -179,7 +186,7 @@ export class FirebaseAuthService {
                         provider: PROVIDER_FIREBASE_MAIL,
                         displayName: fireBaseUser.displayName,
                         uid: fireBaseUserId,
-                        wallet:user["wallet"]?user.wallet:0
+                        wallet: user["wallet"] ? user.wallet : 0
                     };
                     this.userCache[uid] = userData;
                     resolve(userData);
@@ -193,7 +200,7 @@ export class FirebaseAuthService {
 
     logout(): Promise<string> {
         let ret = firebase.auth().signOut();
-        audit.track("user/logout",{uid:this.currentUserUid});
+        audit.track("user/logout", {uid: this.currentUserUid});
         return ret;
     }
 
@@ -206,7 +213,7 @@ export class FirebaseAuthService {
                         console.warn("user recreated : ", user);
                         this.saveUser(user).then(() => {
                             this.eventEmitter.emit('AuthStateChanged', user.uid);
-                            audit.track("user/login",{uid:user.uid});
+                            audit.track("user/login", {uid: user.uid});
                             resolve("ok");
                         });
                     } else {
@@ -229,7 +236,7 @@ export class FirebaseAuthService {
             //configure default HTTP timeout
             const httpClient = axios.create();
             httpClient.defaults.timeout = 20000;//ms
-            httpClient.get(backEndPropetiesProvider.getProperty('USER_SERVICE_INIT')+"/"+user.uid).then(() => {
+            httpClient.get(backEndPropetiesProvider.getProperty('USER_SERVICE_INIT') + "/" + user.uid).then(() => {
                 resolve("ok");
             }).catch(error => {
                 audit.reportError("fail to init user");

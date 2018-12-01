@@ -1,6 +1,4 @@
-import {
-    CommentServiceInterface, CommentsVisitor
-} from "../generic/ApplicationInterface";
+import {CommentServiceInterface, CommentsVisitor} from "../generic/ApplicationInterface";
 import {MemeComment} from "../generic/MemeComment";
 import {DATABASE_COMMENTS, FirebaseComment} from "./shared/FireBaseDBDefinition";
 import * as firebase from "firebase";

@@ -1,5 +1,5 @@
-import {Component} from 'react';
 import * as React from 'react';
+import {Component} from 'react';
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import withMobileDialog from "@material-ui/core/withMobileDialog/withMobileDialog";
 

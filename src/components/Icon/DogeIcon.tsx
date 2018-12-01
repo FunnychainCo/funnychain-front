@@ -1,5 +1,5 @@
-import {Component} from 'react';
 import * as React from 'react';
+import {Component} from 'react';
 import SvgIcon from "@material-ui/core/SvgIcon";
 
 export default class DogeIcon extends Component<{}, {}> {

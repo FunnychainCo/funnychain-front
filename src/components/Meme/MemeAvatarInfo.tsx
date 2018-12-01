@@ -1,6 +1,6 @@
+import * as React from 'react'
 import {Component} from 'react'
 import "./Meme.css"
-import * as React from 'react';
 import withStyles from "@material-ui/core/styles/withStyles";
 import {Meme} from "../../service/generic/Meme";
 import * as moment from 'moment';

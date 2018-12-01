@@ -1,5 +1,5 @@
-import { Component } from 'react';
 import * as React from 'react';
+import {Component} from 'react';
 import ModalPage from "../ModalPage/ModalPage";
 import {authService} from "../../service/generic/AuthService";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";

@@ -1,10 +1,10 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import ContentAdd from '@material-ui/icons/Add';
 import {authService} from "../../service/generic/AuthService";
 import Button from "@material-ui/core/Button/Button";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import CreateMemeDialog from "./CreateMemeDialog";
 import {backService} from "../../service/BackService";
 

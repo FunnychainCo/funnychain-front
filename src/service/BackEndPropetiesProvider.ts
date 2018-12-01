@@ -1,4 +1,3 @@
-
 import {GLOBAL_PROPERTIES} from "../properties/properties";
 import {GlobalAppProperties} from "../properties/propertiesInterface";
 

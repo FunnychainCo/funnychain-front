@@ -1,6 +1,6 @@
 import * as React from 'react';
+import {Component} from 'react';
 import {authService} from "../../service/generic/AuthService";
-import {Component} from "react";
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import {Menu} from "@material-ui/icons";

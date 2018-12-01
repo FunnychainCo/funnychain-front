@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import firebase from 'firebase';
 import FileUploader from 'react-firebase-file-uploader';
 import {makeid} from "../../service/IdService";

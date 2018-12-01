@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import MemeListV2 from "../components/MemeList/MemeListV2";
 import Header from "../components/Header/Header";
 import DialogPage from "./DialogPage/DialogPage";

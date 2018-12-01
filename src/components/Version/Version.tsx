@@ -1,5 +1,5 @@
-import {Component} from 'react';
 import * as React from 'react';
+import {Component} from 'react';
 import axios from 'axios'
 import {backEndPropetiesProvider} from "../../service/BackEndPropetiesProvider";
 import {audit} from "../../service/Audit";

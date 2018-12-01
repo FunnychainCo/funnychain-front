@@ -1,16 +1,11 @@
+import * as React from 'react'
 import {Component} from 'react'
 import "./Meme.css"
-import {
-    CommentsVisitor,
-    MemeLinkInterface
-} from "../../service/generic/ApplicationInterface";
-import * as React from 'react';
+import {CommentsVisitor, MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import CardActions from "@material-ui/core/CardActions/CardActions";
-import {
-    ChatBubbleOutline
-} from "@material-ui/icons";
+import {ChatBubbleOutline} from "@material-ui/icons";
 import Button from "@material-ui/core/Button/Button";
 import Collapse from "@material-ui/core/Collapse/Collapse";
 import CardContent from "@material-ui/core/CardContent/CardContent";

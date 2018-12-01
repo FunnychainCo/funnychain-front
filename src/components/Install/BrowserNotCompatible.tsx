@@ -1,8 +1,8 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import {withStyles} from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
-import {Cancel} from 'mdi-material-ui';//https://materialdesignicons.com/
+import {Cancel} from 'mdi-material-ui'; //https://materialdesignicons.com/
 
 const styles: any = theme => ({});
 

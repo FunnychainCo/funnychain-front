@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import InstallDialog from "../../components/Install/InstallDialog";
 
 export default class InstallPage extends Component<{

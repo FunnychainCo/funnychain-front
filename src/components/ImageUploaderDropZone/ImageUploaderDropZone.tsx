@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import ImagesLoaded from 'react-images-loaded';
 import Dropzone from 'react-dropzone'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';

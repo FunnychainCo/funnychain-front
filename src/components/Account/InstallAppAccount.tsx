@@ -1,10 +1,10 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import "./Account.css";
-import { CellphoneArrowDown } from 'mdi-material-ui';//https://materialdesignicons.com/
+import {CellphoneArrowDown} from 'mdi-material-ui'; //https://materialdesignicons.com/
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 
 export default class InstallAppAccount extends Component<{}, {

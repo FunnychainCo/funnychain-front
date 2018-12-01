@@ -1,12 +1,12 @@
+import * as React from 'react'
 import {Component} from 'react'
 import "./Meme.css"
-import * as React from 'react';
 import withStyles from "@material-ui/core/styles/withStyles";
 import {Meme} from "../../service/generic/Meme";
 import MemeBetButton from "./MemeBetButton";
 import MemeUpvoteButton from "./MemeUpvoteButton";
-import DogeIcon from "../Icon/DogeIcon";
 import {MemeLinkInterface} from "../../service/generic/ApplicationInterface";
+import LolTokenIcon from "../Icon/LolTokenIcon";
 
 const styles = theme => ({});
 
@@ -34,7 +34,7 @@ class MemeActionButton extends Component<{
                 this.props.memeLink.refresh();
             }}/>}
             {this.props.meme.hot === true &&
-            <div className="memeElementStyleDiv"><DogeIcon/> {this.props.meme.dolarValue.toFixed(2)}</div>
+            <div className="memeElementStyleDiv"><LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)}</div>
             }
         </div>
     }

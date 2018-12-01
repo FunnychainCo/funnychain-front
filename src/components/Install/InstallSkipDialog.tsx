@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import Button from "@material-ui/core/Button/Button";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
@@ -8,7 +8,7 @@ import {withStyles} from '@material-ui/core/styles';
 import {pwaService} from "../../service/mobile/PWAService";
 import Dialog from "@material-ui/core/Dialog";
 import {Link} from 'react-router-dom';
-import {CellphoneArrowDown} from 'mdi-material-ui';//https://materialdesignicons.com/
+import {CellphoneArrowDown} from 'mdi-material-ui'; //https://materialdesignicons.com/
 import * as store from 'store';
 
 const styles: any = theme => ({});

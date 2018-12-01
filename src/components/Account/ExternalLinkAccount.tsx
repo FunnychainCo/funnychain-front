@@ -1,7 +1,7 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import "./Account.css";
-import {Telegram, Facebook, Twitter, Reddit, Medium, Face, HelpCircle, Discord} from 'mdi-material-ui';//https://materialdesignicons.com/
+import {Discord, Face, Facebook, HelpCircle, Medium, Reddit, Telegram, Twitter} from 'mdi-material-ui'; //https://materialdesignicons.com/
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 

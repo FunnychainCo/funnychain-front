@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import PostPage from "./PostPage";
 import {Route} from 'react-router-dom'
 import AccountDrawerPage from "./AccountDrawerPage";

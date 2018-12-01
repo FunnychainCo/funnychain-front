@@ -1,5 +1,5 @@
+import * as React from 'react';
 import {Component} from 'react';
-import * as React from 'react'
 import {userNotificationService} from "../../service/UserNotificationService";
 import {withStyles} from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';

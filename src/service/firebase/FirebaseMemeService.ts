@@ -40,7 +40,7 @@ export class FirebaseMemeService implements MemeServiceInterface {
 
 function loadMeme(meme:FirebaseMeme):Promise<Meme>{
     return new Promise<Meme>((resolve, reject) => {
-        let memeIPFSLink = ipfsFileUploadService.convertIPFSHashToIPFSLink(meme.memeIpfsHash);
+        let memeIPFSLink = ipfsFileUploadService.convertIPFSLinkToHttpsLink(meme.memeIpfsHash);
         let promiseArray:Promise<boolean>[] = [];
 
         //(1) retreive IPFS meme and load its image data
@@ -49,7 +49,7 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
         promiseArray.push(new Promise<boolean>((resolve2) => {
             axios.get(memeIPFSLink, {responseType: 'arraybuffer'}).then((response) => {
                 ipfsMeme = JSON.parse(new Buffer(response.data, 'binary').toString());
-                preLoadImage(ipfsFileUploadService.convertIPFSHashToIPFSLink(ipfsMeme.imageIPFSHash)).then((imgUrlValue:string) => {
+                preLoadImage(ipfsFileUploadService.convertIPFSLinkToHttpsLink(ipfsMeme.imageIPFSHash)).then((imgUrlValue:string) => {
                     imgUrl = imgUrlValue;
                     resolve2(true);
                 });

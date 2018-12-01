@@ -1,4 +1,4 @@
-import {UserEntry,USER_ENTRY_NO_VALUE} from "./UserEntry";
+import {USER_ENTRY_NO_VALUE, UserEntry} from "./UserEntry";
 
 /**
  * MEME SERVICE

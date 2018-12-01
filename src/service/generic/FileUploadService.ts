@@ -1,5 +1,6 @@
 import {FileUploadServiceInterface, UploadedDataInterface} from "../generic/ApplicationInterface";
 import {ipfsFileUploadService} from "../IPFSFileUploader/IPFSFileUploadService";
+
 //import {firebaseUploadService} from "../firebase/FirebaseUploadService";
 
 export class FileUploadService implements FileUploadServiceInterface{
@@ -15,7 +16,7 @@ export class FileUploadService implements FileUploadServiceInterface{
         /*if(iid.startsWith("0")){
             //media service image
         }*/
-        return Promise.resolve(ipfsFileUploadService.convertIPFSHashToIPFSLink(iid));
+        return Promise.resolve(ipfsFileUploadService.convertIPFSLinkToHttpsLink(iid));
     }
 
 }

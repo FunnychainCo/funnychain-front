@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import *as React from 'react'
+import {Component} from 'react'
 //import {steemConnectAuthService} from "../../service/steem/SteemConnectAuthService";
 import {Redirect} from "react-router-dom";
 import {authService} from "../../service/generic/AuthService";

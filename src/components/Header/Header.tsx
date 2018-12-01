@@ -1,5 +1,5 @@
-import {Component} from 'react';
 import * as React from 'react';
+import {Component} from 'react';
 import {leftMenuService} from "../../service/LeftMenuService";
 import AppBar from "@material-ui/core/AppBar/AppBar";
 import Typography from "@material-ui/core/Typography/Typography";
@@ -7,12 +7,15 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Toolbar from "@material-ui/core/Toolbar/Toolbar";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import LoginAccountIcon from "../LoginAccountIcon/LoginAccountIcon";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
 import {firebaseBetService} from "../../service/firebase/FirebaseBetService";
-import DogeIcon from "../Icon/DogeIcon";
+import ArrowBackIos from "@material-ui/icons/ArrowBackIos";
+import {backService} from "../../service/BackService";
+import Button from "@material-ui/core/Button";
+import LolTokenIcon from "../Icon/LolTokenIcon";
 
 const styles = theme => ({
     root: {
@@ -85,6 +88,10 @@ class Header extends Component<{
         this.setState({currentSelected: feed});
     }
 
+    handleGoBack(){
+        backService.goBack();
+    }
+
     render() {
         const {classes} = this.props;
         const HotTabLinkLink = (props) => <Link to={"/hot"} {...props} />;
@@ -93,7 +100,10 @@ class Header extends Component<{
             // overflow: "hidden" to ensure scroll-x is not activated on small device (looks ugly)
             <AppBar style={{overflow: "hidden"}} position="sticky">
                 <Toolbar>
+                    {false &&
                     <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png" alt="logo"/>
+                    }
+                    <Button size="small" color="inherit" aria-label="Back" onClick={()=>{this.handleGoBack()}}><ArrowBackIos/>{this.state.compact?"":" back"}</Button>
                     <Typography variant="title" color="inherit" className={classes.flex}>
                         <Tabs
                             value={this.state.currentSelected}
@@ -107,7 +117,7 @@ class Header extends Component<{
                         </Tabs>
                     </Typography>
 
-                    <Chip label={(this.state.compact?"":"Bet Pool: ")+this.state.betPoolBalance.toFixed(2)} color="secondary" avatar={<Avatar><DogeIcon /></Avatar>} />&nbsp;&nbsp;
+                    <Chip label={(this.state.compact?"":"Bet Pool: ")+this.state.betPoolBalance.toFixed(2)} color="secondary" avatar={<Avatar><LolTokenIcon /></Avatar>} />&nbsp;&nbsp;
                     <LoginAccountIcon/>
                 </Toolbar>
             </AppBar>

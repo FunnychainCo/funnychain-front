@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import {authService} from "../../service/generic/AuthService";
 import Edit from '@material-ui/icons/Edit';
 import VpnKey from '@material-ui/icons/VpnKey';

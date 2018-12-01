@@ -1,5 +1,5 @@
-import {Component} from 'react'
 import * as React from 'react'
+import {Component} from 'react'
 import LoginRegisterDialogV2 from "../../components/LoginDialog/LoginRegisterDialogV2";
 
 export default class LoginPage extends Component<{

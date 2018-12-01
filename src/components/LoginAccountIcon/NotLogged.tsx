@@ -1,5 +1,5 @@
-import {Component} from 'react';
 import * as React from 'react';
+import {Component} from 'react';
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import {Menu} from "@material-ui/icons";
 

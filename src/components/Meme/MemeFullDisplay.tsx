@@ -1,10 +1,7 @@
+import * as React from 'react'
 import {Component} from 'react'
 import "./Meme.css"
-import {
-    CommentsVisitor,
-    MemeLinkInterface
-} from "../../service/generic/ApplicationInterface";
-import * as React from 'react';
+import {CommentsVisitor, MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import CardActions from "@material-ui/core/CardActions/CardActions";

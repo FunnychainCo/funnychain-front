@@ -33,8 +33,15 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
         })
     }
 
-    convertIPFSHashToIPFSLink(hash:string){
-        return this.ipfsGatway+hash;
+    convertIPFSLinkToHttpsLink(link:string){
+        if(link.startsWith("ipfs://")){
+            link = link.replace("ipfs://","");
+        }
+        return this.ipfsGatway+link;
+    }
+
+    convertHttpsLinkToIpfsLink(url: string):string {
+        return "ipfs://"+this.convertIPFSLinkToIPFSHash(url);
     }
 
     convertIPFSLinkToIPFSHash(link:string){
