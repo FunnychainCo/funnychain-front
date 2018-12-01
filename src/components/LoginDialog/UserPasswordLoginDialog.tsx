@@ -31,6 +31,7 @@ export default class UserPasswordLoginDialog extends Component<{
 
     handleSubmit = () => {
         this.setState({loading: true});
+        this.email=this.email.replace(" ","");
         authService.login(authService.MODE_EMAIL,JSON.stringify({email:this.email, password:this.pw}))
             .then(() => {
                 console.log(this.email + " logged");

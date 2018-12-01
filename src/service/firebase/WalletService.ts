@@ -1,10 +1,11 @@
-import * as firebase from "firebase";
-import {DATABASE_TRANSACTIONS, FirebaseTransaction} from "./shared/FireBaseDBDefinition";
+import {FirebaseTransaction} from "./shared/FireBaseDBDefinition";
 
 export class WalletService {
 
     getTransaction(uid: string): Promise<FirebaseTransaction[]> {
         return new Promise(resolve => {
+            resolve([]);
+            /*
             let transactionPromiseDST:Promise<FirebaseTransaction[]>;
             let transactionPromiseSRC:Promise<FirebaseTransaction[]>;
             transactionPromiseDST = new Promise(resolve => {
@@ -28,7 +29,7 @@ export class WalletService {
                     }
                     resolve(res);
                 });
-            });
+            });*/
         });
     }
 

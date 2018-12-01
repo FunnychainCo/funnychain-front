@@ -19,6 +19,10 @@ export default class AccountDrawer extends Component<{
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
+            if(this.state.user!==USER_ENTRY_NO_VALUE && user===USER_ENTRY_NO_VALUE){
+                //changed state from a user to no user means whe need to close the drawer (logout)
+                this.props.onRequestChange(false);
+            }
             this.setState({
                 user: user
             });
