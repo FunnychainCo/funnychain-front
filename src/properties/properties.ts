@@ -25,11 +25,19 @@ export const GLOBAL_PROPERTIES:GlobalAppProperties = {
 
     vapidPublicKey:"BO7gTNODQ9ECFWDZfbDDRcM_jKfc63qS5jREcz8y-BnFsQz5ooPvPmUNsbx3vXvHXXDAQ9XxzvyHTRMrrnzg92I",//TODO get from distant address
 
-    //FIREBASE properties
-    apiKey: "AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",
+    //FIREBASE alpha properties
+    /*apiKey: "AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",
     authDomain: "funnychain-dev.firebaseapp.com",
     databaseURL: "https://funnychain-dev.firebaseio.com",
     projectId: "funnychain-dev",
     storageBucket: "funnychain-dev.appspot.com",
-    messagingSenderId: "818676897965"
+    messagingSenderId: "818676897965"*/
+
+    //FIREBASE beta properties
+    apiKey: "AIzaSyClb51m-dOtbsZ4xlzQrGu6xMhLlfxilCg",
+    authDomain: "funnychain-b2243.firebaseapp.com",
+    databaseURL: "https://funnychain-b2243.firebaseio.com",
+    projectId: "funnychain-b2243",
+    storageBucket: "funnychain-b2243.appspot.com",
+    messagingSenderId: "428682484079"
 };
