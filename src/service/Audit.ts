@@ -1,7 +1,7 @@
 import {LogstashAudit} from "./LogstashAudit";
 
 declare let mixpanel: any;
-//declare let window: any;
+declare let window: any;
 
 export class Audit {
     additionalData: any = {};
@@ -21,9 +21,8 @@ export class Audit {
     }
 
     isDev(): boolean {
-        //let href = window.location.href;
-        //return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:")
-        return false;
+        let href = window.location.href;
+        return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:")
     }
 
     private _track(event: string, data: any): void {

@@ -1,9 +1,15 @@
 import {GlobalAppProperties} from "./propertiesInterface";
 
-//const hostAPI = "http://127.0.0.1:8085";
-//const hostAPI = "https://alpha.funnychain.co/backend";
-const hostAPI = "https://beta.funnychain.co/backend";
-//const hostAPI = "https://"+window.location.hostname+"/backend";
+declare let GLOBAL_PROPERTIES_JS:any;
+
+function isDev(): boolean {
+    let href = window.location.href;
+    return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:")
+}
+
+//const devHostAPI = "http://127.0.0.1:8085";
+const devHostAPI = "https://alpha.funnychain.co/backend";
+const hostAPI = isDev()?devHostAPI:GLOBAL_PROPERTIES_JS.hostAPI;
 
 const serviceAvatar = '/service/avatar';
 const serviceUser = '/service/user';
@@ -11,7 +17,7 @@ const serviceWallet = '/service/api';
 
 export const GLOBAL_PROPERTIES:GlobalAppProperties = {
     MODE:"DEV",
-    VERSION:"1.2.8",
+    VERSION:"1.2.9",
 
     //Web service properties
     FUNNYCHAIN_SERVICE:hostAPI,
@@ -25,19 +31,11 @@ export const GLOBAL_PROPERTIES:GlobalAppProperties = {
 
     vapidPublicKey:"BO7gTNODQ9ECFWDZfbDDRcM_jKfc63qS5jREcz8y-BnFsQz5ooPvPmUNsbx3vXvHXXDAQ9XxzvyHTRMrrnzg92I",//TODO get from distant address
 
-    //FIREBASE alpha properties
-    /*apiKey: "AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",
-    authDomain: "funnychain-dev.firebaseapp.com",
-    databaseURL: "https://funnychain-dev.firebaseio.com",
-    projectId: "funnychain-dev",
-    storageBucket: "funnychain-dev.appspot.com",
-    messagingSenderId: "818676897965"*/
-
-    //FIREBASE beta properties
-    apiKey: "AIzaSyClb51m-dOtbsZ4xlzQrGu6xMhLlfxilCg",
-    authDomain: "funnychain-b2243.firebaseapp.com",
-    databaseURL: "https://funnychain-b2243.firebaseio.com",
-    projectId: "funnychain-b2243",
-    storageBucket: "funnychain-b2243.appspot.com",
-    messagingSenderId: "428682484079"
+    //FIREBASE properties
+    apiKey: GLOBAL_PROPERTIES_JS.apiKey,
+    authDomain: GLOBAL_PROPERTIES_JS.authDomain,
+    databaseURL: GLOBAL_PROPERTIES_JS.databaseURL,
+    projectId: GLOBAL_PROPERTIES_JS.projectId,
+    storageBucket: GLOBAL_PROPERTIES_JS.storageBucket,
+    messagingSenderId: GLOBAL_PROPERTIES_JS.messagingSenderId
 };
