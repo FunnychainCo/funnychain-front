@@ -1,8 +1,8 @@
 import {GlobalAppProperties} from "./propertiesInterface";
 
 //const hostAPI = "http://127.0.0.1:8085";
-const hostAPI = "https://alpha.funnychain.co/backend";
-//const hostAPI = "https://beta.funnychain.co/backend";
+//const hostAPI = "https://alpha.funnychain.co/backend";
+const hostAPI = "https://beta.funnychain.co/backend";
 //const hostAPI = "https://"+window.location.hostname+"/backend";
 
 const serviceAvatar = '/service/avatar';
@@ -11,7 +11,7 @@ const serviceWallet = '/service/api';
 
 export const GLOBAL_PROPERTIES:GlobalAppProperties = {
     MODE:"DEV",
-    VERSION:"1.2.7",
+    VERSION:"1.2.8",
 
     //Web service properties
     FUNNYCHAIN_SERVICE:hostAPI,
