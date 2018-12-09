@@ -13,7 +13,7 @@ export class Audit {
         }
     }
 
-    track(event: string, data: any): void {
+    track(event: string, data?: any): void {
         let finalData = {...data, ...this.additionalData};
         if (!this.isDev()) {
             this._track(event, finalData);
@@ -22,7 +22,7 @@ export class Audit {
 
     isDev(): boolean {
         let href = window.location.href;
-        return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:")
+        return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:");
     }
 
     private _track(event: string, data: any): void {
@@ -34,7 +34,7 @@ export class Audit {
         let stack: any = new Error().stack;
         let finalData = {error: data, additionalData: this.additionalData, stack: stack};
         if (!this.isDev()) {
-            this._track("error/client", finalData);
+            this._track("user/error", finalData);
         }
         console.error(finalData);
     }

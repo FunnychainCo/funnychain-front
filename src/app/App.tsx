@@ -13,6 +13,7 @@ import HomePage from "../containers/HomePage";
 import {backEndPropetiesProvider} from "../service/BackEndPropetiesProvider";
 import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
 import {firebaseInitAuthService} from "../service/firebase/FirebaseInitAuthService";
+import {audit} from "../service/Audit";
 
 class App extends React.Component<any, any> {
     state = {};
@@ -23,6 +24,7 @@ class App extends React.Component<any, any> {
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();
+        audit.track("user/app/open");
     }
 
     render() {
