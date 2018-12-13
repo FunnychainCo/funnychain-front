@@ -186,7 +186,7 @@ export class FirebaseAuthService {
                         provider: PROVIDER_FIREBASE_MAIL,
                         displayName: fireBaseUser.displayName,
                         uid: fireBaseUserId,
-                        wallet: user["wallet"] ? user.wallet : 0
+                        wallet: fireBaseUser["wallet"] ? fireBaseUser.wallet.balance : 0
                     };
                     this.userCache[uid] = userData;
                     resolve(userData);

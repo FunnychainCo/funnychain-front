@@ -19,7 +19,6 @@ import MemeAvatarInfo from "./MemeAvatarInfo";
 import MemeActionButton from "./MemeActionButton";
 import {Helmet} from "react-helmet";
 
-
 const styles = theme => ({
     actions: {
         display: 'flex',

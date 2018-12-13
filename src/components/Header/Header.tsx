@@ -40,43 +40,51 @@ const styles = theme => ({
 });
 
 class Header extends Component<{
-    type:string,
-    onTypeChange:(type:string)=>void,
-    classes:any
+    type: string,
+    onTypeChange: (type: string) => void,
+    classes: any
 }, {
     currentSelected: any,
-    betPoolBalance:number,
-    compact:boolean
+    betPoolBalance: number,
+    compact: boolean,
+    backAvailableA:boolean
 }> {
     state = {
         currentSelected: false,
-        betPoolBalance:0,
-        compact:true
+        betPoolBalance: 0,
+        compact: true,
+        backAvailableA:backService.isBackAvailable()
     };
     itemOrder = {
         "hot": 0,
         "fresh": 1
     };
+    private onBackAvailableRemoveListener: () => void = ()=>{};
 
     componentDidMount() {
         window.addEventListener('resize', this.throttledHandleWindowResize);
         this.throttledHandleWindowResize();
-        if(this.props.type!=="hot" && this.props.type!=="fresh"){
-            this.setState({currentSelected:false});
-        }else {
-            this.setState({currentSelected:this.itemOrder[this.props.type]});
+        if (this.props.type !== "hot" && this.props.type !== "fresh") {
+            this.setState({currentSelected: false});
+        } else {
+            this.setState({currentSelected: this.itemOrder[this.props.type]});
         }
         firebaseBetService.getBetPool().then(balance => {
-            this.setState({betPoolBalance:balance});
-        })
+            this.setState({betPoolBalance: balance});
+        });
+        this.onBackAvailableRemoveListener = backService.onBackAvailable((backAvailable) => {
+            console.log("header : "+backAvailable);
+            this.setState({backAvailableA: backAvailable});
+        });
     }
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.throttledHandleWindowResize);
+        this.onBackAvailableRemoveListener();
     }
 
     throttledHandleWindowResize = () => {
-        this.setState({ compact: window.innerWidth < 480 });
+        this.setState({compact: window.innerWidth < 480});
     };
 
     onLeftIconButtonClick() {
@@ -84,11 +92,11 @@ class Header extends Component<{
     }
 
     handleFeedButton(feed: number) {
-        this.props.onTypeChange(feed==0?"hot":"fresh");
+        this.props.onTypeChange(feed == 0 ? "hot" : "fresh");
         this.setState({currentSelected: feed});
     }
 
-    handleGoBack(){
+    handleGoBack() {
         backService.goBack();
     }
 
@@ -100,10 +108,14 @@ class Header extends Component<{
             // overflow: "hidden" to ensure scroll-x is not activated on small device (looks ugly)
             <AppBar style={{overflow: "hidden"}} position="sticky">
                 <Toolbar>
-                    {false &&
+                    {(!this.state.backAvailableA) &&
                     <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png" alt="logo"/>
                     }
-                    <Button size="small" color="inherit" aria-label="Back" onClick={()=>{this.handleGoBack()}}><ArrowBackIos/>{this.state.compact?"":" back"}</Button>
+                    {this.state.backAvailableA &&
+                    <Button size="small" color="inherit" aria-label="Back" onClick={() => {
+                        this.handleGoBack()
+                    }}><ArrowBackIos/>{this.state.compact ? "" : " back"}</Button>
+                    }
                     <Typography variant="title" color="inherit" className={classes.flex}>
                         <Tabs
                             value={this.state.currentSelected}
@@ -112,12 +124,13 @@ class Header extends Component<{
                             }}
                             indicatorColor="primary"
                         >
-                            <Tab label="Hot" style={{minWidth: '30px'}}  component={HotTabLinkLink}/>
-                            <Tab label="Fresh" style={{minWidth: '30px'}}  component={FreshTabLink}/>
+                            <Tab label="Hot" style={{minWidth: '30px'}} component={HotTabLinkLink}/>
+                            <Tab label="Fresh" style={{minWidth: '30px'}} component={FreshTabLink}/>
                         </Tabs>
                     </Typography>
 
-                    <Chip label={(this.state.compact?"":"Pool: ")+this.state.betPoolBalance.toFixed(2)} color="secondary" avatar={<Avatar><LolTokenIcon /></Avatar>} />&nbsp;&nbsp;
+                    <Chip label={(this.state.compact ? "" : "Pool: ") + this.state.betPoolBalance.toFixed(2)}
+                          color="secondary" avatar={<Avatar><LolTokenIcon/></Avatar>}/>&nbsp;&nbsp;
                     <LoginAccountIcon/>
                 </Toolbar>
             </AppBar>

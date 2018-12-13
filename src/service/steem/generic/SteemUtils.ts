@@ -118,7 +118,7 @@ export function convertMeme(steemPost: dsteem.Discussion): Promise<Meme> {
                                 //order: orderNumber,
                                 hot:false,
                                 hotDate:new Date(),
-                                betable:false
+                                bettable:false
                             };
                             resolve(newMeme);
                         }).catch(reason => {

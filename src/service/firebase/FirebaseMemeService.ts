@@ -68,12 +68,17 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
         }));
 
         //(2.5) compute if current user bet
+        //(6) is meme bettable
+        let bettable = false;
         let currentUserBet;
         promiseArray.push(new Promise<boolean>((resolve2) => {
             authService.getLoggedUser().then(currentUserData => {
-                firebaseBetService.hasBetOnPost(meme.memeIpfsHash, currentUserData.uid).then(currentUserBetValue => {
-                    currentUserBet=currentUserBetValue;
-                    resolve2(true);
+                firebaseBetService.isBetEnableOnPost(meme.memeIpfsHash).then(bettableRes => {
+                    firebaseBetService.hasBetOnPost(meme.memeIpfsHash, currentUserData.uid).then(currentUserBetValue => {
+                        currentUserBet=currentUserBetValue;
+                        bettable = currentUserData.wallet >= 1.0 && bettableRes;
+                        resolve2(true);
+                    });
                 });
             });
         }));
@@ -96,15 +101,6 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
             });
         }));
 
-
-        //(6) is meme betable
-        let betable = false;
-        promiseArray.push(new Promise<boolean>((resolve2) => {
-            firebaseBetService.isBetEnableOnPost(meme.memeIpfsHash).then(betableRes => {
-                betable = betableRes;
-                resolve2(true);
-            });
-        }));
 
         //(7) compute comment number
         let commentNumber=0;
@@ -130,7 +126,7 @@ function loadMeme(meme:FirebaseMeme):Promise<Meme>{
                 currentUserBet:currentUserBet,
                 hot:meme.hot!=0,
                 hotDate:new Date(meme.hot),
-                betable:betable
+                bettable:bettable
             });
         })
     });

@@ -7,6 +7,7 @@ import MemeBetButton from "./MemeBetButton";
 import MemeUpvoteButton from "./MemeUpvoteButton";
 import {MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import LolTokenIcon from "../Icon/LolTokenIcon";
+import MemeShareButton from "./MemeShareButton";
 
 const styles = theme => ({});
 
@@ -19,6 +20,7 @@ class MemeActionButton extends Component<{
     render() {
         //const {classes} = this.props;
         return <div className="memeElementStyleDivContainer">
+            <MemeShareButton url={"https://"+window.location.host+"/meme/"+this.props.meme.id}/>
             {this.props.meme.hot === true &&
             <MemeUpvoteButton meme={this.props.meme} logged={this.props.logged} onUpvoteConfirmed={() => {
                 this.props.memeLink.refresh();
@@ -34,7 +36,7 @@ class MemeActionButton extends Component<{
                 this.props.memeLink.refresh();
             }}/>}
             {this.props.meme.hot === true &&
-            <div className="memeElementStyleDiv"><LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)}</div>
+            <div className="memeElementStyleDiv" style={{marginLeft:"5px",marginRight:"5px"}}><LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)}</div>
             }
         </div>
     }

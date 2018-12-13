@@ -40,15 +40,14 @@ class MemeBetButton extends Component<{
 
     render() {
         //const {classes} = this.props;
-        return <div>{this.props.meme.betable &&
-        <Button variant="outlined"
+        return <Button variant="outlined"
                 color={this.props.meme.currentUserBet ? "secondary" : "default"}
                 aria-label="Invest"
-                disabled={!this.props.logged}
+                disabled={!this.props.logged || !this.props.meme.bettable}
                 onClick={this.bet}>
             Invest !&nbsp;
             <CashMultiple style={{height: "0.7em"}}/>
-        </Button>}</div>
+        </Button>
     }
 
 }
