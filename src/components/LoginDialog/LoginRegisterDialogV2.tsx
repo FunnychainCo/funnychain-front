@@ -12,7 +12,7 @@ import UserPasswordLoginDialog from "./UserPasswordLoginDialog";
 import UserPasswordRegisterDialog from "./UserPasswordRegisterDialog";
 import {EmoticonCool} from 'mdi-material-ui';
 import ListItemText from "@material-ui/core/ListItemText";
-import AboutUsDialog from "./AboutUsDialog";
+import AboutUsDialog from "../StartPopUp/AboutUsDialog";
 import {backService} from "../../service/BackService";
 
 interface State {
@@ -66,6 +66,9 @@ export default class LoginRegisterDialogV2 extends Component<{
                                 variant="contained"
                                 fullWidth
                             ><EmoticonCool/><ListItemText primary="About Funnychain"/>
+                            <AboutUsDialog onRequestClose={() => {
+                                this.handleClose()
+                            }} open={this.state.aboutUsOpen} />
                             </Button>
                         </ListItem>
                         <ListItem>
@@ -102,9 +105,6 @@ export default class LoginRegisterDialogV2 extends Component<{
                 <UserPasswordRegisterDialog onRequestClose={() => {
                     this.handleClose()
                 }} open={this.state.userPasswordRegisterDialogOpen}/>
-                <AboutUsDialog onRequestClose={() => {
-                    this.handleClose()
-                }} open={this.state.aboutUsOpen} />
 
             </ModalPage>
         )

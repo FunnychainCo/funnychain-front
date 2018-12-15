@@ -1,4 +1,5 @@
 import {LogstashAudit} from "./LogstashAudit";
+import {GLOBAL_PROPERTIES} from "../properties/properties";
 
 declare let mixpanel: any;
 declare let window: any;
@@ -27,7 +28,9 @@ export class Audit {
 
     private _track(event: string, data: any): void {
         this.logstashAudit.track(event, data);
-        mixpanel.track(event, data);
+        if(GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED==="true"){
+            mixpanel.track(event, data);
+        }
     }
 
     reportError(...data: any[]) {

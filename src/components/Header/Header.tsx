@@ -7,7 +7,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Toolbar from "@material-ui/core/Toolbar/Toolbar";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
-import {Link} from 'react-router-dom';
 import LoginAccountIcon from "../LoginAccountIcon/LoginAccountIcon";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
@@ -16,6 +15,7 @@ import ArrowBackIos from "@material-ui/icons/ArrowBackIos";
 import {backService} from "../../service/BackService";
 import Button from "@material-ui/core/Button";
 import LolTokenIcon from "../Icon/LolTokenIcon";
+//import {Link} from 'react-router-dom';
 
 const styles = theme => ({
     root: {
@@ -102,8 +102,8 @@ class Header extends Component<{
 
     render() {
         const {classes} = this.props;
-        const HotTabLinkLink = (props) => <Link to={"/hot"} {...props} />;
-        const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
+        //const HotTabLinkLink = (props) => <Link to={"/hot"} {...props} />;
+        //const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
         return (
             // overflow: "hidden" to ensure scroll-x is not activated on small device (looks ugly)
             <AppBar style={{overflow: "hidden"}} position="sticky">
@@ -124,8 +124,10 @@ class Header extends Component<{
                             }}
                             indicatorColor="primary"
                         >
-                            <Tab label="Hot" style={{minWidth: '30px'}} component={HotTabLinkLink}/>
-                            <Tab label="Fresh" style={{minWidth: '30px'}} component={FreshTabLink}/>
+                            {/*<Tab label="Hot" style={{minWidth: '30px'}} component={HotTabLinkLink}/>
+                            <Tab label="Fresh" style={{minWidth: '30px'}} component={FreshTabLink}/>*/}
+                            <Tab label="Hot" style={{minWidth: '30px'}}/>
+                            <Tab label="Fresh" style={{minWidth: '30px'}}/>
                         </Tabs>
                     </Typography>
 

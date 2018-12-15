@@ -17,7 +17,9 @@ const serviceWallet = '/service/api';
 
 export const GLOBAL_PROPERTIES:GlobalAppProperties = {
     MODE:"DEV",
-    VERSION:"1.3.0",
+    VERSION:"1.3.1",
+
+    MIXPANEL_ACTIVATED:GLOBAL_PROPERTIES_JS.mixpanelActivated,
 
     //Web service properties
     FUNNYCHAIN_SERVICE:hostAPI,

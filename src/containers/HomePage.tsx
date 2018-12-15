@@ -6,7 +6,7 @@ import Debug from "./Debug/Debug";
 import Connect from "./Steem/Connect";
 import BackListener from "./BackListener";
 import InstallPage from "./DialogPage/InstallPage";
-import InstallSkipDialog from "../components/Install/InstallSkipDialog";
+import InstallSkipDialog from "../components/StartPopUp/StartPopupSkipDialog";
 
 export default class HomePage extends React.Component<{}, {}> {
     render() {

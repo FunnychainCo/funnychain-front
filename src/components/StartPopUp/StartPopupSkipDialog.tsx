@@ -10,19 +10,23 @@ import Dialog from "@material-ui/core/Dialog";
 import {Link} from 'react-router-dom';
 import {CellphoneArrowDown} from 'mdi-material-ui'; //https://materialdesignicons.com/
 import * as store from 'store';
+import AboutUsDialog from "./AboutUsDialog";
+import {EmoticonCool} from 'mdi-material-ui';
 
 const styles: any = theme => ({});
 
-class InstallSkipDialog extends Component<{
+class StartPopupSkipDialog extends Component<{
     classes: any
 }, {
     displayAddToHomeButton: boolean,
-    open: boolean
+    open: boolean,
+    aboutUsOpen:boolean
 }> {
 
     state = {
         displayAddToHomeButton: false,
-        open: false
+        open: false,
+        aboutUsOpen:false
     };
     private removeListenerPWA: () => void;
 
@@ -61,11 +65,23 @@ class InstallSkipDialog extends Component<{
                     this.handleClose()
                 }}
             >
-                <DialogTitle>Install Funnychain</DialogTitle>
+                <DialogTitle>Welcome to Funnychain</DialogTitle>
                 <DialogContent>
+                    <Button
+                        style={{fontSize:"0.8em",marginBottom:"8px"}}
+                        onClick={() => {
+                            this.setState({aboutUsOpen: true})
+                        }}
+                        variant="contained"
+                        fullWidth
+                    ><EmoticonCool/>&nbsp;&nbsp;About Funnychain
+                    <AboutUsDialog onRequestClose={() => {
+                        this.handleClose()
+                    }} open={this.state.aboutUsOpen} />
+                    </Button>
                     {this.state.displayAddToHomeButton &&
                     <Button
-                        style={{fontSize:"0.8em"}}
+                        style={{fontSize:"0.8em",marginBottom:"8px"}}
                         onClick={() => {
                             this.doNotShowPopupAgain();
                             pwaService.triggerAddToHomeScreen();
@@ -75,7 +91,7 @@ class InstallSkipDialog extends Component<{
                     }
                     {!this.state.displayAddToHomeButton &&
                     <Button
-                        style={{fontSize:"0.8em"}}
+                        style={{fontSize:"0.8em",marginBottom:"8px"}}
                         onClick={() => {
                             this.doNotShowPopupAgain();
                             pwaService.triggerAddToHomeScreen();
@@ -95,4 +111,4 @@ class InstallSkipDialog extends Component<{
     }
 }
 
-export default withStyles(styles)(InstallSkipDialog);
+export default withStyles(styles)(StartPopupSkipDialog);

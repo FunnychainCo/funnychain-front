@@ -2,6 +2,8 @@ export interface GlobalAppProperties{
     MODE:string,
     VERSION:string,
 
+    MIXPANEL_ACTIVATED:string,
+
     //Web service properties
     AVATAR_GENERATION_SERVICE:string,
     USERNAME_GENERATION_SERVICE:string,

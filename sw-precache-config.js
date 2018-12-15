@@ -1,6 +1,6 @@
 module.exports = {
     importScripts: (['./service-worker-custom.js']),
-    staticFileGlobs: ['build/**/*.{js,html,css,png,jpg,gif}'],
+    staticFileGlobs: ['build/**/*.{html,png,jpg,gif}','build/static/**/*.{js,html,css,png,jpg,gif}'],
     navigateFallback: 'index.html',
     stripPrefix: 'build/',
     minify: true,
