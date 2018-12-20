@@ -1,10 +1,8 @@
 import {firebaseAuthService} from "../firebase/FirebaseAuthService";
-import {steemConnectAuthService} from "../steem/steemConnect/SteemConnectAuthService";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "./UserEntry";
 import * as EventEmitter from "eventemitter3";
 import * as store from 'store';
 import {UserActionInterface} from "./ApplicationInterface";
-import {steemConnectActionService} from "../steem/steemConnect/SteemConnectActionService";
 import {firebaseActionService} from "../firebase/FirebaseActionService";
 import {userNotificationService} from "../UserNotificationService";
 
@@ -90,8 +88,6 @@ export class AuthService implements AuthServiceInterface {
             case this.MODE_EMAIL:
                 let parse = JSON.parse(authToken);
                 return firebaseAuthService.login(parse.email, parse.password);
-            case this.MODE_STEEM:
-                return steemConnectAuthService.notifyConnexionURL(authToken);
             default:
                 throw new Error("invalid mode");
         }
@@ -114,17 +110,6 @@ export class AuthService implements AuthServiceInterface {
                     this.updateNotificationStatus(userDataReceived);
                     if (this.mode == this.MODE_EMAIL) {
                         firebaseActionService.start(userDataReceived);
-                        this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);
-                    } else {
-                        throw new Error("invalid mode");
-                    }
-                });
-                break;
-            case this.MODE_STEEM:
-                steemConnectAuthService.start();
-                this.removeAuthListener = steemConnectAuthService.onAuthStateChanged(userDataReceived => {
-                    if (this.mode == this.MODE_STEEM) {
-                        steemConnectActionService.start();
                         this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);
                     } else {
                         throw new Error("invalid mode");
@@ -154,9 +139,6 @@ export class AuthService implements AuthServiceInterface {
 
     getUserAction():UserActionInterface{
         switch (this.mode) {
-            case this.MODE_STEEM:
-                return steemConnectActionService;
-                break;
             case this.MODE_EMAIL:
                 //return dsteemActionService;
                 return firebaseActionService;
@@ -174,12 +156,6 @@ export class AuthService implements AuthServiceInterface {
                     this.logout();//if this fail it means the current user is invalid we have to logout to recreate a new user at login
                 });
                 return loggedUser;
-            case this.MODE_STEEM:
-                let loggedUser1 = steemConnectAuthService.getLoggedUser();
-                loggedUser1.catch(()=>{
-                    this.logout();//if this fail it means the current user is invalid we have to logout to recreate a new user at login
-                });
-                return loggedUser1;
             default:
                 return new Promise<UserEntry>(resolve => {
                     resolve(USER_ENTRY_NO_VALUE);
@@ -207,14 +183,6 @@ export class AuthService implements AuthServiceInterface {
 
     logout(): Promise<string> {
         switch (this.mode) {
-            case this.MODE_STEEM:
-                return new Promise<string>(resolve => {
-                    steemConnectAuthService.logout().then(() => {
-                        this.switchMode(this.MODE_UNDEFINDED);
-                        resolve("ok");
-                    });
-                });
-                break;
             case this.MODE_EMAIL:
                 return new Promise<string>(resolve => {
                     firebaseAuthService.logout().then(() => {

@@ -41,7 +41,8 @@ export interface MemeServiceAction {
 }
 
 export interface MemeServiceView {
-    getMemeLoader(type:string,tags:string[]):MemeLoaderInterface
+    getMemeLoader(type:string,tags:string[]):MemeLoaderInterface;
+    getMemeLoaderByUser(userid: string): MemeLoaderInterface;
 }
 
 export interface MemeServiceInterface extends MemeServiceView{

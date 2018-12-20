@@ -10,21 +10,28 @@ import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {authService} from "../service/generic/AuthService";
 import HomePage from "../containers/HomePage";
-import {backEndPropetiesProvider} from "../service/BackEndPropetiesProvider";
 import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
 import {firebaseInitAuthService} from "../service/firebase/FirebaseInitAuthService";
 import {audit} from "../service/Audit";
+import * as MobileDetect from "mobile-detect";
+import {GLOBAL_PROPERTIES} from "../properties/properties";
 
 class App extends React.Component<any, any> {
     state = {};
 
     componentWillMount() {
         firebaseInitAuthService.start();
-        console.log("MODE : " + backEndPropetiesProvider.getProperty("MODE"));
+        console.log("MODE : " + GLOBAL_PROPERTIES.MODE);
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();
-        audit.track("user/app/open");
+        let md = new MobileDetect(window.navigator.userAgent);
+        audit.track("user/app/open",{
+            pwa:pwaService.runningFromPWA,
+            mobile:md.mobile(),
+            agent:window.navigator.userAgent,
+            version:GLOBAL_PROPERTIES.VERSION
+        });
     }
 
     render() {

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {Component} from 'react';
 import axios from 'axios'
-import {backEndPropetiesProvider} from "../../service/BackEndPropetiesProvider";
 import {audit} from "../../service/Audit";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 export default class Version extends Component {
 
-    version = backEndPropetiesProvider.getProperty("VERSION");
+    version = GLOBAL_PROPERTIES.VERSION;
 
     componentDidMount(){
         console.log("funnychain version: "+this.version);
@@ -14,8 +14,8 @@ export default class Version extends Component {
     }
 
     getServerVersion(){
-        axios.get(backEndPropetiesProvider.getProperty('FUNNYCHAIN_SERVICE')+"/service/version").then(response => {
-            console.log("funnychain backend version: "+response.data+" ("+backEndPropetiesProvider.getProperty('FUNNYCHAIN_SERVICE')+")");
+        axios.get(GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE+"/service/version").then(response => {
+            console.log("funnychain backend version: "+response.data+" ("+GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE+")");
         }).catch(error => {
             audit.reportError(error);
         });

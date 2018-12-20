@@ -1,17 +1,27 @@
 import {LogstashAudit} from "./LogstashAudit";
 import {GLOBAL_PROPERTIES} from "../properties/properties";
+import {authService} from "./generic/AuthService";
+
 
 declare let mixpanel: any;
 declare let window: any;
 
 export class Audit {
     additionalData: any = {};
-    logstashAudit: LogstashAudit = new LogstashAudit("https://api.funnychain.co/tracking", "")
+    logstashAudit: LogstashAudit;
 
     constructor() {
+        this.logstashAudit = new LogstashAudit("https://api.funnychain.co/tracking","");
+        authService.onAuthStateChanged(user => {
+            this.logstashAudit.setUserId(user.uid);
+        });
         if (this.isDev()) {
             console.log("Audit in dev mode");
         }
+        window.addEventListener("unhandledrejection", (promiseRejectionEvent) =>{
+            // handle error here, for example log
+            this.reportError("unhandledrejection",promiseRejectionEvent);
+        });
     }
 
     track(event: string, data?: any): void {
@@ -33,9 +43,33 @@ export class Audit {
         }
     }
 
+    replaceErrors = (key, value) => {
+        if (value instanceof Error) {
+            let error = {};
+
+            Object.getOwnPropertyNames(value).forEach(function (key) {
+                error[key] = value[key];
+            });
+
+            return error;
+        }
+
+        return value;
+    }
+
     reportError(...data: any[]) {
         let stack: any = new Error().stack;
-        let finalData = {error: data, additionalData: this.additionalData, stack: stack};
+        let finalData:any = {
+            error:{},
+            additionalData: this.additionalData,
+            stack: stack,
+            version: GLOBAL_PROPERTIES.VERSION
+        };
+
+        data.forEach((value, index) => {
+            finalData.error[""+index]=JSON.stringify(value,this.replaceErrors);
+        });
+
         if (!this.isDev()) {
             this._track("user/error", finalData);
         }

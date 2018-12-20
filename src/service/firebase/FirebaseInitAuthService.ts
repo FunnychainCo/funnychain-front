@@ -1,5 +1,5 @@
 import * as firebase from 'firebase'
-import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 export class FirebaseInitAuthService {
     constructor()
@@ -7,12 +7,12 @@ export class FirebaseInitAuthService {
     }
     start(){
         let config = {
-            apiKey: backEndPropetiesProvider.getProperty('apiKey'),
-            authDomain: backEndPropetiesProvider.getProperty('authDomain'),
-            databaseURL: backEndPropetiesProvider.getProperty('databaseURL'),
-            projectId: backEndPropetiesProvider.getProperty('projectId'),
-            storageBucket: backEndPropetiesProvider.getProperty('storageBucket'),
-            messagingSenderId: backEndPropetiesProvider.getProperty('messagingSenderId')
+            apiKey: GLOBAL_PROPERTIES.apiKey,
+            authDomain: GLOBAL_PROPERTIES.authDomain,
+            databaseURL: GLOBAL_PROPERTIES.databaseURL,
+            projectId: GLOBAL_PROPERTIES.projectId,
+            storageBucket: GLOBAL_PROPERTIES.storageBucket,
+            messagingSenderId: GLOBAL_PROPERTIES.messagingSenderId
         };
         firebase.initializeApp(config);
     }

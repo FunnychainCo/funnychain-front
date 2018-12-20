@@ -1,7 +1,7 @@
 // tslint:disable:no-console
 // TODO check https://developers.google.com/web/tools/workbox/
 
-import {backEndPropetiesProvider} from "./BackEndPropetiesProvider";
+import {GLOBAL_PROPERTIES} from "../properties/properties";
 
 
 export class PushNotificationService {
@@ -32,8 +32,8 @@ export class PushNotificationService {
     }
 
     registerPushNotification(uid) {
-        let subscribeAdresse = backEndPropetiesProvider.getProperty("PUSH_NOTIFICATION_SERVICE")+"/subscribe/";
-        const publicVapidKey = backEndPropetiesProvider.getProperty("vapidPublicKey");
+        let subscribeAdresse = GLOBAL_PROPERTIES.PUSH_NOTIFICATION_SERVICE+"/subscribe/";
+        const publicVapidKey = GLOBAL_PROPERTIES.vapidPublicKey;
         navigator.serviceWorker.ready.then(registration => {
             registration.pushManager.subscribe({
                 userVisibleOnly: true,

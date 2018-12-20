@@ -1,11 +1,11 @@
 import axios from 'axios'
-import {backEndPropetiesProvider} from "../BackEndPropetiesProvider";
 import * as firebase from "firebase";
 import * as EventEmitter from "eventemitter3";
 import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
 import {fileUploadService} from "../generic/FileUploadService";
 import {DATABASE_USERS, FirebaseUser} from "./shared/FireBaseDBDefinition";
 import {audit} from "../Audit";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 
 export class FirebaseAuthService {
@@ -93,7 +93,7 @@ export class FirebaseAuthService {
             httpClient.defaults.timeout = 1000;//ms
             newAvatarUrl = encodeURIComponent(newAvatarUrl);
             httpClient.get(
-                backEndPropetiesProvider.getProperty("USER_SERVICE") + "/avatar/change/" + user.uid + "/" + newAvatarUrl)
+                GLOBAL_PROPERTIES.USER_SERVICE + "/avatar/change/" + user.uid + "/" + newAvatarUrl)
                 .then(response => {
                 delete this.userCache[user.uid];//invalidate cache
                 this.eventEmitter.emit('AuthStateChanged', user.uid);
@@ -157,7 +157,7 @@ export class FirebaseAuthService {
                 } else {
                     const httpClient = axios.create();
                     httpClient.defaults.timeout = 1000;//ms
-                    httpClient.get(backEndPropetiesProvider.getProperty("WALLET_SERVICE") + "/compute_wallet/" + uid).then(response => {
+                    httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE + "/compute_wallet/" + uid).then(response => {
                         resolve(response.data.balance);
                     }).catch(reason => {
                         resolve(fireBaseUser.wallet ? fireBaseUser.wallet.balance : 0);
@@ -236,7 +236,7 @@ export class FirebaseAuthService {
             //configure default HTTP timeout
             const httpClient = axios.create();
             httpClient.defaults.timeout = 20000;//ms
-            httpClient.get(backEndPropetiesProvider.getProperty('USER_SERVICE_INIT') + "/" + user.uid).then(() => {
+            httpClient.get(GLOBAL_PROPERTIES.USER_SERVICE_INIT + "/" + user.uid).then(() => {
                 resolve("ok");
             }).catch(error => {
                 audit.reportError("fail to init user");

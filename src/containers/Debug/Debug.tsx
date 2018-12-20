@@ -2,7 +2,7 @@ import * as React from 'react'
 import {Component} from 'react'
 import {debugService} from "../../service/DebugService";
 import Switch from "@material-ui/core/Switch/Switch";
-import {backEndPropetiesProvider} from "../../service/BackEndPropetiesProvider";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 export default class Debug extends Component<{},{testNetwork:boolean}> {
     state={
@@ -13,8 +13,8 @@ export default class Debug extends Component<{},{testNetwork:boolean}> {
         return (
             <div>
                 <h1>debug</h1>
-                <a href={backEndPropetiesProvider.getProperty("WALLET_SERVICE")+"/compute"} >FORCE COMPUTE HOT</a><br/>
-                <a href={backEndPropetiesProvider.getProperty("FUNNYCHAIN_SERVICE")+"/bot/populate10"} >POPULATE 10 meme</a><br/>
+                <a href={GLOBAL_PROPERTIES.WALLET_SERVICE+"/compute"} >FORCE COMPUTE HOT</a><br/>
+                <a href={GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE+"/bot/populate10"} >POPULATE 10 meme</a><br/>
                 <Switch
                     checked={this.state.testNetwork}
                     onChange={event => {

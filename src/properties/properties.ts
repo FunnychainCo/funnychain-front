@@ -1,5 +1,3 @@
-import {GlobalAppProperties} from "./propertiesInterface";
-
 declare let GLOBAL_PROPERTIES_JS:any;
 
 function isDev(): boolean {
@@ -15,9 +13,9 @@ const serviceAvatar = '/service/avatar';
 const serviceUser = '/service/user';
 const serviceWallet = '/service/api';
 
-export const GLOBAL_PROPERTIES:GlobalAppProperties = {
+export const GLOBAL_PROPERTIES = {
     MODE:"DEV",
-    VERSION:"1.3.1",
+    VERSION:"1.3.5",
 
     MIXPANEL_ACTIVATED:GLOBAL_PROPERTIES_JS.mixpanelActivated,
 

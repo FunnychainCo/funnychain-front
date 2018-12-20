@@ -16,10 +16,14 @@ export class LogstashAudit {
     private sessionStart: number = +new Date();
 
     /** A generated random id for this "installation", kind of like a user-id. */
-    private userId: string;
+    private _userId: string;
 
     constructor(private tracking_url: string, uid: string) {
-        this.userId = uid=="" ? uid : this.uuidv4();
+        this.setUserId(uid);
+    }
+
+    setUserId(uid: string) {
+        this._userId = uid==="" ? this.uuidv4():uid;
     }
 
     /**
@@ -30,7 +34,7 @@ export class LogstashAudit {
     public track(event: string, data?: any): void {
         let finalvalue={
             event:event,
-            user: this.userId,
+            user: this._userId,
             session: this.sessionId,
             session_duration: (+new Date()) - this.sessionStart,
             ...data,

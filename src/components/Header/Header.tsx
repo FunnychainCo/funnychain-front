@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {Component} from 'react';
-import {leftMenuService} from "../../service/LeftMenuService";
 import AppBar from "@material-ui/core/AppBar/AppBar";
 import Typography from "@material-ui/core/Typography/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -86,10 +85,6 @@ class Header extends Component<{
     throttledHandleWindowResize = () => {
         this.setState({compact: window.innerWidth < 480});
     };
-
-    onLeftIconButtonClick() {
-        leftMenuService.requestOpening();
-    }
 
     handleFeedButton(feed: number) {
         this.props.onTypeChange(feed == 0 ? "hot" : "fresh");

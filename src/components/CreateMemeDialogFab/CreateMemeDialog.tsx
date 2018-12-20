@@ -105,6 +105,8 @@ class CreateMemeDialog extends Component<{
                                     this.setState({progress: progress})
                                 }).then((data) => {
                                     resolve(data.fileURL);
+                                }).catch(reason => {
+                                    reject(reason);
                                 });
                             });
                         }}
