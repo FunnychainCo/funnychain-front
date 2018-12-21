@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^3.1.1",
+    "@material-ui/core": "^3.7.0",
     "@material-ui/icons": "^3.0.1",
     "@types/q": "^1.5.1",
     "@types/storejs": "^2.0.3",

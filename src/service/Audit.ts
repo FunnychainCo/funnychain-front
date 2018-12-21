@@ -11,16 +11,16 @@ export class Audit {
     logstashAudit: LogstashAudit;
 
     constructor() {
-        this.logstashAudit = new LogstashAudit("https://api.funnychain.co/tracking","");
+        this.logstashAudit = new LogstashAudit("https://api.funnychain.co/tracking", "");
         authService.onAuthStateChanged(user => {
             this.logstashAudit.setUserId(user.uid);
         });
         if (this.isDev()) {
             console.log("Audit in dev mode");
         }
-        window.addEventListener("unhandledrejection", (promiseRejectionEvent) =>{
+        window.addEventListener("unhandledrejection", (promiseRejectionEvent) => {
             // handle error here, for example log
-            this.reportError("unhandledrejection",promiseRejectionEvent);
+            this.error("unhandledrejection", promiseRejectionEvent);
         });
     }
 
@@ -31,19 +31,35 @@ export class Audit {
         }
     }
 
-    isDev(): boolean {
+    reportError(...data: any[]) {
+        this.error(data);
+    }
+
+    error(...data: any[]) {
+        this.report("user/error", data);
+    }
+
+    warn(...data: any[]) {
+        this.report("user/warn", data);
+    }
+
+    log(...data: any[]) {
+        this.track("user/log", data);
+    }
+
+    private isDev(): boolean {
         let href = window.location.href;
         return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:");
     }
 
     private _track(event: string, data: any): void {
         this.logstashAudit.track(event, data);
-        if(GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED==="true"){
+        if (GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED === "true") {
             mixpanel.track(event, data);
         }
     }
 
-    replaceErrors = (key, value) => {
+    private replaceErrors = (key, value) => {
         if (value instanceof Error) {
             let error = {};
 
@@ -55,29 +71,31 @@ export class Audit {
         }
 
         return value;
-    }
+    };
 
-    reportError(...data: any[]) {
+    private report(event: string, ...data: any[]) {
         let stack: any = new Error().stack;
-        let finalData:any = {
-            error:{},
+        let finalData: any = {
+            error: {},
             additionalData: this.additionalData,
             stack: stack,
             version: GLOBAL_PROPERTIES.VERSION
         };
 
         data.forEach((value, index) => {
-            finalData.error[""+index]=JSON.stringify(value,this.replaceErrors);
+            finalData.error["" + index] = JSON.stringify(value, this.replaceErrors);
         });
 
         if (!this.isDev()) {
-            this._track("user/error", finalData);
+            this._track(event, finalData);
         }
-        console.error(finalData);
-    }
-
-    error(...data: any[]) {
-        this.reportError(data);
+        if (event === "user/error") {
+            console.error(finalData);
+        } else if (event === "user/warn") {
+            console.warn(finalData);
+        } else if (event === "user/log") {
+            console.log(finalData);
+        }
     }
 
 }

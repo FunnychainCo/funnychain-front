@@ -27,7 +27,7 @@ class App extends React.Component<any, any> {
         ipfsFileUploadService.start();
         let md = new MobileDetect(window.navigator.userAgent);
         audit.track("user/app/open",{
-            pwa:pwaService.runningFromPWA,
+            pwaMode:pwaService.runningFromPWA,
             mobile:md.mobile(),
             agent:window.navigator.userAgent,
             version:GLOBAL_PROPERTIES.VERSION
@@ -38,7 +38,6 @@ class App extends React.Component<any, any> {
         const theme = createMuiTheme({
             typography: {
                 useNextVariants: true,
-                suppressDeprecationWarnings: true,
             },
             palette: {
                 //type: 'dark'

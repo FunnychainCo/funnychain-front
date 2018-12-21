@@ -2,11 +2,11 @@ import * as React from 'react'
 import {Component} from 'react'
 import ContentAdd from '@material-ui/icons/Add';
 import {authService} from "../../service/generic/AuthService";
-import Button from "@material-ui/core/Button/Button";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Link} from 'react-router-dom';
 import CreateMemeDialog from "./CreateMemeDialog";
 import {backService} from "../../service/BackService";
+import Fab from "@material-ui/core/Fab";
 
 export default class CreateMemeDialogFab extends Component<{},{
     open:boolean,
@@ -49,14 +49,13 @@ export default class CreateMemeDialogFab extends Component<{},{
         return (
             <div>
                 {this.state.logged &&
-                <Button
-                    variant="fab"
+                <Fab
                     style={style}
                     onClick={()=>{this.setState({open:true})}}
                     component={PostDialogDisplayLink}
                 >
                     <ContentAdd/>
-                </Button>
+                </Fab>
                 }
                 {this.state.logged &&
                 <CreateMemeDialog open={this.state.open} handleClose={()=>{backService.goBack()}}/>

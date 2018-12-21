@@ -72,7 +72,6 @@ class Header extends Component<{
             this.setState({betPoolBalance: balance});
         });
         this.onBackAvailableRemoveListener = backService.onBackAvailable((backAvailable) => {
-            console.log("header : "+backAvailable);
             this.setState({backAvailableA: backAvailable});
         });
     }
@@ -111,7 +110,7 @@ class Header extends Component<{
                         this.handleGoBack()
                     }}><ArrowBackIos/>{this.state.compact ? "" : " back"}</Button>
                     }
-                    <Typography variant="title" color="inherit" className={classes.flex}>
+                    <Typography variant="h6" color="inherit" className={classes.flex}>
                         <Tabs
                             value={this.state.currentSelected}
                             onChange={(event, value) => {

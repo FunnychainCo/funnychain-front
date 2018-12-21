@@ -63,18 +63,25 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
             httpClient.get(url).then(() => {
                 resolve("ok");
             }).catch((err) => {
-                audit.reportError("ipfs pin failed 1", err);
-                reject("upload error");
+                reject("ipfs pin failed");
             });
         });
     }
 
     pinMulti(ipfsId: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
+            let error=0;
             this.ipfsApis.forEach(ipfsApi => {
-                this.pin(ipfsId, ipfsApi);
+                this.pin(ipfsId, ipfsApi).catch(reason => {
+                    //we do not care
+                    error++;
+                });
             });
-            resolve("ok");
+            if(error===this.ipfsApis.length){
+                reject("evrery pin failed");
+            }else {
+                resolve("ok");
+            }
         });
     }
 
@@ -93,7 +100,7 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
                         progress(50);
                     }
                 }, (err, response) => {
-                    if (err !== null && response.length == 1) {
+                    if (err === null && response.length == 1) {
                         //console.log(response);
                         ipfsId = response[0].hash;
                         let imageLink = this.ipfsMainGatway + ipfsId;
@@ -103,7 +110,6 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
                             fileId: ipfsId,
                             fileURL: imageLink
                         });
-                        this.pinMulti(ipfsId);//no need to wait for this
                         return;
                     } else {
                         reject("add failed");
@@ -112,6 +118,7 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
             }).then(value => {
                 resolveMain(value);
             }).catch(reason => {
+                audit.warn("ipfs node upload failed:",reason);
                 step++;
                 if (step >= this.ipfsApis.length) {
                     rejectMain("no more upload server available");
@@ -133,6 +140,7 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
             reader.onloadend = () => {
                 const buffer = Buffer.from(reader.result);
                 this.uploadBuffer(buffer, progress).then(value => {
+                    this.pinMulti(value.fileId);//no need to wait for this
                     resolve(value);
                 }).catch(reason => {
                     reject(reason);
