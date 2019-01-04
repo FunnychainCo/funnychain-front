@@ -63,7 +63,7 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
             httpClient.get(url).then(() => {
                 resolve("ok");
             }).catch((err) => {
-                reject("ipfs pin failed");
+                reject("ipfs pin failed : "+ipfsApi.host.host);
             });
         });
     }
@@ -92,9 +92,9 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
                     reject("no more upload server available");
                     return;
                 }
+                progress(20);
                 let ipfsApi: any = this.ipfsApis[step];
                 let ipfsId;
-                progress(20);
                 ipfsApi.api.add(buffer, {
                     progress: (prog) => {
                         progress(50);
@@ -112,7 +112,7 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
                         });
                         return;
                     } else {
-                        reject("add failed");
+                        reject("add failed :"+ipfsApi.host.host+" / "+JSON.stringify(err));
                     }
                 });
             }).then(value => {

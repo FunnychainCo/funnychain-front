@@ -5,13 +5,14 @@ function isDev(): boolean {
     return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:")
 }
 
-//const devHostAPI = "http://127.0.0.1:8085";
-const devHostAPI = "https://alpha.funnychain.co/backend";
+const devHostAPI = "http://127.0.0.1:8085";
+//const devHostAPI = "https://alpha.funnychain.co/backend";
 const hostAPI = isDev()?devHostAPI:GLOBAL_PROPERTIES_JS.hostAPI;
 
 const serviceAvatar = '/service/avatar';
 const serviceUser = '/service/user';
 const serviceWallet = '/service/api';
+const serviceIPFS = '/service/ipfs';
 
 export const GLOBAL_PROPERTIES = {
     MODE:"DEV",
@@ -28,6 +29,7 @@ export const GLOBAL_PROPERTIES = {
     USER_SERVICE:hostAPI+serviceUser,
     USER_SERVICE_INIT:hostAPI+serviceUser+"/init",
     PUSH_NOTIFICATION_SERVICE:hostAPI,
+    URL_UPLOAD_SERVICE:hostAPI+serviceIPFS+"/uploadURLtoIPFS",//consume json data {url:string}
 
     vapidPublicKey:"BO7gTNODQ9ECFWDZfbDDRcM_jKfc63qS5jREcz8y-BnFsQz5ooPvPmUNsbx3vXvHXXDAQ9XxzvyHTRMrrnzg92I",//TODO get from distant address
 
