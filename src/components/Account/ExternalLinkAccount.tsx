@@ -50,7 +50,7 @@ export default class ExternalLinkAccount extends Component<{}, {}> {
                     <HelpCircle/><ListItemText primary="Feedback"/>
                 </ListItem>
 
-                <ListItem button component={(props) => <a href="https://medium.com/p/cff33aab1bcc/edit" {...props} />}>
+                <ListItem button component={(props) => <a href="https://medium.com/@funnychain/funnychain-faq-cff33aab1bcc" {...props} />}>
                     <HelpCircle/><ListItemText primary="FAQ"/>
                 </ListItem>
 

@@ -8,6 +8,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import NotificationAccount from "./NotificationAccount";
 import InstallAppAccount from "./InstallAppAccount";
+import ViewMyPostButton from "./ViewMyPostButton";
 
 export default class CommonAccountManagement extends Component<{}, {
 }> {
@@ -19,6 +20,7 @@ export default class CommonAccountManagement extends Component<{}, {
         return (
 
             <div className="fcContent">
+                <ViewMyPostButton/>
                 <NotificationAccount />
                 <InstallAppAccount/>
 

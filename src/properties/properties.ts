@@ -16,7 +16,7 @@ const serviceIPFS = '/service/ipfs';
 
 export const GLOBAL_PROPERTIES = {
     MODE:"DEV",
-    VERSION:"1.3.5",
+    VERSION:"1.3.6",
 
     MIXPANEL_ACTIVATED:GLOBAL_PROPERTIES_JS.mixpanelActivated,
 

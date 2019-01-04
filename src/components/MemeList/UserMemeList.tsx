@@ -18,6 +18,7 @@ interface State {
 }
 
 export default class UserMemeList extends Component<{
+    userid:string,
     onRequestClose: () => void,
     open: boolean
 }, State> {
@@ -41,7 +42,7 @@ export default class UserMemeList extends Component<{
 
 
     componentWillMount() {
-        this.restartMemeLoader("zUMz7sjkPBScAPd421K2QflR1vO2");
+        this.restartMemeLoader(this.props.userid);
     }
 
     restartMemeLoader(uid: string) {
