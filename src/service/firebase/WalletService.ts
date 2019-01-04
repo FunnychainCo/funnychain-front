@@ -1,35 +1,14 @@
 import {FirebaseTransaction} from "./shared/FireBaseDBDefinition";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
+import axios from 'axios';
 
 export class WalletService {
 
     getTransaction(uid: string): Promise<FirebaseTransaction[]> {
         return new Promise(resolve => {
-            resolve([]);
-            /*
-            let transactionPromiseDST:Promise<FirebaseTransaction[]>;
-            let transactionPromiseSRC:Promise<FirebaseTransaction[]>;
-            transactionPromiseDST = new Promise(resolve => {
-                firebase.database().ref().child(DATABASE_TRANSACTIONS).orderByChild('dst').equalTo(uid).once("value", a => {
-                    resolve(a.val());
-                })
+            axios.get(GLOBAL_PROPERTIES.WALLET_SERVICE_USER_TRANSACTION+"/"+uid).then((resp) => {
+                resolve(resp.data);
             });
-            transactionPromiseSRC = new Promise(resolve => {
-                firebase.database().ref().child(DATABASE_TRANSACTIONS).orderByChild('src').equalTo(uid).once("value", a => {
-                    resolve(a.val());
-                })
-            });
-            transactionPromiseDST.then((dstTransactions:FirebaseTransaction[]) => {
-                transactionPromiseSRC.then((srcTransactions:FirebaseTransaction[]) => {
-                    let res:FirebaseTransaction[] = [];
-                    if(dstTransactions!=null){
-                        res = res.concat(dstTransactions);
-                    }
-                    if(srcTransactions!=null){
-                        res = res.concat(srcTransactions);
-                    }
-                    resolve(res);
-                });
-            });*/
         });
     }
 

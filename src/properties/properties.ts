@@ -16,14 +16,16 @@ const serviceIPFS = '/service/ipfs';
 
 export const GLOBAL_PROPERTIES = {
     MODE:"DEV",
-    VERSION:"1.3.6",
+    VERSION:"1.3.7",
 
     MIXPANEL_ACTIVATED:GLOBAL_PROPERTIES_JS.mixpanelActivated,
 
     //Web service properties
     FUNNYCHAIN_SERVICE:hostAPI,
     WALLET_SERVICE:hostAPI+serviceWallet,
-    WALLET_SERVICE_UPVOTE:hostAPI+serviceWallet+"/upvote",///upvote/:uid/:memeid
+    WALLET_SERVICE_UPVOTE:hostAPI+serviceWallet+"/upvote",// /upvote/:uid/:memeid
+    WALLET_SERVICE_TRANSFER:hostAPI+serviceWallet+"/transfer",// /transfer/:from/:to/:amount
+    WALLET_SERVICE_USER_TRANSACTION:hostAPI+serviceWallet+"/user/transaction",// /user/transfer/:userid
     AVATAR_GENERATION_SERVICE:hostAPI+serviceAvatar+'/avatar_ipfs',
     USERNAME_GENERATION_SERVICE:hostAPI+serviceAvatar+'/name',
     USER_SERVICE:hostAPI+serviceUser,

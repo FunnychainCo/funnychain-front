@@ -92,6 +92,9 @@ export class UserNotificationService {
         this.callback(message);
     }
 
+    sendNotificationToUser(message){
+        this.notifyUIToNotifyUser(message);
+    }
 }
 
-export var userNotificationService = new UserNotificationService();
+export let userNotificationService = new UserNotificationService();

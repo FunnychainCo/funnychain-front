@@ -8,7 +8,6 @@ import {authService} from "../../service/generic/AuthService";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import ModalPage from "../ModalPage/ModalPage";
-import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import {userService} from "../../service/generic/UserService";
@@ -19,6 +18,8 @@ import {walletService} from "../../service/firebase/WalletService";
 import {FirebaseTransaction} from "../../service/firebase/shared/FireBaseDBDefinition";
 import {audit} from "../../service/Audit";
 import LolTokenIcon from "../Icon/LolTokenIcon";
+import * as moment from "moment";
+import {userNotificationService} from "../../service/UserNotificationService";
 
 export default class WalletAccount extends Component<{}, {}> {
     state = {
@@ -30,8 +31,8 @@ export default class WalletAccount extends Component<{}, {}> {
     };
 
     private removeListener: () => void;
-    dialogAddrDest: string;
-    dialogAmount: string;
+    dialogAddrDest: string = "";
+    dialogAmount: string = "0";
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
@@ -58,14 +59,23 @@ export default class WalletAccount extends Component<{}, {}> {
     handleClose = () => {
         this.setState({dialogOpen: false});
     };
-    handleSaveAndClose = () => {
+
+    handleProcessTransaction = () => {
         console.warn("send " + this.dialogAmount + " to " + this.dialogAddrDest);
-        this.setState({dialogOpen: false});
+        userService.transfer(this.dialogAddrDest, +this.dialogAmount).then(value => {
+            userNotificationService.sendNotificationToUser("Transaction registered");
+        });
+        this.handleClose();
     };
 
     private checkValidity() {
         //TODO send firebase request
         console.warn("send firebase request");
+        //1) check if account exist
+        let valide1 = this.dialogAddrDest.length === 28;//TODO find a better way to check
+        //2) check if value is correct according to balance
+        let valide2 = (this.state.user.wallet >= +this.dialogAmount) && (+this.dialogAmount > 0.0);
+        this.setState({sendTokenValid: valide1 && valide2});
     }
 
     loadWalletTransaction() {
@@ -88,7 +98,7 @@ export default class WalletAccount extends Component<{}, {}> {
                 >
                     <DialogTitle>Send token</DialogTitle>
                     <DialogContent>
-                        Current account address : {this.state.user.uid} <br/><br/>
+                        Current account address : {this.state.user.uid}<br/><br/>
 
                         <TextField
                             variant="outlined"
@@ -109,26 +119,24 @@ export default class WalletAccount extends Component<{}, {}> {
                             type={"text"}
                             label={"amount"}
                             fullWidth={true}/>
-                    </DialogContent>
-                    <DialogActions>
                         <Button
                             onClick={this.handleClose}
                         >Cancel</Button>
                         <Button
-                            onClick={this.handleSaveAndClose}
+                            onClick={this.handleProcessTransaction}
                             disabled={!this.state.sendTokenValid}
                         >Send</Button>
-                    </DialogActions>
-                    <DialogTitle>Transaction History</DialogTitle>
-                    <DialogContent>
                         <List component="nav">
-                            {this.state.transactions.map((value:FirebaseTransaction, index, array) => {
-                                let addreseMessage = "";
+                            {this.state.transactions.map((value: FirebaseTransaction, index, array) => {
+                                let addressMessage = "ERROR";
+                                let date = moment(value.date).fromNow();
+                                let amount = "ERROR";
                                 if (value.src === this.state.user.uid) {
-                                    addreseMessage = "To " + value.dst;
-                                    value.amount = -value.amount;
+                                    addressMessage = "To " + value.dst;
+                                    amount = "" + (-value.amount);
                                 } else if (value.dst === this.state.user.uid) {
-                                    addreseMessage = "From " + value.src;
+                                    addressMessage = "From " + value.src;
+                                    amount = "" + value.amount;
                                 } else {
                                     audit.reportError(value);
                                 }
@@ -137,8 +145,8 @@ export default class WalletAccount extends Component<{}, {}> {
                                         <InboxIcon/>
                                     </ListItemIcon>
                                     <ListItemText
-                                        primary={value.amount + " LOL"}
-                                        secondary={addreseMessage}
+                                        primary={amount + " LOL"}
+                                        secondary={addressMessage + " " + date}
                                     />
                                 </ListItem>
                             })

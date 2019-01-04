@@ -98,18 +98,17 @@ export interface FirebaseUpvoteDBStruct {
 ///////////////////
 // TRANSACTION
 ///////////////////
-export const DATABASE_TRANSACTIONS = "transactions";
+export const DATABASE_TRANSACTIONS = "transactions_V2";
 
 export interface FirebaseTransaction {
     amount: number,
     dst: string,
-    src: string
+    src: string,
+    date:number
 }
 
 export interface FirebaseTransactionDBStruct {
-    [id: string]: {// id => transaction time
-        [id: string]: FirebaseTransaction
-    }// id => internal transaction id
+    [id: string]: FirebaseTransaction
 }
 
 export let rules = {

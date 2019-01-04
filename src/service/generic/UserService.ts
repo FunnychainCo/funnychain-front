@@ -15,6 +15,11 @@ export class UserService {
     computeWalletValue(uid: string): Promise<number>{
         return firebaseAuthService.computeWalletValue(uid);
     }
+
+
+    transfer(to: string, amount:number): Promise<number>{
+        return firebaseAuthService.transfer(to,amount);
+    }
 }
 
 export let userService = new UserService();

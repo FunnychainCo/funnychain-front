@@ -146,6 +146,17 @@ export class FirebaseAuthService {
         };
     }
 
+    transfer(to: string, amount:number): Promise<any> {
+        return new Promise<number>((resolve, reject) => {
+            const httpClient = axios.create();
+            httpClient.defaults.timeout = 20000;//ms
+            let from = this.currentUserUid;
+            httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_TRANSFER + "/"+from+"/"+to+"/"+amount).then(response => {
+                resolve(response.data.balance);
+            });
+        });
+    }
+
     computeWalletValue(uid: string): Promise<number> {
         return new Promise<number>((resolve, reject) => {
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {

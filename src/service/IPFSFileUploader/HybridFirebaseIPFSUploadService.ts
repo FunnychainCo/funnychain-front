@@ -1,6 +1,6 @@
 import * as firebase from 'firebase';
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
-import axios from 'axios'
+import axios from 'axios';
 import {FileUploadServiceInterface, UploadedDataInterface} from "../generic/ApplicationInterface";
 import {idService} from "../IdService";
 
