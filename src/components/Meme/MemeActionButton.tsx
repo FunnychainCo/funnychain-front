@@ -36,7 +36,9 @@ class MemeActionButton extends Component<{
                 this.props.memeLink.refresh();
             }}/>}
             {this.props.meme.hot === true &&
-            <div className="memeElementStyleDiv" style={{marginLeft:"5px",marginRight:"5px"}}><LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)}</div>
+            <div className="memeElementStyleDiv" style={{marginLeft:"5px",marginRight:"5px"}}>
+                <b>&#36;{(this.props.meme.dolarValue * 0.08).toFixed(2)}</b>(<LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)})
+                </div>
             }
         </div>
     }

@@ -5,8 +5,8 @@ function isDev(): boolean {
     return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:")
 }
 
-const devHostAPI = "http://127.0.0.1:8085";
-//const devHostAPI = "https://alpha.funnychain.co/backend";
+//const devHostAPI = "http://127.0.0.1:8085";
+const devHostAPI = "https://alpha.funnychain.co/backend";
 const hostAPI = isDev()?devHostAPI:GLOBAL_PROPERTIES_JS.hostAPI;
 
 const serviceAvatar = '/service/avatar';
@@ -16,7 +16,7 @@ const serviceIPFS = '/service/ipfs';
 
 export const GLOBAL_PROPERTIES = {
     MODE:"DEV",
-    VERSION:"1.3.7",
+    VERSION:"1.3.10",
 
     MIXPANEL_ACTIVATED:GLOBAL_PROPERTIES_JS.mixpanelActivated,
 

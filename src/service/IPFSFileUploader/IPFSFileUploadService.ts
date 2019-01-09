@@ -1,5 +1,5 @@
 import {FileUploadServiceInterface, UploadedDataInterface} from "../generic/ApplicationInterface";
-import * as ipfsAPI from "ipfs-api";
+import * as ipfsAPI from "ipfs-http-client";
 import axios from 'axios'
 import {audit} from "../Audit";
 
@@ -20,11 +20,11 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
             protocol: 'https'
         });
 
-        this.ipfsNodes.push({
+        /*this.ipfsNodes.push({
             host: 'ipfs.infura.io',
             port: '5001',
             protocol: 'https'
-        });
+        });*/
 
         this.ipfsNodes.forEach(ipfsHost => {
             this.ipfsApis.push({
@@ -78,7 +78,8 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
                 });
             });
             if(error===this.ipfsApis.length){
-                reject("evrery pin failed");
+                audit.warn("every pin failed: "+ipfsId);
+                reject("every pin failed");
             }else {
                 resolve("ok");
             }
