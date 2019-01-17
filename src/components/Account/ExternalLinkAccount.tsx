@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {Component} from 'react'
 import "./Account.css";
-import {Discord, Face, Facebook, HelpCircle, Medium, Reddit, Telegram, Twitter} from 'mdi-material-ui'; //https://materialdesignicons.com/
+import {Discord, Face, Facebook, HelpCircle, Medium, Twitter,CommentAccountOutline} from 'mdi-material-ui'; //https://materialdesignicons.com/
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 
@@ -28,18 +28,22 @@ export default class ExternalLinkAccount extends Component<{}, {}> {
                     <Facebook/><ListItemText primary="Facebook"/>
                 </ListItem>
 
-                <ListItem button component={(props) => <a href="https://twitter.com/funnychain_lol" {...props} />}>
+                <ListItem button component={(props) => <a href="https://twitter.com/funnychain_co" {...props} />}>
                     <Twitter/><ListItemText primary="Twitter"/>
                 </ListItem>
 
-                <ListItem button
+                <ListItem button component={(props) => <a href="https://discord.gg/9NmfPXc" {...props} />}>
+                    <Discord/><ListItemText primary="Join on discord"/>
+                </ListItem>
+
+                {/**<ListItem button
                           component={(props) => <a href="https://t.me/joinchat/G6O10E0dEZnSRFLycDgKjw" {...props} />}>
                     <Telegram/><ListItemText primary="Telegram"/>
                 </ListItem>
 
                 <ListItem button component={(props) => <a href="https://www.reddit.com/r/FunnyChain" {...props} />}>
                     <Reddit/><ListItemText primary="Reddit"/>
-                </ListItem>
+                </ListItem>**/}
 
                 <ListItem button component={(props) => <a href="https://medium.com/@funnychain" {...props} />}>
                     <Medium/><ListItemText primary="Medium"/>
@@ -47,15 +51,11 @@ export default class ExternalLinkAccount extends Component<{}, {}> {
 
                 <ListItem button
                           component={(props) => <a href="https://funnychain.typeform.com/to/VS9XlS" {...props} />}>
-                    <HelpCircle/><ListItemText primary="Feedback"/>
+                    <CommentAccountOutline/><ListItemText primary="Feedback"/>
                 </ListItem>
 
                 <ListItem button component={(props) => <a href="https://medium.com/@funnychain/funnychain-faq-cff33aab1bcc" {...props} />}>
                     <HelpCircle/><ListItemText primary="FAQ"/>
-                </ListItem>
-
-                <ListItem button component={(props) => <a href="https://discord.gg/9NmfPXc" {...props} />}>
-                    <Discord/><ListItemText primary="Join on discord"/>
                 </ListItem>
 
             </div>
