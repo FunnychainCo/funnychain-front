@@ -15,7 +15,8 @@ export default class UserPasswordLoginDialog extends Component<{
     state = {
         errorMessage: null,
         displayButton: false,
-        loading: false
+        loading: false,
+        resetEmailMode: false
     };
 
     email = "";
@@ -46,6 +47,7 @@ export default class UserPasswordLoginDialog extends Component<{
     }
 
     resetPassword = () => {
+        this.setState({resetEmailMode:true});
         authService.resetPassword(this.email)
             .then(() => this.setErrorMsg(`Password reset email sent to ${this.email}.`))
             .catch((error) => this.setErrorMsg(`Email address not found.`))
@@ -66,24 +68,25 @@ export default class UserPasswordLoginDialog extends Component<{
                             this.email = event.target.value
                         }}
                     />
-                    <TextField
-                        label="Password"
-                        fullWidth
-                        type="password"
-                        autoComplete="current-password"
-                        margin="normal"
-                        onChange={(event) => {
-                            this.pw = event.target.value
-                        }}
-                    />
+                    {!this.state.resetEmailMode &&
+                        <TextField
+                            label="Password"
+                            fullWidth
+                            type="password"
+                            autoComplete="current-password"
+                            margin="normal"
+                            onChange={(event) => {
+                                this.pw = event.target.value
+                            }}
+                        />
+                    }
                     {
                         this.state.errorMessage &&
                         <div className="alert alert-danger" role="alert">
                             <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                             <span className="sr-only">Error:</span>
                             &nbsp;{this.state.errorMessage}<br/>
-                            <a href="#" onClick={this.resetPassword}
-                               className="alert-link">Forgot Password?</a>
+                            {!this.state.resetEmailMode && <div onClick={this.resetPassword} className="alert-link">Forgot Password?</div>}
                         </div>
                     }
                 </DialogContent>}
@@ -91,8 +94,8 @@ export default class UserPasswordLoginDialog extends Component<{
                     <Button onClick={this.handleClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={this.handleSubmit} color="primary">
-                        Login
+                    <Button onClick={this.state.resetEmailMode?this.resetPassword:this.handleSubmit} color="primary">
+                        {this.state.resetEmailMode?"Reset Password":"Login"}
                     </Button>
                 </DialogActions>}
                 {this.state.loading && <CircularProgress/>}
