@@ -29,6 +29,7 @@ export interface FirebaseMemeDBStruct {
 // USER
 ///////////////////
 export const DATABASE_USERS = "users";
+export const DATABASE_CACHE_USERS = "cache/users";
 
 export interface FirebaseUser {
     uid: string,

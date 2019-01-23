@@ -14,13 +14,14 @@ import MemeComponent from '../Meme/MemeComponent';
 interface State {
     memes: { [id: string]: MemeLinkInterface },
     memesOrder: string[];
-    displayWaypoint: boolean
+    displayWaypoint: boolean,
+    loading : boolean,
 }
 
 export default class UserMemeList extends Component<{
-    userid:string,
+    userid: string,
     onRequestClose: () => void,
-    open: boolean
+    open: boolean,
 }, State> {
 
     handleClose = () => {
@@ -30,12 +31,15 @@ export default class UserMemeList extends Component<{
     state: State = {
         memes: {},
         memesOrder: [],
-        displayWaypoint: true
+        displayWaypoint: true,
+        loading: true,
     };
 
     private removeCallbackOnMemeData: (() => void) = () => {
     };
     private removeCallbackOnMemeOrder: (() => void) = () => {
+    };
+    private removeCallbackOnInitialLoadingFinished: () => void = () => {
     };
 
     private memeLoader: MemeLoaderInterface;
@@ -59,12 +63,17 @@ export default class UserMemeList extends Component<{
             this.state.memesOrder = this.state.memesOrder.concat(memesKey.reverse());
             this.setState({memesOrder: this.state.memesOrder});//update view
         });
+        this.removeCallbackOnInitialLoadingFinished();
+        this.removeCallbackOnInitialLoadingFinished = this.memeLoader.onInitialLoadingFinished(() => {
+            this.setState({loading: false});//update view
+        });
         this.memeLoader.loadMore(5);
     }
 
     componentWillUnmount() {
         this.removeCallbackOnMemeData();
         this.removeCallbackOnMemeOrder();
+        this.removeCallbackOnInitialLoadingFinished();
     }
 
     renderWaypoint = (key) => {
@@ -109,7 +118,7 @@ export default class UserMemeList extends Component<{
                             </div>
                         })
                     }
-                    <LoadingBlock/>
+                    {this.state.loading && <LoadingBlock/>}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose} color="primary">

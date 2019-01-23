@@ -2,12 +2,12 @@ import * as firebase from 'firebase';
 import {
     CommentsVisitor,
     MemeLinkInterface,
-} from "../generic/ApplicationInterface";
-import {Meme, MEME_ENTRY_NO_VALUE} from "../generic/Meme";
-import {firebaseCommentService} from "./FirebaseCommentService";
+} from "../../generic/ApplicationInterface";
+import {Meme, MEME_ENTRY_NO_VALUE} from "../../generic/Meme";
+import {firebaseCommentService} from "../FirebaseCommentService";
 import * as EventEmitter from "eventemitter3";
-import {DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
-import {audit} from "../Audit";
+import {DATABASE_MEMES, FirebaseMeme} from "../shared/FireBaseDBDefinition";
+import {audit} from "../../Audit";
 import {loadMeme} from "./MemeLoaderFunction";
 
 export class MemeLink implements MemeLinkInterface{

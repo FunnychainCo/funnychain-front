@@ -24,6 +24,11 @@ export interface MemeLoaderInterface {
      */
     onMemeData(callback: (meme: MemeLinkInterface) => void): () => void,
 
+
+    /**
+     */
+    onInitialLoadingFinished(callback: () => void): () => void,
+
     /**
      * Ordoned List Of Meme IDs
      * @param {(memesId: string[]) => void} callback

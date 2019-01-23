@@ -32,7 +32,7 @@ export default class ExternalLinkAccount extends Component<{}, {}> {
                     <Twitter/><ListItemText primary="Twitter"/>
                 </ListItem>
 
-                <ListItem button component={(props) => <a href="https://discord.gg/9NmfPXc" {...props} />}>
+                <ListItem button component={(props) => <a href="https://discordapp.com/invite/5G2ECV6" {...props} />}>
                     <Discord/><ListItemText primary="Join on discord"/>
                 </ListItem>
 

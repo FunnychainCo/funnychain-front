@@ -2,28 +2,30 @@ import * as firebase from 'firebase';
 import {
     MemeLinkInterface,
     MemeLoaderInterface,
-} from "../generic/ApplicationInterface";
+} from "../../generic/ApplicationInterface";
 import * as Q from 'q';
-import {Meme, MEME_TYPE_FRESH, MEME_TYPE_HOT} from "../generic/Meme";
+import {Meme} from "../../generic/Meme";
 import * as EventEmitter from "eventemitter3";
-import {DATABASE_MEMES, FirebaseMeme, FirebaseMemeDBStruct} from "./shared/FireBaseDBDefinition";
+import {DATABASE_CACHE_USERS, DATABASE_MEMES, FirebaseMeme, FirebaseMemeDBStruct} from "../shared/FireBaseDBDefinition";
 import {PromisePoolExecutor} from "promise-pool-executor";
-import {audit} from "../Audit";
-import {firebaseMemeService} from "./FirebaseMemeService";
+import {audit} from "../../Audit";
+import {firebaseMemeService} from "../FirebaseMemeService";
 import {MemeLink} from "./MemeLink";
 import {loadMeme} from "./MemeLoaderFunction";
 
-export class MemeLoader implements MemeLoaderInterface{
+export class MemeByUserLoader implements MemeLoaderInterface{
 
     readonly EVENT_ON_MEME = "onMeme";
     readonly EVENT_ON_MEME_DATA = "onMemeData";
     readonly EVENT_ON_MEME_ORDER = "onMemeOrder";
-    eventEmitter = new EventEmitter();
+    readonly EVENT_ON_INITIAL_LOADING_FINISHED = "onInitialLoadingFinished";
     lastPostDate: number = new Date().getTime();
+    alreadyProvided: number = 0;
+    eventEmitter = new EventEmitter();
     private pool: PromisePoolExecutor;
 
 
-    constructor(public type:string,public tags:string[],public userid:string) {
+    constructor(public userid:string) {
         this.pool = new PromisePoolExecutor(1);//concurrency limit of 1
     }
 
@@ -39,37 +41,30 @@ export class MemeLoader implements MemeLoaderInterface{
                         resolve(true);
                         return;
                     }
-                    let query;
-                    if(this.type!=="") {
-                        let hot = this.type == MEME_TYPE_HOT;
-                        query = firebase.database().ref(DATABASE_MEMES).orderByChild(hot ? 'hot' : 'created').endAt(this.lastPostDate - 1);
-                    }else if(this.userid!==""){
-                        query = firebase.database().ref(DATABASE_MEMES).orderByChild('created').endAt(this.lastPostDate - 1);
-                    }else{
-                        throw new Error();
-                    }
-
-                    let ref = query.limitToLast(limit);
-                    ref.once("value", (memes) => {
-                        let memesVal: FirebaseMemeDBStruct = memes.val() || {};
+                    let ref = firebase.database().ref(DATABASE_CACHE_USERS+"/"+this.userid+"/memes");
+                    let memes = new Promise(resolveMemes => {
+                        ref.once("value", (memes) => {
+                            let promiseList:Promise<any>[] = [];
+                            let memesVal: FirebaseMemeDBStruct = memes.val() || {};
+                            Object.keys(memesVal).forEach(memekey => {
+                                promiseList.push(new Promise<any>(resolveMeme => {
+                                    firebase.database().ref(DATABASE_MEMES + "/" + memekey).once("value", (meme) => {
+                                        let memeVal: FirebaseMemeDBStruct = meme.val() || {};
+                                        resolveMeme(memeVal);
+                                    });
+                                }));
+                            });
+                            Promise.all(promiseList).then(value => {
+                                resolveMemes(value);
+                            });
+                        });
+                    });
+                    memes.then( (memesVal) => {
                         let firebaseMemes: FirebaseMeme[] = [];
                         Object.keys(memesVal).forEach(key => {
                             let memeVal:FirebaseMeme = memesVal[key];
-                            if (this.lastPostDate > memeVal.created) {
-                                this.lastPostDate = memeVal.created;
-                            }
-                            if(this.type!=="") {
-                                if (this.type == MEME_TYPE_HOT && memeVal.hot) {
-                                    firebaseMemes.push(memeVal);
-                                }
-                                if (this.type == MEME_TYPE_FRESH && !memeVal.hot) {
-                                    firebaseMemes.push(memeVal);
-                                }
-                            }
-                            if(this.userid!=="") {
-                                if (this.userid === memeVal.uid) {
-                                    firebaseMemes.push(memeVal);
-                                }
+                            if (this.userid === memeVal.uid) {
+                                firebaseMemes.push(memeVal);
                             }
                         });
                         //sort meme by creation time
@@ -80,6 +75,13 @@ export class MemeLoader implements MemeLoaderInterface{
                         firebaseMemes.forEach(fireBaseMeme => {
                             orderedMemeKeys.push(fireBaseMeme.memeIpfsHash);
                         });
+
+                        orderedMemeKeys = orderedMemeKeys.slice(this.alreadyProvided,limit);
+                        this.alreadyProvided+=orderedMemeKeys.length;
+                        if(orderedMemeKeys.length==0){
+                            this.eventEmitter.emit(this.EVENT_ON_INITIAL_LOADING_FINISHED, {});
+                        }
+
                         if (orderedMemeKeys.length > 0) {
                             this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeKeys);
                         }
@@ -157,8 +159,16 @@ export class MemeLoader implements MemeLoaderInterface{
         };
     }
 
+    onInitialLoadingFinished(callback: () => void): () => void {
+        this.eventEmitter.on(this.EVENT_ON_INITIAL_LOADING_FINISHED, callback);
+        return () => {
+            this.eventEmitter.off(this.EVENT_ON_INITIAL_LOADING_FINISHED, callback);
+        };
+    }
+
     refresh() {
         this.lastPostDate=new Date().getTime();
+        this.alreadyProvided = 0;
     }
 
 }

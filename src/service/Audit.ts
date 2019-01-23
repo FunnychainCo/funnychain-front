@@ -17,11 +17,12 @@ export class Audit {
         });
         if (this.isDev()) {
             console.log("Audit in dev mode");
+        }else {
+            window.addEventListener("unhandledrejection", (promiseRejectionEvent) => {
+                // handle error here, for example log
+                this.error("unhandledrejection", promiseRejectionEvent);
+            });
         }
-        window.addEventListener("unhandledrejection", (promiseRejectionEvent) => {
-            // handle error here, for example log
-            this.error("unhandledrejection", promiseRejectionEvent);
-        });
     }
 
     track(event: string, data?: any): void {
@@ -88,6 +89,8 @@ export class Audit {
 
         if (!this.isDev()) {
             this._track(event, finalData);
+        }else{
+            throw new Error(finalData);
         }
         if (event === "user/error") {
             console.error(finalData);

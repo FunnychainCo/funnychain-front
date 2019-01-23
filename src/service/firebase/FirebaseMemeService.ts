@@ -3,8 +3,9 @@ import {
     MemeLoaderInterface,
     MemeServiceInterface
 } from "../generic/ApplicationInterface";
-import {MemeLoader} from "./MemeLoader";
-import {MemeLink} from "./MemeLink";
+import {MemeLoader} from "./memes/MemeLoader";
+import {MemeLink} from "./memes/MemeLink";
+import {MemeByUserLoader} from "./memes/MemeByUserLoader";
 
 export class FirebaseMemeService implements MemeServiceInterface {
 
@@ -22,7 +23,7 @@ export class FirebaseMemeService implements MemeServiceInterface {
     }
 
     getMemeLoaderByUser(userid: string): MemeLoaderInterface {
-        return new MemeLoader("",[],userid);
+        return new MemeByUserLoader(userid);
     }
 
 }

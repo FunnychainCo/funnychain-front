@@ -1,14 +1,14 @@
-import {UserEntry} from "../generic/UserEntry";
-import {IPFSMeme, Meme} from "../generic/Meme";
+import {UserEntry} from "../../generic/UserEntry";
+import {IPFSMeme, Meme} from "../../generic/Meme";
 import axios from 'axios'
-import {ipfsFileUploadService} from "../IPFSFileUploader/IPFSFileUploadService";
-import {userService} from "../generic/UserService";
-import {preLoadImage} from "../ImageUtil";
-import {firebaseCommentService} from "./FirebaseCommentService";
-import {firebaseUpvoteService} from "./FirebaseUpvoteService";
+import {ipfsFileUploadService} from "../../IPFSFileUploader/IPFSFileUploadService";
+import {userService} from "../../generic/UserService";
+import {preLoadImage} from "../../ImageUtil";
+import {firebaseCommentService} from "../FirebaseCommentService";
+import {firebaseUpvoteService} from "../FirebaseUpvoteService";
 import {authService} from 'src/service/generic/AuthService';
-import {FirebaseMeme} from "./shared/FireBaseDBDefinition";
-import {firebaseBetService} from "./FirebaseBetService";
+import {FirebaseMeme} from "../shared/FireBaseDBDefinition";
+import {firebaseBetService} from "../FirebaseBetService";
 
 export function loadMeme(meme:FirebaseMeme):Promise<Meme>{
     return new Promise<Meme>((resolve, reject) => {
