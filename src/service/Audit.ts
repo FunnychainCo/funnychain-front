@@ -89,11 +89,13 @@ export class Audit {
 
         if (!this.isDev()) {
             this._track(event, finalData);
-        }else{
-            throw new Error(finalData);
         }
+
         if (event === "user/error") {
             console.error(finalData);
+            if (this.isDev()) {
+                throw new Error(finalData);
+            }
         } else if (event === "user/warn") {
             console.warn(finalData);
         } else if (event === "user/log") {

@@ -12,8 +12,21 @@ import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import {authService} from "../../service/generic/AuthService";
 import {withStyles} from '@material-ui/core/styles';
 import LoadingButton from "./LoadingButton";
+import Tab from "@material-ui/core/Tab";
+import Tabs from "@material-ui/core/Tabs";
+import SwipeableViews from 'react-swipeable-views';
+import Typography from "@material-ui/core/Typography";
+import MemeCreator from "./MemeCreator";
 
 const styles: any = theme => ({});
+
+function TabContainer({children}) {
+    return (
+        <Typography component="div" style={{padding: 8 * 3}}>
+            {children}
+        </Typography>
+    );
+}
 
 class CreateMemeDialog extends Component<{
     classes: any
@@ -25,6 +38,7 @@ class CreateMemeDialog extends Component<{
     valid: boolean,
     progress: number,
     postLoading: boolean
+    value: number,
 }> {
 
     state = {
@@ -32,7 +46,8 @@ class CreateMemeDialog extends Component<{
         imageURL: "",
         valid: false,
         progress: 0,
-        postLoading: false
+        postLoading: false,
+        value: 0,
     };
 
     titleValid: boolean = false;
@@ -51,6 +66,14 @@ class CreateMemeDialog extends Component<{
             this.setState({postLoading: false});
             this.props.handleClose();
         });
+    };
+
+    handleChange = (event, value) => {
+        this.setState({value});
+    };
+
+    handleChangeIndex = index => {
+        this.setState({value: index});
     };
 
     handleTextFieldChange = (event) => {
@@ -76,9 +99,6 @@ class CreateMemeDialog extends Component<{
         this.setState({valid: this.imageValid && this.titleValid});
     };
 
-    handleChange = (ref) => {
-    };
-
     render() {
         return (
             <ModalPage
@@ -96,21 +116,45 @@ class CreateMemeDialog extends Component<{
                     />
                     <br/>
                     <br/>
-                    <ImageUploaderDropZone
-                        uploadProgress={this.state.progress}
-                        onImageLoaded={this.onImageLoaded}
-                        onFileToUpload={(file: File) => {
-                            return new Promise<string>((resolve, reject) => {
-                                fileUploadService.uploadFile(file, (progress) => {
-                                    this.setState({progress: progress})
-                                }).then((data) => {
-                                    resolve(data.fileURL);
-                                }).catch(reason => {
-                                    reject(reason);
-                                });
-                            });
-                        }}
-                    />
+                    <Tabs
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                        indicatorColor="primary"
+                        textColor="primary"
+                    >
+                        <Tab label="Image"/>
+                        <Tab label="Create Meme"/>
+                    </Tabs>
+                    <SwipeableViews
+                        index={this.state.value}
+                        onChangeIndex={this.handleChangeIndex}
+                    >
+                        <TabContainer>
+                            <ImageUploaderDropZone
+                                uploadProgress={this.state.progress}
+                                onImageLoaded={this.onImageLoaded}
+                                onFileToUpload={(file: File) => {
+                                    return new Promise<string>((resolve, reject) => {
+                                        fileUploadService.uploadFile(file, (progress) => {
+                                            this.setState({progress: progress})
+                                        }).then((data) => {
+                                            resolve(data.fileURL);
+                                        }).catch(reason => {
+                                            reject(reason);
+                                        });
+                                    });
+                                }}
+                            /></TabContainer>
+                        <TabContainer>
+                            <div style={{width:"100%",height:"100%"}}>
+                            <MemeCreator
+                                visible={this.state.value==1}
+                                onImageUploaded={(url)=>{
+                                this.onImageLoaded(url);
+                            }}/>
+                            </div>
+                        </TabContainer>
+                    </SwipeableViews>
                 </DialogContent>
 
                 <DialogActions>

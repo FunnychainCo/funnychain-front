@@ -26,6 +26,11 @@ export class FileUploadService implements FileUploadServiceInterface{
         })
     }
 
+
+    uploadBuffer(buffer: Buffer, progress: (progressPercent: number) => void): Promise<UploadedDataInterface>{
+        return ipfsFileUploadService.uploadBuffer(buffer,progress);
+    }
+
     getMediaUrlFromImageID(iid:string):Promise<string>{
         return Promise.resolve(ipfsFileUploadService.convertIPFSLinkToHttpsLink(iid));
     }

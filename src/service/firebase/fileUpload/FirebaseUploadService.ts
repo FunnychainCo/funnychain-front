@@ -5,6 +5,9 @@ import {FileUploadServiceInterface, UploadedDataInterface} from "../../generic/A
 import {DATABASE_MEDIA} from "../shared/FireBaseDBDefinition";
 
 export class FirebaseUploadService implements FileUploadServiceInterface{
+    uploadBuffer(buffer: Buffer, progress: (progressPercent: number) => void): Promise<UploadedDataInterface> {
+        throw new Error();
+    }
     storageBase = DATABASE_MEDIA;
 
     uploadFile(file:File):Promise<UploadedDataInterface> {

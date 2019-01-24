@@ -94,7 +94,8 @@ export interface UserServiceInterface {
  */
 
 export interface FileUploadServiceInterface{
-    uploadFile(file:File,progress:(progressPercent:number)=>void):Promise<UploadedDataInterface>
+    uploadFile(file:File,progress:(progressPercent:number)=>void):Promise<UploadedDataInterface>,
+    uploadBuffer(buffer: Buffer, progress: (progressPercent: number) => void): Promise<UploadedDataInterface>
 }
 
 export interface UploadedDataInterface{

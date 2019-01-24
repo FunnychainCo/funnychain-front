@@ -6,6 +6,9 @@ import {idService} from "../IdService";
 import {audit} from "../Audit";
 
 export class HybridFirebaseIPFSUploadService implements FileUploadServiceInterface {
+    uploadBuffer(buffer: Buffer, progress: (progressPercent: number) => void): Promise<UploadedDataInterface> {
+        throw new Error();
+    }
 
     storageBase = "temp";
     uploadFile(file: File): Promise<UploadedDataInterface> {
