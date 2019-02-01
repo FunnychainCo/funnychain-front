@@ -13,7 +13,7 @@ export default class NotificationAccount extends Component<{}, {
     state = {
         bell:false
     };
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
 
     componentWillMount(){
         this.removeListener = userNotificationService.onNotificationState(granted => {

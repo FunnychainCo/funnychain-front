@@ -40,7 +40,7 @@ export default class EmailAccountManagement extends Component<{}, {
     dialogValueCurrentPassword: string = "";
     userId: string = "";
     iid: string = "";
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
     private removeListenerPWA: any;
 
     componentWillMount() {

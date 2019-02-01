@@ -1,6 +1,6 @@
 import axios from 'axios'
 import * as firebase from "firebase";
-import * as EventEmitter from "eventemitter3";
+import EventEmitter from "eventemitter3";
 import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
 import {fileUploadService} from "../generic/FileUploadService";
 import {DATABASE_USERS, FirebaseUser} from "./shared/FireBaseDBDefinition";

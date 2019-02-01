@@ -9,7 +9,7 @@ import {withStyles} from '@material-ui/core/styles';
 import BrowserNotCompatible from "./BrowserNotCompatible";
 import AndroidInstall from "./AndroidInstall";
 import IOSInstall from "./IOSInstall";
-import * as MobileDetect from "mobile-detect";
+import MobileDetect from "mobile-detect";
 
 const styles: any = theme => ({});
 

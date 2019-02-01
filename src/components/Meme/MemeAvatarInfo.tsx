@@ -3,7 +3,7 @@ import {Component} from 'react'
 import "./Meme.css"
 import withStyles from "@material-ui/core/styles/withStyles";
 import {Meme} from "../../service/generic/Meme";
-import * as moment from 'moment';
+import moment from 'moment';
 import Avatar from "@material-ui/core/Avatar/Avatar";
 
 const styles = theme => ({});

@@ -21,7 +21,7 @@ export default class SteemAccount extends Component<{
         loading: true
     };
 
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
 
     private openSteemAccount = () => {
         window.location.href = "https://steemit.com/@" + this.state.user.uid;

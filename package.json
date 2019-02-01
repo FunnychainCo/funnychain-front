@@ -3,13 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^3.7.0",
+    "@material-ui/core": "^3.9.0",
     "@material-ui/icons": "^3.0.1",
+    "@types/jest": "23.3.11",
+    "@types/node": "10.12.18",
     "@types/q": "^1.5.1",
+    "@types/react": "^16.7.20",
+    "@types/react-dom": "16.0.11",
     "@types/storejs": "^2.0.3",
     "axios": "^0.18.0",
     "blob-to-buffer": "^1.2.8",
-    "bootstrap": "^4.1.3",
+    "bootstrap": "^4.2.1",
     "eventemitter3": "^3.1.0",
     "firebase": "^4.13.1",
     "ipfs-http-client": "^28.1.1",
@@ -22,8 +26,8 @@
     "promise-pool-executor": "^1.1.1",
     "prop-types": "^15.6.2",
     "q": "^1.5.1",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
     "react-dropzone": "^8.0.2",
     "react-firebase-file-uploader": "^2.4.2",
     "react-helmet": "^5.2.0",
@@ -31,10 +35,11 @@
     "react-markdown": "^3.6.0",
     "react-masonry-component": "^6.2.1",
     "react-microlink": "^2.2.5",
+    "react-mobile-devices": "^0.1.0",
     "react-onsenui": "^1.11.1",
     "react-perfect-scrollbar": "^1.2.2",
     "react-router-dom": "^4.3.1",
-    "react-scripts-ts": "2.16.0",
+    "react-scripts": "2.1.3",
     "react-share": "^2.4.0",
     "react-swipeable-views": "^0.13.0",
     "react-swipeable-views-utils": "^0.13.0",
@@ -44,21 +49,22 @@
     "store": "^2.0.12",
     "suggest-username": "^0.1.2",
     "sw-precache": "^5.2.1",
+    "typescript": "3.2.2",
     "webfontloader": "^1.6.28"
   },
   "scripts": {
-    "dev": "react-scripts-ts start",
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build && sw-precache --config=sw-precache-config.js",
-    "test": "react-scripts-ts test --env=jsdom",
-    "testonce": "set CI=true&&react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "dev": "react-scripts start",
+    "start": "react-scripts start",
+    "build": "react-scripts build && sw-precache --config=sw-precache-config.js",
+    "test": "react-scripts test --env=jsdom",
+    "testonce": "set CI=true&&react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
-  "devDependencies": {
-    "@types/jest": "^22.2.3",
-    "@types/node": "^10.11.3",
-    "@types/react": "^16.4.14",
-    "@types/react-dom": "^16.0.8",
-    "typescript": "^2.8.3"
-  }
+  "devDependencies": {},
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

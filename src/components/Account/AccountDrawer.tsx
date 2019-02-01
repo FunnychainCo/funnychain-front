@@ -15,7 +15,7 @@ export default class AccountDrawer extends Component<{
         user: USER_ENTRY_NO_VALUE
     };
 
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {

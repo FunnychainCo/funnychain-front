@@ -1,5 +1,5 @@
 import {FileUploadServiceInterface, UploadedDataInterface} from "../generic/ApplicationInterface";
-import * as ipfsAPI from "ipfs-http-client";
+import ipfsAPI from "ipfs-http-client";
 import axios from 'axios'
 import {audit} from "../Audit";
 

@@ -18,7 +18,7 @@ import {walletService} from "../../service/firebase/WalletService";
 import {FirebaseTransaction} from "../../service/firebase/shared/FireBaseDBDefinition";
 import {audit} from "../../service/Audit";
 import LolTokenIcon from "../Icon/LolTokenIcon";
-import * as moment from "moment";
+import moment from "moment";
 import {userNotificationService} from "../../service/UserNotificationService";
 
 export default class WalletAccount extends Component<{}, {}> {
@@ -30,7 +30,7 @@ export default class WalletAccount extends Component<{}, {}> {
         transactions: []
     };
 
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
     dialogAddrDest: string = "";
     dialogAmount: string = "0";
 

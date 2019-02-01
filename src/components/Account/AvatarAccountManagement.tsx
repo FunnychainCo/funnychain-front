@@ -37,7 +37,7 @@ export default class AvatarAccountManagement extends Component<any, any> {
     dialogValueCurrentPassword: string = "";
     userId: string = "";
     url: string = "";
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
     private removeListenerPWA: any;
 
     componentWillMount() {

@@ -20,7 +20,7 @@ export default class FirebaseAccount extends Component<{}, {
         loading: true,
     };
 
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {

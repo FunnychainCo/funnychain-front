@@ -14,7 +14,7 @@ export default class ViewMyPostButton extends Component<{}, { user: UserEntry }>
         user: USER_ENTRY_NO_VALUE,
     };
 
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {

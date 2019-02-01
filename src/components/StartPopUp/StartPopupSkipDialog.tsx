@@ -9,7 +9,7 @@ import {pwaService} from "../../service/mobile/PWAService";
 import Dialog from "@material-ui/core/Dialog";
 import {Link} from 'react-router-dom';
 import {CellphoneArrowDown} from 'mdi-material-ui'; //https://materialdesignicons.com/
-import * as store from 'store';
+import store from 'store';
 import AboutUsDialog from "./AboutUsDialog";
 import {EmoticonCool} from 'mdi-material-ui';
 

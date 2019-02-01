@@ -4,7 +4,7 @@ import ImagesLoaded from 'react-images-loaded';
 import Dropzone from 'react-dropzone'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import './ImageUploaderDropZone.css';
-import * as MobileDetect from 'mobile-detect'
+import MobileDetect from 'mobile-detect'
 import {authService} from "../../service/generic/AuthService";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import CircularProgress from "@material-ui/core/CircularProgress";

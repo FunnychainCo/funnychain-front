@@ -1,7 +1,7 @@
 import {firebaseAuthService} from "../firebase/FirebaseAuthService";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "./UserEntry";
-import * as EventEmitter from "eventemitter3";
-import * as store from 'store';
+import EventEmitter from "eventemitter3";
+import store from 'store';
 import {UserActionInterface} from "./ApplicationInterface";
 import {firebaseActionService} from "../firebase/FirebaseActionService";
 import {userNotificationService} from "../UserNotificationService";

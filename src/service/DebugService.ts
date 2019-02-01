@@ -1,7 +1,7 @@
-import * as store from 'store';
+import store from 'store';
 
 export class DebugService {
-    private _testNetwork = store.get("fc.debug.testnetwork") || false;
+    private _testNetwork:any = store.get("fc.debug.testnetwork") || false;
 
     get testNetwork(): boolean {
         return this._testNetwork;

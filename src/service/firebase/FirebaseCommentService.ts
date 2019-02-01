@@ -53,7 +53,7 @@ export class FireBaseCommentVisitor implements CommentsVisitor{
     }
 
     on(callback: (comments: MemeComment[]) => void): () => void {
-        let toremove = firebase.database().ref(DATABASE_COMMENTS + '/' + this.memeId).on("child_added",(comments) => {
+        let toremove:any = firebase.database().ref(DATABASE_COMMENTS + '/' + this.memeId).on("child_added",(comments) => {
             if (comments == null) {
                 audit.reportError(comments);
                 return;

@@ -17,7 +17,7 @@ export default class CreateMemeDialogFab extends Component<{},{
         logged: false
     };
 
-    private removeListener: () => void;
+    private removeListener: () => void = ()=>{};
     private removeBackListener: ()=>void = ()=>{};
 
     componentDidMount() {

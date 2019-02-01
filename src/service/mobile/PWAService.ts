@@ -1,4 +1,4 @@
-import * as EventEmitter from "eventemitter3/index";
+import EventEmitter from "eventemitter3/index";
 import {audit} from "../Audit";
 
 declare let window:any;

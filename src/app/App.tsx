@@ -13,7 +13,7 @@ import HomePage from "../containers/HomePage";
 import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
 import {firebaseInitAuthService} from "../service/firebase/FirebaseInitAuthService";
 import {audit} from "../service/Audit";
-import * as MobileDetect from "mobile-detect";
+import MobileDetect from "mobile-detect";
 import {GLOBAL_PROPERTIES} from "../properties/properties";
 
 

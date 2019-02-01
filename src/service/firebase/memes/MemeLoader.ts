@@ -5,7 +5,7 @@ import {
 } from "../../generic/ApplicationInterface";
 import * as Q from 'q';
 import {Meme, MEME_TYPE_FRESH, MEME_TYPE_HOT} from "../../generic/Meme";
-import * as EventEmitter from "eventemitter3";
+import EventEmitter from "eventemitter3";
 import {DATABASE_MEMES, FirebaseMeme, FirebaseMemeDBStruct} from "../shared/FireBaseDBDefinition";
 import {PromisePoolExecutor} from "promise-pool-executor";
 import {audit} from "../../Audit";
