@@ -53,12 +53,13 @@ export class FirebaseBetService {
 
     isBetEnableOnPost(memeId: string): Promise<boolean> {
         return new Promise<boolean>((resolve,reject) => {
-            axios.get(GLOBAL_PROPERTIES.WALLET_SERVICE+"/isBetEnabledOnPost/"+memeId).then(response => {
+            resolve(true);
+            /*axios.get(GLOBAL_PROPERTIES.WALLET_SERVICE()+"/isBetEnabledOnPost/"+memeId).then(response => {
                 resolve(response.data);
             }).catch(error => {
                 audit.reportError(error);
                 resolve(false);
-            });
+            });*/
         });
     }
 
@@ -67,7 +68,7 @@ export class FirebaseBetService {
             /*firebase.database().ref(this.dataBase + '/' + memeId+"/"+uid).set(new Date().getTime()).then(() => {
                 resolve("ok");
             });*/
-            axios.get(GLOBAL_PROPERTIES.WALLET_SERVICE+"/bet/"+uid+"/"+memeId).then(response => {
+            axios.get(GLOBAL_PROPERTIES.WALLET_SERVICE()+"/bet/"+uid+"/"+memeId).then(response => {
                 resolve("ok");
             }).catch(error => {
                 audit.reportError("fail to bet",error);

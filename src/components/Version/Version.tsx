@@ -6,7 +6,7 @@ import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 export default class Version extends Component {
 
-    version = GLOBAL_PROPERTIES.VERSION;
+    version = GLOBAL_PROPERTIES.VERSION();
 
     componentDidMount(){
         console.log("funnychain version: "+this.version);
@@ -14,8 +14,8 @@ export default class Version extends Component {
     }
 
     getServerVersion(){
-        axios.get(GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE+"/service/version").then(response => {
-            console.log("funnychain backend version: "+response.data+" ("+GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE+")");
+        axios.get(GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE()+"/service/version").then(response => {
+            console.log("funnychain backend version: "+response.data+" ("+GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE()+")");
         }).catch(error => {
             audit.reportError(error);
         });

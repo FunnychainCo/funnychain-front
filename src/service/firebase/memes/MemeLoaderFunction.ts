@@ -6,9 +6,9 @@ import {userService} from "../../generic/UserService";
 import {preLoadImage} from "../../ImageUtil";
 import {firebaseCommentService} from "../FirebaseCommentService";
 import {firebaseUpvoteService} from "../FirebaseUpvoteService";
-import {authService} from 'src/service/generic/AuthService';
 import {FirebaseMeme} from "../shared/FireBaseDBDefinition";
 import {firebaseBetService} from "../FirebaseBetService";
+import {authService} from "../../generic/AuthService";
 
 export function loadMeme(meme:FirebaseMeme):Promise<Meme>{
     return new Promise<Meme>((resolve, reject) => {

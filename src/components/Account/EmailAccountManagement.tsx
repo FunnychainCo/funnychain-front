@@ -54,7 +54,6 @@ export default class EmailAccountManagement extends Component<{}, {
                 });
             } else {
                 this.userId = user.uid;
-                console.log(user);
                 this.setState({
                     user: user,
                     loading: false

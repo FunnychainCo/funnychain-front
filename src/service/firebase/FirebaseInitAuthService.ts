@@ -7,12 +7,12 @@ export class FirebaseInitAuthService {
     }
     start(){
         let config = {
-            apiKey: GLOBAL_PROPERTIES.apiKey,
-            authDomain: GLOBAL_PROPERTIES.authDomain,
-            databaseURL: GLOBAL_PROPERTIES.databaseURL,
-            projectId: GLOBAL_PROPERTIES.projectId,
-            storageBucket: GLOBAL_PROPERTIES.storageBucket,
-            messagingSenderId: GLOBAL_PROPERTIES.messagingSenderId
+            apiKey: GLOBAL_PROPERTIES.apiKey(),
+            authDomain: GLOBAL_PROPERTIES.authDomain(),
+            databaseURL: GLOBAL_PROPERTIES.databaseURL(),
+            projectId: GLOBAL_PROPERTIES.projectId(),
+            storageBucket: GLOBAL_PROPERTIES.storageBucket(),
+            messagingSenderId: GLOBAL_PROPERTIES.messagingSenderId()
         };
         firebase.initializeApp(config);
     }

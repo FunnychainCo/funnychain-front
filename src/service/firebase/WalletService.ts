@@ -6,7 +6,7 @@ export class WalletService {
 
     getTransaction(uid: string): Promise<FirebaseTransaction[]> {
         return new Promise(resolve => {
-            axios.get(GLOBAL_PROPERTIES.WALLET_SERVICE_USER_TRANSACTION+"/"+uid).then((resp) => {
+            axios.get(GLOBAL_PROPERTIES.WALLET_SERVICE_USER_TRANSACTION()+"/"+uid).then((resp) => {
                 resolve(resp.data);
             });
         });

@@ -41,7 +41,7 @@ export class AuthService implements AuthServiceInterface {
     readonly MODE_UNDEFINDED:string = "UNDEFINED";
     readonly STORAGE_KEY_AUTH_METHOD:string = "fc.auth.method";
     mode:string = this.MODE_UNDEFINDED;
-    readonly AUTH_EVENTNAME:string = "AuthService.AuthStateChanged";
+    readonly AUTH_EVENTNAME:string = "AuthServiceAuthStateChanged2";
     eventEmitter = new EventEmitter();
     private removeAuthListener: () => void = () => {
     };
@@ -168,15 +168,25 @@ export class AuthService implements AuthServiceInterface {
      * @param {(userData: UserEntry) => void} callback
      * @returns {() => void} A method to unregister this listener
      */
+    lastUserData:UserEntry = USER_ENTRY_NO_VALUE;
     onAuthStateChanged(callback: (userData: UserEntry) => void): () => void {
+        let activated:boolean = true;//Note hack event emiter where the event is fired even after off has been called
         let wrapedCallback = (userDataReceived: UserEntry) => {
-            callback(userDataReceived);
+            if(activated && JSON.stringify(this.lastUserData) !== JSON.stringify(userDataReceived)) {
+                this.lastUserData = userDataReceived;
+                callback(userDataReceived);
+            }
         };
         this.eventEmitter.on(this.AUTH_EVENTNAME, wrapedCallback);
         this.getLoggedUser().then(value => {
-            wrapedCallback(value);//initial call
+            //initial call
+            //this.eventEmitter.emit(this.AUTH_EVENTNAME, value);
+            if(activated) {
+                callback(value);
+            }
         });
         return () => {
+            activated=false;
             this.eventEmitter.off(this.AUTH_EVENTNAME, wrapedCallback);
         };
     }

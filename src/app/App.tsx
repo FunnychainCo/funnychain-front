@@ -16,12 +16,12 @@ import {audit} from "../service/Audit";
 import * as MobileDetect from "mobile-detect";
 import {GLOBAL_PROPERTIES} from "../properties/properties";
 
+
 class App extends React.Component<any, any> {
     state = {};
 
     componentWillMount() {
         firebaseInitAuthService.start();
-        console.log("MODE : " + GLOBAL_PROPERTIES.MODE);
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();

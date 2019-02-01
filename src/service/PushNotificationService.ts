@@ -32,8 +32,8 @@ export class PushNotificationService {
     }
 
     registerPushNotification(uid) {
-        let subscribeAdresse = GLOBAL_PROPERTIES.PUSH_NOTIFICATION_SERVICE+"/subscribe/";
-        const publicVapidKey = GLOBAL_PROPERTIES.vapidPublicKey;
+        let subscribeAdresse = GLOBAL_PROPERTIES.PUSH_NOTIFICATION_SERVICE()+"/subscribe/";
+        const publicVapidKey = GLOBAL_PROPERTIES.vapidPublicKey();
         navigator.serviceWorker.ready.then(registration => {
             registration.pushManager.subscribe({
                 userVisibleOnly: true,

@@ -93,7 +93,7 @@ export class FirebaseAuthService {
             httpClient.defaults.timeout = 1000;//ms
             newAvatarUrl = encodeURIComponent(newAvatarUrl);
             httpClient.get(
-                GLOBAL_PROPERTIES.USER_SERVICE + "/avatar/change/" + user.uid + "/" + newAvatarUrl)
+                GLOBAL_PROPERTIES.USER_SERVICE() + "/avatar/change/" + user.uid + "/" + newAvatarUrl)
                 .then(response => {
                 delete this.userCache[user.uid];//invalidate cache
                 this.eventEmitter.emit('AuthStateChanged', user.uid);
@@ -128,18 +128,19 @@ export class FirebaseAuthService {
     onAuthStateChanged(callback: (userData: UserEntry) => void): () => void {
         let wrapedCallback = (uid: string) => {
             if (uid == "" || uid == null) {
-                console.warn("invalid uid");
+                callback(USER_ENTRY_NO_VALUE);
                 return;
             }
             this.loadUserData(uid).then((data) => {
                 callback(data);
             }).catch(reason => {
-                audit.reportError(reason);
+                //onAuthStateChanged triggered by firebase before user has been initialized in backend server behavior OK
+                callback(USER_ENTRY_NO_VALUE);
             });
         };
         this.eventEmitter.on('AuthStateChanged', wrapedCallback);
         if (this.currentUserUid !== "") {
-            wrapedCallback(this.currentUserUid);//initial call
+            this.eventEmitter.emit('AuthStateChanged', this.currentUserUid);//initial call
         }
         return () => {
             this.eventEmitter.off('AuthStateChanged', wrapedCallback)
@@ -151,7 +152,7 @@ export class FirebaseAuthService {
             const httpClient = axios.create();
             httpClient.defaults.timeout = 20000;//ms
             let from = this.currentUserUid;
-            httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_TRANSFER + "/"+from+"/"+to+"/"+amount).then(response => {
+            httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_TRANSFER() + "/"+from+"/"+to+"/"+amount).then(response => {
                 resolve(response.data.balance);
             });
         });
@@ -168,7 +169,7 @@ export class FirebaseAuthService {
                 } else {
                     const httpClient = axios.create();
                     httpClient.defaults.timeout = 1000;//ms
-                    httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE + "/compute_wallet/" + uid).then(response => {
+                    httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE() + "/compute_wallet/" + uid).then(response => {
                         resolve(response.data.balance);
                     }).catch(reason => {
                         resolve(fireBaseUser.wallet ? fireBaseUser.wallet.balance : 0);
@@ -247,7 +248,7 @@ export class FirebaseAuthService {
             //configure default HTTP timeout
             const httpClient = axios.create();
             httpClient.defaults.timeout = 20000;//ms
-            httpClient.get(GLOBAL_PROPERTIES.USER_SERVICE_INIT + "/" + user.uid).then(() => {
+            httpClient.get(GLOBAL_PROPERTIES.USER_SERVICE_INIT() + "/" + user.uid).then(() => {
                 resolve("ok");
             }).catch(error => {
                 audit.reportError("fail to init user");

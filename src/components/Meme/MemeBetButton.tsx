@@ -45,7 +45,7 @@ class MemeBetButton extends Component<{
                 aria-label="Invest"
                 disabled={!this.props.logged || !this.props.meme.bettable}
                 onClick={this.bet}>
-            Invest !&nbsp;
+            Invest&nbsp;
             <CashMultiple style={{height: "0.7em"}}/>
         </Button>
     }

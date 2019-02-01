@@ -55,7 +55,7 @@ export class Audit {
 
     private _track(event: string, data: any): void {
         this.logstashAudit.track(event, data);
-        if (GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED === "true") {
+        if (GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED() === "true") {
             mixpanel.track(event, data);
         }
     }

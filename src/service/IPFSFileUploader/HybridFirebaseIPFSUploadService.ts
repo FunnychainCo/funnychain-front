@@ -20,7 +20,7 @@ export class HybridFirebaseIPFSUploadService implements FileUploadServiceInterfa
             };
             ref.child(filename).put(file, metadata).then(() => {
                 ref.child(filename).getDownloadURL().then((url) => {
-                    axios.get(GLOBAL_PROPERTIES.URL_UPLOAD_SERVICE+"/"+encodeURIComponent(url)).then((resp) => {
+                    axios.get(GLOBAL_PROPERTIES.URL_UPLOAD_SERVICE()+"/"+encodeURIComponent(url)).then((resp) => {
                         let uploadedDataInterface: UploadedDataInterface = {
                             fileURL: resp.data.fileURL,
                             fileId: resp.data.fileId

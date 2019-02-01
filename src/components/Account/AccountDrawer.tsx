@@ -7,9 +7,9 @@ import {authService} from "../../service/generic/AuthService";
 import FirebaseAccount from "./FirebaseAccount";
 
 export default class AccountDrawer extends Component<{
-    open:boolean,
-    onRequestChange: (state:boolean) => void,
-},{}> {
+    open: boolean,
+    onRequestChange: (state: boolean) => void,
+}, {}> {
 
     state = {
         user: USER_ENTRY_NO_VALUE
@@ -19,7 +19,7 @@ export default class AccountDrawer extends Component<{
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
-            if(this.state.user!==USER_ENTRY_NO_VALUE && user===USER_ENTRY_NO_VALUE){
+            if (this.state.user !== USER_ENTRY_NO_VALUE && user === USER_ENTRY_NO_VALUE) {
                 //changed state from a user to no user means whe need to close the drawer (logout)
                 this.props.onRequestChange(false);
             }
@@ -37,8 +37,8 @@ export default class AccountDrawer extends Component<{
         return (
             <Drawer open={this.props.open}
                     onClose={() => this.props.onRequestChange(false)}>
-                <div style={{minWidth:"40px"}}>
-                    <FirebaseAccount />
+                <div style={{minWidth: "40px"}}>
+                    <FirebaseAccount/>
                 </div>
             </Drawer>
         )
