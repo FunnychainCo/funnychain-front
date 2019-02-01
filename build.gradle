@@ -60,7 +60,7 @@ task dockerBuildImage(type: DockerBuildImage) {
 }
 
 task dockerCreateContainer(type: DockerCreateContainer) {
-    targetImageId { 'funnychain:latest' }
+    targetImageId { 'cd do  :latest' }
     containerName "docker_auto_jungle-js"
     portBindings = ['8156:80']
 }
@@ -99,5 +99,13 @@ task dockerBuildRelease(){
     tasks.findByName('dockerBuildImage').mustRunAfter 'dockerCopyRessource'
     tasks.findByName('dockerBuildImage').mustRunAfter 'dockerCopyRessourceDockerConfig'
     tasks.findByName('dockerSaveImage').mustRunAfter 'dockerBuildImage'
+}
+
+task dockerBuildReleaseNPMInstall(){
+    dependsOn 'nodeSetup'
+    dependsOn 'npmSetup'
+    dependsOn 'dockerBuildRelease'
+    tasks.findByName('dockerBuildRelease').mustRunAfter 'nodeSetup'
+    tasks.findByName('dockerBuildRelease').mustRunAfter 'npmSetup'
 }
 
