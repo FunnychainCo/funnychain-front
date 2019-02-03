@@ -3,12 +3,12 @@ import {IPFSMeme, Meme} from "../../generic/Meme";
 import axios from 'axios'
 import {ipfsFileUploadService} from "../../IPFSFileUploader/IPFSFileUploadService";
 import {userService} from "../../generic/UserService";
-import {preLoadImage} from "../../ImageUtil";
 import {firebaseCommentService} from "../FirebaseCommentService";
 import {firebaseUpvoteService} from "../FirebaseUpvoteService";
 import {FirebaseMeme} from "../shared/FireBaseDBDefinition";
 import {firebaseBetService} from "../FirebaseBetService";
 import {authService} from "../../generic/AuthService";
+import {imageService} from "../../ImageService";
 
 export function loadMeme(meme:FirebaseMeme):Promise<Meme>{
     return new Promise<Meme>((resolve, reject) => {
@@ -21,7 +21,7 @@ export function loadMeme(meme:FirebaseMeme):Promise<Meme>{
         promiseArray.push(new Promise<boolean>((resolve2) => {
             axios.get(memeIPFSLink, {responseType: 'arraybuffer'}).then((response) => {
                 ipfsMeme = JSON.parse(new Buffer(response.data, 'binary').toString());
-                preLoadImage(ipfsFileUploadService.convertIPFSLinkToHttpsLink(ipfsMeme.imageIPFSHash)).then((imgUrlValue:string) => {
+                imageService.preLoadImage(ipfsFileUploadService.convertIPFSLinkToHttpsLink(ipfsMeme.imageIPFSHash)).then((imgUrlValue:string) => {
                     imgUrl = imgUrlValue;
                     resolve2(true);
                 });

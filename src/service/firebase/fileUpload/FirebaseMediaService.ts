@@ -1,7 +1,7 @@
 import * as firebase from 'firebase';
 import {idService} from "../../IdService";
-import {preLoadImage} from "../../ImageUtil";
 import {DATABASE_MEDIA, MediaEntry} from "../shared/FireBaseDBDefinition";
+import {imageService} from "../../ImageService";
 
 export default class MediaService {
 
@@ -31,7 +31,7 @@ export default class MediaService {
                     reject(iid);
                     return;
                 }
-                preLoadImage(imageValue.url).then(() => {
+                imageService.preLoadImage(imageValue.url).then(() => {
                     resolve(imageValue);
                 });
             });

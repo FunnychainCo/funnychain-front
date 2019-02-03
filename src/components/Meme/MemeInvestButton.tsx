@@ -9,7 +9,7 @@ import {CashMultiple} from 'mdi-material-ui';
 
 const styles = theme => ({});
 
-class MemeBetButton extends Component<{
+class MemeInvestButton extends Component<{
     meme: Meme,
     onBetConfirmed: () => void,
     logged: boolean,
@@ -52,4 +52,4 @@ class MemeBetButton extends Component<{
 
 }
 
-export default withStyles(styles)(MemeBetButton);
+export default withStyles(styles)(MemeInvestButton);

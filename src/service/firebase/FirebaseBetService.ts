@@ -68,7 +68,7 @@ export class FirebaseBetService {
             /*firebase.database().ref(this.dataBase + '/' + memeId+"/"+uid).set(new Date().getTime()).then(() => {
                 resolve("ok");
             });*/
-            axios.get(GLOBAL_PROPERTIES.WALLET_SERVICE()+"/bet/"+uid+"/"+memeId).then(response => {
+            axios.get(GLOBAL_PROPERTIES.REWARD_SERVICE_INVEST()+uid+"/"+memeId).then(response => {
                 resolve("ok");
             }).catch(error => {
                 audit.reportError("fail to bet",error);

@@ -168,12 +168,12 @@ export class AuthService implements AuthServiceInterface {
      * @param {(userData: UserEntry) => void} callback
      * @returns {() => void} A method to unregister this listener
      */
-    lastUserData:UserEntry = USER_ENTRY_NO_VALUE;
     onAuthStateChanged(callback: (userData: UserEntry) => void): () => void {
+        let lastUserData:UserEntry = USER_ENTRY_NO_VALUE;
         let activated:boolean = true;//Note hack event emiter where the event is fired even after off has been called
         let wrapedCallback = (userDataReceived: UserEntry) => {
-            if(activated && JSON.stringify(this.lastUserData) !== JSON.stringify(userDataReceived)) {
-                this.lastUserData = userDataReceived;
+            if(activated && (JSON.stringify(lastUserData) !== JSON.stringify(userDataReceived))) {
+                lastUserData = userDataReceived;
                 callback(userDataReceived);
             }
         };

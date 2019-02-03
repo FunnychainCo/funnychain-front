@@ -2,10 +2,10 @@ import axios from 'axios'
 import * as firebase from "firebase";
 import EventEmitter from "eventemitter3";
 import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
-import {fileUploadService} from "../generic/FileUploadService";
 import {DATABASE_USERS, FirebaseUser} from "./shared/FireBaseDBDefinition";
 import {audit} from "../Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
+import {ipfsFileUploadService} from "../IPFSFileUploader/IPFSFileUploadService";
 
 
 export class FirebaseAuthService {
@@ -16,6 +16,7 @@ export class FirebaseAuthService {
     started: boolean = false;
 
     userCache: { [id: string]: UserEntry; } = {};//{uid:userobj}
+    userCacheTime: { [id: string]: number; } = {};//{uid:userobj}
 
     constructor() {
     }
@@ -93,12 +94,12 @@ export class FirebaseAuthService {
             httpClient.defaults.timeout = 1000;//ms
             newAvatarUrl = encodeURIComponent(newAvatarUrl);
             httpClient.get(
-                GLOBAL_PROPERTIES.USER_SERVICE() + "/avatar/change/" + user.uid + "/" + newAvatarUrl)
+                GLOBAL_PROPERTIES.USER_SERVICE_CHANGE_AVATAR() + user.uid + "/" + newAvatarUrl)
                 .then(response => {
-                delete this.userCache[user.uid];//invalidate cache
-                this.eventEmitter.emit('AuthStateChanged', user.uid);
-                resolve("ok");
-            });
+                    delete this.userCache[user.uid];//invalidate cache
+                    this.eventEmitter.emit('AuthStateChanged', user.uid);
+                    resolve("ok");
+                });
         });
     }
 
@@ -147,12 +148,12 @@ export class FirebaseAuthService {
         };
     }
 
-    transfer(to: string, amount:number): Promise<any> {
+    transfer(to: string, amount: number): Promise<any> {
         return new Promise<number>((resolve, reject) => {
             const httpClient = axios.create();
             httpClient.defaults.timeout = 20000;//ms
             let from = this.currentUserUid;
-            httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_TRANSFER() + "/"+from+"/"+to+"/"+amount).then(response => {
+            httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_TRANSFER() + "/" + from + "/" + to + "/" + amount).then(response => {
                 resolve(response.data.balance);
             });
         });
@@ -169,7 +170,7 @@ export class FirebaseAuthService {
                 } else {
                     const httpClient = axios.create();
                     httpClient.defaults.timeout = 1000;//ms
-                    httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE() + "/compute_wallet/" + uid).then(response => {
+                    httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_COMPUTE_WALLET() + uid).then(response => {
                         resolve(response.data.balance);
                     }).catch(reason => {
                         resolve(fireBaseUser.wallet ? fireBaseUser.wallet.balance : 0);
@@ -181,32 +182,43 @@ export class FirebaseAuthService {
 
     loadUserData(uid: string): Promise<UserEntry> {
         return new Promise<UserEntry>((resolve, reject) => {
-            if (this.userCache[uid] != null && this.userCache[uid] != undefined) {
-                resolve(this.userCache[uid]);//continue to update user
+            ////
+            // START cache management
+            ////
+            if(this.userCacheTime[uid] === undefined){
+                this.userCacheTime[uid] = 0;
             }
-            firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
-                let fireBaseUser: FirebaseUser = user.val();
-                let fireBaseUserId: string = user.key;
-                if (fireBaseUser == null) {
-                    reject("uid does not exist in database");
+            if (this.userCache[uid] != null && this.userCache[uid] != undefined) {
+                resolve(this.userCache[uid]);
+                if(!(new Date().getTime()-this.userCacheTime[uid]>5000)){
+                    //If it has been less than 5 s since last user update just return
                     return;
                 }
-                fileUploadService.getMediaUrlFromImageID(fireBaseUser.avatarIid).then((avatarUrl) => {
-                    let userData: UserEntry = {
-                        avatarUrl: avatarUrl,
-                        email: fireBaseUser.email,
-                        provider: PROVIDER_FIREBASE_MAIL,
-                        displayName: fireBaseUser.displayName,
-                        uid: fireBaseUserId,
-                        wallet: fireBaseUser["wallet"] ? fireBaseUser.wallet.balance : 0
-                    };
-                    this.userCache[uid] = userData;
-                    resolve(userData);
-                });
-            }).catch((error) => {
-                audit.reportError(error);
+                //else continue to update user
+            }
+            ////
+            // END cache management
+            ////
+            //Load user
+            this.userCacheTime[uid] = new Date().getTime();//this is to prevent flood request get data while loading
+            axios.get(GLOBAL_PROPERTIES.USER_SERVICE_GET() + "/" + uid).then((receivedUserA) => {
+                let receivedUser: any = receivedUserA.data;
+                let userData: UserEntry = {
+                    avatarUrl: ipfsFileUploadService.convertIPFSLinkToHttpsLink(receivedUser.avatarIid),
+                    email: receivedUser.email,
+                    provider: PROVIDER_FIREBASE_MAIL,
+                    displayName: receivedUser.displayName,
+                    uid: receivedUser.uid,
+                    wallet: receivedUser["wallet"] ? receivedUser.wallet.balance : 0
+                };
+                this.userCacheTime[uid] = new Date().getTime();
+                this.userCache[uid] = userData;
+                resolve(userData);
+            }).catch(error => {
+                audit.reportError("fail to load user data", error);
                 reject(error);
             });
+
         });
     }
 

@@ -14,7 +14,7 @@ export default class Version extends Component {
     }
 
     getServerVersion(){
-        axios.get(GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE()+"/service/version").then(response => {
+        axios.get(GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE_VERSION()).then(response => {
             console.log("funnychain backend version: "+response.data+" ("+GLOBAL_PROPERTIES.FUNNYCHAIN_SERVICE()+")");
         }).catch(error => {
             audit.reportError(error);

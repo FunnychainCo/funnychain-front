@@ -7,6 +7,7 @@ import Masonry from 'react-masonry-component';
 import Button from "@material-ui/core/Button";
 import {fileUploadService} from "../../service/generic/FileUploadService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 let toBuffer = require('blob-to-buffer')
 
@@ -169,15 +170,16 @@ class MemeCanva extends React.Component<{ image: string, onTextChangeProp: any, 
     }
 }
 
+interface MemeTemplate{
+    refImageSD: string,
+    refImageMD: string,
+    refImageHD: string,
+    memeName: string,
+}
+
 interface State {
-    memesTemplates: {
-        refImage: string,
-        memeName: string,
-    }[],
-    selected: {
-        refImage: string,
-        memeName: string,
-    },
+    memesTemplates: MemeTemplate[],
+    selected:MemeTemplate,
     step: number,
     upText: string,
     downText: string,
@@ -189,7 +191,7 @@ class MemeCreator extends Component<{ visible:boolean,onImageUploaded:(image:str
 
     state: State = {
         memesTemplates: [],
-        selected: {refImage: "", memeName: ""},
+        selected: {refImageSD: "",refImageMD:"",refImageHD:"", memeName: ""},
         step: 0,
         upText: "",
         downText: "",
@@ -198,20 +200,15 @@ class MemeCreator extends Component<{ visible:boolean,onImageUploaded:(image:str
     private canva: any;
 
     componentDidMount() {
-        axios.get("https://memegen.link/api/templates/", {}).then((response) => {
+        axios.get(GLOBAL_PROPERTIES.MEME_SERVICE_GET_MAP(), {}).then((response) => {
             let data = response.data;
-            let imageLinks: {
-                refImage: string,
-                memeName: string,
-            }[] = [];
+            let imageLinks: MemeTemplate[] = [];
             Object.keys(data).forEach(key => {
-                let templateURL = data[key];
-                let split = templateURL.split("/");
-                let memeName = split[split.length - 1];
-                let imageLink = "https://memegen.link/" + memeName + "/_.jpg?watermark=none";
                 imageLinks.push({
-                    refImage: imageLink,
-                    memeName: memeName,
+                    refImageSD: data[key].ipfsSD,
+                    refImageMD: data[key].ipfsMD,
+                    refImageHD: data[key].ipfs,
+                    memeName: key,
                 });
             });
             this.setState({memesTemplates: imageLinks});
@@ -224,7 +221,7 @@ class MemeCreator extends Component<{ visible:boolean,onImageUploaded:(image:str
         let rows = this.state.memesTemplates.map((content) => {
             // map content to html elements
             return <Grid item style={{flexGrow: 1, maxWidth: ratio + "%", maxHeight: "100%"}}>
-                <img style={{flexGrow: 1, maxWidth: "100%", maxHeight: "100%"}} src={content.refImage}
+                <img style={{flexGrow: 1, maxWidth: "100%", maxHeight: "100%"}} src={content.refImageSD}
                      alt={content.memeName}/></Grid>;
         }).reduce((r: any, element, index) => {
             // create element groups with size 3, result looks like:
@@ -247,9 +244,9 @@ class MemeCreator extends Component<{ visible:boolean,onImageUploaded:(image:str
 
         const childElements = this.state.memesTemplates.map((element) => {
             return (
-                <img key={element.refImage}
+                <img key={element.memeName}
                      style={{width: ratio + "%", maxWidth: ratio + "%", maxHeight: "100%", minHeight: "20px"}}
-                     src={element.refImage}
+                     src={element.refImageSD}
                      onClick={() => {
                          this.setState({selected: element, step: 1})
                      }}/>
@@ -329,7 +326,7 @@ class MemeCreator extends Component<{ visible:boolean,onImageUploaded:(image:str
                         });
                     }}>Upload</Button>
                     <MemeCanva
-                        image={this.state.selected.refImage}
+                        image={this.state.selected.refImageHD}
                         onTextChangeProp={(value) => {
                             this.setState({upText: value.up, downText: value.down});
                         }}

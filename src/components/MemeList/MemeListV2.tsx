@@ -7,6 +7,7 @@ import {Component} from "react";
 import {MemeLinkInterface, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
 import Waypoint from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
+import {authService} from "../../service/generic/AuthService";
 
 
 interface State {
@@ -30,6 +31,7 @@ export default class MemeListV2 extends Component<{
     };
 
     private memeLoader: MemeLoaderInterface;
+    private removeListener: () => void = ()=>{};
 
 
     componentWillMount() {
@@ -43,6 +45,11 @@ export default class MemeListV2 extends Component<{
     }
 
     restartMemeLoader(type: string, tags: string[]) {
+        this.removeListener = authService.onAuthStateChanged((user) => {
+            Object.keys(this.state.memes).forEach(id => {
+                this.state.memes[id].refresh();//refresh meme personalized data eg like and invest
+            })
+        });
         this.memeLoader = memeService.getMemeLoader(type, tags);
         this.setState({memesOrder: []});//reset meme order
         this.removeCallbackOnMemeData();
@@ -60,6 +67,7 @@ export default class MemeListV2 extends Component<{
     }
 
     componentWillUnmount() {
+        this.removeListener();
         this.removeCallbackOnMemeData();
         this.removeCallbackOnMemeOrder();
     }
