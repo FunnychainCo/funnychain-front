@@ -1,0 +1,8 @@
+{
+  "name": "funnychain",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular",
+  "id": "102444df"
+}
