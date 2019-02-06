@@ -5,6 +5,19 @@
 <script type="text/javascript" src="%PUBLIC_URL%/static/properties/properties.js"></script>
 <script type="text/javascript">
     window.GLOBAL_PROPERTIES_JS = GLOBAL_PROPERTIES_JS;
+    function setNativeControl(controller){
+        console.log("setNativeControl");
+        window.nativeApplicationController = controller;
+    }
+
+    self.addEventListener('fetch', event => {
+        console.log(event);
+    });
+    window.nativeApplicationController={};
+    window.nativeApplicationController.send = function(){
+        var frame = document.getElementById('native-app-iframe');
+        frame.contentWindow.postMessage({type:"post_notification",data:{text:"hello",icon:'https://ipfs.funnychain.co/ipfs/QmRAiJWZ2PZt1KXpBr6he1X84kfcY7UMeF2dFB9moyzXPV'}}, '*');
+    }
 </script>
 <!-- end setup properties script -->
 
@@ -108,10 +121,20 @@ mixpanel.init(GLOBAL_PROPERTIES_JS.mixpanelId);
 <!-- react root tag-->
 <div id="root"></div>
 
-<iframe width="0"
+<!--<iframe id="native-app-iframe"
+        width="0"
         height="0"
         src="http://localhost/scripts.html">
-</iframe>
+</iframe>-->
+
+
+<app-root></app-root>
+<script type="text/javascript" src="http://localhost/runtime.js"></script>
+<script type="text/javascript" src="http://localhost/polyfills.js"></script>
+<script type="text/javascript" src="http://localhost/styles.js"></script>
+<script type="text/javascript" src="http://localhost/cordova.js"></script>
+<script type="text/javascript" src="http://localhost/vendor.js"></script>
+<script type="text/javascript" src="http://localhost/main.js"></script>
 
 </body>
 </html>
