@@ -6,8 +6,8 @@ import registerServiceWorker from './registerServiceWorker';
 import WebFont from 'webfontloader';
 
 ReactDOM.render(
-  <App />,
-  document.getElementById('root') as HTMLElement
+    <App/>,
+    document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();
 

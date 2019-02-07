@@ -15,6 +15,7 @@ import {firebaseInitAuthService} from "../service/firebase/FirebaseInitAuthServi
 import {audit} from "../service/Audit";
 import MobileDetect from "mobile-detect";
 import {GLOBAL_PROPERTIES} from "../properties/properties";
+import {ionicMobileAppService} from "../service/mobile/IonicMobileAppService";
 
 
 class App extends React.Component<any, any> {
@@ -22,6 +23,7 @@ class App extends React.Component<any, any> {
 
     componentWillMount() {
         firebaseInitAuthService.start();
+        ionicMobileAppService.start();
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();

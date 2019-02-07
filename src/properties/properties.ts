@@ -22,7 +22,7 @@ const serviceWallet = '/service/wallet';
 const serviceIPFS = '/service/ipfs';
 
 export const GLOBAL_PROPERTIES = {
-    VERSION:()=> "1.4.0",
+    VERSION:()=> "1.4.1",
 
     MIXPANEL_ACTIVATED: ()=> getGlobalProperties().mixpanelActivated,
 
