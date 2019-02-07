@@ -5,4 +5,4 @@ call npm install @ionic-native/badge
 call npm install
 call npm outdated
 call ionic cordova resources
-call ionic cordova build android --prod
+call ionic cordova build android

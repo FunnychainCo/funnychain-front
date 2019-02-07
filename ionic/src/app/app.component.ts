@@ -4,6 +4,7 @@ import {Platform} from '@ionic/angular';
 import {SplashScreen} from '@ionic-native/splash-screen/ngx';
 import {StatusBar} from '@ionic-native/status-bar/ngx';
 import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
+import {Badge} from '@ionic-native/badge/ngx';
 
 @Component({
     selector: 'app-root',
@@ -13,7 +14,8 @@ export class AppComponent {
     constructor(private platform: Platform,
                 private splashScreen: SplashScreen,
                 private statusBar: StatusBar,
-                private localNotifications: LocalNotifications) {
+                private localNotifications: LocalNotifications,
+                private badge: Badge) {
         this.initializeApp();
     }
 
@@ -21,6 +23,18 @@ export class AppComponent {
         const type = cmd.type ? cmd.type : 'ERROR';
         if (type === 'post_notification') {
             this.sendNotification(cmd.data);
+        }
+        if (type === 'hide_splash_screen') {
+            this.splashScreen.hide();
+        }
+        if (type === 'badge_set') {
+            this.badge.set(cmd.data);
+        }
+        if (type === 'badge_increase') {
+            this.badge.increase(cmd.data);
+        }
+        if (type === 'badge_clear') {
+            this.badge.clear();
         }
     }
 
@@ -31,7 +45,7 @@ export class AppComponent {
             text: notification.text,
             icon: notification.icon,
             vibrate: true,
-            led: {color: '#ffC000', on: 500, off: 500},
+            led: 'ffC000',
             foreground: true
         });
     }
@@ -39,7 +53,6 @@ export class AppComponent {
     initializeApp() {
         this.platform.ready().then(() => {
             this.statusBar.styleDefault();
-            this.splashScreen.hide();
             const self = this;
             window.addEventListener('message', function (event) {
                 // IMPORTANT: Check the origin of the data!
@@ -58,17 +71,6 @@ export class AppComponent {
                 }
             });
             console.log('Mobile App Component service started');
-            this.sendNotification({
-                text: 'Welcome To Funnychain!',
-                icon: 'https://ipfs.funnychain.co/ipfs/QmRAiJWZ2PZt1KXpBr6he1X84kfcY7UMeF2dFB9moyzXPV'
-            });
-            setTimeout(function () {
-                console.log('timed notif');
-                self.sendNotification({
-                    text: 'Welcome To Funnychain 2!',
-                    icon: 'https://ipfs.funnychain.co/ipfs/QmRAiJWZ2PZt1KXpBr6he1X84kfcY7UMeF2dFB9moyzXPV'
-                });
-            }, 20000);
         });
     }
 }
