@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {Component} from 'react'
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
-import {userNotificationService} from "../../service/UserNotificationService";
+import {userNotificationService} from "../../service/notification/UserNotificationService";
 import {fileUploadService} from "../../service/generic/FileUploadService";
 import ModalPage from "../ModalPage/ModalPage";
 import Button from "@material-ui/core/Button/Button";

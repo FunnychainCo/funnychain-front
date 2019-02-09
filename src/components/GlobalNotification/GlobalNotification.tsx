@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
-import {userNotificationService} from "../../service/UserNotificationService";
+import {userNotificationService} from "../../service/notification/UserNotificationService";
 import {withStyles} from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -62,7 +62,7 @@ class GlobalNotification extends Component<{ classes: any }, IState> {
     };
 
     componentWillMount() {
-        userNotificationService.start((message) => {
+        userNotificationService.setUiCallBackForNotification((message) => {
             console.log("Notification: " + message);
             this.processMessage(message);
         });

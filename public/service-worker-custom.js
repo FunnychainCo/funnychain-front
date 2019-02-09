@@ -1,5 +1,6 @@
 // tslint:disable:no-console
-console.log('app service worker V1.0');
+let activated = false;
+console.log('web push notification service worker V1.0 activated:'+activated);
 let url = '/';
 
 function init() {
@@ -116,7 +117,7 @@ function processNotification(title, message) {
             //Show new notification
             self.registration.showNotification(title, {
                 body:message,
-                icon:"/static/image/push_notif_icon.png"
+                icon:"https://ipfs.funnychain.co/ipfs/QmT3UbEsfSmLqe2AVHUrCRTA92vmBu3WPFnsVyXcUXY9oH"
             }).then((NotificationEvent) => {
                 resolve(NotificationEvent);
             });
@@ -124,4 +125,6 @@ function processNotification(title, message) {
     });
 }
 
-init();
+if(activated) {
+    init();
+}

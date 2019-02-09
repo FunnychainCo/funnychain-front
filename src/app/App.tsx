@@ -16,12 +16,14 @@ import {audit} from "../service/Audit";
 import MobileDetect from "mobile-detect";
 import {GLOBAL_PROPERTIES} from "../properties/properties";
 import {ionicMobileAppService} from "../service/mobile/IonicMobileAppService";
+import {userNotificationService} from "../service/notification/UserNotificationService";
 
 
 class App extends React.Component<any, any> {
     state = {};
 
     componentWillMount() {
+        userNotificationService.start();//must be started before firebaseInitAuthService because it will register uid
         firebaseInitAuthService.start();
         ionicMobileAppService.start();
         pwaService.start();

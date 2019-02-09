@@ -19,7 +19,7 @@ import {FirebaseTransaction} from "../../service/firebase/shared/FireBaseDBDefin
 import {audit} from "../../service/Audit";
 import LolTokenIcon from "../Icon/LolTokenIcon";
 import moment from "moment";
-import {userNotificationService} from "../../service/UserNotificationService";
+import {userNotificationService} from "../../service/notification/UserNotificationService";
 
 export default class WalletAccount extends Component<{}, {}> {
     state = {

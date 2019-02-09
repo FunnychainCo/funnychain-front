@@ -4,7 +4,7 @@ import "./Account.css";
 import {Bell, BellOff} from 'mdi-material-ui'; //https://materialdesignicons.com/
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import {userNotificationService} from "../../service/UserNotificationService";
+import {userNotificationService} from "../../service/notification/UserNotificationService";
 
 
 export default class NotificationAccount extends Component<{}, {

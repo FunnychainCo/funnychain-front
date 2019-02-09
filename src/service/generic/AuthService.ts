@@ -4,7 +4,7 @@ import EventEmitter from "eventemitter3";
 import store from 'store';
 import {UserActionInterface} from "./ApplicationInterface";
 import {firebaseActionService} from "../firebase/FirebaseActionService";
-import {userNotificationService} from "../UserNotificationService";
+import {userNotificationService} from "../notification/UserNotificationService";
 
 export interface MailAuthServiceInterface {
     //specific email pasword auth
@@ -49,6 +49,9 @@ export class AuthService implements AuthServiceInterface {
     start() {
         let mode: string = store.get(this.STORAGE_KEY_AUTH_METHOD) || this.MODE_UNDEFINDED;
         console.log("auth mode : "+mode);
+        this.onAuthStateChanged(userData => {
+            this.updateNotificationStatus(userData);
+        });
         this.switchMode(mode);
     }
 
@@ -96,6 +99,8 @@ export class AuthService implements AuthServiceInterface {
     updateNotificationStatus(userDataReceived: UserEntry){
         if(userDataReceived!=USER_ENTRY_NO_VALUE){
             userNotificationService.updateNotification(userDataReceived.uid);
+        }else{
+            userNotificationService.updateNotification("");
         }
     };
 
@@ -107,7 +112,6 @@ export class AuthService implements AuthServiceInterface {
             case this.MODE_EMAIL:
                 firebaseAuthService.start();
                 this.removeAuthListener = firebaseAuthService.onAuthStateChanged((userDataReceived: UserEntry) => {
-                    this.updateNotificationStatus(userDataReceived);
                     if (this.mode == this.MODE_EMAIL) {
                         firebaseActionService.start(userDataReceived);
                         this.eventEmitter.emit(this.AUTH_EVENTNAME, userDataReceived);

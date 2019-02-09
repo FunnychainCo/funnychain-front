@@ -20,6 +20,8 @@ const serviceMeme = '/service/meme';
 const serviceReward = '/service/reward';
 const serviceWallet = '/service/wallet';
 const serviceIPFS = '/service/ipfs';
+const serviceNotificationWebpush = '/service/notification/webpush';
+
 
 export const GLOBAL_PROPERTIES = {
     VERSION:()=> "1.4.1",
@@ -49,8 +51,10 @@ export const GLOBAL_PROPERTIES = {
     USER_SERVICE_INIT:()=> hostAPI()+serviceUser+"/init",// '/init/:uid'
     USER_SERVICE_GET:()=> hostAPI()+serviceUser+"/get",// '/get/:uid'
 
-    //Notification and upload services
-    PUSH_NOTIFICATION_SERVICE:()=> hostAPI(),
+    //Notification
+    PUSH_NOTIFICATION_SERVICE_SUBSCRIBE:()=> hostAPI()+serviceNotificationWebpush+"/subscribe/",
+
+    //upload services
     URL_UPLOAD_SERVICE:()=> hostAPI()+serviceIPFS+"/uploadURLtoIPFS",//consume json data {url:string}
 
     vapidPublicKey:()=> "BO7gTNODQ9ECFWDZfbDDRcM_jKfc63qS5jREcz8y-BnFsQz5ooPvPmUNsbx3vXvHXXDAQ9XxzvyHTRMrrnzg92I",//TODO get from distant address

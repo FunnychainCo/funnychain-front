@@ -43,7 +43,31 @@ export class IonicMobileAppService {
             });
             $('body').append(scriptScting);
             console.log("native scripts loaded");
+        }else if(type === 'native_code_ready'){
+            this.hideSplashScreen();
+        }else{
+            //there is a lot of unknown command but its ok
         }
+    }
+
+    badgeSet(value){
+        //this will be catch by the local ionic cordova service
+        window.postMessage({type:"badge_set",data:value}, '*');
+    }
+
+    badgeIncrease(value){
+        //this will be catch by the local ionic cordova service
+        window.postMessage({type:"badge_increase",data:value}, '*');
+    }
+
+    badgeClear(){
+        //this will be catch by the local ionic cordova service
+        window.postMessage({type:"badge_clear",data:{}}, '*');
+    }
+
+    hideSplashScreen(){
+        //this will be catch by the local ionic cordova service
+        window.postMessage({type:"hide_splash_screen",data:{}}, '*');
     }
 
     displayLocalNotification(data:{text:string,icon:string}){

@@ -23,23 +23,24 @@ export class AppComponent {
         const type = cmd.type ? cmd.type : 'ERROR';
         if (type === 'post_notification') {
             this.sendNotification(cmd.data);
-        }
-        if (type === 'hide_splash_screen') {
+        } else if (type === 'hide_splash_screen') {
+            console.log('hide_splash_screen');
             this.splashScreen.hide();
-        }
-        if (type === 'badge_set') {
+        } else if (type === 'badge_set') {
+            console.log('badge_set: ' + cmd.data);
             this.badge.set(cmd.data);
-        }
-        if (type === 'badge_increase') {
+        } else if (type === 'badge_increase') {
             this.badge.increase(cmd.data);
-        }
-        if (type === 'badge_clear') {
+        } else if (type === 'badge_clear') {
+            console.log('badge_clear');
             this.badge.clear();
+        } else {
+            //there is a lot of unknown command but its ok
         }
     }
 
     sendNotification(notification: { text: string, icon: string }) {
-        console.log('event', notification);
+        console.log('notification', notification);
         // Schedule a single notification
         this.localNotifications.schedule({
             text: notification.text,
@@ -70,7 +71,18 @@ export class AppComponent {
                     return;
                 }
             });
+            window.postMessage({type: 'native_code_ready', data: {}}, '*');
             console.log('Mobile App Component service started');
+
+            const notificationOpenedCallback = function (jsonData) {
+                console.log('notificationOpenedCallback: ' + JSON.stringify(jsonData));
+            };
+
+            window['plugins'].OneSignal
+                .startInit('a9c4c96f-0711-4010-8d9f-7a8faee2813b', '428682484079')
+                .handleNotificationOpened(notificationOpenedCallback)
+                .endInit();
+
         });
     }
 }
