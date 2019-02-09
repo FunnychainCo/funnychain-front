@@ -42,12 +42,12 @@ export class PWAService {
 
     start(){
         if (window.matchMedia('(display-mode: standalone)').matches) {
-            console.log("PWA service started: running from installed PWA");
+            //console.log("PWA service started: running from installed PWA");
             this.runningFromPWA=true;
             audit.additionalData.pwa="true";
         }else{
             this.runningFromPWA=false;
-            console.log("PWA service started: running from browser");
+            //console.log("PWA service started: running from browser");
         }
         this.eventEmitter.emit(this.installPromptChange, null);
     }

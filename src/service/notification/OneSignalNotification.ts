@@ -37,9 +37,6 @@ export class OneSignalNotification {
                 if(storeduid!==uid){
                     this.oneSignal.removeExternalUserId();
                     console.log("User unsubscribed: "+storeduid);
-                    this.oneSignal.getExternalUserId().then(storeduid2 =>{
-                        console.log("User unsubscribed: "+storeduid2);
-                    });
                 }
                 if(uid!=="") {
                     setTimeout(()=>{

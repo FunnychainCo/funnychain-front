@@ -1,13 +1,16 @@
-declare let window:any;
+declare let window: any;
 import * as jquery from "jquery";
+
 let $: any = jquery;
 
 export class IonicMobileAppService {
 
+    mobileapp: boolean = false;
+
     constructor() {
     }
 
-    start(){
+    start() {
         window.addEventListener('message', function (event) {
             // IMPORTANT: Check the origin of the data!
             if (event.origin.indexOf('https://alpha.funnychain.co')
@@ -23,11 +26,13 @@ export class IonicMobileAppService {
                 return;
             }
         });
-        if(window._cordovaNative){
-            console.log("native scripts detected");
+        if (window._cordovaNative) {
+            //console.log("native scripts detected");
+            this.mobileapp = true;
             $('body').append('<iframe src="http://localhost/local_iframe.html"></iframe>');
-        }else{
-            console.log("NO native scripts detected");
+        } else {
+            this.mobileapp = false;
+            //console.log("NO native scripts detected");
         }
 
         const self = this;
@@ -36,43 +41,43 @@ export class IonicMobileAppService {
     private dispatchCommand(cmd: { type: string, data: any }) {
         const type = cmd.type ? cmd.type : 'ERROR';
         if (type === 'send_config') {
-            let importList:string[] = cmd.data;
+            let importList: string[] = cmd.data;
             let scriptScting = "<app-root></app-root>";
             importList.forEach(value => {
-                scriptScting+='<script type="text/javascript" src="'+value+'"></script>'
+                scriptScting += '<script type="text/javascript" src="' + value + '"></script>'
             });
             $('body').append(scriptScting);
             console.log("native scripts loaded");
-        }else if(type === 'native_code_ready'){
+        } else if (type === 'native_code_ready') {
             this.hideSplashScreen();
-        }else{
+        } else {
             //there is a lot of unknown command but its ok
         }
     }
 
-    badgeSet(value){
+    badgeSet(value) {
         //this will be catch by the local ionic cordova service
-        window.postMessage({type:"badge_set",data:value}, '*');
+        window.postMessage({type: "badge_set", data: value}, '*');
     }
 
-    badgeIncrease(value){
+    badgeIncrease(value) {
         //this will be catch by the local ionic cordova service
-        window.postMessage({type:"badge_increase",data:value}, '*');
+        window.postMessage({type: "badge_increase", data: value}, '*');
     }
 
-    badgeClear(){
+    badgeClear() {
         //this will be catch by the local ionic cordova service
-        window.postMessage({type:"badge_clear",data:{}}, '*');
+        window.postMessage({type: "badge_clear", data: {}}, '*');
     }
 
-    hideSplashScreen(){
+    hideSplashScreen() {
         //this will be catch by the local ionic cordova service
-        window.postMessage({type:"hide_splash_screen",data:{}}, '*');
+        window.postMessage({type: "hide_splash_screen", data: {}}, '*');
     }
 
-    displayLocalNotification(data:{text:string,icon:string}){
+    displayLocalNotification(data: { text: string, icon: string }) {
         //this will be catch by the local ionic cordova service
-        window.postMessage({type:"post_notification",data}, '*');
+        window.postMessage({type: "post_notification", data}, '*');
     }
 
 }

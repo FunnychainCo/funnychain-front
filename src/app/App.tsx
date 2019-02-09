@@ -13,10 +13,10 @@ import HomePage from "../containers/HomePage";
 import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
 import {firebaseInitAuthService} from "../service/firebase/FirebaseInitAuthService";
 import {audit} from "../service/Audit";
-import MobileDetect from "mobile-detect";
 import {GLOBAL_PROPERTIES} from "../properties/properties";
 import {ionicMobileAppService} from "../service/mobile/IonicMobileAppService";
 import {userNotificationService} from "../service/notification/UserNotificationService";
+import {deviceDetector} from "../service/mobile/DeviceDetector";
 
 
 class App extends React.Component<any, any> {
@@ -29,13 +29,12 @@ class App extends React.Component<any, any> {
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();
-        let md = new MobileDetect(window.navigator.userAgent);
         audit.track("user/app/open",{
-            pwaMode:pwaService.runningFromPWA,
-            mobile:md.mobile(),
+            target:deviceDetector.getDeviceString(),
             agent:window.navigator.userAgent,
             version:GLOBAL_PROPERTIES.VERSION
         });
+        console.log("running on: "+deviceDetector.getDeviceString());
     }
 
     render() {
