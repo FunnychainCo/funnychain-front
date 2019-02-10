@@ -11,6 +11,9 @@ import {Badge} from '@ionic-native/badge/ngx';
     templateUrl: 'app.component.html'
 })
 export class AppComponent {
+    private currentUser: string;
+    private oneSignal: any;
+
     constructor(private platform: Platform,
                 private splashScreen: SplashScreen,
                 private statusBar: StatusBar,
@@ -34,9 +37,62 @@ export class AppComponent {
         } else if (type === 'badge_clear') {
             console.log('badge_clear');
             this.badge.clear();
+        } else if (type === 'initialize_one_signal') {
+            const dataOS = cmd.data;
+            this.initializeOneSignal(dataOS.appId, dataOS.androidId);
+        } else if (type === 'change_notification_uid') {
+            this.changeNotificationUID(cmd.data);
+        } else if (type === 'prompt_notification_authorization') {
+            this.oneSignal.promptForPushNotificationsWithUserResponse(function (accepted) {
+                console.log("User accepted notifications: " + accepted);
+            });
+        } else if (type === 'get_notification_state') {
+            this.getNotificationState();
         } else {
             //there is a lot of unknown command but its ok
         }
+    }
+
+    changeNotificationUID(uid: string) {
+        if (this.oneSignal) {
+            //uid "" means unsubscribe "aka deconnexion"
+            //ascociate current user id to the device
+            //unsubscribe other userid from this device /!\
+            //https://documentation.onesignal.com/docs/web-push-sdk#section--setexternaluserid-
+            if (this.currentUser !== uid) {
+                this.oneSignal.removeExternalUserId();
+                console.log('User unsubscribed: ' + this.currentUser);
+            }
+            if (uid !== '') {
+                setTimeout(() => {
+                    console.log('User subscribed: ' + uid);
+                    this.oneSignal.setExternalUserId(uid);
+                    this.currentUser = uid;
+                }, 2000);
+            } else {
+                this.currentUser = uid;
+            }
+            this.getNotificationState();
+        }
+    }
+
+    initializeOneSignal(appId, androidId) {
+        const notificationOpenedCallback = (jsonData) => {
+            this.sendEvent('native_notification_opened', jsonData);
+        };
+
+        const notificationReceivedCallback = (jsonData) => {
+            this.sendEvent('native_notification_received', jsonData);
+        };
+
+        window['plugins'].OneSignal
+            .startInit(appId, androidId)
+            .handleNotificationOpened(notificationOpenedCallback)
+            .handleNotificationReceived(notificationReceivedCallback)
+            .inFocusDisplaying(window['plugins'].OneSignal.OSInFocusDisplayOption.None)
+            .endInit();
+        this.oneSignal = window['plugins'].OneSignal;
+        this.sendEvent('native_notification_ready', {});
     }
 
     sendNotification(notification: { text: string, icon: string }) {
@@ -49,6 +105,29 @@ export class AppComponent {
             led: 'ffC000',
             foreground: true
         });
+    }
+
+    getNotificationState() {
+        this.oneSignal.getPermissionSubscriptionState((status) => {
+            /*status.permissionStatus.hasPrompted; // Bool
+            status.permissionStatus.status; // iOS only: Integer: 0 = Not Determined, 1 = Denied, 2 = Authorized
+            status.permissionStatus.state; //Android only: Integer: 1 = Authorized, 2 = Denied
+
+            status.subscriptionStatus.subscribed; // Bool
+            status.subscriptionStatus.userSubscriptionSetting; // Bool
+            status.subscriptionStatus.userId; // String: OneSignal Player ID
+            status.subscriptionStatus.pushToken; // String: Device Identifier from FCM/APNs*/
+            this.sendEvent("notification_subscription_changes", status.permissionStatus.status && status.subscriptionStatus.subscribed);
+        });
+    }
+
+    sendEvent(event: string, data: any) {
+        window.postMessage({
+            type: 'native_code_event', data: {
+                event: event,
+                evd: data
+            }
+        }, '*');
     }
 
     initializeApp() {
@@ -71,18 +150,8 @@ export class AppComponent {
                     return;
                 }
             });
-            window.postMessage({type: 'native_code_ready', data: {}}, '*');
+            this.sendEvent('native_code_ready', {});
             console.log('Mobile App Component service started');
-
-            const notificationOpenedCallback = function (jsonData) {
-                console.log('notificationOpenedCallback: ' + JSON.stringify(jsonData));
-            };
-
-            window['plugins'].OneSignal
-                .startInit('a9c4c96f-0711-4010-8d9f-7a8faee2813b', '428682484079')
-                .handleNotificationOpened(notificationOpenedCallback)
-                .endInit();
-
         });
     }
 }

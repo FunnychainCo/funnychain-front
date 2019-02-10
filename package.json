@@ -52,7 +52,8 @@
     "suggest-username": "^0.1.2",
     "sw-precache": "^5.2.1",
     "typescript": "3.2.2",
-    "webfontloader": "^1.6.28"
+    "webfontloader": "^1.6.28",
+    "workerpool": "^3.0.0"
   },
   "scripts": {
     "dev": "react-scripts start",

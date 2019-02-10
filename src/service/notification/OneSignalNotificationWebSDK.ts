@@ -1,19 +1,23 @@
 declare let window: any;
 import EventEmitter from "eventemitter3/index";
 
-export class OneSignalNotification {
+export class OneSignalNotificationWebSDK {
     private oneSignal: any;
     eventEmitter = new EventEmitter();
     currentUser:string = "";
 
+    constructor(private API_KEY:string) {
+    }
+
+    onNewNotificationFromServiceWorker(callback: (data: { title: string, message: string }) => void): ()=>void  {
+        return ()=>{};
+    }
+
     start() {
-        let API_KEY = "dc7c1d29-5ea3-4967-baac-a64f0be10c95";//local
-        //let API_KEY = "1d106801-b574-4616-93aa-d281b3c21600";//alpha
-        //let API_KEY = "a9c4c96f-0711-4010-8d9f-7a8faee2813b";//beta
         this.oneSignal = window.OneSignal || [];
         this.oneSignal.push(() => {
             this.oneSignal.init({
-                appId: API_KEY,
+                appId: this.API_KEY,
                 autoRegister: false,
                 notifyButton: {
                     enable: false,

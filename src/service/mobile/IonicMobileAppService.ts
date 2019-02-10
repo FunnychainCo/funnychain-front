@@ -1,14 +1,22 @@
+import {TaskPoolExecutor} from "../TaskPoolExecutor";
+
 declare let window: any;
 import * as jquery from "jquery";
+import EventEmitter from "eventemitter3/index";
+
 
 let $: any = jquery;
 
 export class IonicMobileAppService {
+    eventEmitter = new EventEmitter();
+    private pool: TaskPoolExecutor;
 
     mobileapp: boolean = false;
 
     constructor() {
+        this.pool = new TaskPoolExecutor();//concurrency limit of 1
     }
+
 
     start() {
         window.addEventListener('message', function (event) {
@@ -36,6 +44,17 @@ export class IonicMobileAppService {
         }
 
         const self = this;
+
+        this.onNativeEvent("native_code_ready", () => {
+            this.hideSplashScreen();
+        })
+    }
+
+    onNativeEvent(event: string, callback: (data: any) => void): () => void {
+        this.eventEmitter.on(event, callback);
+        return () => {
+            this.eventEmitter.off(event, callback);
+        }
     }
 
     private dispatchCommand(cmd: { type: string, data: any }) {
@@ -48,36 +67,43 @@ export class IonicMobileAppService {
             });
             $('body').append(scriptScting);
             console.log("native scripts loaded");
-        } else if (type === 'native_code_ready') {
-            this.hideSplashScreen();
+            this.pool.start();
+        } else if (type === 'native_code_event') {
+            let event = cmd.data.event;
+            console.log("event :"+event);
+            let eventdata = cmd.data.evd;
+            this.eventEmitter.emit(event, eventdata);
         } else {
             //there is a lot of unknown command but its ok
         }
     }
 
-    badgeSet(value) {
+    sendMessageToNative(cmd: string, data: any) {
         //this will be catch by the local ionic cordova service
-        window.postMessage({type: "badge_set", data: value}, '*');
+        this.pool.addTask(() => {
+            console.log("command :"+cmd);
+            window.postMessage({type: cmd, data: data}, '*');
+        });
+    }
+
+    badgeSet(value) {
+        this.sendMessageToNative("badge_set", value);
     }
 
     badgeIncrease(value) {
-        //this will be catch by the local ionic cordova service
-        window.postMessage({type: "badge_increase", data: value}, '*');
+        this.sendMessageToNative("badge_increase", value);
     }
 
     badgeClear() {
-        //this will be catch by the local ionic cordova service
-        window.postMessage({type: "badge_clear", data: {}}, '*');
+        this.sendMessageToNative("badge_clear", {});
     }
 
     hideSplashScreen() {
-        //this will be catch by the local ionic cordova service
-        window.postMessage({type: "hide_splash_screen", data: {}}, '*');
+        this.sendMessageToNative("hide_splash_screen", {});
     }
 
     displayLocalNotification(data: { text: string, icon: string }) {
-        //this will be catch by the local ionic cordova service
-        window.postMessage({type: "post_notification", data}, '*');
+        this.sendMessageToNative("post_notification", data);
     }
 
 }

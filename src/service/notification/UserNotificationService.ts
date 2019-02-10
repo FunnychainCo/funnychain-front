@@ -1,19 +1,30 @@
 
 import {UiNotification} from "./UiNotification";
-import {OneSignalNotification} from "./OneSignalNotification";
+import {OneSignalNotificationWebSDK} from "./OneSignalNotificationWebSDK";
+import {ionicMobileAppService} from "../mobile/IonicMobileAppService";
+import {OneSignalNotificationMobileSDK} from "./OneSignalNotificationMobileSDK";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 export class UserNotificationService {
     uiNotification:UiNotification;
-    oneSignalNotification:OneSignalNotification;
+    oneSignalNotification:any;//TODO interface
 
     start() {
+
+        let API_KEY = GLOBAL_PROPERTIES.ONE_SIGNAL_API_KEY();
+        let ANDROID_ID= GLOBAL_PROPERTIES.ONE_SIGNAL_ANDROID_NUMBER();
+
         this.uiNotification = new UiNotification();
-        this.oneSignalNotification = new OneSignalNotification();
-        this.oneSignalNotification.start();
-        /*this.oneSignalNotification.onNewNotificationFromServiceWorker(data => {
-            data.processed(this.uiNotification.visible);
+        if(ionicMobileAppService.mobileapp){
+            this.oneSignalNotification = new OneSignalNotificationMobileSDK(API_KEY,ANDROID_ID);
+            this.oneSignalNotification.start();
+        }else{
+            this.oneSignalNotification = new OneSignalNotificationWebSDK(API_KEY);
+            this.oneSignalNotification.start();
+        }
+        this.oneSignalNotification.onNewNotificationFromServiceWorker(data => {
             this.notifyUIToNotifyUser(data.message);
-        });*/
+        });
     }
 
     //ui part

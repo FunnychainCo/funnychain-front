@@ -23,9 +23,9 @@ class App extends React.Component<any, any> {
     state = {};
 
     componentWillMount() {
+        ionicMobileAppService.start();//must be started before userNotificationService because it need to know what device we use
         userNotificationService.start();//must be started before firebaseInitAuthService because it will register uid
         firebaseInitAuthService.start();
-        ionicMobileAppService.start();
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();

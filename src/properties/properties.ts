@@ -28,6 +28,10 @@ export const GLOBAL_PROPERTIES = {
 
     MIXPANEL_ACTIVATED: ()=> getGlobalProperties().mixpanelActivated,
 
+
+    ONE_SIGNAL_API_KEY: ()=> getGlobalProperties().oneSignalApiKey,
+    ONE_SIGNAL_ANDROID_NUMBER: ()=> getGlobalProperties().oneSignalAndroidNumber,
+
     //Web service properties
     FUNNYCHAIN_SERVICE:()=> hostAPI(),
     FUNNYCHAIN_SERVICE_VERSION: () => hostAPI()+"/service/version",
