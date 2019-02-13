@@ -131,6 +131,7 @@ export class AppComponent {
     }
 
     initializeApp() {
+        console.log('Mobile App initializeApp');
         this.platform.ready().then(() => {
             this.statusBar.styleDefault();
             const self = this;

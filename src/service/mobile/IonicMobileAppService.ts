@@ -4,7 +4,6 @@ declare let window: any;
 import * as jquery from "jquery";
 import EventEmitter from "eventemitter3/index";
 
-
 let $: any = jquery;
 
 export class IonicMobileAppService {
@@ -23,7 +22,8 @@ export class IonicMobileAppService {
             // IMPORTANT: Check the origin of the data!
             if (event.origin.indexOf('https://alpha.funnychain.co')
                 || event.origin.indexOf('https://beta.funnychain.co')
-                || event.origin.indexOf('http://localhost')) {
+                || event.origin.indexOf('http://localhost')
+                || event.origin.indexOf('http://127.0.0.1')) {
                 // The data has been sent from your site
                 // The data sent with postMessage is stored in event.data
                 self.dispatchCommand(event.data);
@@ -37,7 +37,9 @@ export class IonicMobileAppService {
         if (window._cordovaNative) {
             //console.log("native scripts detected");
             this.mobileapp = true;
-            $('body').append('<iframe src="http://localhost/local_iframe.html"></iframe>');
+            if($("#initialized").length == 0) {
+                $('body').append('<script type="text/javascript" src="http://localhost/init.js"></script>');
+            }
         } else {
             this.mobileapp = false;
             //console.log("NO native scripts detected");
@@ -57,17 +59,40 @@ export class IonicMobileAppService {
         }
     }
 
+    loadConfig(importList:string[]){
+        if($("#initialized").length == 0) {
+            {
+                let scriptScting = "<app-root></app-root>";
+                scriptScting += '<div id="initialized"></div>'
+                $('body').append(scriptScting);
+            }
+            {
+                setTimeout(()=>{
+                    /*let scriptScting = "";
+                    importList.forEach(value => {
+                        scriptScting += '<script type="text/javascript" src="' + value + '" async></script>'
+                    });
+                    $('body').append(scriptScting);*/
+                    importList.forEach(value => {
+                        let script = document.createElement('script');
+                        script.src = value;
+                        document.body.appendChild(script);
+                    });
+                    console.log("native scripts loaded");
+                },1000);//delay native integration loading
+            }
+            this.pool.start();
+        }else{
+            console.error("double call init");
+        }
+    }
+
     private dispatchCommand(cmd: { type: string, data: any }) {
         const type = cmd.type ? cmd.type : 'ERROR';
         if (type === 'send_config') {
+            //Deprecated
             let importList: string[] = cmd.data;
-            let scriptScting = "<app-root></app-root>";
-            importList.forEach(value => {
-                scriptScting += '<script type="text/javascript" src="' + value + '"></script>'
-            });
-            $('body').append(scriptScting);
-            console.log("native scripts loaded");
-            this.pool.start();
+            this.loadConfig(importList);
         } else if (type === 'native_code_event') {
             let event = cmd.data.event;
             console.log("event :"+event);
