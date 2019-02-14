@@ -27,3 +27,4 @@ yarn-error.log*
 /package-lock.json
 /profile/properties.prod.ts
 /build_docker
+/ionic/*.keystore
