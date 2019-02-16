@@ -3,6 +3,8 @@ import {pwaService} from "./PWAService";
 import {ionicMobileAppService} from "./IonicMobileAppService";
 
 export class DeviceDetector {
+    private type: string;
+    private os: string;
     //windows chrome
     //android chrome
     //android pwa
@@ -13,16 +15,20 @@ export class DeviceDetector {
 
     getDeviceString():string{
         let md = new MobileDetect(window.navigator.userAgent);
-        let os = md.os()?md.os():"desktop";//TODO add Windows/Mac/Linux differences? //TODO add android/ios differences?
-        let type = "";
+        this.os = md.os()?md.os():"desktop";//TODO add Windows/Mac/Linux differences? //TODO add android/ios differences?
+        this.type = "";
         if(ionicMobileAppService.mobileapp){
-            type="mobile";
+            this.type="mobile";
         }else if(pwaService.runningFromPWA){
-            type="pwa"
+            this.type="pwa"
         }else{
-            type="web";
+            this.type="web";
         }
-        return os+"/"+type;
+        return this.os+"/"+this.type;
+    }
+
+    isMobile():boolean{
+        return this.type === "mobile";
     }
 }
 

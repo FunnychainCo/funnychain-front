@@ -9,6 +9,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import NotificationAccount from "./NotificationAccount";
 import InstallAppAccount from "./InstallAppAccount";
 import ViewMyPostButton from "./ViewMyPostButton";
+import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
 export default class CommonAccountManagement extends Component<{}, {
 }> {
@@ -21,8 +22,12 @@ export default class CommonAccountManagement extends Component<{}, {
 
             <div className="fcContent">
                 <ViewMyPostButton/>
-                <NotificationAccount />
-                <InstallAppAccount/>
+                {false &&
+                    <NotificationAccount/>
+                }
+                {!deviceDetector.isMobile() &&
+                    <InstallAppAccount/>
+                }
 
                 <ListItem button onClick={() => {
                     authService.logout();

@@ -8,6 +8,7 @@ import MemeUpvoteButton from "./MemeUpvoteButton";
 import {MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import LolTokenIcon from "../Icon/LolTokenIcon";
 import MemeShareButton from "./MemeShareButton";
+import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
 const styles = theme => ({});
 
@@ -37,7 +38,17 @@ class MemeActionButton extends Component<{
             }}/>}
             {this.props.meme.hot === true &&
             <div className="memeElementStyleDiv" style={{marginLeft:"5px",marginRight:"5px"}}>
-                <b>&#36;{(this.props.meme.dolarValue * 0.08).toFixed(2)}</b>(<LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)})
+                {
+                    !deviceDetector.isMobile() &&
+                    <React.Fragment>
+                        <b>&#36;{(this.props.meme.dolarValue * 0.08).toFixed(2)}</b>(<LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)})
+                    </React.Fragment>
+                }
+                {deviceDetector.isMobile() &&
+                    <React.Fragment>
+                        <LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)}
+                    </React.Fragment>
+                }
                 </div>
             }
         </div>

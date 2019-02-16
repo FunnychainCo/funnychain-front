@@ -4,7 +4,7 @@ import "./Account.css";
 import Drawer from "@material-ui/core/Drawer/Drawer";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {authService} from "../../service/generic/AuthService";
-import FirebaseAccount from "./FirebaseAccount";
+import EmailAccount from "./EmailAccount";
 
 export default class AccountDrawer extends Component<{
     open: boolean,
@@ -38,7 +38,7 @@ export default class AccountDrawer extends Component<{
             <Drawer open={this.props.open}
                     onClose={() => this.props.onRequestChange(false)}>
                 <div style={{minWidth: "40px"}}>
-                    <FirebaseAccount/>
+                    <EmailAccount/>
                 </div>
             </Drawer>
         )

@@ -11,7 +11,7 @@ import Divider from "@material-ui/core/Divider";
 import ExternalLinkAccount from "./ExternalLinkAccount";
 import WalletAccount from "./WalletAccount";
 
-export default class FirebaseAccount extends Component<{}, {
+export default class EmailAccount extends Component<{}, {
     user: UserEntry,
     loading: boolean,
 }> {
