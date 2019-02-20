@@ -19,7 +19,8 @@
 </body>
 </html>
 <script type="text/javascript">
-    //window.open("http://beta.funnychain.co", '_self');
-    window.open("http://alpha.funnychain.co", '_self');
-    //window.open("http://localhost:3000/", '_self');
+    var targetURL = "http://localhost:3000/";
+    //var targetURL = "http://beta.funnychain.co";
+    //var targetURL = "http://alpha.funnychain.co";
+    var ref = cordova.InAppBrowser.open(targetURL, '_self', 'location=no,toolbar=no');
 </script>

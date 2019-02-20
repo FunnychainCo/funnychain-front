@@ -28,3 +28,4 @@ yarn-error.log*
 /profile/properties.prod.ts
 /build_docker
 /ionic/*.keystore
+/ionic/*.apk

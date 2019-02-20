@@ -64,7 +64,7 @@ export class IonicMobileAppService {
             {
                 let scriptScting = "<app-root></app-root>";
                 scriptScting += '<div id="initialized"></div>'
-                $('body').append(scriptScting);
+                $('body').prepend(scriptScting);
             }
             {
                 setTimeout(()=>{
