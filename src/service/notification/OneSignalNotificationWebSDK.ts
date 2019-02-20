@@ -44,9 +44,15 @@ export class OneSignalNotificationWebSDK {
                 }
                 if(uid!=="") {
                     setTimeout(()=>{
-                        this.oneSignal.getUserId(function(userId) {
+                        this.oneSignal.getUserId((userId)=> {
                             console.log("OneSignal User ID:", userId);
                             // (Output) OneSignal User ID: 270a35cd-4dda-4b3f-b04e-41d7463a2316
+                            if(userId===null){
+                                this.oneSignal.registerForPushNotifications();
+                                setTimeout(()=>{
+                                    this.oneSignal.setExternalUserId(uid);
+                                },60000);//wait for user interaction to set ext user id again //TODO find a better way to do that
+                            }
                         });
                         console.log("User subscribed: "+uid);
                         this.oneSignal.setExternalUserId(uid);
