@@ -5,22 +5,25 @@
     <base href="/">
 
     <!-- ionic mobil compliance meta tags -->
-    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="apple-mobile-web-app-capable" content="yes" /><!-- add to homescreen for ios -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" /><!-- add to homescreen for ios -->
+    <meta name="viewport"
+          content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="msapplication-tap-highlight" content="no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/><!-- add to homescreen for ios -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/><!-- add to homescreen for ios -->
 
 </head>
 <body>
-	<noscript>You need to enable JavaScript to run this app.</noscript>
-	<div id="root"></div>
-	<app-root></app-root>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root"></div>
+<app-root></app-root>
 </body>
 </html>
 <script type="text/javascript">
-    var targetURL = "http://localhost:3000/";
-    //var targetURL = "http://beta.funnychain.co";
+    //var targetURL = "http://localhost:3000/";
+    var targetURL = "http://beta.funnychain.co";
     //var targetURL = "http://alpha.funnychain.co";
-    var ref = cordova.InAppBrowser.open(targetURL, '_self', 'location=no,toolbar=no');
+    document.addEventListener("deviceready", function () {
+        var ref = cordova.InAppBrowser.open(targetURL, '_self', 'location=no,toolbar=no');
+    }, false);
 </script>
