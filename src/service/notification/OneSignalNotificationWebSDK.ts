@@ -24,9 +24,11 @@ export class OneSignalNotificationWebSDK {
                 },
             });
         });
-        this.onNotificationState(isSubscribed => {
-            console.log("subscription status changed");
-        })
+        this.oneSignal.push(() => {
+            this.onNotificationState(isSubscribed => {
+                console.log("subscription status changed");
+            })
+        });
     }
 
     //service worker server part
@@ -68,9 +70,11 @@ export class OneSignalNotificationWebSDK {
             callback(isSubscribed);
         };
 
-        this.oneSignal.isPushNotificationsEnabled((isSubscribed) => {
-            callback(isSubscribed)
-        });
+        if(this.oneSignal.isPushNotificationsEnabled) {// /!\ HACK Seems to be undefined on IOS
+            this.oneSignal.isPushNotificationsEnabled((isSubscribed) => {
+                callback(isSubscribed)
+            });
+        }
         this.oneSignal.push(() => {
             // Occurs when the user's subscription changes to a new value.
             this.oneSignal.on('subscriptionChange', wrappedCallBack);

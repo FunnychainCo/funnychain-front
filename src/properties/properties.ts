@@ -24,7 +24,7 @@ const serviceNotificationWebpush = '/service/notification/webpush';
 
 
 export const GLOBAL_PROPERTIES = {
-    VERSION:()=> "1.4.3",
+    VERSION:()=> "1.4.4",
 
     MIXPANEL_ACTIVATED: ()=> getGlobalProperties().mixpanelActivated,
 

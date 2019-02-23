@@ -70,21 +70,8 @@ class FirstPresentation extends Component<{
                     }}>
                         <div style={{textAlign: "center", fontSize: "1.0em"}}>
                             <b style={{fontSize: "1.0em"}}>
-                                Significant hurdles prevent cryptocurrency mass adoption (volatility, scalability, time
-                                and education). We believe that with Funnychain, by having fun looking at memes, people
-                                will be using a decentralized application (with no central authority) and earn
-                                cryptocurrencies using it.<br/>
-                                A meme dApp where people gets rewarded in crypto without having to buy it first is the
-                                best way to bring crypto mass adoption.<br/>
-                                Funnychain allows users to view and share the funniest-rated memes with their friends,
-                                workplace, and the community. The platform incentivizes users for creating, curating,
-                                sharing memes, and especially rewards community founders/admins. Users can also bet on
-                                their favorite memes in cryptocurrencies, chat with friends using their favorite memes
-                                and share with their own community.<br/>
-                                <br/>
-                                Break the barriers for crypto mass adoption.<br/>
-                                Funny and make money.<br/>
-                                - <b>Funnychain</b><br/>
+                                Funnychain allows users to view and share the funniest memes. The platform also incentivizes users for creating, curating,
+                                and sharing memes.
                             </b><br/>
                         </div>
                     </div>
