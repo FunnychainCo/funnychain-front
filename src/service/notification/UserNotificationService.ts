@@ -5,6 +5,12 @@ import {ionicMobileAppService} from "../mobile/IonicMobileAppService";
 import {OneSignalNotificationMobileSDK} from "./OneSignalNotificationMobileSDK";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
+export interface Message{
+    text:string,
+    type:string,
+    date:number,
+}
+
 export class UserNotificationService {
     uiNotification:UiNotification;
     oneSignalNotification:any;//TODO interface
@@ -23,24 +29,24 @@ export class UserNotificationService {
             this.oneSignalNotification.start();
         }
         this.oneSignalNotification.onNewNotificationFromServiceWorker(data => {
-            this.notifyUIToNotifyUser(data.message);
+            this.sendNotificationToUser(data.message);
         });
     }
 
     //ui part
-    notifyUIToNotifyUser(message):void {
-        this.uiNotification.notifyUIToNotifyUser(message);
+    sendNotificationToUser(message:string):void {
+        this.uiNotification.sendNotificationToUser({text: message, type: "text",date:new Date().getTime()});
     }
 
-    sendNotificationToUser(message):void{
-        this.uiNotification.notifyUIToNotifyUser(message);
+    sendNotificationMessageToUser(message:Message):void {
+        this.uiNotification.sendNotificationToUser(message);
     }
 
-    setUiCallBackForNotification(callback:(message:string)=>void):void{
+    setUiCallBackForNotification(callback:(message:Message)=>void):void{
         this.uiNotification.setUiCallBackForNotification(callback);
     }
 
-    //service worker server part
+    //service worker server / app closed part
     updateNotification(uid: string):void {
         this.oneSignalNotification.updateNotification(uid);
     }

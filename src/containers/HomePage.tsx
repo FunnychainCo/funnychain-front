@@ -6,7 +6,6 @@ import BackListener from "./BackListener";
 import InstallPage from "./DialogPage/InstallPage";
 import InstallSkipDialog from "../components/StartPopUp/StartPopupSkipDialog";
 import UserMemeListPage from "./UserMemeListPage";
-import {deviceDetector} from "../service/mobile/DeviceDetector";
 
 export default class HomePage extends React.Component<{}, {}> {
     render() {
@@ -14,9 +13,8 @@ export default class HomePage extends React.Component<{}, {}> {
             <div>
                 <Route path='/' component={BackListener} />
 
-                {!deviceDetector.isMobile() &&
-                    <Route path='/' component={InstallSkipDialog}/>
-                }
+                <Route path='/' component={InstallSkipDialog}/>
+
                 <Route path='/' component={MemeListPage} />
                 <Route path='/meme/:memeid' component={MemeDisplayPage} />
                 <Route exact path='/user/:userid/meme/list' component={UserMemeListPage} />

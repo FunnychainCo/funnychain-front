@@ -1,32 +1,32 @@
 import * as React from 'react'
 import {Component} from 'react'
-import Button from "@material-ui/core/Button/Button";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import {withStyles} from '@material-ui/core/styles';
-import Dialog from "@material-ui/core/Dialog";
 import store from 'store';
-import AboutUsDialog from "./AboutUsDialog";
-import {EmoticonCool} from 'mdi-material-ui';
-import InstallButton from "./InstallButtons";
+import ModalPage from "../ModalPage/ModalPage";
+import Fab from "@material-ui/core/Fab";
+import {Check} from 'mdi-material-ui';
+import Typography from "@material-ui/core/Typography";
+import FirstPresentation from "./FirstPresentation"; //https://materialdesignicons.com/
 
 const styles: any = theme => ({});
 
 class StartPopupSkipDialog extends Component<{
     classes: any
 }, {
-    open: boolean,
-    aboutUsOpen:boolean
+    open: boolean
 }> {
 
     state = {
-        open: false,
-        aboutUsOpen:false
+        open: false
     };
 
+    skipPopupStoreKey = "fc.terms.privacy.agreed";
+
     componentWillMount() {
-        let skiped = store.get("fc.pwa.install.skipped") || false;
+        let skiped = store.get(this.skipPopupStoreKey,false);
         let displayPopup = !skiped;
         this.setState({open: displayPopup});
     }
@@ -38,7 +38,7 @@ class StartPopupSkipDialog extends Component<{
     }
 
     doNotShowPopupAgain() {
-        store.set("fc.pwa.install.skipped", true);
+        store.set(this.skipPopupStoreKey, true);
     }
 
     handleClose() {
@@ -47,34 +47,29 @@ class StartPopupSkipDialog extends Component<{
 
     render() {
         return (
-            <Dialog
+            <ModalPage
                 open={this.state.open}
                 onClose={() => {
                     this.handleClose()
                 }}
             >
                 <DialogTitle>Welcome to Funnychain</DialogTitle>
-                <DialogContent>
-                    <Button
-                        style={{fontSize:"0.8em",marginBottom:"8px"}}
-                        onClick={() => {
-                            this.setState({aboutUsOpen: true})
-                        }}
-                        variant="contained"
-                        fullWidth
-                    ><EmoticonCool/>&nbsp;&nbsp;About Funnychain
-                    <AboutUsDialog onRequestClose={() => {
-                        this.handleClose()
-                    }} open={this.state.aboutUsOpen} />
-                    </Button>
-                    <InstallButton/>
+                <DialogContent style={{display: "flex",flexDirection:"row",margin:0,padding:0}}>
+                    <div style={{flexGrow:1,display: "flex",flexDirection:"column"}}>
+                        <FirstPresentation />
+                    </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => {
+                    <Typography>
+                        By clicking the "Continue" button you agree with our <a href={"http://funnychain.co/terms"}>Terms of Use</a> and <a href={"http://funnychain.co/privacy"}>Privacy Policy</a>.
+                        <br/>
+                        <br/>
+                    </Typography>
+                    <Fab style={{minWidth:"131px"}} color="primary" size="large" variant="extended" aria-label="Continue" onClick={() => {
                         this.skip()
-                    }}>Skip</Button>
+                    }}><Check/>&nbsp;Continue</Fab>
                 </DialogActions>
-            </Dialog>
+            </ModalPage>
         )
     }
 }

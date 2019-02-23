@@ -3,6 +3,9 @@ import {TaskPoolExecutor} from "../TaskPoolExecutor";
 declare let window: any;
 import * as jquery from "jquery";
 import EventEmitter from "eventemitter3/index";
+import {audit} from "../Audit";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
+import {updateService} from "../UpdateService";
 
 let $: any = jquery;
 
@@ -34,11 +37,11 @@ export class IonicMobileAppService {
                 return;
             }
         });
-        if (window._cordovaNative) {
+        if (window._cordovaNative || (navigator.userAgent.match(/(iPhone|iPod|iPad)/))) {
             //console.log("native scripts detected");
             this.mobileapp = true;
-            if($("#initialized").length == 0) {
-                $('body').append('<script type="text/javascript" src="http://localhost/init.js"></script>');
+            if ($("#initialized").length == 0) {
+                $('body').append('<script type="text/javascript" src="' + this.getMobileHost() + '/init.js"></script>');
             }
         } else {
             this.mobileapp = false;
@@ -52,6 +55,17 @@ export class IonicMobileAppService {
         })
     }
 
+    getMobileHost(): string {
+        if (window._cordovaNative) {
+            return GLOBAL_PROPERTIES.FUNNYCHAIN_HOST() + "/mobile/android"
+        } else if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
+            return GLOBAL_PROPERTIES.FUNNYCHAIN_HOST() + "/mobile/ios"
+        } else {
+            audit.error("invalid state");
+        }
+        return "";
+    }
+
     onNativeEvent(event: string, callback: (data: any) => void): () => void {
         this.eventEmitter.on(event, callback);
         return () => {
@@ -59,15 +73,15 @@ export class IonicMobileAppService {
         }
     }
 
-    loadConfig(importList:string[]){
-        if($("#initialized").length == 0) {
+    loadConfig(importList: string[]) {
+        if ($("#initialized").length == 0) {
             {
                 let scriptScting = "<app-root></app-root>";
                 scriptScting += '<div id="initialized"></div>'
                 $('body').prepend(scriptScting);
             }
             {
-                setTimeout(()=>{
+                setTimeout(() => {
                     /*let scriptScting = "";
                     importList.forEach(value => {
                         scriptScting += '<script type="text/javascript" src="' + value + '" async></script>'
@@ -75,14 +89,14 @@ export class IonicMobileAppService {
                     $('body').append(scriptScting);*/
                     importList.forEach(value => {
                         let script = document.createElement('script');
-                        script.src = value;
+                        script.src = value.replace("http://localhost", this.getMobileHost());
                         document.body.appendChild(script);
                     });
                     console.log("native scripts loaded");
-                },1000);//delay native integration loading
+                }, 1000);//delay native integration loading
             }
             this.pool.start();
-        }else{
+        } else {
             console.error("double call init");
         }
     }
@@ -93,9 +107,11 @@ export class IonicMobileAppService {
             //Deprecated
             let importList: string[] = cmd.data;
             this.loadConfig(importList);
+        } else if (type === 'native_code_resume') {
+            updateService.checkUpdate();
         } else if (type === 'native_code_event') {
             let event = cmd.data.event;
-            console.log("event :"+event);
+            console.log("event :" + event);
             let eventdata = cmd.data.evd;
             this.eventEmitter.emit(event, eventdata);
         } else {
@@ -106,7 +122,7 @@ export class IonicMobileAppService {
     sendMessageToNative(cmd: string, data: any) {
         //this will be catch by the local ionic cordova service
         this.pool.addTask(() => {
-            console.log("command :"+cmd);
+            console.log("command :" + cmd);
             window.postMessage({type: cmd, data: data}, '*');
         });
     }

@@ -1,7 +1,8 @@
+import {Message} from "./UserNotificationService";
 
 export class UiNotification {
-    visible:boolean = true;
-    callback:(message:string)=>void = (message) => {
+    visible: boolean = true;
+    callback: (message: Message) => void = (message) => {
     };
 
     start() {
@@ -10,19 +11,15 @@ export class UiNotification {
         });
     }
 
-    setUiCallBackForNotification(callback:(message:string)=>void){
+    setUiCallBackForNotification(callback: (message: Message) => void) {
         this.callback = callback;
     }
 
-    uiVisible():boolean{
+    uiVisible(): boolean {
         return this.visible;
     }
 
-    notifyUIToNotifyUser(message) {
+    sendNotificationToUser(message: Message) {
         this.callback(message);
-    }
-
-    sendNotificationToUser(message){
-        this.notifyUIToNotifyUser(message);
     }
 }

@@ -8,6 +8,13 @@ export class BackService {
     };
     backAvailable: boolean;
 
+    start(){
+        //event send by cordova in case of native integration
+        document.addEventListener("backbutton", ()=>{
+            this.eventEmitter.emit("back_event", {});
+        }, false);
+    }
+
     notifyBack() {
         this.eventEmitter.emit("back_event", {});
     }

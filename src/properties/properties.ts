@@ -33,6 +33,7 @@ export const GLOBAL_PROPERTIES = {
     ONE_SIGNAL_ANDROID_NUMBER: ()=> getGlobalProperties().oneSignalAndroidNumber,
 
     //Web service properties
+    FUNNYCHAIN_HOST:()=> hostAPI().replace("/backend",""),
     FUNNYCHAIN_SERVICE:()=> hostAPI(),
     FUNNYCHAIN_SERVICE_VERSION: () => hostAPI()+"/service/version",
 

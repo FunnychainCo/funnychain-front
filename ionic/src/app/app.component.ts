@@ -13,6 +13,7 @@ import {Badge} from '@ionic-native/badge/ngx';
 export class AppComponent {
     private currentUser: string;
     private oneSignal: any;
+    private version: "1.0.1";
 
     constructor(private platform: Platform,
                 private splashScreen: SplashScreen,
@@ -135,10 +136,17 @@ export class AppComponent {
         this.platform.ready().then(() => {
             this.statusBar.styleDefault();
             const self = this;
+            this.platform.resume.subscribe((e) => {
+                this.sendEvent('native_code_resume', {});
+            });
             window.addEventListener('message', function (event) {
                 // IMPORTANT: Check the origin of the data!
                 if (event.origin.indexOf('https://alpha.funnychain.co')
                     || event.origin.indexOf('https://beta.funnychain.co')
+                    || event.origin.indexOf('http://alpha.funnychain.co')
+                    || event.origin.indexOf('http://beta.funnychain.co')
+                    || event.origin.indexOf('http://mobile.alpha.funnychain.co')
+                    || event.origin.indexOf('http://mobile.beta.funnychain.co')
                     || event.origin.indexOf('http://localhost')) {
                     // The data has been sent from your site
                     // The data sent with postMessage is stored in event.data
@@ -152,7 +160,7 @@ export class AppComponent {
                 }
             });
             this.sendEvent('native_code_ready', {});
-            console.log('Mobile App Component service started');
+            console.log('Mobile component loaded version:' + this.version);
         });
     }
 }

@@ -97,7 +97,7 @@ export default class ImageUploaderDropZone extends Component<{
 
     onDrop = (files) => {
         if (files.length !== 1) {
-            userNotificationService.notifyUIToNotifyUser("Cannot upload more than 1 item.");
+            userNotificationService.sendNotificationToUser("Cannot upload more than 1 item.");
             return;
         }
         this.setState({isUploading: true, progress: 0});
@@ -105,14 +105,14 @@ export default class ImageUploaderDropZone extends Component<{
         this.props.onFileToUpload(file).then((url: string) => {
             this.setState({fileURL: url});
         }).catch(reason => {
-            userNotificationService.notifyUIToNotifyUser("Cannot upload (network error) please retry.");
+            userNotificationService.sendNotificationToUser("Cannot upload (network error) please retry.");
             this.setState({isUploading: false, progress: 0});
             return;
         });
     };
 
     dropError = (files) => {
-        userNotificationService.notifyUIToNotifyUser("Cannot upload image. Image is too big (>10mb) or not a a png or a jpeg");
+        userNotificationService.sendNotificationToUser("Cannot upload image. Image is too big (>10mb) or not a a png or a jpeg");
         audit.reportError(files);
     };
 

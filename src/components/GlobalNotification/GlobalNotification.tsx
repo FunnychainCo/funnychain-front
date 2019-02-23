@@ -1,10 +1,12 @@
 import * as React from 'react';
 import {Component} from 'react';
-import {userNotificationService} from "../../service/notification/UserNotificationService";
+import {Message, userNotificationService} from "../../service/notification/UserNotificationService";
 import {withStyles} from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import Button from "@material-ui/core/Button";
+import {updateService} from "../../service/UpdateService";
 
 const styles = theme => ({
     close: {
@@ -14,58 +16,62 @@ const styles = theme => ({
 
 interface IState {
     open: boolean,
-    messageInfo: any
+    messageInfo: Message
 }
 
 class GlobalNotification extends Component<{ classes: any }, IState> {
 
     state: IState = {
         open: false,
-        messageInfo: {},
+        messageInfo: {
+            text: "",
+            type: "text",
+            date: 0
+        },
     };
 
-    queue: any[] = [];
+    queue: Message[] = [];
 
-    processMessage(message) {
-        this.queue.push({
-            message,
-            key: new Date().getTime(),
-        });
-
-        if (this.state.open) {
-            // immediately begin dismissing current message
-            // to start showing new one
-            this.setState({open: false});
-        } else {
-            this.processQueue();
-        }
+    processMessage(message: Message) {
+        this.queue.push(message);
+        this.displayMessage(message);
     }
 
-    processQueue = () => {
-        if (this.queue.length > 0) {
+    displayMessage(message) {
+        this.setState({open: false});
+        setTimeout(() => {
             this.setState({
-                messageInfo: this.queue.shift(),
+                messageInfo: message,
                 open: true,
             });
+        }, 400);
+    }
+
+    displayNextMessage() {
+        if (this.queue.length > 0) {
+            let message = this.queue[this.queue.length - 1];
+            this.displayMessage(message);
         }
     };
 
     handleClose = (reason: any) => {
-        if (reason === 'clickaway') {
-            return;
-        }
         this.setState({open: false});
+        this.queue.pop();
+        this.displayNextMessage();
     };
 
     handleExited = () => {
-        this.processQueue();
     };
 
     componentWillMount() {
-        userNotificationService.setUiCallBackForNotification((message) => {
-            console.log("Notification: " + message);
+        userNotificationService.setUiCallBackForNotification((message: Message) => {
             this.processMessage(message);
         });
+        /*this.processMessage({
+            text:"New Update available!",
+            type:"update",
+            date:new Date().getTime(),
+        });*/
     }
 
     componentWillUnmount() {
@@ -73,10 +79,46 @@ class GlobalNotification extends Component<{ classes: any }, IState> {
 
     render() {
         const {classes} = this.props;
-        const {message, key} = this.state.messageInfo;
+        let typeAction = {};
+        typeAction["text"] = [
+            <IconButton
+                key="close"
+                aria-label="Close"
+                color="inherit"
+                className={classes.close}
+                onClick={(reason) => {
+                    this.handleClose(reason)
+                }}
+            >
+                <CloseIcon/>
+            </IconButton>,
+        ];
+
+        typeAction["update"] = [
+            <Button key="update" size="small"
+                    color="inherit"
+                    onClick={(reason) => {
+                        updateService.performUpdate();
+                        this.handleClose(reason)
+                    }} >
+                Update
+            </Button>,
+            <IconButton
+                key="close"
+                aria-label="Close"
+                color="inherit"
+                className={classes.close}
+                onClick={(reason) => {
+                    this.handleClose(reason)
+                }}
+            >
+                <CloseIcon/>
+            </IconButton>
+        ];
+
         return (
             <Snackbar
-                key={key}
+                key={this.state.messageInfo.date}
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'left',
@@ -88,20 +130,8 @@ class GlobalNotification extends Component<{ classes: any }, IState> {
                 ContentProps={{
                     'aria-describedby': 'message-id',
                 }}
-                message={<span id="message-id">{message}</span>}
-                action={[
-                    <IconButton
-                        key="close"
-                        aria-label="Close"
-                        color="inherit"
-                        className={classes.close}
-                        onClick={(reason) => {
-                            this.handleClose(reason)
-                        }}
-                    >
-                        <CloseIcon/>
-                    </IconButton>,
-                ]}
+                message={<span id="message-id">{this.state.messageInfo.text}</span>}
+                action={typeAction[this.state.messageInfo.type]}
             />
         );
     }
