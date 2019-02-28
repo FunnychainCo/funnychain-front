@@ -14,6 +14,8 @@ import ArrowBackIos from "@material-ui/icons/ArrowBackIos";
 import {backService} from "../../service/BackService";
 import Button from "@material-ui/core/Button";
 import LolTokenIcon from "../Icon/LolTokenIcon";
+import WalletIcon from "../Icon/WalletIcon";
+import IconButton from "@material-ui/core/IconButton";
 //import {Link} from 'react-router-dom';
 
 const styles = theme => ({
@@ -46,19 +48,20 @@ class Header extends Component<{
     currentSelected: any,
     betPoolBalance: number,
     compact: boolean,
-    backAvailableA:boolean
+    backAvailableA: boolean
 }> {
     state = {
         currentSelected: false,
         betPoolBalance: 0,
         compact: true,
-        backAvailableA:backService.isBackAvailable()
+        backAvailableA: backService.isBackAvailable()
     };
     itemOrder = {
         "hot": 0,
         "fresh": 1
     };
-    private onBackAvailableRemoveListener: () => void = ()=>{};
+    private onBackAvailableRemoveListener: () => void = () => {
+    };
 
     componentDidMount() {
         window.addEventListener('resize', this.throttledHandleWindowResize);
@@ -125,8 +128,12 @@ class Header extends Component<{
                         </Tabs>
                     </Typography>
 
-                    <Chip label={(this.state.compact ? "" : "Pool: ") + this.state.betPoolBalance.toFixed(2)}
-                          color="secondary" avatar={<Avatar><LolTokenIcon/></Avatar>}/>&nbsp;&nbsp;
+                    {false && <Chip label={(this.state.compact ? "" : "Pool: ") + this.state.betPoolBalance.toFixed(2)}
+                                    color="secondary" avatar={<Avatar><LolTokenIcon/></Avatar>}/>}
+                    <IconButton>
+                        <WalletIcon/>
+                    </IconButton>
+                    &nbsp;&nbsp;
                     <LoginAccountIcon/>
                 </Toolbar>
             </AppBar>

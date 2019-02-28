@@ -139,6 +139,9 @@ export class AppComponent {
             this.platform.resume.subscribe((e) => {
                 this.sendEvent('native_code_resume', {});
             });
+            this.platform.backButton.subscribe((e) => {
+                this.sendEvent('native_back_button', {});
+            });
             window.addEventListener('message', function (event) {
                 // IMPORTANT: Check the origin of the data!
                 if (event.origin.indexOf('https://alpha.funnychain.co')

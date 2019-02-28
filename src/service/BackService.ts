@@ -1,5 +1,6 @@
 import EventEmitter from "eventemitter3/index";
 import {audit} from "./Audit";
+import {ionicMobileAppService} from "./mobile/IonicMobileAppService";
 
 export class BackService {
     eventEmitter = new EventEmitter();
@@ -10,8 +11,17 @@ export class BackService {
 
     start(){
         //event send by cordova in case of native integration
+        ionicMobileAppService.onNativeEvent("native_back_button", () => {
+            this.notifyBack();
+            if(this.backAvailable) {
+                this.goBack();
+            }
+            console.log("back");
+        });
+        //back pwa case
         document.addEventListener("backbutton", ()=>{
-            this.eventEmitter.emit("back_event", {});
+            this.notifyBack();
+            console.log("back2");
         }, false);
     }
 

@@ -17,6 +17,7 @@ import {GLOBAL_PROPERTIES} from "../properties/properties";
 import {ionicMobileAppService} from "../service/mobile/IonicMobileAppService";
 import {userNotificationService} from "../service/notification/UserNotificationService";
 import {deviceDetector} from "../service/mobile/DeviceDetector";
+import {backService} from "../service/BackService";
 
 
 class App extends React.Component<any, any> {
@@ -29,6 +30,7 @@ class App extends React.Component<any, any> {
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();
+        backService.start();
         audit.track("user/app/open",{
             target:deviceDetector.getDeviceString(),
             agent:window.navigator.userAgent,
@@ -46,14 +48,14 @@ class App extends React.Component<any, any> {
                 //type: 'dark'
                 //https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=212121&secondary.color=FF3D00
                 primary: {
-                    light: '#484848',
-                    main: '#212121',
-                    dark: '#000000',
+                    light: '#ffc046',
+                    main: '#ff8f00',
+                    dark: '#c56000',
                 },
                 secondary: {
-                    light: '#FF7539',
-                    main: '#FF3D00',
-                    dark: '#C30000',
+                    light: '#7843ff',
+                    main: '#1e00ff',
+                    dark: '#0000ca',
                 },
             },
         });

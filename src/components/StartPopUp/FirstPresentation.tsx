@@ -2,13 +2,13 @@ import * as React from 'react'
 import {Component} from 'react'
 import {withStyles} from '@material-ui/core/styles';
 import MobileStepper from "@material-ui/core/MobileStepper";
-import Button from "@material-ui/core/Button";
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import SwipeableViews from 'react-swipeable-views';
 import InstallButtons from './InstallButtons';
 import Typography from "@material-ui/core/Typography";
 import {deviceDetector} from "../../service/mobile/DeviceDetector";
+import Fab from "@material-ui/core/Fab";
 //https://materialdesignicons.com/
 
 const AutoPlaySwipeableViews = SwipeableViews;
@@ -52,7 +52,7 @@ class FirstPresentation extends Component<{
     render() {
         const {classes} = this.props;
         const {activeStep} = this.state;
-        const maxSteps = 2;
+        const maxSteps = 3;
         return (
             <div style={{flexGrow: 1, display: "flex", justifyContent: "center", flexDirection: "column"}}>
                 <AutoPlaySwipeableViews
@@ -69,13 +69,29 @@ class FirstPresentation extends Component<{
                         margin: "10%"
                     }}>
                         <div style={{textAlign: "center", fontSize: "1.0em"}}>
+                            <img style={{flexGrow: 1,maxWidth:"100%",maxHeight:"100%"}} src="https://ipfs.funnychain.co/ipfs/QmeZsE4XDAe6SdXwHrmj2XXx4Ce7xD7d3pxkwbQGFRLmFA" alt="install" />
+                            <h2>
+                                Welcome to Funnychain!
+                            </h2>
                             <b style={{fontSize: "1.0em"}}>
-                                Funnychain allows users to view and share the funniest memes. The platform also incentivizes users for creating, curating,
-                                and sharing memes.
+                                Like, post or invest
+                                on the best memes to
+                                get paid!
                             </b><br/>
                         </div>
                     </div>
                     <div key={"2"} style={{
+                        flexGrow: 1,
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        margin: "10%"
+                    }}>
+                        <div style={{textAlign: "center", fontSize: "1.0em"}}>
+                            <img style={{flexGrow: 1,maxWidth:"100%",maxHeight:"100%"}} src="https://ipfs.funnychain.co/ipfs/QmTkiEYEmy4kWraMD8tKChrvbhZe4HJa2vixjRLPWXw9gR" alt="install" />
+                        </div>
+                    </div>
+                    <div key={"3"} style={{
                         flexGrow: 1,
                         display: "flex",
                         justifyContent: "center",
@@ -100,16 +116,16 @@ class FirstPresentation extends Component<{
                     activeStep={activeStep}
                     className={classes.root}
                     nextButton={
-                        <Button size="small" onClick={this.handleNext} disabled={activeStep === maxSteps - 1}>
+                        <Fab variant="extended" color={"primary"} size="medium" onClick={this.handleNext} disabled={activeStep === maxSteps - 1}>
                             Next
                             <KeyboardArrowRight/>
-                        </Button>
+                        </Fab>
                     }
                     backButton={
-                        <Button size="small" onClick={this.handleBack} disabled={activeStep === 0}>
+                        <Fab variant="extended" color={"primary"} size="medium" onClick={this.handleBack} disabled={activeStep === 0}>
                             <KeyboardArrowLeft/>
                             Back
-                        </Button>
+                        </Fab>
                     }
                 />
             </div>

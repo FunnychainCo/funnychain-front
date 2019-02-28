@@ -46,8 +46,8 @@ class LoginAccountIcon extends Component<{history:any}, State> {
 
     render() {
 
-        const AccountLink = (props) => <Link to={"/account"} {...props} />;
-        const LogLink = (props) => <Link to={"/log"} {...props} />;
+        const AccountLink = (props) => <Link color="inherit" to={"/account"} {...props} />;
+        const LogLink = (props) => <Link color="inherit" to={"/log"} {...props} />;
         const LoggedButton =
             <Logged
                 component={AccountLink}
@@ -61,12 +61,12 @@ class LoginAccountIcon extends Component<{history:any}, State> {
                     this.setState({dialogLogin:true});
                 }}/>;
         return (
-            <div>
+            <React.Fragment>
                 {(this.state.user !== USER_ENTRY_NO_VALUE ? true : false) ?
                     LoggedButton : NotLoggedButton}
                 <AccountDrawer open={this.state.drawerOpen} onRequestChange={()=>{backService.goBack()}}/>
                 <LoginRegisterDialogV2 open={this.state.dialogLogin} onRequestClose={()=>{backService.goBack()}}/>
-            </div>)
+            </React.Fragment>)
     }
 }
 

@@ -52,7 +52,7 @@ export class IonicMobileAppService {
 
         this.onNativeEvent("native_code_ready", () => {
             this.hideSplashScreen();
-        })
+        });
     }
 
     getMobileHost(): string {

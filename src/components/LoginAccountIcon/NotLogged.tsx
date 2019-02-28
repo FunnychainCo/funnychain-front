@@ -23,16 +23,17 @@ export default class NotLogged extends Component<{
 
     render() {
         return (
-            <div>
+            <React.Fragment>
                 <IconButton
+                    color={"inherit"}
                     component={this.props.component}
                     aria-owns={this.state.anchorEl ? 'simple-menu' : ""}
                     aria-haspopup="true"
                     onClick={()=>{this.handleClose();this.props.onDialogLogin();}}
                 >
-                    <Menu style={{color:"#FFFFFF"}}/>
+                    <Menu/>
                 </IconButton>
-            </div>
+            </React.Fragment>
         )
     }
 }

@@ -14,4 +14,4 @@ call ionic cordova resources
 call ionic cordova build android --prod --release
 call jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore funnychain2-release-key.keystore -storepass funnychain -keypass funnychain .\platforms\android\app\build\outputs\apk\release\app-release-unsigned.apk funnychain
 call D:\Documents\AppData\AndroidSdk\AndroidSdk\build-tools\28.0.3\zipalign -v 4 .\platforms\android\app\build\outputs\apk\release\app-release-unsigned.apk funnychain-signed.apk
-move .\www .\docker\wwwAndroid
+copy .\www .\docker\wwwAndroid
