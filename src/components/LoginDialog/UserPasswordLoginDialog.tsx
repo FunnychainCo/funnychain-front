@@ -6,7 +6,7 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import TextField from "@material-ui/core/TextField/TextField";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
-import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
+import LoadingBlock from "../LoadingBlock/LoadingBlock";
 
 export default class UserPasswordLoginDialog extends Component<{
     onRequestClose:()=>void,
@@ -98,7 +98,7 @@ export default class UserPasswordLoginDialog extends Component<{
                         {this.state.resetEmailMode?"Reset Password":"Login"}
                     </Button>
                 </DialogActions>}
-                {this.state.loading && <CircularProgress/>}
+                {this.state.loading && <LoadingBlock/>}
             </ModalPage>
         )
     }

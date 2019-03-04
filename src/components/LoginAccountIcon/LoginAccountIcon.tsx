@@ -8,6 +8,8 @@ import {Link, withRouter} from 'react-router-dom'
 import AccountDrawer from "../Account/AccountDrawer";
 import LoginRegisterDialogV2 from "../LoginDialog/LoginRegisterDialogV2";
 import {backService} from "../../service/BackService";
+import WalletIcon from "../Icon/WalletIcon";
+import IconButton from "@material-ui/core/IconButton";
 
 interface State {
     user: UserEntry,
@@ -48,12 +50,19 @@ class LoginAccountIcon extends Component<{history:any}, State> {
 
         const AccountLink = (props) => <Link color="inherit" to={"/account"} {...props} />;
         const LogLink = (props) => <Link color="inherit" to={"/log"} {...props} />;
+        const walletLink = (props) => <Link to={"/user/current/wallet"} {...props} />;
         const LoggedButton =
+        <React.Fragment>
+            <IconButton component={walletLink}>
+                <WalletIcon/>
+            </IconButton>
+            &nbsp;&nbsp;
             <Logged
                 component={AccountLink}
                 onAccountClick={() => {
                 this.setState({drawerOpen:true});
-            }}/>;
+            }}/>
+        </React.Fragment>;
        const NotLoggedButton =
                 <NotLogged
                     component={LogLink}

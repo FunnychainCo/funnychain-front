@@ -9,6 +9,7 @@ import {MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import LolTokenIcon from "../Icon/LolTokenIcon";
 import MemeShareButton from "./MemeShareButton";
 import {deviceDetector} from "../../service/mobile/DeviceDetector";
+import {lolTokenService} from "../../service/generic/LolTokenService";
 
 const styles = theme => ({});
 
@@ -41,7 +42,7 @@ class MemeActionButton extends Component<{
                 {
                     !deviceDetector.isMobile() &&
                     <React.Fragment>
-                        <b>&#36;{(this.props.meme.dolarValue * 0.08).toFixed(2)}</b>(<LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)})
+                        <b>&#36;{(lolTokenService.convertLolToEuroValue(this.props.meme.dolarValue)).toFixed(2)}</b>(<LolTokenIcon/> {this.props.meme.dolarValue.toFixed(2)})
                     </React.Fragment>
                 }
                 {deviceDetector.isMobile() &&

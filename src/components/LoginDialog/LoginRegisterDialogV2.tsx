@@ -4,7 +4,6 @@ import ModalPage from "../ModalPage/ModalPage";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import Button from "@material-ui/core/Button/Button";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
-import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import List from "@material-ui/core/List/List";
 import ListItem from "@material-ui/core/ListItem/ListItem";
 import {MailOutline} from "@material-ui/icons";
@@ -14,6 +13,7 @@ import {EmoticonCool} from 'mdi-material-ui';
 import ListItemText from "@material-ui/core/ListItemText";
 import AboutUsDialog from "../StartPopUp/AboutUsDialog";
 import {backService} from "../../service/BackService";
+import LoadingBlock from "../LoadingBlock/LoadingBlock";
 
 interface State {
     loading: boolean,
@@ -98,7 +98,7 @@ export default class LoginRegisterDialogV2 extends Component<{
                         Cancel
                     </Button>
                 </DialogActions>}
-                {this.state.loading && <CircularProgress/>}
+                {this.state.loading && <LoadingBlock/>}
                 <UserPasswordLoginDialog onRequestClose={() => {
                     this.handleClose()
                 }} open={this.state.userPasswordLoginDialogOpen}/>

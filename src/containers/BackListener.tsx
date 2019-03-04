@@ -14,6 +14,14 @@ export default class BackListener extends Component<{
     };
 
     componentDidMount() {
+        if(this.props.location.pathname!=="/"){
+            //in this case that means the user has open an app page that is not the root so we replace the current by
+            // the root and push the new page so the back button is coherent.
+            this.props.history.replace("/");//replace by root
+            this.props.history.push(this.props.location.pathname);//replace by root
+            this.length++;
+            backService.notifyBackAvailable(this.isBackAvailable());
+        }
         this.removeBackListener = this.props.history.listen(location => {
             if (this.props.history.action === "POP") {
                 this.length--;

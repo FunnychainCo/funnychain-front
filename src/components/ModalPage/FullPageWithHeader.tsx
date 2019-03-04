@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import withMobileDialog from "@material-ui/core/withMobileDialog/withMobileDialog";
-import Header from "../Header/Header";
+import HeaderClassic from "../Header/HeaderClassic";
 
 class FullPageWithHeader extends Component<{
     title: string,
@@ -18,7 +18,7 @@ class FullPageWithHeader extends Component<{
                 open={this.props.open}
                 onClose={this.props.onRequestClose}
             >
-                <Header type={""} onTypeChange={(type) => {}}/>
+                <HeaderClassic/>
                 <div>{/*add div to have the button right after the text field*/}
                     {this.props.children}
                 </div>

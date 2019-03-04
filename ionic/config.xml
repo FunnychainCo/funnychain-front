@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="mobile.funnychain.co" version="0.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Funnychain</name>
+<widget id="co.funnychain.mobile" version="0.0.5" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Funnychain.co</name>
     <description>Funnychain application</description>
     <author email="contact@funnychain.co" href="http://funnychain.co">funnychain</author>
     <content src="index.html" />
@@ -23,11 +23,11 @@
     <preference name="AutoHideSplashScreen" value="true" />
     <platform name="android">
         <allow-intent href="market:*" />
-        <resource-file src="resources/android/n_icon/mipmap-mdpi/icon.png" target="res/drawable-mdpi/icon.png" />
-        <resource-file src="resources/android/n_icon/mipmap-hdpi/icon.png" target="res/drawable-hdpi/icon.png" />
-        <resource-file src="resources/android/n_icon/mipmap-xhdpi/icon.png" target="res/drawable-xhdpi/icon.png" />
-        <resource-file src="resources/android/n_icon/mipmap-xxhdpi/icon.png" target="res/drawable-xxhdpi/icon.png" />
-        <resource-file src="resources/android/n_icon/mipmap-xxxhdpi/icon.png" target="res/drawable-xxxhdpi/icon.png" />
+        <resource-file src="resources/android/n_icon/mipmap-mdpi/icon.png" target="res/drawable-mdpi/n_icon.png" />
+        <resource-file src="resources/android/n_icon/mipmap-hdpi/icon.png" target="res/drawable-hdpi/n_icon.png" />
+        <resource-file src="resources/android/n_icon/mipmap-xhdpi/icon.png" target="res/drawable-xhdpi/n_icon.png" />
+        <resource-file src="resources/android/n_icon/mipmap-xxhdpi/icon.png" target="res/drawable-xxhdpi/n_icon.png" />
+        <resource-file src="resources/android/n_icon/mipmap-xxxhdpi/icon.png" target="res/drawable-xxxhdpi/n_icon.png" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
         <icon density="hdpi" src="resources/android/icon/drawable-hdpi-icon.png" />

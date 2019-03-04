@@ -155,6 +155,8 @@ export class FirebaseAuthService {
             let from = this.currentUserUid;
             httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_TRANSFER() + "/" + from + "/" + to + "/" + amount).then(response => {
                 resolve(response.data.balance);
+            }).catch(reason => {
+                reject(reason);
             });
         });
     }
