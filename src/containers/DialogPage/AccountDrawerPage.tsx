@@ -5,7 +5,7 @@ import AccountDrawer from "../../components/Account/AccountDrawer";
 export default class AccountDrawerPage extends Component<{
     match: any,
     history: any
-}, void> {
+}, {}> {
 
     goBack() {
         //window.history.back();

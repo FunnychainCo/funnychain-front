@@ -13,7 +13,7 @@ export class DeviceDetector {
     //OS: Windows/Mac/Linux/Ios/android
     //viewer PWA/browser/Mobile app
 
-    getDeviceString():string{
+    start(){
         let md = new MobileDetect(window.navigator.userAgent);
         this.os = md.os()?md.os():"desktop";//TODO add Windows/Mac/Linux differences? //TODO add android/ios differences?
         this.type = "";
@@ -24,11 +24,22 @@ export class DeviceDetector {
         }else{
             this.type="web";
         }
+    }
+
+    getDeviceString():string{
         return this.os+"/"+this.type;
     }
 
     isMobile():boolean{
         return this.type === "mobile";
+    }
+
+    isAndroid():boolean{
+        return this.os === "AndroidOS";
+    }
+
+    isAndroidAndMobileApp():boolean{
+        return this.isMobile()&&this.isAndroid();
     }
 }
 

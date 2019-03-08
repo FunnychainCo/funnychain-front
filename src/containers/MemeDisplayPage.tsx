@@ -8,7 +8,7 @@ export default class MemeDisplayPage extends Component<{
     match: any,
     history: any,
     location:any
-}, void> {
+}, {}> {
     private removeListener: () => void;
     private memeLink: MemeLinkInterface;
 

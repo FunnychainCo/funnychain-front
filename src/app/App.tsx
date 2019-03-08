@@ -31,6 +31,7 @@ class App extends React.Component<any, any> {
         authService.start();
         ipfsFileUploadService.start();
         backService.start();
+        deviceDetector.start();
         audit.track("user/app/open",{
             target:deviceDetector.getDeviceString(),
             agent:window.navigator.userAgent,

@@ -3,22 +3,63 @@ import {Component} from 'react'
 import "./Meme.css"
 import withStyles from "@material-ui/core/styles/withStyles";
 import {
-    FacebookShareButton,
-    TwitterShareButton,
-    TelegramShareButton,
-    RedditShareButton,
-    WhatsappShareButton,
     FacebookIcon,
     TwitterIcon,
     TelegramIcon,
     RedditIcon,
-    WhatsappIcon
+    WhatsappIcon,
 } from 'react-share';
 import Button from "@material-ui/core/Button";
 import Popover from "@material-ui/core/Popover";
 import ShareIcon from '@material-ui/icons/Share';
+import ExternalLink from "../Link/ExternalLink";
 
 const styles = theme => ({});
+
+//https://github.com/nygardk/react-share/tree/master/src
+function objectToGetParams(object) {
+    return '?' + Object.keys(object)
+        .filter(key => !!object[key])
+        .map(key => `${key}=${encodeURIComponent(object[key])}`)
+        .join('&');
+}
+
+function facebookLink(url, {quote, hashtag}) {
+    return 'https://www.facebook.com/sharer/sharer.php' + objectToGetParams({
+        u: url,
+        quote,
+        hashtag,
+    });
+}
+
+function twitterLink(url, {title, via, hashtags = []}) {
+    return 'https://twitter.com/share' + objectToGetParams({
+        url,
+        text: title,
+        via,
+        hashtags: hashtags.join(','),
+    });
+}
+
+function telegramLink(url, {title}) {
+    return 'https://telegram.me/share/' + objectToGetParams({
+        url,
+        text: title,
+    });
+}
+
+function redditLink(url, {title}) {
+    return 'https://www.reddit.com/submit' + objectToGetParams({
+        url,
+        title,
+    });
+}
+
+function whatsappLink(url, {title, separator}) {
+    return 'https://api.whatsapp.com/send' + objectToGetParams({
+        text: title ? title + separator + url : url,
+    });
+}
 
 class MemeShareButton extends Component<{ url: string }, { anchorEl: any }> {
 
@@ -68,21 +109,20 @@ class MemeShareButton extends Component<{ url: string }, { anchorEl: any }> {
                 }}
             >
                 <div style={{overflow: "hidden", padding: "5px", margin: "5px"}}>
-                    <FacebookShareButton style={{overflow: "hidden", margin: "5px"}} url={this.props.url}><FacebookIcon
-                        size={32} round={true}/></FacebookShareButton>
-                    <TwitterShareButton style={{overflow: "hidden", margin: "5px"}} url={this.props.url}><TwitterIcon
-                        size={32} round={true}/></TwitterShareButton>
-                    <TelegramShareButton style={{overflow: "hidden", margin: "5px"}} url={this.props.url}><TelegramIcon
-                        size={32} round={true}/></TelegramShareButton>
-                    <RedditShareButton style={{overflow: "hidden", margin: "5px"}} url={this.props.url}><RedditIcon
-                        size={32} round={true}/></RedditShareButton>
-                    <WhatsappShareButton style={{overflow: "hidden", margin: "5px"}} url={this.props.url}><WhatsappIcon
-                        size={32} round={true}/></WhatsappShareButton>
+                    <ExternalLink href={facebookLink(this.props.url, {quote: '', hashtag: ''})}>
+                        <FacebookIcon size={32} round={true}/></ExternalLink>
+                    <ExternalLink href={twitterLink(this.props.url, {title: "", via: "https://funnychain.co"})}>
+                        <TwitterIcon size={32} round={true}/></ExternalLink>
+                    <ExternalLink href={telegramLink(this.props.url, {title: ""})}>
+                        <TelegramIcon size={32} round={true}/></ExternalLink>
+                    <ExternalLink href={redditLink(this.props.url, {title: ""})}>
+                        <RedditIcon size={32} round={true}/></ExternalLink>
+                    <ExternalLink href={whatsappLink(this.props.url, {title: "", separator: "-"})}>
+                        <WhatsappIcon size={32} round={true}/></ExternalLink>
                 </div>
             </Popover>
         </div>
     }
-
 }
 
 export default withStyles(styles)(MemeShareButton);

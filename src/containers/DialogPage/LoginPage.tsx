@@ -5,7 +5,7 @@ import LoginRegisterDialogV2 from "../../components/LoginDialog/LoginRegisterDia
 export default class LoginPage extends Component<{
     match: any,
     history: any
-}, void> {
+}, {}> {
 
     goBack() {
         //window.history.back();

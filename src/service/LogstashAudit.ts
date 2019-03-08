@@ -32,13 +32,19 @@ export class LogstashAudit {
      * @param value optional additional information (e.g. the msec it took to start the app)
      */
     public track(event: string, data?: any): void {
-        let finalvalue={
-            event:event,
-            user: this._userId,
-            session: this.sessionId,
-            session_duration: (+new Date()) - this.sessionStart,
-            ...data,
-        };
-        axios.put(this.tracking_url, finalvalue);
+        try {
+            let finalvalue = {
+                event: event,
+                user: this._userId,
+                session: this.sessionId,
+                session_duration: (+new Date()) - this.sessionStart,
+                ...data,
+            };
+            axios.put(this.tracking_url, finalvalue).catch(reason => {
+                //Do nothing otherwise will will notifi this error
+            });
+        }catch (err){
+            //Do nothing
+        }
     }
 }

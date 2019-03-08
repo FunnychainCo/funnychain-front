@@ -24,7 +24,7 @@ const serviceNotificationWebpush = '/service/notification/webpush';
 
 
 export const GLOBAL_PROPERTIES = {
-    VERSION:()=> "1.4.4",
+    VERSION:()=> "1.4.10",
 
     MIXPANEL_ACTIVATED: ()=> getGlobalProperties().mixpanelActivated,
 
@@ -44,7 +44,8 @@ export const GLOBAL_PROPERTIES = {
     MEME_SERVICE_GET_MAP:()=> hostAPI()+serviceMeme+"/creator/get/map",// /creator/get/map
 
     //Vote service
-    VOTE_SERVICE_UPVOTE:()=> hostAPI()+serviceVote+"/upvote",// /upvote/:uid/:memeid
+    VOTE_SERVICE_UPVOTE:()=> hostAPI()+serviceVote+"" +
+        "/upvote",// /upvote/:uid/:memeid
 
     //Wallet service
     WALLET_SERVICE_COMPUTE_WALLET:()=> hostAPI()+serviceWallet+"/compute_wallet/",// '/compute_wallet/:uid'

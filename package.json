@@ -11,6 +11,7 @@
     "@types/q": "^1.5.1",
     "@types/react": "^16.7.20",
     "@types/react-dom": "16.0.11",
+    "@types/react-router-dom": "^4.3.1",
     "@types/storejs": "^2.0.3",
     "axios": "^0.18.0",
     "blob-to-buffer": "^1.2.8",

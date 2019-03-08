@@ -1,11 +1,13 @@
 export class LolTokenService {
 
+    rate:number = 5/500; //5euro == 500token
+
     convertLolToEuroValue(lolValue: number): number {
-        return lolValue*(5/6500);//5euro == 6500token
+        return lolValue*(this.rate);
     }
 
     convertEuroToLolValue(euroValue: number): number {
-        return euroValue*(6500/5);//5euro == 6500token
+        return euroValue*(1/this.rate);//5euro == 6500token
     }
 }
 

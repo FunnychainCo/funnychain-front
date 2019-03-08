@@ -52,9 +52,13 @@ export class Audit {
     }
 
     private _track(event: string, data: any): void {
-        this.logstashAudit.track(event, data);
-        if (window.mixpanel && GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED() === "true") {
-            window.mixpanel.track(event, data);
+        try {
+            this.logstashAudit.track(event, data);
+            if (window.mixpanel && GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED() === "true") {
+                window.mixpanel.track(event, data);
+            }
+        }catch (err){
+            //do nothing
         }
     }
 

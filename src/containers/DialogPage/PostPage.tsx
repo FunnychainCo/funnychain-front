@@ -5,7 +5,7 @@ import CreateMemeDialog from "../../components/CreateMemeDialogFab/CreateMemeDia
 export default class PostPage extends Component<{
     match: any,
     history: any
-}, void> {
+}, {}> {
 
     goBack() {
         //window.history.back();

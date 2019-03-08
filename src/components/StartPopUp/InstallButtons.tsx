@@ -3,6 +3,7 @@ import {Component} from 'react';
 import ButtonBase from "@material-ui/core/ButtonBase";
 import {pwaService} from "../../service/mobile/PWAService";
 import {Link} from 'react-router-dom';
+import ExternalLink from "../Link/ExternalLink";
 
 export default class InstallButtons extends Component<{}, {
     displayAddToHomeButton: boolean,
@@ -39,11 +40,7 @@ export default class InstallButtons extends Component<{}, {
         return (
             <React.Fragment>
                 <ButtonBase
-                    onClick={
-                        () => {
-                            window.open("https://play.google.com/store/apps/details?id=mobile.funnychain.co", "_system");
-                        }
-                    }
+                    component={(props) => <ExternalLink href="https://play.google.com/store/apps/details?id=co.funnychain.mobile" {...props} />}
                     focusRipple
                     style={buttonStyle}
                 >
@@ -84,9 +81,6 @@ export default class InstallButtons extends Component<{}, {
                     component={installLink}
                     focusRipple
                     style={buttonStyle}
-                    onClick={() => {
-                        pwaService.triggerAddToHomeScreen();
-                    }}
                 >
                     <img
                         style={imageStyle}

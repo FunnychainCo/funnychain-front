@@ -4,7 +4,7 @@ import {authService} from "../../service/generic/AuthService";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import Logged from "./Logged";
 import NotLogged from "./NotLogged";
-import {Link, withRouter} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import AccountDrawer from "../Account/AccountDrawer";
 import LoginRegisterDialogV2 from "../LoginDialog/LoginRegisterDialogV2";
 import {backService} from "../../service/BackService";
@@ -17,7 +17,7 @@ interface State {
     drawerOpen: boolean,
 }
 
-class LoginAccountIcon extends Component<{history:any}, State> {
+export default class LoginAccountIcon extends Component<{}, State> {
     state: State = {
         user: USER_ENTRY_NO_VALUE,
         dialogLogin: false,
@@ -48,9 +48,9 @@ class LoginAccountIcon extends Component<{history:any}, State> {
 
     render() {
 
-        const AccountLink = (props) => <Link color="inherit" to={"/account"} {...props} />;
-        const LogLink = (props) => <Link color="inherit" to={"/log"} {...props} />;
-        const walletLink = (props) => <Link to={"/user/current/wallet"} {...props} />;
+        const AccountLink = (props:any) => <Link color="inherit" to={"/account"} {...props} />;
+        const LogLink = (props:any) => <Link color="inherit" to={"/log"} {...props} />;
+        const walletLink = (props:any) => <Link to={"/user/current/wallet"} {...props} />;
         const LoggedButton =
         <React.Fragment>
             <IconButton component={walletLink}>
@@ -78,5 +78,3 @@ class LoginAccountIcon extends Component<{history:any}, State> {
             </React.Fragment>)
     }
 }
-
-export default withRouter(LoginAccountIcon);
