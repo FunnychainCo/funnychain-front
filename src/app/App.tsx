@@ -35,7 +35,7 @@ class App extends React.Component<any, any> {
         audit.track("user/app/open",{
             target:deviceDetector.getDeviceString(),
             agent:window.navigator.userAgent,
-            version:GLOBAL_PROPERTIES.VERSION
+            version:GLOBAL_PROPERTIES.VERSION()
         });
         console.log("running on: "+deviceDetector.getDeviceString());
     }

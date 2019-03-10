@@ -23,6 +23,9 @@ export default class UserPasswordLoginDialog extends Component<{
     pw = "";
 
     setErrorMsg(error) {
+        if(error.startsWith("The email address is badly formatted.")){
+            error="Incorrect email or password.";
+        }
         this.setState({errorMessage: error});
     }
 
@@ -86,7 +89,7 @@ export default class UserPasswordLoginDialog extends Component<{
                             <span className="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                             <span className="sr-only">Error:</span>
                             &nbsp;{this.state.errorMessage}<br/>
-                            {!this.state.resetEmailMode && <div onClick={this.resetPassword} className="alert-link">Forgot Password?</div>}
+                            {!this.state.resetEmailMode && <Button variant="contained" onClick={this.resetPassword} className="alert-link">Forgot Password?</Button>}
                         </div>
                     }
                 </DialogContent>}

@@ -4,7 +4,7 @@ function getGlobalProperties():any{
     return window.GLOBAL_PROPERTIES_JS
 }
 
-function isDev(): boolean {
+export function isDev(): boolean {
     let href = window.location.href;
     return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:")
 }
@@ -24,7 +24,7 @@ const serviceNotificationWebpush = '/service/notification/webpush';
 
 
 export const GLOBAL_PROPERTIES = {
-    VERSION:()=> "1.4.10",
+    VERSION:()=> "1.4.11",
 
     MIXPANEL_ACTIVATED: ()=> getGlobalProperties().mixpanelActivated,
 

@@ -40,10 +40,13 @@ export class LogstashAudit {
                 session_duration: (+new Date()) - this.sessionStart,
                 ...data,
             };
-            axios.put(this.tracking_url, finalvalue).catch(reason => {
+            axios.put(this.tracking_url, finalvalue).then(value => {
+            }).catch(reason => {
+                console.error(reason);
                 //Do nothing otherwise will will notifi this error
             });
         }catch (err){
+            console.error(err);
             //Do nothing
         }
     }

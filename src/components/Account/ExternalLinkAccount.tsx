@@ -20,6 +20,11 @@ export default class ExternalLinkAccount extends Component<{}, {}> {
         return (
 
             <div className="fcContent">
+
+                <ListItem button component={(props) => <ExternalLink href="https://discordapp.com/invite/5G2ECV6" {...props} />}>
+                    <Discord/><ListItemText primary="Discord community"/>
+                </ListItem>
+
                 <ListItem button component={(props) => <ExternalLink href="https://funnychain.co" {...props} />}>
                     <Face/><ListItemText primary="Funnychain"/>
                 </ListItem>
@@ -31,10 +36,6 @@ export default class ExternalLinkAccount extends Component<{}, {}> {
 
                 <ListItem button component={(props) => <ExternalLink href="https://twitter.com/funnychain_co" {...props} />}>
                     <Twitter/><ListItemText primary="Twitter"/>
-                </ListItem>
-
-                <ListItem button component={(props) => <ExternalLink href="https://discordapp.com/invite/5G2ECV6" {...props} />}>
-                    <Discord/><ListItemText primary="Join on discord"/>
                 </ListItem>
 
                 {/**<ListItem button

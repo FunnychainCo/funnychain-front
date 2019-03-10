@@ -1,5 +1,5 @@
 import {LogstashAudit} from "./LogstashAudit";
-import {GLOBAL_PROPERTIES} from "../properties/properties";
+import {GLOBAL_PROPERTIES, isDev} from "../properties/properties";
 import {authService} from "./generic/AuthService";
 
 declare let window: any;
@@ -47,8 +47,7 @@ export class Audit {
     }
 
     private isDev(): boolean {
-        let href = window.location.href;
-        return href.startsWith("http://localhost:") || href.startsWith("http://127.0.0.1:");
+        return isDev();
     }
 
     private _track(event: string, data: any): void {
@@ -58,6 +57,7 @@ export class Audit {
                 window.mixpanel.track(event, data);
             }
         }catch (err){
+            console.error(err);
             //do nothing
         }
     }
@@ -80,9 +80,9 @@ export class Audit {
         let stack: any = new Error().stack;
         let finalData: any = {
             error: {},
-            additionalData: this.additionalData,
-            stack: stack,
-            version: GLOBAL_PROPERTIES.VERSION
+            additionalData: JSON.stringify(this.additionalData),
+            stack: JSON.stringify(stack),
+            version: GLOBAL_PROPERTIES.VERSION()
         };
 
         data.forEach((value, index) => {
@@ -91,6 +91,11 @@ export class Audit {
 
         if (!this.isDev()) {
             this._track(event, finalData);
+            if(event==="user/error") {
+                //sometime big data in finalData value or strange stringification may cause the event to
+                //not be notified so we always double error event
+                this._track(event, {});
+            }
         }
 
         if (event === "user/error") {
