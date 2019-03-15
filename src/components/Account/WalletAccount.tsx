@@ -3,20 +3,30 @@ import {Component} from 'react'
 import "./Account.css";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
+import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import {authService} from "../../service/generic/AuthService";
 import {userService} from "../../service/generic/UserService";
 import LolTokenIcon from "../Icon/LolTokenIcon";
 import {Link} from 'react-router-dom';
 
-export default class WalletAccount extends Component<{}, {}> {
-    state = {
+interface State
+{
+    user: UserEntry,
+    loading: boolean,
+    sendTokenValid: boolean
+}
+
+export default class WalletAccount extends Component<{}, State> {
+    state:State = {
         user: USER_ENTRY_NO_VALUE,
         loading: true,
         sendTokenValid: false
     };
 
-    private removeListener: () => void = ()=>{};
+    private removeListener: () => void = () => {
+    };
+    private removeListenerWallet: () => void = () => {
+    };
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
@@ -25,11 +35,14 @@ export default class WalletAccount extends Component<{}, {}> {
                     loading: true
                 });
             } else {
-                userService.computeWalletValue(user.uid).then(balance => {
-                    user.wallet = balance;
-                    this.setState({
-                        user: user,
-                        loading: false
+                this.setState({
+                    user: user,
+                    loading: false
+                });
+                this.removeListenerWallet = userService.getWalletLink().onChange(balance => {
+                    this.setState((state) => {
+                        state.user.wallet = balance;
+                        return {user: state.user}
                     });
                 });
             }
@@ -38,17 +51,15 @@ export default class WalletAccount extends Component<{}, {}> {
 
     componentWillUnmount() {
         this.removeListener();
+        this.removeListenerWallet();
     }
-
-    handleClose = () => {
-        this.setState({dialogOpen: false});
-    };
 
     render() {
         const walletLink = (props) => <Link to={"/user/current/wallet"} {...props} />;
         return (
             <div className="fcContent">
-                <ListItem button component={walletLink}><LolTokenIcon/><ListItemText primary={(this.state.user.wallet).toFixed(2) + ""}/></ListItem>
+                <ListItem button component={walletLink}><LolTokenIcon/><ListItemText
+                    primary={(this.state.user.wallet).toFixed(2) + ""}/></ListItem>
             </div>
         )
     }

@@ -9,11 +9,12 @@ export class OneSignalNotificationMobileSDK {
         this.pool = new TaskPoolExecutor();
     }
 
-    onNewNotificationFromServiceWorker(callback: (data: { title: string, message: string }) => void): ()=>void  {
+    onNewNotificationFromServiceWorker(callback: (data: { title: string, message: string,hash:string }) => void): ()=>void  {
         return ionicMobileAppService.onNativeEvent("native_notification_received", (data)=>{
             callback({
                 title:data.payload.title,
-                message:data.payload.body
+                message:data.payload.body,
+                hash:data.payload.data.hash,
             })
         });
     }

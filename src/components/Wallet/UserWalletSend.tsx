@@ -12,7 +12,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 interface State {
     user: UserEntry,
     loading: boolean,
-    processing:boolean,
+    processing: boolean,
     sendTokenValid: boolean,
     value: number,
 }
@@ -24,12 +24,14 @@ export default class UserWalletSend extends Component<{
     state: State = {
         user: USER_ENTRY_NO_VALUE,
         loading: true,
-        processing:false,
+        processing: false,
         sendTokenValid: false,
         value: 0,
     };
 
     private removeListener: () => void = () => {
+    };
+    private removeListenerWallet: () => void = () => {
     };
 
     dialogAddrDest: string = "";
@@ -42,11 +44,14 @@ export default class UserWalletSend extends Component<{
                     loading: true
                 });
             } else {
-                userService.computeWalletValue(user.uid).then(balance => {
-                    user.wallet = balance;
-                    this.setState({
-                        user: user,
-                        loading: false
+                this.setState({
+                    user: user,
+                    loading: false
+                });
+                this.removeListenerWallet = userService.getWalletLink().onChange(balance => {
+                    this.setState((state) => {
+                        state.user.wallet = balance;
+                        return {user: state.user}
                     });
                 });
             }
@@ -55,17 +60,18 @@ export default class UserWalletSend extends Component<{
 
     componentWillUnmount() {
         this.removeListener();
+        this.removeListenerWallet();
     }
 
     handleProcessTransaction = () => {
-        this.setState({processing:true});
+        this.setState({processing: true});
         console.log("send " + this.dialogAmount + " to " + this.dialogAddrDest);
         userService.transfer(this.dialogAddrDest, +this.dialogAmount).then(value => {
             userNotificationService.sendNotificationToUser("Transaction registered");
-            this.setState({processing:false});
+            this.setState({processing: false});
         }).catch(reason => {
             userNotificationService.sendNotificationToUser("An error has occurred with your transaction");
-            this.setState({processing:false});
+            this.setState({processing: false});
         });
     };
 
@@ -124,8 +130,14 @@ export default class UserWalletSend extends Component<{
                 <LoadingBlock/>
                 }
                 {this.state.processing &&
-                <div style={{flexDirection:"column",display:"flex",justifyContent:"center ",alignItems:"center",height:"100px"}}>
-                    <CircularProgress />
+                <div style={{
+                    flexDirection: "column",
+                    display: "flex",
+                    justifyContent: "center ",
+                    alignItems: "center",
+                    height: "100px"
+                }}>
+                    <CircularProgress/>
                     <div>Processing token transaction</div>
                 </div>
                 }

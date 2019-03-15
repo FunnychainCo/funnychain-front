@@ -10,8 +10,8 @@ export function isDev(): boolean {
 }
 
 
-//const devHostAPI = "http://127.0.0.1:8085";
-const devHostAPI = "https://alpha.funnychain.co/backend";
+const devHostAPI = "http://127.0.0.1:8085";
+//const devHostAPI = "https://alpha.funnychain.co/backend";
 const hostAPI = ()=>isDev()?devHostAPI:getGlobalProperties().hostAPI;
 
 const serviceUser = '/service/user';
@@ -21,6 +21,7 @@ const serviceReward = '/service/reward';
 const serviceWallet = '/service/wallet';
 const serviceIPFS = '/service/ipfs';
 const serviceNotificationWebpush = '/service/notification/webpush';
+const serviceNotification = '/service/notification';
 
 
 export const GLOBAL_PROPERTIES = {
@@ -59,6 +60,12 @@ export const GLOBAL_PROPERTIES = {
 
     //Notification
     PUSH_NOTIFICATION_SERVICE_SUBSCRIBE:()=> hostAPI()+serviceNotificationWebpush+"/subscribe/",
+    NOTIFICATION_SERVICE_MARK_SEEN:()=> hostAPI()+serviceNotification+"/mark/seen/",///mark/seen/:uid/:hash/
+    NOTIFICATION_SERVICE_UNSEEN_NUMBER:()=> hostAPI()+serviceNotification+"/unseen/number/",// /unseen/number/:uid/
+    NOTIFICATION_SERVICE_CLEAR:()=> hostAPI()+serviceNotification+"/clear/",// /clear/:uid/:hash
+    NOTIFICATION_SERVICE_GET_ALL:()=> hostAPI()+serviceNotification+"/notifications/",// /notifications/:uid/
+    NOTIFICATION_SERVICE_GET:()=> hostAPI()+serviceNotification+"notification/",// /notification/:uid/:hash
+
 
     //upload services
     URL_UPLOAD_SERVICE:()=> hostAPI()+serviceIPFS+"/uploadURLtoIPFS",//consume json data {url:string}

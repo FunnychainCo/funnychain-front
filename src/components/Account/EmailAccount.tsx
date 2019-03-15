@@ -10,6 +10,7 @@ import EmailAccountManagement from "./EmailAccountManagement";
 import Divider from "@material-ui/core/Divider";
 import ExternalLinkAccount from "./ExternalLinkAccount";
 import WalletAccount from "./WalletAccount";
+import NotificationListButton from "./NotificationListButton";
 
 export default class EmailAccount extends Component<{}, {
     user: UserEntry,
@@ -52,6 +53,7 @@ export default class EmailAccount extends Component<{}, {
                         <div className="fcContent">
                             <Divider />
                             <WalletAccount/>
+                            <NotificationListButton/>
                             <Divider />
                             <EmailAccountManagement/>
                             <Divider/>

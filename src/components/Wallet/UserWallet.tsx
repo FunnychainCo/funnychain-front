@@ -76,6 +76,8 @@ export default class UserWallet extends Component<{
 
     private removeListener: () => void = () => {
     };
+    private removeListenerWallet: () => void= () => {
+    };
 
     componentWillMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
@@ -84,11 +86,14 @@ export default class UserWallet extends Component<{
                     loading: true
                 });
             } else {
-                userService.computeWalletValue(user.uid).then(balance => {
-                    user.wallet = balance;
-                    this.setState({
-                        user: user,
-                        loading: false
+                this.setState({
+                    user: user,
+                    loading: false
+                });
+                this.removeListenerWallet = userService.getWalletLink().onChange(balance => {
+                    this.setState((state)=>{
+                        state.user.wallet = balance;
+                        return {user: state.user}
                     });
                 });
             }
@@ -97,6 +102,7 @@ export default class UserWallet extends Component<{
 
     componentWillUnmount() {
         this.removeListener();
+        this.removeListenerWallet();
     }
 
     changePage(index) {

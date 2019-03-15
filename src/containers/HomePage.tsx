@@ -7,6 +7,7 @@ import InstallPage from "./DialogPage/InstallPage";
 import InstallSkipDialog from "../components/StartPopUp/StartPopupSkipDialog";
 import UserMemeListPage from "./UserMemeListPage";
 import WalletPage from "./WalletPage";
+import NotificationListPage from "./NotificationListPage";
 
 export default class HomePage extends React.Component<{}, {}> {
     render() {
@@ -19,6 +20,7 @@ export default class HomePage extends React.Component<{}, {}> {
 
                 <Route exact path='/meme/:memeid' component={MemeDisplayPage} />
                 <Route exact path='/user/:userid/meme/list' component={UserMemeListPage} />
+                <Route exact path='/user/:userid/notification/list' component={NotificationListPage} />
                 <Route exact path='/install' component={InstallPage} />
                 <Route exact path='/user/current/wallet' component={WalletPage} />
 

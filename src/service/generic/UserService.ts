@@ -1,6 +1,7 @@
 import {firebaseAuthService} from "../firebase/FirebaseAuthService";
 import {UserEntry} from "./UserEntry";
 import {audit} from "../Audit";
+import {RemoteValue} from "../RemoteValue";
 
 export class UserService {
 
@@ -12,8 +13,8 @@ export class UserService {
         return firebaseAuthService.loadUserData(uid);
     }
 
-    computeWalletValue(uid: string): Promise<number>{
-        return firebaseAuthService.computeWalletValue(uid);
+    getWalletLink(): RemoteValue{
+        return firebaseAuthService.walletValue;
     }
 
 

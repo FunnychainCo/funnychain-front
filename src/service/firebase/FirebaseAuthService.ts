@@ -6,6 +6,7 @@ import {DATABASE_USERS, FirebaseUser} from "./shared/FireBaseDBDefinition";
 import {audit} from "../Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
 import {ipfsFileUploadService} from "../IPFSFileUploader/IPFSFileUploadService";
+import {RemoteValue} from "../RemoteValue";
 
 
 export class FirebaseAuthService {
@@ -17,6 +18,7 @@ export class FirebaseAuthService {
 
     userCache: { [id: string]: UserEntry; } = {};//{uid:userobj}
     userCacheTime: { [id: string]: number; } = {};//{uid:userobj}
+    walletValue:RemoteValue = new RemoteValue(0);
 
     constructor() {
     }
@@ -36,6 +38,11 @@ export class FirebaseAuthService {
                 this.eventEmitter.emit('AuthStateChanged', user.uid);
             }
         });
+        this.walletValue.setResync(callback => {
+            this.computeWalletValue(this.currentUserUid).then(value => {
+                callback(value);
+            })
+        })
     }
 
     changeEmail(newEmail: string): Promise<string> {
@@ -132,6 +139,7 @@ export class FirebaseAuthService {
                 callback(USER_ENTRY_NO_VALUE);
                 return;
             }
+            this.walletValue.refresh();
             this.loadUserData(uid).then((data) => {
                 callback(data);
             }).catch(reason => {
@@ -161,7 +169,7 @@ export class FirebaseAuthService {
         });
     }
 
-    computeWalletValue(uid: string): Promise<number> {
+    private computeWalletValue(uid: string): Promise<number> {
         return new Promise<number>((resolve, reject) => {
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
                 let fireBaseUser: FirebaseUser = user.val();
