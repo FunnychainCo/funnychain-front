@@ -7,11 +7,11 @@ import * as Q from 'q';
 import {Meme} from "../../generic/Meme";
 import EventEmitter from "eventemitter3";
 import {DATABASE_CACHE_USERS, DATABASE_MEMES, FirebaseMeme, FirebaseMemeDBStruct} from "../shared/FireBaseDBDefinition";
-import {PromisePoolExecutor} from "promise-pool-executor";
 import {audit} from "../../Audit";
 import {firebaseMemeService} from "../FirebaseMemeService";
 import {MemeLink} from "./MemeLink";
 import {loadMeme} from "./MemeLoaderFunction";
+import {TaskPoolExecutor} from "../../TaskPoolExecutor";
 
 export class MemeByUserLoader implements MemeLoaderInterface{
 
@@ -22,79 +22,93 @@ export class MemeByUserLoader implements MemeLoaderInterface{
     lastPostDate: number = new Date().getTime();
     alreadyProvided: number = 0;
     eventEmitter = new EventEmitter();
-    private pool: PromisePoolExecutor;
+    private pool: TaskPoolExecutor;
+    memes = [];
 
 
     constructor(public userid:string) {
-        this.pool = new PromisePoolExecutor(1);//concurrency limit of 1
+        this.pool = new TaskPoolExecutor();//concurrency limit of 1
+        this.pool.start();
     }
 
     loadMore(limit: number):void {
-        this.pool.addSingleTask({
-            generator: () => {
-                return new Promise(resolve => {
-                    if (limit < 0) {
-                        resolve(true);
-                        audit.reportError("negative limit");
-                    }
-                    if (limit <= 0) {
-                        resolve(true);
-                        return;
-                    }
-                    let ref = firebase.database().ref(DATABASE_CACHE_USERS+"/"+this.userid+"/memes");
-                    let memes = new Promise(resolveMemes => {
-                        ref.once("value", (memes) => {
-                            let promiseList:Promise<any>[] = [];
-                            let memesVal: FirebaseMemeDBStruct = memes.val() || {};
-                            Object.keys(memesVal).forEach(memekey => {
-                                promiseList.push(new Promise<any>(resolveMeme => {
-                                    firebase.database().ref(DATABASE_MEMES + "/" + memekey).once("value", (meme) => {
-                                        let memeVal: FirebaseMemeDBStruct = meme.val() || {};
-                                        resolveMeme(memeVal);
-                                    });
-                                }));
-                            });
-                            Promise.all(promiseList).then(value => {
-                                resolveMemes(value);
-                            });
-                        });
-                    });
-                    memes.then( (memesVal) => {
-                        let firebaseMemes: FirebaseMeme[] = [];
-                        Object.keys(memesVal).forEach(key => {
-                            let memeVal:FirebaseMeme = memesVal[key];
-                            if (this.userid === memeVal.uid) {
-                                firebaseMemes.push(memeVal);
-                            }
-                        });
-                        //sort meme by creation time
-                        firebaseMemes.sort((a, b) => {
-                            return a.created - b.created;
-                        });
-                        let orderedMemeKeys: string[] = [];
-                        firebaseMemes.forEach(fireBaseMeme => {
-                            orderedMemeKeys.push(fireBaseMeme.memeIpfsHash);
-                        });
-
-                        orderedMemeKeys = orderedMemeKeys.slice(this.alreadyProvided,limit);
-                        this.alreadyProvided+=orderedMemeKeys.length;
-                        if(orderedMemeKeys.length==0){
-                            this.eventEmitter.emit(this.EVENT_ON_INITIAL_LOADING_FINISHED, {});
-                        }
-
-                        if (orderedMemeKeys.length > 0) {
-                            this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeKeys);
-                        }
-                        this.convertor(firebaseMemes).then(memeLinkData => {
-                            this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
-                            resolve(true);
-                            if (Object.keys(memesVal).length != 0) {
-                                this.loadMore(limit - firebaseMemes.length);//TODO find a better system to load type fresh and hot
-                            }
-                        });
-                    });
-                })
+        this.pool.addResolvableTask((resolve, reject) => {
+            if (limit < 0) {
+                resolve(true);
+                audit.reportError("negative limit");
             }
+            if (limit <= 0) {
+                resolve(true);
+                return;
+            }
+            ////////////////
+            //Load user memes
+            ////////////////
+            let memes;
+            if(this.memes.length==0) {
+                //force refresh
+                memes = new Promise(resolveMemes => {
+                    let ref = firebase.database().ref(DATABASE_CACHE_USERS+"/"+this.userid+"/memes");
+                    ref.once("value", (memes) => {
+                        let promiseList: Promise<any>[] = [];
+                        let memesVal: FirebaseMemeDBStruct = memes.val() || {};
+                        Object.keys(memesVal).forEach(memekey => {
+                            promiseList.push(new Promise<any>(resolveMeme => {
+                                firebase.database().ref(DATABASE_MEMES + "/" + memekey).once("value", (meme) => {
+                                    let memeVal: FirebaseMemeDBStruct = meme.val() || {};
+                                    resolveMeme(memeVal);
+                                });
+                            }));
+                        });
+                        Promise.all(promiseList).then(value => {
+                            resolveMemes(value);
+                        });
+                    });
+                });
+            }else{
+                memes=Promise.resolve(this.memes);
+            }
+            /////////////////
+            // Notify memes
+            /////////////////
+            memes.then( (memesVal) => {
+                let firebaseMemes: FirebaseMeme[] = [];
+                Object.keys(memesVal).forEach(key => {
+                    let memeVal:FirebaseMeme = memesVal[key];
+                    if (this.userid === memeVal.uid) {
+                        firebaseMemes.push(memeVal);
+                    }
+                });
+                //sort meme by creation time
+                firebaseMemes.sort((a, b) => {
+                    return b.created - a.created;
+                });
+                let orderedMemeKeys: string[] = [];
+                firebaseMemes.forEach(fireBaseMeme => {
+                    orderedMemeKeys.push(fireBaseMeme.memeIpfsHash);
+                });
+
+                let orderedMemeSubsetKeys = orderedMemeKeys.slice(this.alreadyProvided,this.alreadyProvided+limit);
+                let orderedMemeSubset = firebaseMemes.slice(this.alreadyProvided,this.alreadyProvided+limit);
+                this.alreadyProvided+=orderedMemeSubsetKeys.length;
+                if(orderedMemeSubsetKeys.length==0){
+                    this.eventEmitter.emit(this.EVENT_ON_INITIAL_LOADING_FINISHED, {});
+                }
+
+                if (orderedMemeSubsetKeys.length > 0) {
+                    this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeSubsetKeys);
+                }
+                this.convertor(orderedMemeSubset).then(memeLinkData => {
+                    this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
+                    resolve(true);
+                    if (Object.keys(memesVal).length != 0) {
+                        let loadMoreNb = limit - firebaseMemes.length;
+                        if(loadMoreNb>0) {
+                            this.loadMore(loadMoreNb);
+                        }
+                    }
+                });
+            });
         });
     }
 
@@ -169,6 +183,7 @@ export class MemeByUserLoader implements MemeLoaderInterface{
     refresh() {
         this.lastPostDate=new Date().getTime();
         this.alreadyProvided = 0;
+        this.memes = [];
     }
 
 }

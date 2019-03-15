@@ -57,11 +57,12 @@ export default class UserMemeList extends Component<{
             let tmpState = {};
             tmpState[meme.id] = meme;
             this.setState((state) => ({memes: {...tmpState, ...state.memes}}));//reset view
+            console.log(meme);
         });
         this.removeCallbackOnMemeOrder();
         this.removeCallbackOnMemeOrder = this.memeLoader.onMemeOrder((memesKey: string[]) => {
-            this.state.memesOrder = this.state.memesOrder.concat(memesKey.reverse());
-            this.setState({memesOrder: this.state.memesOrder});//update view
+            let tmp = this.state.memesOrder.concat(memesKey);
+            this.setState({memesOrder: tmp});//update view
         });
         this.removeCallbackOnInitialLoadingFinished();
         this.removeCallbackOnInitialLoadingFinished = this.memeLoader.onInitialLoadingFinished(() => {
