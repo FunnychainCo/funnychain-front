@@ -29,7 +29,7 @@ export default class LoginAccountIcon extends Component<{}, State> {
     componentDidMount() {
         this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({user: user});
-        })
+        });
 
         this.removeBackListener = backService.onBack(() => {
             this.setState({drawerOpen:false});
@@ -48,7 +48,7 @@ export default class LoginAccountIcon extends Component<{}, State> {
 
     render() {
 
-        const AccountLink = (props:any) => <Link color="inherit" to={"/account"} {...props} />;
+        //const AccountLink = (props:any) => <Link color="inherit" to={"/account"} {...props} />;
         const LogLink = (props:any) => <Link color="inherit" to={"/log"} {...props} />;
         const walletLink = (props:any) => <Link to={"/user/current/wallet"} {...props} />;
         const LoggedButton =
@@ -58,7 +58,6 @@ export default class LoginAccountIcon extends Component<{}, State> {
             </IconButton>
             &nbsp;&nbsp;
             <Logged
-                component={AccountLink}
                 onAccountClick={() => {
                 this.setState({drawerOpen:true});
             }}/>
@@ -73,7 +72,9 @@ export default class LoginAccountIcon extends Component<{}, State> {
             <React.Fragment>
                 {(this.state.user !== USER_ENTRY_NO_VALUE ? true : false) ?
                     LoggedButton : NotLoggedButton}
-                <AccountDrawer open={this.state.drawerOpen} onRequestChange={()=>{backService.goBack()}}/>
+                <AccountDrawer open={this.state.drawerOpen} onRequestChange={()=>{
+                    this.setState({drawerOpen:false});
+                }}/>
                 <LoginRegisterDialogV2 open={this.state.dialogLogin} onRequestClose={()=>{backService.goBack()}}/>
             </React.Fragment>)
     }

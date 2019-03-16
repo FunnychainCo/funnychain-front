@@ -39,9 +39,11 @@ export class FirebaseAuthService {
             }
         });
         this.walletValue.setResync(callback => {
-            this.computeWalletValue(this.currentUserUid).then(value => {
-                callback(value);
-            })
+            if(this.currentUserUid && this.currentUserUid!=="") {
+                this.computeWalletValue(this.currentUserUid).then(value => {
+                    callback(value);
+                });
+            }
         })
     }
 
@@ -139,8 +141,8 @@ export class FirebaseAuthService {
                 callback(USER_ENTRY_NO_VALUE);
                 return;
             }
-            this.walletValue.refresh();
             this.loadUserData(uid).then((data) => {
+                this.walletValue.refresh();
                 callback(data);
             }).catch(reason => {
                 //onAuthStateChanged triggered by firebase before user has been initialized in backend server behavior OK

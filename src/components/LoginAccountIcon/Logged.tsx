@@ -16,6 +16,10 @@ export default class Logged extends Component<{
     unseenNumber: number,
 }> {
 
+    public static defaultProps = {
+        component: undefined
+    };
+
     state = {
         user: USER_ENTRY_NO_VALUE,
         unseenNumber: 0,

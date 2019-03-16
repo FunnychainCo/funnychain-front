@@ -78,7 +78,9 @@ export class AuthService implements AuthServiceInterface {
 
     register(email: string, pw: string): Promise<string> {
         this.switchMode(this.MODE_EMAIL);
-        return firebaseAuthService.register(email, pw);
+        let promise = firebaseAuthService.register(email, pw);
+        promise.then(value => {userNotificationService.sendNotificationToUser("Welcome to Funnychain!")})
+        return promise;
     }
 
     loginEmailPassword(email: string, password: string): Promise<string> {

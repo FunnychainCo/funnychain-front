@@ -16,12 +16,10 @@ export class BackService {
             if(this.backAvailable) {
                 this.goBack();
             }
-            console.log("back");
         });
         //back pwa case
         document.addEventListener("backbutton", ()=>{
             this.notifyBack();
-            console.log("back2");
         }, false);
     }
 

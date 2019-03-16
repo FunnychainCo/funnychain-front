@@ -10,8 +10,8 @@ export function isDev(): boolean {
 }
 
 
-const devHostAPI = "http://127.0.0.1:8085";
-//const devHostAPI = "https://alpha.funnychain.co/backend";
+//const devHostAPI = "http://127.0.0.1:8085";
+const devHostAPI = "https://alpha.funnychain.co/backend";
 const hostAPI = ()=>isDev()?devHostAPI:getGlobalProperties().hostAPI;
 
 const serviceUser = '/service/user';
@@ -25,7 +25,7 @@ const serviceNotification = '/service/notification';
 
 
 export const GLOBAL_PROPERTIES = {
-    VERSION:()=> "1.4.11",
+    VERSION:()=> "1.5.0",
 
     MIXPANEL_ACTIVATED: ()=> getGlobalProperties().mixpanelActivated,
 
