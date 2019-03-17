@@ -62,6 +62,9 @@ export class UserNotificationService {
     }
 
     markAllAsSeen():void{
+        if(!this.uid || this.uid===""){
+            return;
+        }
         axios.get(GLOBAL_PROPERTIES.NOTIFICATION_SERVICE_MARK_SEEN() + this.uid + "/" + "all", {}).then((response) => {
             this.notifications.refresh();
         }).catch(reason => {

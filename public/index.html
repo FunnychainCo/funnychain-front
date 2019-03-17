@@ -1,56 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- start PWA script -->
-<script type="text/javascript">
-    window._promptEventForPWA = null;
-    window.addEventListener("beforeinstallprompt", function (ev) {
-        console.log("early beforeinstallprompt received");
-        ev.preventDefault();// Stop Chrome from asking _now_
-        window._promptEventForPWA = ev;
-    });
-</script>
-<!-- end PWA script -->
-
-<!-- start setup properties script -->
-<script type="text/javascript" src="%PUBLIC_URL%/static/properties/properties.js"></script>
-<script type="text/javascript" src="%PUBLIC_URL%/static/script/fill.js"></script>
-<script type="text/javascript">
-    window.GLOBAL_PROPERTIES_JS = GLOBAL_PROPERTIES_JS;
-</script>
-<!-- end setup properties script -->
-
-<!-- start One Signal -->
-<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" no-cors async=""></script>
-<!-- end One Signal -->
-
-<!-- Google ads -->
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<script>
-    (adsbygoogle = window.adsbygoogle || []).push({
-        google_ad_client: "ca-pub-2015196854926270",
-        enable_page_level_ads: true
-    });
-</script>
-<!-- Google ads end -->
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script type="text/javascript">
-    if (GLOBAL_PROPERTIES_JS.googleAnalyticsActivated === "true") {
-        document.write('\x3Cscript async src="' + GLOBAL_PROPERTIES_JS.googleAnalyticsUrl + '">\x3C/script>');
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag('js', new Date());
-        gtag('config', GLOBAL_PROPERTIES_JS.googleAnalyticsId);
-    }
-</script>
-<!-- end - Google Analytics -->
-
 <head>
+    <!-- start PWA script -->
+    <script type="text/javascript">
+        window._promptEventForPWA = null;
+        window.addEventListener("beforeinstallprompt", function (ev) {
+            console.log("early beforeinstallprompt received");
+            ev.preventDefault();// Stop Chrome from asking _now_
+            window._promptEventForPWA = ev;
+        });
+    </script>
+    <!-- end PWA script -->
+
+    <!-- start setup properties script -->
+    <script type="text/javascript" src="%PUBLIC_URL%/static/properties/properties.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/static/script/fill.js"></script>
+    <script type="text/javascript">
+        window.GLOBAL_PROPERTIES_JS = GLOBAL_PROPERTIES_JS;
+    </script>
+    <!-- end setup properties script -->
+
+    <!-- start One Signal -->
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" no-cors async=""></script>
+    <!-- end One Signal -->
+
+    <!-- Google ads -->
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-2015196854926270",
+            enable_page_level_ads: true
+        });
+    </script>
+    <!-- Google ads end -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script type="text/javascript">
+        if (GLOBAL_PROPERTIES_JS.googleAnalyticsActivated === "true") {
+            document.write('\x3Cscript async src="' + GLOBAL_PROPERTIES_JS.googleAnalyticsUrl + '">\x3C/script>');
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+
+            gtag('js', new Date());
+            gtag('config', GLOBAL_PROPERTIES_JS.googleAnalyticsId);
+        }
+    </script>
+    <!-- end - Google Analytics -->
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-KPTK763');</script>
+    <!-- End Google Tag Manager -->
+
+
     <base href="/">
 
     <!-- ionic mobil compliance meta tags -->
@@ -113,6 +122,10 @@
 
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KPTK763"
+                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <noscript>
     You need to enable JavaScript to run this app.
 </noscript>

@@ -22,6 +22,7 @@ const serviceWallet = '/service/wallet';
 const serviceIPFS = '/service/ipfs';
 const serviceNotificationWebpush = '/service/notification/webpush';
 const serviceNotification = '/service/notification';
+const serviceComments = '/service/comments';
 
 
 export const GLOBAL_PROPERTIES = {
@@ -64,8 +65,10 @@ export const GLOBAL_PROPERTIES = {
     NOTIFICATION_SERVICE_UNSEEN_NUMBER:()=> hostAPI()+serviceNotification+"/unseen/number/",// /unseen/number/:uid/
     NOTIFICATION_SERVICE_CLEAR:()=> hostAPI()+serviceNotification+"/clear/",// /clear/:uid/:hash
     NOTIFICATION_SERVICE_GET_ALL:()=> hostAPI()+serviceNotification+"/notifications/",// /notifications/:uid/
-    NOTIFICATION_SERVICE_GET:()=> hostAPI()+serviceNotification+"notification/",// /notification/:uid/:hash
+    NOTIFICATION_SERVICE_GET:()=> hostAPI()+serviceNotification+"/notification/",// /notification/:uid/:hash
 
+    //comments
+    COMMENTS_SERVICE_POST:()=> hostAPI()+serviceComments+"/post/",// /Post
 
     //upload services
     URL_UPLOAD_SERVICE:()=> hostAPI()+serviceIPFS+"/uploadURLtoIPFS",//consume json data {url:string}

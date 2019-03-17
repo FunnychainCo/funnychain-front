@@ -5,7 +5,7 @@ import Button from "@material-ui/core/Button/Button";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {authService} from "../../service/generic/AuthService";
 import {Meme} from "../../service/generic/Meme";
-import {CashMultiple} from 'mdi-material-ui';
+import {CashMultiple} from 'mdi-material-ui';//https://materialdesignicons.com/
 
 const styles = theme => ({});
 

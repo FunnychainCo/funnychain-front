@@ -4,6 +4,8 @@ import {DATABASE_COMMENTS, FirebaseComment} from "./shared/FireBaseDBDefinition"
 import * as firebase from "firebase";
 import {userService} from "../generic/UserService";
 import {audit} from "../Audit";
+import axios from 'axios'
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 export class FirebaseCommentService implements CommentServiceInterface{
     getCommentVisitor(id): CommentsVisitor {
@@ -29,16 +31,14 @@ export class FirebaseCommentService implements CommentServiceInterface{
 
     postComment(memeId: string, message: string,uid:string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            let comment:FirebaseComment={
-                uid:uid,
+            axios.post(GLOBAL_PROPERTIES.COMMENTS_SERVICE_POST(), {
+                memeId:memeId,
                 message:message,
-                date:new Date().getTime()
-            };
-            firebase.database().ref(DATABASE_COMMENTS + '/' + memeId+"/"+new Date().getTime()).set(comment).then(() => {
+                uid:uid,
+            }).then((response) => {
                 resolve("ok");
-                this.getCommentNumber(memeId).then(value=>{
-                    firebase.database().ref(DATABASE_COMMENTS + "/" + memeId + "/count").set(value+1);
-                });
+            }).catch(reason => {
+                reject(reason);
             });
         });
     }

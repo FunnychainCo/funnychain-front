@@ -11,6 +11,10 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from '@material-ui/icons/Inbox';
 import {UiNotificationData} from "../../service/generic/Notification";
+import {Link} from "react-router-dom";
+import {CommentTextOutline} from 'mdi-material-ui';//https://materialdesignicons.com/
+import {TooltipImageOutline} from 'mdi-material-ui';//https://materialdesignicons.com/
+import {ThumbUpOutline} from 'mdi-material-ui';//https://materialdesignicons.com/
 
 interface State {
     notifications: { [id: string]: UiNotificationData }
@@ -45,7 +49,8 @@ export default class NotificationList extends Component<{
             data[entry.hash] = entry.entry;
             this.setState((state) => ({notifications: {...state.notifications, ...data}}));//reset view
         }, hash => {
-        },data => {});
+        }, data => {
+        });
     }
 
     componentWillUnmount() {
@@ -55,6 +60,21 @@ export default class NotificationList extends Component<{
     getOrderedKeys() {
         //Todo order
         return Object.keys(this.state.notifications);
+    }
+
+    getIcon(type: string): any {
+        if (type === "Comment" || type === "Comments") {
+            return <CommentTextOutline/>;
+        }
+        if (type === "Meme" || type === "Memes") {
+            return <TooltipImageOutline/>;
+        }
+        if (type === "Like" || type === "Likes") {
+            return <ThumbUpOutline/>;
+        }
+        else {
+            return <InboxIcon/>;
+        }
     }
 
     render() {
@@ -68,13 +88,14 @@ export default class NotificationList extends Component<{
                         {
                             this.getOrderedKeys().map((key) => {
                                 let notification = this.state.notifications[key];
-                                return <ListItem key={key}>
+                                const link = (props) => <Link to={notification.action?notification.action:"/"} {...props} />;
+                                return <ListItem button key={key} component={link}>
                                     <ListItemIcon>
-                                        <InboxIcon/>
+                                        {this.getIcon(notification.title)}
                                     </ListItemIcon>
                                     <ListItemText
-                                        primary={notification.title}
-                                        secondary={notification.text}
+                                        primary={notification.text}
+                                        secondary={""}
                                     />
                                 </ListItem>
                             })
