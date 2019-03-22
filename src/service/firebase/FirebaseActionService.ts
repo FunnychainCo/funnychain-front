@@ -3,11 +3,12 @@ import * as firebase from "firebase";
 import {ipfsFileUploadService} from "../uploader/IPFSFileUploadService";
 import {IPFSMeme} from "../generic/Meme";
 import {UserEntry} from "../generic/UserEntry";
-import {firebaseUpvoteService} from "./FirebaseUpvoteService";
-import {DATABASE_MEMES, MemeDBEntry} from "../database/shared/DBDefinition";
+import {upvoteService} from "../generic/UpvoteService";
+import {MemeDBEntry} from "../database/shared/DBDefinition";
 import {firebaseBetService} from "./FirebaseBetService";
 import {firebaseCommentService} from "./FirebaseCommentService";
-import {audit} from "../Audit";
+import {audit} from "../log/Audit";
+import {memeDatabase} from "../database/MemeDatabase";
 
 export class FirebaseActionService implements MemeServiceAction, CommentsAction {
     vote(memeID: string): Promise<string> {
@@ -17,7 +18,7 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                 reject("error");
             }else {
                 let uid = currentUser.uid;
-                firebaseUpvoteService.vote(memeID,uid).then(value => {
+                upvoteService.vote(memeID,uid).then(value => {
                     audit.track("user/vote",{
                         uid:uid
                     });
@@ -69,7 +70,7 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                     value:0,
                     hot:0
                 };
-                firebase.database().ref(DATABASE_MEMES + '/' + value.fileId).set(meme).then(()=>{
+                memeDatabase.postMeme(value.fileId,meme).then(() => {
                     audit.track("user/post/meme",{
                         uid:userUID
                     });

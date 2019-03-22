@@ -4,7 +4,7 @@ import axios from 'axios'
 import {ipfsFileUploadService} from "../../uploader/IPFSFileUploadService";
 import {userService} from "../../generic/UserService";
 import {firebaseCommentService} from "../FirebaseCommentService";
-import {firebaseUpvoteService} from "../FirebaseUpvoteService";
+import {upvoteService} from "../../generic/UpvoteService";
 import {MemeDBEntry} from "../../database/shared/DBDefinition";
 import {firebaseBetService} from "../FirebaseBetService";
 import {authService} from "../../generic/AuthService";
@@ -32,7 +32,7 @@ export function loadMeme(meme:MemeDBEntry):Promise<Meme>{
         let currentUserVoted;
         promiseArray.push(new Promise<boolean>((resolve2) => {
             authService.getLoggedUser().then(currentUserData => {
-                firebaseUpvoteService.hasVotedOnPost(meme.memeIpfsHash, currentUserData.uid).then(currentUserVotedValue => {
+                upvoteService.hasVotedOnPost(meme.memeIpfsHash, currentUserData.uid).then(currentUserVotedValue => {
                     currentUserVoted=currentUserVotedValue;
                     resolve2(true);
                 });
@@ -58,7 +58,7 @@ export function loadMeme(meme:MemeDBEntry):Promise<Meme>{
         //(3) compute number of vote
         let voteNumber;
         promiseArray.push(new Promise<boolean>((resolve2) => {
-            firebaseUpvoteService.countVote(meme.memeIpfsHash).then(voteNumberValue => {
+            upvoteService.countVote(meme.memeIpfsHash).then(voteNumberValue => {
                 voteNumber=voteNumberValue;
                 resolve2(true);
             });

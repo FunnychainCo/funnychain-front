@@ -1,4 +1,4 @@
-import {firebaseMemeService} from "../firebase/FirebaseMemeService";
+import {firebaseMemeService} from "../firebase/memes/FirebaseMemeService";
 //import {steemMemeService} from "../steem/SteemMemeService";
 import {MemeLinkInterface, MemeLoaderInterface, MemeServiceInterface} from "./ApplicationInterface";
 

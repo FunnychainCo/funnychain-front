@@ -9,7 +9,7 @@ import {authService} from "../../service/generic/AuthService";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {setInterval} from "timers";
-import {audit} from "../../service/Audit";
+import {audit} from "../../service/log/Audit";
 import {userNotificationService} from "../../service/notification/UserNotificationService";
 
 export interface IState {

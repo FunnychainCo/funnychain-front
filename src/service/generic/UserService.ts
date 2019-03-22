@@ -1,7 +1,7 @@
 import {firebaseAuthService} from "../firebase/FirebaseAuthService";
 import {UserEntry} from "./UserEntry";
-import {audit} from "../Audit";
-import {RemoteValue} from "../RemoteValue";
+import {audit} from "../log/Audit";
+import {RemoteValue} from "../concurency/RemoteValue";
 
 export class UserService {
 

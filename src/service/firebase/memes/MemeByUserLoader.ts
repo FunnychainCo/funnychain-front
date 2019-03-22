@@ -1,4 +1,3 @@
-import * as firebase from 'firebase';
 import {
     MemeLinkInterface,
     MemeLoaderInterface,
@@ -6,14 +5,16 @@ import {
 import * as Q from 'q';
 import {Meme} from "../../generic/Meme";
 import EventEmitter from "eventemitter3";
-import {DATABASE_CACHE_USERS, DATABASE_MEMES, MemeDBEntry, MemeDBStruct} from "../../database/shared/DBDefinition";
-import {audit} from "../../Audit";
-import {firebaseMemeService} from "../FirebaseMemeService";
+import {MemeDBEntry} from "../../database/shared/DBDefinition";
+import {audit} from "../../log/Audit";
+import {firebaseMemeService} from "./FirebaseMemeService";
 import {MemeLink} from "./MemeLink";
 import {loadMeme} from "./MemeLoaderFunction";
-import {TaskPoolExecutor} from "../../TaskPoolExecutor";
+import {TaskPoolExecutor} from "../../concurency/TaskPoolExecutor";
+import {memeDatabase} from "../../database/MemeDatabase";
+import {userDatabase} from "../../database/UserDatabase";
 
-export class MemeByUserLoader implements MemeLoaderInterface{
+export class MemeByUserLoader implements MemeLoaderInterface {
 
     readonly EVENT_ON_MEME = "onMeme";
     readonly EVENT_ON_MEME_DATA = "onMemeData";
@@ -26,12 +27,12 @@ export class MemeByUserLoader implements MemeLoaderInterface{
     memes = [];
 
 
-    constructor(public userid:string) {
+    constructor(public userid: string) {
         this.pool = new TaskPoolExecutor();//concurrency limit of 1
         this.pool.start();
     }
 
-    loadMore(limit: number):void {
+    loadMore(limit: number): void {
         this.pool.addResolvableTask((resolve, reject) => {
             if (limit < 0) {
                 resolve(true);
@@ -45,17 +46,14 @@ export class MemeByUserLoader implements MemeLoaderInterface{
             //Load user memes
             ////////////////
             let memes;
-            if(this.memes.length==0) {
+            if (this.memes.length == 0) {
                 //force refresh
                 memes = new Promise(resolveMemes => {
-                    let ref = firebase.database().ref(DATABASE_CACHE_USERS+"/"+this.userid+"/memes");
-                    ref.once("value", (memes) => {
+                    userDatabase.getUserMemeKeys(this.userid).then(memeKeys => {
                         let promiseList: Promise<any>[] = [];
-                        let memesVal: MemeDBStruct = memes.val() || {};
-                        Object.keys(memesVal).forEach(memekey => {
+                        Object.keys(memeKeys).forEach(memekey => {
                             promiseList.push(new Promise<any>(resolveMeme => {
-                                firebase.database().ref(DATABASE_MEMES + "/" + memekey).once("value", (meme) => {
-                                    let memeVal: MemeDBStruct = meme.val() || {};
+                                memeDatabase.getMeme(memekey).then(memeVal => {
                                     resolveMeme(memeVal);
                                 });
                             }));
@@ -65,16 +63,16 @@ export class MemeByUserLoader implements MemeLoaderInterface{
                         });
                     });
                 });
-            }else{
-                memes=Promise.resolve(this.memes);
+            } else {
+                memes = Promise.resolve(this.memes);
             }
             /////////////////
             // Notify memes
             /////////////////
-            memes.then( (memesVal) => {
+            memes.then((memesVal) => {
                 let firebaseMemes: MemeDBEntry[] = [];
                 Object.keys(memesVal).forEach(key => {
-                    let memeVal:MemeDBEntry = memesVal[key];
+                    let memeVal: MemeDBEntry = memesVal[key];
                     if (this.userid === memeVal.uid) {
                         firebaseMemes.push(memeVal);
                     }
@@ -88,10 +86,10 @@ export class MemeByUserLoader implements MemeLoaderInterface{
                     orderedMemeKeys.push(fireBaseMeme.memeIpfsHash);
                 });
 
-                let orderedMemeSubsetKeys = orderedMemeKeys.slice(this.alreadyProvided,this.alreadyProvided+limit);
-                let orderedMemeSubset = firebaseMemes.slice(this.alreadyProvided,this.alreadyProvided+limit);
-                this.alreadyProvided+=orderedMemeSubsetKeys.length;
-                if(orderedMemeSubsetKeys.length==0){
+                let orderedMemeSubsetKeys = orderedMemeKeys.slice(this.alreadyProvided, this.alreadyProvided + limit);
+                let orderedMemeSubset = firebaseMemes.slice(this.alreadyProvided, this.alreadyProvided + limit);
+                this.alreadyProvided += orderedMemeSubsetKeys.length;
+                if (orderedMemeSubsetKeys.length == 0) {
                     this.eventEmitter.emit(this.EVENT_ON_INITIAL_LOADING_FINISHED, {});
                 }
 
@@ -103,7 +101,7 @@ export class MemeByUserLoader implements MemeLoaderInterface{
                     resolve(true);
                     if (Object.keys(memesVal).length != 0) {
                         let loadMoreNb = limit - firebaseMemes.length;
-                        if(loadMoreNb>0) {
+                        if (loadMoreNb > 0) {
                             this.loadMore(loadMoreNb);
                         }
                     }
@@ -112,7 +110,7 @@ export class MemeByUserLoader implements MemeLoaderInterface{
         });
     }
 
-    private convertor(memes:MemeDBEntry[]):Promise<MemeLinkInterface[]> {
+    private convertor(memes: MemeDBEntry[]): Promise<MemeLinkInterface[]> {
         return new Promise<MemeLinkInterface[]>(resolve => {
             let memesPromise: Promise<Meme>[] = [];
             Object.keys(memes).forEach(memeID => {
@@ -154,7 +152,7 @@ export class MemeByUserLoader implements MemeLoaderInterface{
      * @param {(meme: MemeLinkInterface) => void} callback
      * @returns {() => void}
      */
-    onMemeData(callback: (meme: MemeLinkInterface) => void): () => void{
+    onMemeData(callback: (meme: MemeLinkInterface) => void): () => void {
         this.eventEmitter.on(this.EVENT_ON_MEME_DATA, callback);
         return () => {
             this.eventEmitter.off(this.EVENT_ON_MEME_DATA, callback);
@@ -166,7 +164,7 @@ export class MemeByUserLoader implements MemeLoaderInterface{
      * @param {(memesId: string[]) => void} callback
      * @returns {() => void}
      */
-    onMemeOrder(callback: (memesId: string[]) => void): () => void{
+    onMemeOrder(callback: (memesId: string[]) => void): () => void {
         this.eventEmitter.on(this.EVENT_ON_MEME_ORDER, callback);
         return () => {
             this.eventEmitter.off(this.EVENT_ON_MEME_ORDER, callback);
@@ -181,7 +179,7 @@ export class MemeByUserLoader implements MemeLoaderInterface{
     }
 
     refresh() {
-        this.lastPostDate=new Date().getTime();
+        this.lastPostDate = new Date().getTime();
         this.alreadyProvided = 0;
         this.memes = [];
     }

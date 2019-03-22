@@ -16,7 +16,7 @@ import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import {userService} from "../../service/generic/UserService";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import {audit} from "../../service/Audit";
+import {audit} from "../../service/log/Audit";
 
 export default class EmailAccountManagement extends Component<{}, {
     user:UserEntry,

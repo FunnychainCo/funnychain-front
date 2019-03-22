@@ -7,7 +7,7 @@ import {Send} from "@material-ui/icons";
 import {authService} from "../../service/generic/AuthService";
 import {MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
-import {audit} from "../../service/Audit";
+import {audit} from "../../service/log/Audit";
 
 interface State {
     logged: boolean,

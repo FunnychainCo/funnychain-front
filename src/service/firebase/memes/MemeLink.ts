@@ -1,4 +1,3 @@
-import * as firebase from 'firebase';
 import {
     CommentsVisitor,
     MemeLinkInterface,
@@ -6,9 +5,8 @@ import {
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../generic/Meme";
 import {firebaseCommentService} from "../FirebaseCommentService";
 import EventEmitter from "eventemitter3";
-import {DATABASE_MEMES, MemeDBEntry} from "../../database/shared/DBDefinition";
-import {audit} from "../../Audit";
 import {loadMeme} from "./MemeLoaderFunction";
+import {memeDatabase} from "../../database/MemeDatabase";
 
 export class MemeLink implements MemeLinkInterface{
     id: string;
@@ -35,12 +33,7 @@ export class MemeLink implements MemeLinkInterface{
             this.eventEmitter.emit("onSingleMeme", this.lastValidMeme);
         }
         return new Promise<string>((resolve, reject) => {
-            firebase.database().ref(DATABASE_MEMES + "/" + this.id).once("value", (memes) => {
-                if (memes == null) {
-                    audit.reportError(memes);
-                    return;
-                }
-                let meme:MemeDBEntry = memes.val() || {};
+            memeDatabase.getMeme(this.id).then(meme => {
                 loadMeme(meme).then(meme => {
                     this.lastValidMeme = meme;
                     this.eventEmitter.emit("onSingleMeme", meme);

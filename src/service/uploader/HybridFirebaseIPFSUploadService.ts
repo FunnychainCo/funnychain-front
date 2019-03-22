@@ -3,7 +3,7 @@ import {GLOBAL_PROPERTIES} from "../../properties/properties";
 import axios from 'axios';
 import {FileUploadServiceInterface, UploadedDataInterface} from "../generic/ApplicationInterface";
 import {idService} from "../IdService";
-import {audit} from "../Audit";
+import {audit} from "../log/Audit";
 
 export class HybridFirebaseIPFSUploadService implements FileUploadServiceInterface {
     uploadBuffer(buffer: Buffer, progress: (progressPercent: number) => void): Promise<UploadedDataInterface> {

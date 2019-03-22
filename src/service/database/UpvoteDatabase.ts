@@ -1,10 +1,8 @@
 import * as firebase from "firebase";
 import {DATABASE_UPVOTES} from "../database/shared/DBDefinition";
-import axios from 'axios'
-import {audit} from "../Audit";
-import {GLOBAL_PROPERTIES} from "../../properties/properties";
+import {audit} from "../log/Audit";
 
-export class FirebaseUpvoteService {
+export class UpvoteDatabase {
     dataBase = DATABASE_UPVOTES
 
     hasVotedOnPost(memeId: string, uid: string): Promise<boolean> {
@@ -40,20 +38,6 @@ export class FirebaseUpvoteService {
         });
     }
 
-    vote(memeId: string, uid: string): Promise<string> {
-        return new Promise<string>((resolve,reject) => {
-            /*firebase.database().ref(this.dataBase + '/' + memeId+"/"+uid).set(new Date().getTime()).then(() => {
-                resolve("ok");
-            });*/
-            axios.get(GLOBAL_PROPERTIES.VOTE_SERVICE_UPVOTE()+"/"+uid+"/"+memeId).then(response => {
-                resolve("ok");
-            }).catch(error => {
-                audit.reportError("fail to upvote",error);
-                reject("fail to upvote");
-            });
-        });
-    }
-
 }
 
-export let firebaseUpvoteService = new FirebaseUpvoteService();
+export let upvoteDatabase = new UpvoteDatabase();

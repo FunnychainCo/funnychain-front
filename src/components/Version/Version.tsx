@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
 import axios from 'axios'
-import {audit} from "../../service/Audit";
+import {audit} from "../../service/log/Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 export default class Version extends Component {

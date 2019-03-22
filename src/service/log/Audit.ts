@@ -1,6 +1,6 @@
 import {LogstashAudit} from "./LogstashAudit";
-import {GLOBAL_PROPERTIES, isDev} from "../properties/properties";
-import {authService} from "./generic/AuthService";
+import {GLOBAL_PROPERTIES, isDev} from "../../properties/properties";
+import {authService} from "../generic/AuthService";
 
 declare let window: any;
 

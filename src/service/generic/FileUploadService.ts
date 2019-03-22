@@ -1,7 +1,7 @@
 import {FileUploadServiceInterface, UploadedDataInterface} from "../generic/ApplicationInterface";
 import {ipfsFileUploadService} from "../uploader/IPFSFileUploadService";
 import {hybridFirebaseIPFSUploadService} from "../uploader/HybridFirebaseIPFSUploadService";
-import {audit} from "../Audit";
+import {audit} from "../log/Audit";
 
 //import {firebaseUploadService} from "../firebase/FirebaseUploadService";
 

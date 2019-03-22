@@ -1,54 +1,22 @@
-import * as firebase from "firebase";
-import {CACHE_DATABASE_META, DATABASE_BETS} from "../database/shared/DBDefinition";
+import {DATABASE_BETS} from "../database/shared/DBDefinition";
 import axios from 'axios'
-import {audit} from "../Audit";
+import {audit} from "../log/Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
+import {betDatabase} from "../database/BetDatabase";
 
 export class FirebaseBetService {
     dataBase = DATABASE_BETS;
 
     hasBetOnPost(memeId: string, uid: string): Promise<boolean> {
-        return new Promise<boolean>(resolve => {
-            firebase.database().ref(this.dataBase + "/" + memeId).once("value", (data) => {
-                let value: any[] = data.val();
-                let userHasVoted = false;
-                if(value!=null) {
-                    Object.keys(value).forEach(userid => {
-                        if (uid === userid) {
-                            userHasVoted = true;
-                        }
-                    });
-                }
-                resolve(userHasVoted);
-            });
-        });
+        return betDatabase.hasBetOnPost(memeId,uid);
     }
 
     countBet(memeId: string): Promise<number> {
-        return new Promise<number>(resolve => {
-            firebase.database().ref(this.dataBase + "/" + memeId).once("value", (data) => {
-                let value: any[] = data.val();
-                if(value==null){
-                    resolve(0);
-                }else{
-                    resolve(Object.keys(value).length);
-                }
-            }).catch(reason => {
-                audit.reportError(reason);
-                resolve(0);
-            });
-        });
+        return betDatabase.countBet(memeId);
     }
 
     getBetPool():Promise<number>{
-        return new Promise(resolve => {
-            firebase.database().ref(CACHE_DATABASE_META+"/bet_pool").once("value", (data) => {
-                resolve(data.val()?data.val().balance:0);
-            }).catch(reason => {
-                audit.reportError(reason);
-                resolve(0);
-            });
-        })
+        return betDatabase.getBetPool();
     }
 
     isBetEnableOnPost(memeId: string): Promise<boolean> {

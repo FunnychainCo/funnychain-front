@@ -6,9 +6,9 @@ import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import List from "@material-ui/core/List";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import InboxIcon from '@material-ui/icons/Inbox';
-import {walletService} from "../../service/firebase/WalletService";
+import {walletService} from "../../service/generic/WalletService";
 import {TransactionDBEntry} from "../../service/database/shared/DBDefinition";
-import {audit} from "../../service/Audit";
+import {audit} from "../../service/log/Audit";
 import moment from "moment";
 
 interface State {

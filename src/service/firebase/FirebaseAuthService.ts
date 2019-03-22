@@ -3,10 +3,11 @@ import * as firebase from "firebase";
 import EventEmitter from "eventemitter3";
 import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
 import {DATABASE_USERS, UserDBEntry} from "../database/shared/DBDefinition";
-import {audit} from "../Audit";
+import {audit} from "../log/Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
 import {ipfsFileUploadService} from "../uploader/IPFSFileUploadService";
-import {RemoteValue} from "../RemoteValue";
+import {RemoteValue} from "../concurency/RemoteValue";
+import {userDatabase} from "../database/UserDatabase";
 
 
 export class FirebaseAuthService {
@@ -18,7 +19,7 @@ export class FirebaseAuthService {
 
     userCache: { [id: string]: UserEntry; } = {};//{uid:userobj}
     userCacheTime: { [id: string]: number; } = {};//{uid:userobj}
-    walletValue:RemoteValue = new RemoteValue(0);
+    walletValue: RemoteValue = new RemoteValue(0);
 
     constructor() {
     }
@@ -39,7 +40,7 @@ export class FirebaseAuthService {
             }
         });
         this.walletValue.setResync(callback => {
-            if(this.currentUserUid && this.currentUserUid!=="") {
+            if (this.currentUserUid && this.currentUserUid !== "") {
                 this.computeWalletValue(this.currentUserUid).then(value => {
                     callback(value);
                 });
@@ -56,12 +57,12 @@ export class FirebaseAuthService {
             }
             delete this.userCache[user.uid];//invalidate cache
             user.updateEmail(newEmail).then(() => {
-                firebase.database().ref().child(this.userDataBaseName + '/' + user.uid + '/email')
-                    .set(newEmail)
-                    .then(() => {
-                        this.eventEmitter.emit('AuthStateChanged', user.uid);
-                        resolve("ok")
-                    });
+                userDatabase.changeEmail(user.uid, newEmail).then(value => {
+                    this.eventEmitter.emit('AuthStateChanged', user.uid);
+                    resolve("ok")
+                }).catch(reason => {
+                    reject(reason);
+                });
             }).catch((error) => {
                 audit.reportError(error);
             });
@@ -78,6 +79,8 @@ export class FirebaseAuthService {
             return firebase.auth().signInWithEmailAndPassword(user.email, currentPassword).then((user) => {
                 user.updatePassword(newTextValue).then(function () {
                     resolve("ok");
+                }).catch(reason => {
+                    reject(reason);
                 });
             });
         });
@@ -87,12 +90,12 @@ export class FirebaseAuthService {
         return new Promise((resolve, reject) => {
             let user: any = firebase.auth().currentUser;
             delete this.userCache[user.uid];//invalidate cache
-            firebase.database().ref().child(this.userDataBaseName + '/' + user.uid + '/displayName')
-                .set(newDisplayName)
-                .then(() => {
-                    this.eventEmitter.emit('AuthStateChanged', user.uid);
-                    resolve("ok");
-                });
+            userDatabase.changeDisplayName(user.uid,newDisplayName).then(value => {
+                this.eventEmitter.emit('AuthStateChanged', user.uid);
+                resolve("ok");
+            }).catch(reason => {
+                reject(reason);
+            })
         });
     }
 
@@ -173,21 +176,16 @@ export class FirebaseAuthService {
 
     private computeWalletValue(uid: string): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
-                let fireBaseUser: UserDBEntry = user.val();
-                if (fireBaseUser == null) {
-                    audit.reportError("uid does not exist in database");
-                    resolve(0);
-                    return;
-                } else {
-                    const httpClient = axios.create();
-                    httpClient.defaults.timeout = 1000;//ms
-                    httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_COMPUTE_WALLET() + uid).then(response => {
-                        resolve(response.data.balance);
-                    }).catch(reason => {
-                        resolve(fireBaseUser.wallet ? fireBaseUser.wallet.balance : 0);
-                    });
-                }
+            userDatabase.loadUserData(uid).then((fireBaseUser) => {
+                const httpClient = axios.create();
+                httpClient.defaults.timeout = 1000;//ms
+                httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_COMPUTE_WALLET() + uid).then(response => {
+                    resolve(response.data.balance);
+                }).catch(reason => {
+                    resolve(fireBaseUser.wallet ? fireBaseUser.wallet.balance : 0);
+                });
+            }).catch((err)=>{
+                reject(err);
             });
         });
     }
@@ -197,12 +195,12 @@ export class FirebaseAuthService {
             ////
             // START cache management
             ////
-            if(this.userCacheTime[uid] === undefined){
+            if (this.userCacheTime[uid] === undefined) {
                 this.userCacheTime[uid] = 0;
             }
             if (this.userCache[uid] != null && this.userCache[uid] != undefined) {
                 resolve(this.userCache[uid]);
-                if(!(new Date().getTime()-this.userCacheTime[uid]>5000)){
+                if (!(new Date().getTime() - this.userCacheTime[uid] > 5000)) {
                     //If it has been less than 5 s since last user update just return
                     return;
                 }
@@ -243,8 +241,7 @@ export class FirebaseAuthService {
     login(email: string, pw: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             firebase.auth().signInWithEmailAndPassword(email, pw).then((user) => {
-                firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
-                    let userValue: UserDBEntry = userData.val();
+                userDatabase.loadUserData(user.uid).then(userValue => {
                     if (userValue === null) {
                         console.warn("user recreated : ", user);
                         this.saveUser(user).then(() => {

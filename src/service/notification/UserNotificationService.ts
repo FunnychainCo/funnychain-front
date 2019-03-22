@@ -5,8 +5,8 @@ import {ionicMobileAppService} from "../mobile/IonicMobileAppService";
 import {OneSignalNotificationMobileSDK} from "./OneSignalNotificationMobileSDK";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
 import axios from 'axios'
-import {RemoteHashMap} from "../RemoteHashMap";
-import {audit} from "../Audit";
+import {RemoteHashMap} from "../concurency/RemoteHashMap";
+import {audit} from "../log/Audit";
 import EventEmitter from "eventemitter3";
 import {UiNotificationData} from "../generic/Notification";
 

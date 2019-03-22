@@ -1,4 +1,3 @@
-import * as firebase from 'firebase';
 import {
     MemeLinkInterface,
     MemeLoaderInterface,
@@ -6,14 +5,15 @@ import {
 import * as Q from 'q';
 import {Meme, MEME_TYPE_FRESH, MEME_TYPE_HOT} from "../../generic/Meme";
 import EventEmitter from "eventemitter3";
-import {DATABASE_MEMES, MemeDBEntry, MemeDBStruct} from "../../database/shared/DBDefinition";
+import {MemeDBEntry, MemeDBStruct} from "../../database/shared/DBDefinition";
 import {PromisePoolExecutor} from "promise-pool-executor";
-import {audit} from "../../Audit";
-import {firebaseMemeService} from "../FirebaseMemeService";
+import {audit} from "../../log/Audit";
+import {firebaseMemeService} from "./FirebaseMemeService";
 import {MemeLink} from "./MemeLink";
 import {loadMeme} from "./MemeLoaderFunction";
+import {memeDatabase} from "../../database/MemeDatabase";
 
-export class MemeLoader implements MemeLoaderInterface{
+export class MemeLoader implements MemeLoaderInterface {
 
     readonly EVENT_ON_MEME = "onMeme";
     readonly EVENT_ON_MEME_DATA = "onMemeData";
@@ -24,11 +24,11 @@ export class MemeLoader implements MemeLoaderInterface{
     private pool: PromisePoolExecutor;
 
 
-    constructor(public type:string,public tags:string[],public userid:string) {
+    constructor(public type: string, public tags: string[], public userid: string) {
         this.pool = new PromisePoolExecutor(1);//concurrency limit of 1
     }
 
-    loadMore(limit: number):void {
+    loadMore(limit: number): void {
         this.pool.addSingleTask({
             generator: () => {
                 return new Promise(resolve => {
@@ -40,26 +40,16 @@ export class MemeLoader implements MemeLoaderInterface{
                         resolve(true);
                         return;
                     }
-                    let query;
-                    if(this.type!=="") {
-                        let hot = this.type == MEME_TYPE_HOT;
-                        query = firebase.database().ref(DATABASE_MEMES).orderByChild(hot ? 'hot' : 'created').endAt(this.lastPostDate - 1);
-                    }else if(this.userid!==""){
-                        query = firebase.database().ref(DATABASE_MEMES).orderByChild('created').endAt(this.lastPostDate - 1);
-                    }else{
-                        throw new Error();
-                    }
 
-                    let ref = query.limitToLast(limit);
-                    ref.once("value", (memes) => {
-                        let memesVal: MemeDBStruct = memes.val() || {};
+                    memeDatabase.fetchMemes(memes => {
+                        let memesVal: MemeDBStruct = memes;
                         let firebaseMemes: MemeDBEntry[] = [];
                         Object.keys(memesVal).forEach(key => {
-                            let memeVal:MemeDBEntry = memesVal[key];
+                            let memeVal: MemeDBEntry = memesVal[key];
                             if (this.lastPostDate > memeVal.created) {
                                 this.lastPostDate = memeVal.created;
                             }
-                            if(this.type!=="") {
+                            if (this.type !== "") {
                                 if (this.type == MEME_TYPE_HOT && memeVal.hot) {
                                     firebaseMemes.push(memeVal);
                                 }
@@ -67,7 +57,7 @@ export class MemeLoader implements MemeLoaderInterface{
                                     firebaseMemes.push(memeVal);
                                 }
                             }
-                            if(this.userid!=="") {
+                            if (this.userid !== "") {
                                 if (this.userid === memeVal.uid) {
                                     firebaseMemes.push(memeVal);
                                 }
@@ -91,13 +81,13 @@ export class MemeLoader implements MemeLoaderInterface{
                                 this.loadMore(limit - firebaseMemes.length);//TODO find a better system to load type fresh and hot
                             }
                         });
-                    });
+                    }, this.type, this.userid, limit, this.lastPostDate);
                 })
             }
         });
     }
 
-    private convertor(memes:MemeDBEntry[]):Promise<MemeLinkInterface[]> {
+    private convertor(memes: MemeDBEntry[]): Promise<MemeLinkInterface[]> {
         return new Promise<MemeLinkInterface[]>(resolve => {
             let memesPromise: Promise<Meme>[] = [];
             Object.keys(memes).forEach(memeID => {
@@ -146,7 +136,7 @@ export class MemeLoader implements MemeLoaderInterface{
      * @param {(meme: MemeLinkInterface) => void} callback
      * @returns {() => void}
      */
-    onMemeData(callback: (meme: MemeLinkInterface) => void): () => void{
+    onMemeData(callback: (meme: MemeLinkInterface) => void): () => void {
         this.eventEmitter.on(this.EVENT_ON_MEME_DATA, callback);
         return () => {
             this.eventEmitter.off(this.EVENT_ON_MEME_DATA, callback);
@@ -158,7 +148,7 @@ export class MemeLoader implements MemeLoaderInterface{
      * @param {(memesId: string[]) => void} callback
      * @returns {() => void}
      */
-    onMemeOrder(callback: (memesId: string[]) => void): () => void{
+    onMemeOrder(callback: (memesId: string[]) => void): () => void {
         this.eventEmitter.on(this.EVENT_ON_MEME_ORDER, callback);
         return () => {
             this.eventEmitter.off(this.EVENT_ON_MEME_ORDER, callback);
@@ -166,7 +156,7 @@ export class MemeLoader implements MemeLoaderInterface{
     }
 
     refresh() {
-        this.lastPostDate=new Date().getTime();
+        this.lastPostDate = new Date().getTime();
     }
 
 }

@@ -2,10 +2,10 @@ import {
     MemeLinkInterface,
     MemeLoaderInterface,
     MemeServiceInterface
-} from "../generic/ApplicationInterface";
-import {MemeLoader} from "./memes/MemeLoader";
-import {MemeLink} from "./memes/MemeLink";
-import {MemeByUserLoader} from "./memes/MemeByUserLoader";
+} from "../../generic/ApplicationInterface";
+import {MemeLoader} from "./MemeLoader";
+import {MemeLink} from "./MemeLink";
+import {MemeByUserLoader} from "./MemeByUserLoader";
 
 export class FirebaseMemeService implements MemeServiceInterface {
 

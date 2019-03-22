@@ -1,5 +1,5 @@
 import {ionicMobileAppService} from "../mobile/IonicMobileAppService";
-import {TaskPoolExecutor} from "../TaskPoolExecutor";
+import {TaskPoolExecutor} from "../concurency/TaskPoolExecutor";
 
 export class OneSignalNotificationMobileSDK {
     private pool: TaskPoolExecutor;

@@ -1,5 +1,5 @@
 import EventEmitter from "eventemitter3/index";
-import {audit} from "../Audit";
+import {audit} from "../log/Audit";
 
 declare let window:any;
 

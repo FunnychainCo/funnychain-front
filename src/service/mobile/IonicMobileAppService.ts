@@ -1,9 +1,9 @@
-import {TaskPoolExecutor} from "../TaskPoolExecutor";
+import {TaskPoolExecutor} from "../concurency/TaskPoolExecutor";
 
 declare let window: any;
 import * as jquery from "jquery";
 import EventEmitter from "eventemitter3/index";
-import {audit} from "../Audit";
+import {audit} from "../log/Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
 import {updateService} from "../UpdateService";
 

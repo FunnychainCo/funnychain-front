@@ -11,7 +11,7 @@ import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {authService} from "../service/generic/AuthService";
 import HomePage from "../containers/HomePage";
 import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
-import {audit} from "../service/Audit";
+import {audit} from "../service/log/Audit";
 import {GLOBAL_PROPERTIES} from "../properties/properties";
 import {ionicMobileAppService} from "../service/mobile/IonicMobileAppService";
 import {userNotificationService} from "../service/notification/UserNotificationService";
