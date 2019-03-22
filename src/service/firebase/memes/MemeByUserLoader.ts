@@ -6,7 +6,7 @@ import {
 import * as Q from 'q';
 import {Meme} from "../../generic/Meme";
 import EventEmitter from "eventemitter3";
-import {DATABASE_CACHE_USERS, DATABASE_MEMES, FirebaseMeme, FirebaseMemeDBStruct} from "../shared/FireBaseDBDefinition";
+import {DATABASE_CACHE_USERS, DATABASE_MEMES, MemeDBEntry, MemeDBStruct} from "../../database/shared/DBDefinition";
 import {audit} from "../../Audit";
 import {firebaseMemeService} from "../FirebaseMemeService";
 import {MemeLink} from "./MemeLink";
@@ -51,11 +51,11 @@ export class MemeByUserLoader implements MemeLoaderInterface{
                     let ref = firebase.database().ref(DATABASE_CACHE_USERS+"/"+this.userid+"/memes");
                     ref.once("value", (memes) => {
                         let promiseList: Promise<any>[] = [];
-                        let memesVal: FirebaseMemeDBStruct = memes.val() || {};
+                        let memesVal: MemeDBStruct = memes.val() || {};
                         Object.keys(memesVal).forEach(memekey => {
                             promiseList.push(new Promise<any>(resolveMeme => {
                                 firebase.database().ref(DATABASE_MEMES + "/" + memekey).once("value", (meme) => {
-                                    let memeVal: FirebaseMemeDBStruct = meme.val() || {};
+                                    let memeVal: MemeDBStruct = meme.val() || {};
                                     resolveMeme(memeVal);
                                 });
                             }));
@@ -72,9 +72,9 @@ export class MemeByUserLoader implements MemeLoaderInterface{
             // Notify memes
             /////////////////
             memes.then( (memesVal) => {
-                let firebaseMemes: FirebaseMeme[] = [];
+                let firebaseMemes: MemeDBEntry[] = [];
                 Object.keys(memesVal).forEach(key => {
-                    let memeVal:FirebaseMeme = memesVal[key];
+                    let memeVal:MemeDBEntry = memesVal[key];
                     if (this.userid === memeVal.uid) {
                         firebaseMemes.push(memeVal);
                     }
@@ -112,11 +112,11 @@ export class MemeByUserLoader implements MemeLoaderInterface{
         });
     }
 
-    private convertor(memes:FirebaseMeme[]):Promise<MemeLinkInterface[]> {
+    private convertor(memes:MemeDBEntry[]):Promise<MemeLinkInterface[]> {
         return new Promise<MemeLinkInterface[]>(resolve => {
             let memesPromise: Promise<Meme>[] = [];
             Object.keys(memes).forEach(memeID => {
-                let meme: FirebaseMeme = memes[memeID];
+                let meme: MemeDBEntry = memes[memeID];
                 let promise = loadMeme(meme);
                 promise.then(convertedMeme => {
                     let memeLink = firebaseMemeService.getMemeLink(convertedMeme.id);

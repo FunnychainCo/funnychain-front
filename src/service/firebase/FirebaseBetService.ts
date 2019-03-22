@@ -1,5 +1,5 @@
 import * as firebase from "firebase";
-import {DATABASE_BETS, DATABASE_META} from "./shared/FireBaseDBDefinition";
+import {CACHE_DATABASE_META, DATABASE_BETS} from "../database/shared/DBDefinition";
 import axios from 'axios'
 import {audit} from "../Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
@@ -42,7 +42,7 @@ export class FirebaseBetService {
 
     getBetPool():Promise<number>{
         return new Promise(resolve => {
-            firebase.database().ref(DATABASE_META+"/bet_pool").once("value", (data) => {
+            firebase.database().ref(CACHE_DATABASE_META+"/bet_pool").once("value", (data) => {
                 resolve(data.val()?data.val().balance:0);
             }).catch(reason => {
                 audit.reportError(reason);

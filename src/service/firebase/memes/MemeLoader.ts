@@ -6,7 +6,7 @@ import {
 import * as Q from 'q';
 import {Meme, MEME_TYPE_FRESH, MEME_TYPE_HOT} from "../../generic/Meme";
 import EventEmitter from "eventemitter3";
-import {DATABASE_MEMES, FirebaseMeme, FirebaseMemeDBStruct} from "../shared/FireBaseDBDefinition";
+import {DATABASE_MEMES, MemeDBEntry, MemeDBStruct} from "../../database/shared/DBDefinition";
 import {PromisePoolExecutor} from "promise-pool-executor";
 import {audit} from "../../Audit";
 import {firebaseMemeService} from "../FirebaseMemeService";
@@ -52,10 +52,10 @@ export class MemeLoader implements MemeLoaderInterface{
 
                     let ref = query.limitToLast(limit);
                     ref.once("value", (memes) => {
-                        let memesVal: FirebaseMemeDBStruct = memes.val() || {};
-                        let firebaseMemes: FirebaseMeme[] = [];
+                        let memesVal: MemeDBStruct = memes.val() || {};
+                        let firebaseMemes: MemeDBEntry[] = [];
                         Object.keys(memesVal).forEach(key => {
-                            let memeVal:FirebaseMeme = memesVal[key];
+                            let memeVal:MemeDBEntry = memesVal[key];
                             if (this.lastPostDate > memeVal.created) {
                                 this.lastPostDate = memeVal.created;
                             }
@@ -97,11 +97,11 @@ export class MemeLoader implements MemeLoaderInterface{
         });
     }
 
-    private convertor(memes:FirebaseMeme[]):Promise<MemeLinkInterface[]> {
+    private convertor(memes:MemeDBEntry[]):Promise<MemeLinkInterface[]> {
         return new Promise<MemeLinkInterface[]>(resolve => {
             let memesPromise: Promise<Meme>[] = [];
             Object.keys(memes).forEach(memeID => {
-                let meme: FirebaseMeme = memes[memeID];
+                let meme: MemeDBEntry = memes[memeID];
                 let promise = loadMeme(meme);
                 promise.then(convertedMeme => {
                     let memeLink = firebaseMemeService.getMemeLink(convertedMeme.id);

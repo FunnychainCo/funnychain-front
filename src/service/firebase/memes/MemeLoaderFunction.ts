@@ -1,16 +1,16 @@
 import {UserEntry} from "../../generic/UserEntry";
 import {IPFSMeme, Meme} from "../../generic/Meme";
 import axios from 'axios'
-import {ipfsFileUploadService} from "../../IPFSFileUploader/IPFSFileUploadService";
+import {ipfsFileUploadService} from "../../uploader/IPFSFileUploadService";
 import {userService} from "../../generic/UserService";
 import {firebaseCommentService} from "../FirebaseCommentService";
 import {firebaseUpvoteService} from "../FirebaseUpvoteService";
-import {FirebaseMeme} from "../shared/FireBaseDBDefinition";
+import {MemeDBEntry} from "../../database/shared/DBDefinition";
 import {firebaseBetService} from "../FirebaseBetService";
 import {authService} from "../../generic/AuthService";
 import {imageService} from "../../ImageService";
 
-export function loadMeme(meme:FirebaseMeme):Promise<Meme>{
+export function loadMeme(meme:MemeDBEntry):Promise<Meme>{
     return new Promise<Meme>((resolve, reject) => {
         let memeIPFSLink = ipfsFileUploadService.convertIPFSLinkToHttpsLink(meme.memeIpfsHash);
         let promiseArray:Promise<boolean>[] = [];

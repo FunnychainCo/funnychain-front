@@ -2,10 +2,10 @@ import axios from 'axios'
 import * as firebase from "firebase";
 import EventEmitter from "eventemitter3";
 import {PROVIDER_FIREBASE_MAIL, USER_ENTRY_NO_VALUE, UserEntry} from "../generic/UserEntry";
-import {DATABASE_USERS, FirebaseUser} from "./shared/FireBaseDBDefinition";
+import {DATABASE_USERS, UserDBEntry} from "../database/shared/DBDefinition";
 import {audit} from "../Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
-import {ipfsFileUploadService} from "../IPFSFileUploader/IPFSFileUploadService";
+import {ipfsFileUploadService} from "../uploader/IPFSFileUploadService";
 import {RemoteValue} from "../RemoteValue";
 
 
@@ -174,7 +174,7 @@ export class FirebaseAuthService {
     private computeWalletValue(uid: string): Promise<number> {
         return new Promise<number>((resolve, reject) => {
             firebase.database().ref(this.userDataBaseName + "/" + uid).once("value").then((user) => {
-                let fireBaseUser: FirebaseUser = user.val();
+                let fireBaseUser: UserDBEntry = user.val();
                 if (fireBaseUser == null) {
                     audit.reportError("uid does not exist in database");
                     resolve(0);
@@ -244,7 +244,7 @@ export class FirebaseAuthService {
         return new Promise<string>((resolve, reject) => {
             firebase.auth().signInWithEmailAndPassword(email, pw).then((user) => {
                 firebase.database().ref(this.userDataBaseName + "/" + user.uid).once("value").then((userData) => {
-                    let userValue: FirebaseUser = userData.val();
+                    let userValue: UserDBEntry = userData.val();
                     if (userValue === null) {
                         console.warn("user recreated : ", user);
                         this.saveUser(user).then(() => {
@@ -267,7 +267,7 @@ export class FirebaseAuthService {
         return firebase.auth().sendPasswordResetEmail(email)
     }
 
-    private saveUser(user: FirebaseUser): Promise<string> {
+    private saveUser(user: UserDBEntry): Promise<string> {
         return new Promise((resolve, reject) => {
             //configure default HTTP timeout
             const httpClient = axios.create();

@@ -1,10 +1,10 @@
 import {CommentsAction, MemeServiceAction, UploadedDataInterface} from "../generic/ApplicationInterface";
 import * as firebase from "firebase";
-import {ipfsFileUploadService} from "../IPFSFileUploader/IPFSFileUploadService";
+import {ipfsFileUploadService} from "../uploader/IPFSFileUploadService";
 import {IPFSMeme} from "../generic/Meme";
 import {UserEntry} from "../generic/UserEntry";
 import {firebaseUpvoteService} from "./FirebaseUpvoteService";
-import {DATABASE_MEMES, FirebaseMeme} from "./shared/FireBaseDBDefinition";
+import {DATABASE_MEMES, MemeDBEntry} from "../database/shared/DBDefinition";
 import {firebaseBetService} from "./FirebaseBetService";
 import {firebaseCommentService} from "./FirebaseCommentService";
 import {audit} from "../Audit";
@@ -62,7 +62,7 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                     return;
                 }
                 let userUID = currentUser.uid;
-                let meme:FirebaseMeme = {
+                let meme:MemeDBEntry = {
                     memeIpfsHash: value.fileId,
                     uid: userUID,
                     created: new Date().getTime(),

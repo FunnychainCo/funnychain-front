@@ -1,6 +1,6 @@
 import {CommentServiceInterface, CommentsVisitor} from "../generic/ApplicationInterface";
 import {MemeComment} from "../generic/MemeComment";
-import {DATABASE_COMMENTS, FirebaseComment} from "./shared/FireBaseDBDefinition";
+import {DATABASE_CACHE_COMMENTS, DATABASE_COMMENTS, CommentDBEntry} from "../database/shared/DBDefinition";
 import * as firebase from "firebase";
 import {userService} from "../generic/UserService";
 import {audit} from "../Audit";
@@ -14,7 +14,7 @@ export class FirebaseCommentService implements CommentServiceInterface{
 
     getCommentNumber(memeId: string): Promise<number> {
         return new Promise<number>(resolve => {
-            firebase.database().ref(DATABASE_COMMENTS + "/" + memeId + "/count").once("value", (data) => {
+            firebase.database().ref(DATABASE_CACHE_COMMENTS + "/" + memeId + "/count").once("value", (data) => {
                 let value: number = data.val();
                 if(value==null){
                     //no comment in the database so no count entry
@@ -58,11 +58,11 @@ export class FireBaseCommentVisitor implements CommentsVisitor{
                 audit.reportError(comments);
                 return;
             }
-            //let commentsValue:{[id:string] : FirebaseComment;} = comments.val();
+            //let commentsValue:{[id:string] : CommentDBEntry;} = comments.val();
             if(comments.key==="count"){
                 return;
             }
-            let commentsValue:FirebaseComment = comments.val();
+            let commentsValue:CommentDBEntry = comments.val();
             if (commentsValue == null) {
                 callback([]);
                 return;

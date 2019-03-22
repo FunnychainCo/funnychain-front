@@ -7,7 +7,7 @@ import List from "@material-ui/core/List";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import InboxIcon from '@material-ui/icons/Inbox';
 import {walletService} from "../../service/firebase/WalletService";
-import {FirebaseTransaction} from "../../service/firebase/shared/FireBaseDBDefinition";
+import {TransactionDBEntry} from "../../service/database/shared/DBDefinition";
 import {audit} from "../../service/Audit";
 import moment from "moment";
 
@@ -49,7 +49,7 @@ export default class UserWalletTransaction extends Component<{
     render() {
         return (
             <List component="nav">
-                {this.state.transactions.map((value: FirebaseTransaction, index, array) => {
+                {this.state.transactions.map((value: TransactionDBEntry, index, array) => {
                     let addressMessage = "ERROR";
                     let date = moment(value.date).fromNow();
                     let amount = "ERROR";

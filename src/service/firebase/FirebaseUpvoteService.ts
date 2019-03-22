@@ -1,5 +1,5 @@
 import * as firebase from "firebase";
-import {DATABASE_UPVOTES} from "./shared/FireBaseDBDefinition";
+import {DATABASE_UPVOTES} from "../database/shared/DBDefinition";
 import axios from 'axios'
 import {audit} from "../Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";

@@ -5,6 +5,7 @@ import store from 'store';
 import {UserActionInterface} from "./ApplicationInterface";
 import {firebaseActionService} from "../firebase/FirebaseActionService";
 import {userNotificationService} from "../notification/UserNotificationService";
+import {firebaseInitAuthService} from "../firebase/FirebaseInitAuthService";
 
 export interface MailAuthServiceInterface {
     //specific email pasword auth
@@ -47,6 +48,7 @@ export class AuthService implements AuthServiceInterface {
     };
 
     start() {
+        firebaseInitAuthService.start();
         let mode: string = store.get(this.STORAGE_KEY_AUTH_METHOD) || this.MODE_UNDEFINDED;
         console.log("auth mode : "+mode);
         this.onAuthStateChanged(userData => {

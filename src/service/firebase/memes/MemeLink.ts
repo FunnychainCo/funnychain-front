@@ -6,7 +6,7 @@ import {
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../generic/Meme";
 import {firebaseCommentService} from "../FirebaseCommentService";
 import EventEmitter from "eventemitter3";
-import {DATABASE_MEMES, FirebaseMeme} from "../shared/FireBaseDBDefinition";
+import {DATABASE_MEMES, MemeDBEntry} from "../../database/shared/DBDefinition";
 import {audit} from "../../Audit";
 import {loadMeme} from "./MemeLoaderFunction";
 
@@ -40,7 +40,7 @@ export class MemeLink implements MemeLinkInterface{
                     audit.reportError(memes);
                     return;
                 }
-                let meme:FirebaseMeme = memes.val() || {};
+                let meme:MemeDBEntry = memes.val() || {};
                 loadMeme(meme).then(meme => {
                     this.lastValidMeme = meme;
                     this.eventEmitter.emit("onSingleMeme", meme);

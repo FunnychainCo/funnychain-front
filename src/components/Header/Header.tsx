@@ -6,7 +6,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Toolbar from "@material-ui/core/Toolbar/Toolbar";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
-import {firebaseBetService} from "../../service/firebase/FirebaseBetService";
 import BackButton from "./BackButton";
 import HeaderRightIcon from "./HeaderRightIcon";
 
@@ -59,9 +58,9 @@ class Header extends Component<{
         } else {
             this.setState({currentSelected: this.itemOrder[this.props.type]});
         }
-        firebaseBetService.getBetPool().then(balance => {
+        /*firebaseBetService.getBetPool().then(balance => {
             this.setState({betPoolBalance: balance});
-        });
+        });*/
     }
 
     componentWillUnmount() {

@@ -5,13 +5,12 @@ import "./App.css"
 
 import Version from "../components/Version/Version";
 import {pwaService} from "../service/mobile/PWAService";
-import {ipfsFileUploadService} from "../service/IPFSFileUploader/IPFSFileUploadService";
+import {ipfsFileUploadService} from "../service/uploader/IPFSFileUploadService";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {authService} from "../service/generic/AuthService";
 import HomePage from "../containers/HomePage";
 import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
-import {firebaseInitAuthService} from "../service/firebase/FirebaseInitAuthService";
 import {audit} from "../service/Audit";
 import {GLOBAL_PROPERTIES} from "../properties/properties";
 import {ionicMobileAppService} from "../service/mobile/IonicMobileAppService";
@@ -26,7 +25,6 @@ class App extends React.Component<any, any> {
     componentWillMount() {
         ionicMobileAppService.start();//must be started before userNotificationService because it need to know what device we use
         userNotificationService.start();//must be started before firebaseInitAuthService because it will register uid
-        firebaseInitAuthService.start();
         pwaService.start();
         authService.start();
         ipfsFileUploadService.start();

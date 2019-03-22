@@ -13,7 +13,7 @@ export interface MediaEntry {
 ///////////////////
 export const DATABASE_MEMES = "memes";
 
-export interface FirebaseMeme {
+export interface MemeDBEntry {
     memeIpfsHash: string,
     uid: string,
     hot: number,
@@ -21,8 +21,30 @@ export interface FirebaseMeme {
     value: number,
 }
 
-export interface FirebaseMemeDBStruct {
-    [id: string]: FirebaseMeme // id => meme id
+export interface MemeDBStruct {
+    [id: string]: MemeDBEntry // id => meme id
+}
+
+///////////////////
+// NOTIFICATION
+///////////////////
+export const DATABASE_NOTIFICATIONS = "notifications";
+export interface DBNotification {
+    title:string,
+    uid:string,
+    icon:string,
+    text:string,
+    action:string,
+    date:number,
+    seen:boolean
+}
+
+export interface NotificationDBEntry {
+    notifications:{[id: string]: DBNotification}
+}
+
+export interface NotificationDBStruct {
+    [id: string]: NotificationDBEntry // id => user id
 }
 
 ///////////////////
@@ -31,7 +53,7 @@ export interface FirebaseMemeDBStruct {
 export const DATABASE_USERS = "users";
 export const DATABASE_CACHE_USERS = "cache/users";
 
-export interface FirebaseUser {
+export interface UserDBEntry {
     uid: string,
     email: string,
     displayName: string,
@@ -39,19 +61,20 @@ export interface FirebaseUser {
     wallet: {
         balance: number,
         lastUpdate: number
-    }
+    },
+    notifications:{[id: string]: DBNotification}
 }
 
-export interface FirebaseUserDBStruct {
-    [id: string]: FirebaseUser // id => user id
+export interface UserDBStruct {
+    [id: string]: UserDBEntry // id => user id
 }
 
 ///////////////////
 // META
 ///////////////////
-export const DATABASE_META = "meta";
+export const CACHE_DATABASE_META = "cache/meta";
 
-export interface FirebaseMeta {
+export interface MetaDBEntry {
     hotest: {
         hash: string,
         date: number
@@ -66,11 +89,18 @@ export interface FirebaseMeta {
 // COMMENTS
 ///////////////////
 export const DATABASE_COMMENTS = "comments";
+export const DATABASE_CACHE_COMMENTS = "cache/comments";
 
-export interface FirebaseComment {
+export interface CommentDBEntry {
     date: number,
     message: string,
     uid: string
+}
+
+export interface CommentDBStruct {
+    [id: string]: {
+        [id: string]: CommentDBEntry // id => comment id
+    }// id => meme id
 }
 
 ///////////////////
@@ -78,7 +108,7 @@ export interface FirebaseComment {
 ///////////////////
 export const DATABASE_BETS = "bets";
 
-export interface FirebaseBetDBStruct {
+export interface BetDBStruct {
     [id: string]: { // id => meme id
         [id: string]: number
     }// id => user id
@@ -90,7 +120,7 @@ export interface FirebaseBetDBStruct {
 
 export const DATABASE_UPVOTES = "upvotes";
 
-export interface FirebaseUpvoteDBStruct {
+export interface UpvoteDBStruct {
     [id: string]: {// id => meme id
         [id: string]: number
     }// id => user id
@@ -101,15 +131,15 @@ export interface FirebaseUpvoteDBStruct {
 ///////////////////
 export const DATABASE_TRANSACTIONS = "transactions_V2";
 
-export interface FirebaseTransaction {
+export interface TransactionDBEntry {
     amount: number,
     dst: string,
     src: string,
     date:number
 }
 
-export interface FirebaseTransactionDBStruct {
-    [id: string]: FirebaseTransaction
+export interface TransactionDBStruct {
+    [id: string]: TransactionDBEntry
 }
 
 export let rules = {
@@ -139,11 +169,12 @@ export let rules = {
 // DB
 ///////////////////
 export interface DB {
-    DATABASE_MEMES: FirebaseMemeDBStruct,
-    DATABASE_USERS: FirebaseUserDBStruct,
-    DATABASE_META: FirebaseMeta
-    DATABASE_COMMENTS: any
-    DATABASE_BETS: FirebaseBetDBStruct,
-    DATABASE_UPVOTES: FirebaseUpvoteDBStruct,
-    DATABASE_TRANSACTIONS: FirebaseTransactionDBStruct,
+    DATABASE_MEMES: MemeDBStruct,
+    DATABASE_USERS: UserDBStruct,
+    DATABASE_META: MetaDBEntry,
+    DATABASE_COMMENTS: CommentDBStruct,
+    DATABASE_BETS: BetDBStruct,
+    DATABASE_UPVOTES: UpvoteDBStruct,
+    DATABASE_TRANSACTIONS: TransactionDBStruct,
+    DATABASE_NOTIFICATION : NotificationDBStruct,
 }

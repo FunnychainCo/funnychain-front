@@ -4,7 +4,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import LoginAccountIcon from "../LoginAccountIcon/LoginAccountIcon";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
-import {firebaseBetService} from "../../service/firebase/FirebaseBetService";
 import LolTokenIcon from "../Icon/LolTokenIcon";
 
 const styles = theme => ({
@@ -43,9 +42,9 @@ class HeaderRightIcon extends Component<{classes: any}, {
     componentDidMount() {
         window.addEventListener('resize', this.throttledHandleWindowResize);
         this.throttledHandleWindowResize();
-        firebaseBetService.getBetPool().then(balance => {
+        /*firebaseBetService.getBetPool().then(balance => {
             this.setState({betPoolBalance: balance});
-        });
+        });*/
     }
 
     componentWillUnmount() {

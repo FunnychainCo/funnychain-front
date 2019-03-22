@@ -14,7 +14,7 @@ import Button from "@material-ui/core/Button/Button";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {userService} from "../../service/generic/UserService";
 import {UploadedDataInterface} from "../../service/generic/ApplicationInterface";
-import {ipfsFileUploadService} from "../../service/IPFSFileUploader/IPFSFileUploadService";
+import {ipfsFileUploadService} from "../../service/uploader/IPFSFileUploadService";
 
 export default class AvatarAccountManagement extends Component<any, any> {
     state = {

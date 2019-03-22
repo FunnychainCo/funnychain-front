@@ -4,7 +4,6 @@ import AppBar from "@material-ui/core/AppBar/AppBar";
 import Typography from "@material-ui/core/Typography/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Toolbar from "@material-ui/core/Toolbar/Toolbar";
-import {firebaseBetService} from "../../service/firebase/FirebaseBetService";
 import BackButton from "./BackButton";
 import HeaderRightIcon from "./HeaderRightIcon";
 
@@ -44,9 +43,9 @@ class HeaderClassic extends Component<{ classes: any }, {
     componentDidMount() {
         window.addEventListener('resize', this.throttledHandleWindowResize);
         this.throttledHandleWindowResize();
-        firebaseBetService.getBetPool().then(balance => {
+        /*firebaseBetService.getBetPool().then(balance => {
             this.setState({betPoolBalance: balance});
-        });
+        });*/
     }
 
     componentWillUnmount() {
