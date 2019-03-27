@@ -21,6 +21,12 @@ export class IonicMobileAppService {
 
 
     start() {
+        window.addEventListener("focus", ()=>{
+            updateService.checkUpdate();
+        });
+        document.addEventListener('resume', () => {
+            updateService.checkUpdate();
+        });
         window.addEventListener('message', function (event) {
             // IMPORTANT: Check the origin of the data!
             if (event.origin.indexOf('https://alpha.funnychain.co')

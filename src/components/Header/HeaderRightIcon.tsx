@@ -4,7 +4,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import LoginAccountIcon from "../LoginAccountIcon/LoginAccountIcon";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
-import LolTokenIcon from "../Icon/LolTokenIcon";
+import MoneyCoinIcon from "../Icon/MoneyCoinIcon";
 
 const styles = theme => ({
     root: {
@@ -59,7 +59,7 @@ class HeaderRightIcon extends Component<{classes: any}, {
         //const {classes} = this.props;
         return (<React.Fragment>
                     {false && <Chip label={(this.state.compact ? "" : "Pool: ") + this.state.betPoolBalance.toFixed(2)}
-                                    color="secondary" avatar={<Avatar><LolTokenIcon/></Avatar>}/>}
+                                    color="secondary" avatar={<Avatar><MoneyCoinIcon/></Avatar>}/>}
                     <LoginAccountIcon/>
             </React.Fragment>
         )

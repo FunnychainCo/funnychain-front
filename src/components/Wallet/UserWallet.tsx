@@ -14,7 +14,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 import {CashRefund, TransitConnectionVariant, History} from 'mdi-material-ui'; //https://materialdesignicons.com/
 import SwipeableViews from 'react-swipeable-views';
 import Typography from "@material-ui/core/Typography";
-import LolTokenIcon from "../Icon/LolTokenIcon";
 import BackButton from "../Header/BackButton";
 import Toolbar from "@material-ui/core/Toolbar";
 import UserWalletSend from "./UserWalletSend";
@@ -25,6 +24,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Paper from "@material-ui/core/Paper";
 import {userNotificationService} from "../../service/notification/UserNotificationService";
 import {lolTokenService} from "../../service/generic/LolTokenService";
+import MoneyCoinIcon from "../Icon/MoneyCoinIcon";
 
 function TabContainer({children}) {
     return (
@@ -138,7 +138,7 @@ export default class UserWallet extends Component<{
                             <BackButton/>
                             <Typography color="inherit" variant="h6"
                                         style={{flex: "1", textAlign: "center"}}>Wallet</Typography>
-                            <Button style={{pointerEvents:"none"}} color="inherit" variant={"outlined"}><LolTokenIcon/><ListItemText
+                            <Button style={{pointerEvents:"none"}} color="inherit" variant={"outlined"}><MoneyCoinIcon/><ListItemText
                                 primary={<React.Fragment>{(this.state.user.wallet).toFixed(2) + ""}</React.Fragment>}/></Button>
                         </Toolbar>
                 </DialogTitle>

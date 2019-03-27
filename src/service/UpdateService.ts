@@ -19,7 +19,7 @@ export class UpdateService {
     performUpdate(){
         console.log("perform update");
         store.set(updateNeededStorekey, false);
-        document.location.reload(true);
+        document.location.reload(true);//TODO reload deprecated
     }
 }
 

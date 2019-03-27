@@ -90,7 +90,7 @@ class Header extends Component<{
         //const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
         return (
             // overflow: "hidden" to ensure scroll-x is not activated on small device (looks ugly)
-            <AppBar style={{overflow: "hidden",paddingTop:this.state.extendedHeaderHeight?"20px":"0"}} position="sticky">
+            <AppBar style={{overflow: "hidden",paddingTop:this.state.extendedHeaderHeight?"25px":"0"}} position="sticky">
                 <Toolbar>
                     <BackButton>
                         <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png" alt="logo"/>

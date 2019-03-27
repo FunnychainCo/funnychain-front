@@ -6,8 +6,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import {authService} from "../../service/generic/AuthService";
 import {userService} from "../../service/generic/UserService";
-import LolTokenIcon from "../Icon/LolTokenIcon";
 import {Link} from 'react-router-dom';
+import MoneyCoinIcon from "../Icon/MoneyCoinIcon";
 
 interface State
 {
@@ -58,7 +58,7 @@ export default class WalletAccount extends Component<{}, State> {
         const walletLink = (props) => <Link to={"/user/current/wallet"} {...props} />;
         return (
             <div className="fcContent">
-                <ListItem button component={walletLink}><LolTokenIcon/><ListItemText
+                <ListItem button component={walletLink}><MoneyCoinIcon/><ListItemText
                     primary={(this.state.user.wallet).toFixed(2) + ""}/></ListItem>
             </div>
         )

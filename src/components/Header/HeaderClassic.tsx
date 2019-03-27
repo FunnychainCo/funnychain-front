@@ -6,6 +6,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Toolbar from "@material-ui/core/Toolbar/Toolbar";
 import BackButton from "./BackButton";
 import HeaderRightIcon from "./HeaderRightIcon";
+import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
 const styles = theme => ({
     root: {
@@ -33,11 +34,13 @@ class HeaderClassic extends Component<{ classes: any }, {
     currentSelected: any,
     betPoolBalance: number,
     compact: boolean,
+    extendedHeaderHeight:boolean,
 }> {
     state = {
         currentSelected: false,
         betPoolBalance: 0,
         compact: true,
+        extendedHeaderHeight:false,
     };
 
     componentDidMount() {
@@ -46,6 +49,11 @@ class HeaderClassic extends Component<{ classes: any }, {
         /*firebaseBetService.getBetPool().then(balance => {
             this.setState({betPoolBalance: balance});
         });*/
+
+        if(deviceDetector.isIphoneX()){
+            console.log("iphoneX");
+            this.setState({extendedHeaderHeight:true});
+        }
     }
 
     componentWillUnmount() {
@@ -60,7 +68,7 @@ class HeaderClassic extends Component<{ classes: any }, {
         const {classes} = this.props;
         return (
             // overflow: "hidden" to ensure scroll-x is not activated on small device (looks ugly)
-            <AppBar style={{overflow: "hidden"}} position="sticky">
+            <AppBar style={{overflow: "hidden",paddingTop:this.state.extendedHeaderHeight?"25px":"0"}} position="sticky">
                 <Toolbar>
                     <BackButton>
                         <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png"
