@@ -26,6 +26,17 @@ export class DeviceDetector {
         }
     }
 
+
+    isIphoneX(){
+        /**
+         Screen Resolution: 375 x 812 (pixels)
+         Browser Dimensions: 980 x 1956 (pixels)
+         Screen Resolution: 375 x 812 (pixels)
+         Browser Dimensions: 980 x 448 (pixels)
+         * */
+        return this.isMobile() && this.isIPhone() && (screen.width==375 && screen.height==812)
+    }
+
     getDeviceString():string{
         return this.os+"/"+this.type;
     }
@@ -36,6 +47,10 @@ export class DeviceDetector {
 
     isAndroid():boolean{
         return this.os === "AndroidOS";
+    }
+
+    isIPhone():boolean{
+        return this.os === "iOS";
     }
 
     isAndroidAndMobileApp():boolean{

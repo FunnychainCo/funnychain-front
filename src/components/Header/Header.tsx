@@ -8,6 +8,7 @@ import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
 import BackButton from "./BackButton";
 import HeaderRightIcon from "./HeaderRightIcon";
+import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
 const styles = theme => ({
     root: {
@@ -39,11 +40,13 @@ class Header extends Component<{
     currentSelected: any,
     betPoolBalance: number,
     compact: boolean,
+    extendedHeaderHeight:boolean
 }> {
     state = {
         currentSelected: false,
         betPoolBalance: 0,
         compact: true,
+        extendedHeaderHeight:false,
     };
     itemOrder = {
         "hot": 0,
@@ -61,7 +64,12 @@ class Header extends Component<{
         /*firebaseBetService.getBetPool().then(balance => {
             this.setState({betPoolBalance: balance});
         });*/
+        if(deviceDetector.isIphoneX()){
+            console.log("iphoneX");
+            this.setState({extendedHeaderHeight:true});
+        }
     }
+
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.throttledHandleWindowResize);
@@ -82,7 +90,7 @@ class Header extends Component<{
         //const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
         return (
             // overflow: "hidden" to ensure scroll-x is not activated on small device (looks ugly)
-            <AppBar style={{overflow: "hidden"}} position="sticky">
+            <AppBar style={{overflow: "hidden",paddingTop:this.state.extendedHeaderHeight?"20px":"0"}} position="sticky">
                 <Toolbar>
                     <BackButton>
                         <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png" alt="logo"/>

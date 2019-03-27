@@ -13,6 +13,7 @@
     overflow: auto;
     display: flex;
     justify-content: center;
+    -webkit-overflow-scrolling: touch;
 }
 
 .fcContentScroll{
