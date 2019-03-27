@@ -19,7 +19,7 @@
     <preference name="FadeSplashScreenDuration" value="500" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="40000" />
+    <preference name="SplashScreenDelay" value="20000" />
     <preference name="AutoHideSplashScreen" value="true" />
     <platform name="android">
         <allow-intent href="market:*" />
@@ -48,6 +48,9 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
+        <config-file parent="NSCameraUsageDescription" platform="ios" target="*-Info.plist">
+            <string>You can take photos</string>
+        </config-file>
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
@@ -93,6 +96,8 @@
     <plugin name="onesignal-cordova-plugin" spec="2.4.6" />
     <plugin name="cordova-plugin-local-notification" spec="0.9.0-beta.2" />
     <plugin name="cordova-plugin-badge" spec="0.8.8" />
+    <plugin name="cordova-plugin-ios-camera-permissions" spec="1.2.0" />
+    <plugin name="cordova-plugin-camera" spec="4.0.3" />
     <engine name="android" spec="7.1.4" />
     <engine name="ios" spec="4.5.5" />
 </widget>
