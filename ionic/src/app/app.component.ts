@@ -134,6 +134,7 @@ export class AppComponent {
     initializeApp() {
         console.log('Mobile App initializeApp');
         this.platform.ready().then(() => {
+            this.splashScreen.hide();
             this.statusBar.styleDefault();
             const self = this;
             this.platform.resume.subscribe((e) => {
