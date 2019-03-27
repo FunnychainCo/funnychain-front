@@ -9,4 +9,5 @@ ionic cordova plugin add cordova-plugin-ios-camera-permissions --save
 npm outdated
 ionic cordova resources
 ionic cordova prepare ios
+ionic cordova resources
 ionic cordova build ios --prod --release
