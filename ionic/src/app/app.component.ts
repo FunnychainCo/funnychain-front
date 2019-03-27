@@ -134,7 +134,6 @@ export class AppComponent {
     initializeApp() {
         console.log('Mobile App initializeApp');
         this.platform.ready().then(() => {
-            this.splashScreen.hide();
             this.statusBar.styleDefault();
             const self = this;
             this.platform.resume.subscribe((e) => {
@@ -164,6 +163,9 @@ export class AppComponent {
                 }
             });
             this.sendEvent('native_code_ready', {});
+            setTimeout(()=>{
+                this.splashScreen.hide();
+            },1000);//Note this is a work around for iphone
             console.log('Mobile component loaded version:' + this.version);
         });
     }
