@@ -15,6 +15,7 @@ import {memeDatabase} from "../../database/MemeDatabase";
 import {deviceDetector} from "../../mobile/DeviceDetector";
 
 let blehmemewebp = [
+    "QmQbt1wkDFW2shdrrohQiBCF6xwZqqD5D5m86wMMXnosAf",
     "QmdqQMDmkqYz2uPrNEBavWofHWHqmFZEp6wSqYfHZeAcZg",
     "QmXNh3phwjq1ff8FsBFvU9Wd63cpb7iRewimp698dt9ibr",
     "QmQGMa72eXEYVrusJfEyviJmdCatvbBR8Ak53ztNHSFnZT",
@@ -103,7 +104,7 @@ export class MemeLoader implements MemeLoaderInterface {
                                 }
                             }
                         });
-                        //sort meme by creation time
+                        //sort meme by creation time and filter them
                         firebaseMemes.sort((a, b) => {
                             return a.created - b.created;
                         });
@@ -118,16 +119,31 @@ export class MemeLoader implements MemeLoaderInterface {
                                 return true;
                             }
                         });
-                        if (orderedMemeKeys.length > 0) {
-                            this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeKeys);
-                        }
-                        this.convertor(firebaseMemes).then(memeLinkData => {
-                            this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
-                            resolve(true);
-                            if (Object.keys(memesVal).length != 0) {
-                                this.loadMore(limit - firebaseMemes.length);//TODO find a better system to load type fresh and hot
+
+                        //notify memes
+                        firebaseMemes = firebaseMemes.filter(meme => {
+                            if(orderedMemeKeys.indexOf(meme.memeIpfsHash)>=0){
+                                return true;
+                            }else{
+                                return false;
                             }
                         });
+                        if (orderedMemeKeys.length > 0) {
+                            //notify memes
+                            this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeKeys);
+                            this.convertor(firebaseMemes).then(memeLinkData => {
+                                this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
+                                resolve(true);
+                            });
+                        }else{
+                            resolve(true);
+                            return;
+                        }
+
+                        //check if more memes needs to be loaded
+                        if (Object.keys(memesVal).length != 0) {
+                            this.loadMore(limit - orderedMemeKeys.length);//TODO find a better system to load type fresh and hot
+                        }
                     }, this.type, this.userid, limit, this.lastPostDate);
                 })
             }
