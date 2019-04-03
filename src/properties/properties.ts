@@ -26,7 +26,7 @@ const serviceComments = '/service/comments';
 
 
 export const GLOBAL_PROPERTIES = {
-    VERSION:()=> "1.5.4",
+    VERSION:()=> "1.5.5",
 
     MIXPANEL_ACTIVATED: ()=> getGlobalProperties().mixpanelActivated,
 

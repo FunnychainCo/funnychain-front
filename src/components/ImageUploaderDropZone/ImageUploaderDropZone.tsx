@@ -11,6 +11,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import {setInterval} from "timers";
 import {audit} from "../../service/log/Audit";
 import {userNotificationService} from "../../service/notification/UserNotificationService";
+import {imageService} from "../../service/ImageService";
 
 export interface IState {
     files: any[],
@@ -95,25 +96,33 @@ export default class ImageUploaderDropZone extends Component<{
         this.props.onImageLoaded(this.state.fileURL);
     };
 
-    onDrop = (files) => {
+    onDrop = (files:File[]) => {
         if (files.length !== 1) {
             userNotificationService.sendNotificationToUser("Cannot upload more than 1 item.");
             return;
         }
         this.setState({isUploading: true, progress: 0});
         let file = files[0];
-        this.props.onFileToUpload(file).then((url: string) => {
-            this.setState({fileURL: url});
-        }).catch(reason => {
-            userNotificationService.sendNotificationToUser("Cannot upload (network error) please retry.");
-            this.setState({isUploading: false, progress: 0});
-            return;
-        });
+        imageService.getMimeTypeFromFile(file).then(mimeType => {
+            if(this.state.acceptedFiles.indexOf(mimeType) > -1) {
+                this.props.onFileToUpload(file).then((url: string) => {
+                    this.setState({fileURL: url});
+                }).catch(reason => {
+                    userNotificationService.sendNotificationToUser("Cannot upload (network error) please retry.");
+                    this.setState({isUploading: false, progress: 0});
+                    return;
+                });
+            }else{
+                userNotificationService.sendNotificationToUser("Cannot upload image. Image is too big (>10mb) or not a a png or a jpeg. (ERROR 2)");
+                this.setState({isUploading: false, progress: 0});
+                return;
+            }
+        })
     };
 
     dropError = (files) => {
-        userNotificationService.sendNotificationToUser("Cannot upload image. Image is too big (>10mb) or not a a png or a jpeg");
-        audit.reportError(files);
+        userNotificationService.sendNotificationToUser("Cannot upload image. Image is too big (>10mb) or not a a png or a jpeg. (ERROR 1)");
+        audit.warn(files);
     };
 
     render() {
