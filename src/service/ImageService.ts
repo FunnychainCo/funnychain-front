@@ -31,9 +31,7 @@ export class ImageService {
             this.failIfNoHttps(src);
             image.src = src;
             image.onload = () => {
-                //console.log("loaded image: "+src);
                 resolve(src);
-                console.log(image);
             };
             image.onerror = (e) => {
                 reject(e);
