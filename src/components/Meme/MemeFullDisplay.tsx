@@ -81,7 +81,7 @@ class MemeFullDisplay extends Component<{
             let concatResult: MemeComment[] = this.state.comments;
             concatResult = concatResult.concat(comments);
             concatResult.sort((a: MemeComment, b: MemeComment) => {
-                return b.date.getTime() - a.date.getTime();
+                return a.date.getTime() - b.date.getTime();
             });
             this.setState({comments: concatResult, loadingComment: false});
         });
