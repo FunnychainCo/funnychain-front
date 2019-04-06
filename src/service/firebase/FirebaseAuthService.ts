@@ -219,7 +219,8 @@ export class FirebaseAuthService {
                     provider: PROVIDER_FIREBASE_MAIL,
                     displayName: receivedUser.displayName,
                     uid: receivedUser.uid,
-                    wallet: receivedUser["wallet"] ? receivedUser.wallet.balance : 0
+                    wallet: receivedUser["wallet"] ? receivedUser.wallet.balance : 0,
+                    flag:false,
                 };
                 this.userCacheTime[uid] = new Date().getTime();
                 this.userCache[uid] = userData;

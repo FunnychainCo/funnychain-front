@@ -27,6 +27,7 @@ export default class CommonAccountManagement extends Component<{}, {
 
                 <ListItem button onClick={() => {
                     authService.logout();
+                    document.location.reload();
                 }}><VpnKey/><ListItemText primary="Logout"/>
                 </ListItem>
 

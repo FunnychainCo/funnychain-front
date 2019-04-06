@@ -21,6 +21,7 @@ import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeAvatarInfo from "./MemeAvatarInfo";
 import MemeActionButton from "./MemeActionButton";
+import ContentMenuButton from "./ContentMenuButton";
 
 
 const styles = theme => ({
@@ -89,7 +90,7 @@ class MemeComponent extends Component<{
         this.commentVisitor = this.memeLink.getCommentVisitor();
         this.removeListenerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concat = comments.concat(this.state.comments);
-            concat.sort((a:MemeComment, b:MemeComment) => {
+            concat.sort((a: MemeComment, b: MemeComment) => {
                 return a.date.getTime() - b.date.getTime();
             });
             this.setState({comments: concat, loadingComment: false});
@@ -137,62 +138,75 @@ class MemeComponent extends Component<{
     render() {
         //const {classes} = this.props;
         const MemeDisplayLink = (props) => <Link to={"/meme/" + encodeURIComponent(this.state.meme.id)} {...props} />
-        return <Card
-            elevation={5}
-            style={{"marginBottom":"15px"}}>
-            <ButtonBase component={MemeDisplayLink} style={{width: "100%", justifyContent: "left"}}>
+        return <React.Fragment>
+            {!this.state.meme.flag && <Card
+                elevation={5}
+                style={{"marginBottom": "15px"}}>
                 <CardHeader
-                    style={{"fontSize": "1.5em","fontWeight": "bold"}}
-                    title={this.state.meme.title}
+                    style={{"fontSize": "1.5em", "fontWeight": "bold", justifyContent: "left"}}
+                    title={<React.Fragment>
+                        <ContentMenuButton contentId={this.state.meme.id}
+                                           type={"meme"}
+                                           userId={this.state.meme.user.uid}
+                                           onClick={() => {
+                                               this.setState((state) => {
+                                                   state.meme.flag = true;
+                                                   return {meme: state.meme}
+                                               });
+                                               this.memeLink.refresh();
+                                           }}/>
+                        <ButtonBase component={MemeDisplayLink}>{this.state.meme.title}
+                        </ButtonBase></React.Fragment>}
                     disableTypography={true}
                 />
-            </ButtonBase>
-            <ButtonBase className="memeImage" component={MemeDisplayLink}><img className="memeImage"
-                                                                               src={this.state.meme.imageUrl}
-                                                                               alt=""/></ButtonBase>
-            <CardActions className="memeElementStyleDivContainer">
-                <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
-                <div style={{marginLeft: 'auto'}}>
-                    <Button variant="outlined"
-                            onClick={this.handleExpandClick}
-                            aria-expanded={this.state.expanded}
-                            aria-label="Show more"
-                    >
-                        {this.state.meme.commentNumber}&nbsp;
-                        <ChatBubbleOutline style={{height: "0.7em"}}/>
-                        {/*<ExpandMore className={classnames(classes.expand, {[classes.expandOpen]: this.state.expanded,})}/>*/}
-                    </Button>
-                </div>
-            </CardActions>
-            <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
-                <CardContent style={{marginTop: 0, paddingTop: 0}}>
-                    <MemeAvatarInfo meme={this.state.meme} />
-                    {this.state.loadingComment && <LoadingBlock/>}
-                    {!this.state.loadingComment && <div>
-                        <CommentPoster memeLink={this.props.meme}
-                                       onPost={() => {
-                                           this.state.meme.commentNumber++;
-                                           this.setState({meme: this.state.meme});//update ui
-                                       }}
-                                       onPostValidated={() => {
-                                       }}
-                                       onPostCanceled={() => {
-                                           this.state.meme.commentNumber++;
-                                           this.setState({meme: this.state.meme});//update ui
-                                       }}/>
-                        {
-                            this.getComments().map((comment: MemeComment, index) => {
-                                return <UserComment key={index} comment={comment}/>
-                            })
-                        }
-                        {this.state.commentNumber > this.commentPerPage &&
-                        <Button variant="contained" color="primary" fullWidth size="large" component={MemeDisplayLink}>
-                            Show more comment
-                        </Button>}
-                    </div>}
-                </CardContent>
-            </Collapse>
-        </Card>
+                <ButtonBase className="memeImage" component={MemeDisplayLink}><img className="memeImage"
+                                                                                   src={this.state.meme.imageUrl}
+                                                                                   alt=""/></ButtonBase>
+                <CardActions className="memeElementStyleDivContainer">
+                    <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
+                    <div style={{marginLeft: 'auto'}}>
+                        <Button variant="outlined"
+                                onClick={this.handleExpandClick}
+                                aria-expanded={this.state.expanded}
+                                aria-label="Show more"
+                        >
+                            {this.state.meme.commentNumber}&nbsp;
+                            <ChatBubbleOutline style={{height: "0.7em"}}/>
+                            {/*<ExpandMore className={classnames(classes.expand, {[classes.expandOpen]: this.state.expanded,})}/>*/}
+                        </Button>
+                    </div>
+                </CardActions>
+                <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+                    <CardContent style={{marginTop: 0, paddingTop: 0}}>
+                        <MemeAvatarInfo meme={this.state.meme}/>
+                        {this.state.loadingComment && <LoadingBlock/>}
+                        {!this.state.loadingComment && <div>
+                            <CommentPoster memeLink={this.props.meme}
+                                           onPost={() => {
+                                               this.state.meme.commentNumber++;
+                                               this.setState({meme: this.state.meme});//update ui
+                                           }}
+                                           onPostValidated={() => {
+                                           }}
+                                           onPostCanceled={() => {
+                                               this.state.meme.commentNumber++;
+                                               this.setState({meme: this.state.meme});//update ui
+                                           }}/>
+                            {
+                                this.getComments().map((comment: MemeComment, index) => {
+                                    return <UserComment key={index} comment={comment}/>
+                                })
+                            }
+                            {this.state.commentNumber > this.commentPerPage &&
+                            <Button variant="contained" color="primary" fullWidth size="large"
+                                    component={MemeDisplayLink}>
+                                Show more comment
+                            </Button>}
+                        </div>}
+                    </CardContent>
+                </Collapse>
+            </Card>}
+        </React.Fragment>
     }
 
 }

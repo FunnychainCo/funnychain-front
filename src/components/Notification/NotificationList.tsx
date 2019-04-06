@@ -14,10 +14,14 @@ import {UiNotificationData} from "../../service/generic/Notification";
 import {Link} from "react-router-dom";
 import {CommentTextOutline} from 'mdi-material-ui';//https://materialdesignicons.com/
 import {TooltipImageOutline} from 'mdi-material-ui';//https://materialdesignicons.com/
-import {ThumbUpOutline} from 'mdi-material-ui';//https://materialdesignicons.com/
+import {ThumbUpOutline} from 'mdi-material-ui';
+import moment from "moment";
+
+//https://materialdesignicons.com/
 
 interface State {
-    notifications: { [id: string]: UiNotificationData }
+    notificationsOrder: string[],
+    notificationsData: { [id: string]: UiNotificationData },
 }
 
 export default class NotificationList extends Component<{
@@ -26,40 +30,47 @@ export default class NotificationList extends Component<{
     open: boolean,
 }, State> {
 
+    state: State = {
+        notificationsOrder: [],
+        notificationsData: {},
+    };
+
     handleClose = () => {
         this.props.onRequestClose();
     };
 
-    state: State = {
-        notifications: {}
-    };
 
-    private removeCallback: (() => void) = () => {
+    private removeCallbackOnIndex: (() => void) = () => {
+    };
+    private removeCallbackOnDataUpdate: (() => void) = () => {
     };
 
     componentWillMount() {
         userNotificationService.markAllAsSeen();
-        this.restartMemeLoader(this.props.userid);
+        this.restartLoader(this.props.userid);
     }
 
-    restartMemeLoader(uid: string) {
-        this.removeCallback();
-        this.removeCallback = userNotificationService.notifications.onEntry(entry => {
-            let data = {};
-            data[entry.hash] = entry.entry;
-            this.setState((state) => ({notifications: {...state.notifications, ...data}}));//reset view
-        }, hash => {
-        }, data => {
+    restartLoader(uid: string) {
+        this.removeCallbackOnIndex();
+        this.removeCallbackOnIndex = userNotificationService.notifications.onIndex(data => {
+            this.setState((state) => {
+                return {notificationsOrder: data}
+            });
         });
+        this.removeCallbackOnDataUpdate();
+        this.removeCallbackOnDataUpdate = userNotificationService.notifications.onDataUpdate(data => {
+            this.setState((state) => {
+                state.notificationsData[data.hash] = data.data;
+                return {notificationsData: state.notificationsData}
+            });
+        });
+        userNotificationService.notifications.triggerHistory();
+        userNotificationService.notifications.refresh();
     }
 
     componentWillUnmount() {
-        this.removeCallback();
-    }
-
-    getOrderedKeys() {
-        //Todo order
-        return Object.keys(this.state.notifications);
+        this.removeCallbackOnIndex();
+        this.removeCallbackOnDataUpdate();
     }
 
     getIcon(type: string): any {
@@ -84,20 +95,26 @@ export default class NotificationList extends Component<{
                 onClose={this.handleClose}
             >
                 <DialogContent>
-                    <List component="nav">
+                    <List component="nav" dense={false}>
                         {
-                            this.getOrderedKeys().map((key) => {
-                                let notification = this.state.notifications[key];
-                                const link = (props) => <Link to={notification.action?notification.action:"/"} {...props} />;
-                                return <ListItem button key={key} component={link}>
-                                    <ListItemIcon>
-                                        {this.getIcon(notification.title)}
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={notification.text}
-                                        secondary={""}
-                                    />
-                                </ListItem>
+                            this.state.notificationsOrder.map((notificationKey) => {
+                                let notification = this.state.notificationsData[notificationKey];
+                                if(notification) {
+                                    const link = (props) => <Link
+                                        to={notification.action ? notification.action : "/"} {...props} />;
+                                    let date = moment(notification.date).fromNow();
+                                    return <ListItem button key={notificationKey} component={link} >
+                                        <ListItemIcon>
+                                            {this.getIcon(notification.title)}
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={notification.seen?notification.text:<b>notification.text</b>}
+                                            secondary={date}
+                                        />
+                                    </ListItem>
+                                }else{
+                                    return <div></div>
+                                }
                             })
                         }
                     </List>

@@ -18,6 +18,7 @@ import CommentPoster from "./CommentPoster";
 import MemeAvatarInfo from "./MemeAvatarInfo";
 import MemeActionButton from "./MemeActionButton";
 import {Helmet} from "react-helmet";
+import ContentMenuButton from "./ContentMenuButton";
 
 const styles = theme => ({
     actions: {
@@ -60,7 +61,7 @@ class MemeFullDisplay extends Component<{
     private removeListener: () => void;
     private memeLink: MemeLinkInterface;
     private removeListenerMemeLink: () => void;
-    private removeListnerCommentVisitor: () => void;
+    private removeListenerCommentVisitor: () => void;
 
     componentDidMount() {
         this.memeLink = this.props.meme;
@@ -77,7 +78,7 @@ class MemeFullDisplay extends Component<{
             });
         });
         this.commentVisitor = this.memeLink.getCommentVisitor();
-        this.removeListnerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
+        this.removeListenerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concatResult: MemeComment[] = this.state.comments;
             concatResult = concatResult.concat(comments);
             concatResult.sort((a: MemeComment, b: MemeComment) => {
@@ -92,7 +93,7 @@ class MemeFullDisplay extends Component<{
     componentWillUnmount() {
         this.removeListener();
         this.removeListenerMemeLink();
-        this.removeListnerCommentVisitor();
+        this.removeListenerCommentVisitor();
     }
 
     renderWaypoint = () => {
@@ -136,10 +137,22 @@ class MemeFullDisplay extends Component<{
                 <meta name="twitter:image" content={this.state.meme.imageUrl} />
                 <meta name="twitter:creator" content="@funnychain_lol"/>
             </Helmet>
+            {!this.state.meme.flag &&
             <Card className="fcCenteredContent fcDynamicWidth">
                 <CardHeader
                     style={{"fontSize": "1.5em", "fontWeight": "bold"}}
-                    title={this.state.meme.title}
+                    title={<React.Fragment><ContentMenuButton
+                        contentId={this.state.meme.id}
+                        userId={this.state.meme.user.uid}
+                        type={"meme"}
+                        onClick={()=>{
+                            this.setState((state)=>{
+                                state.meme.flag=true;
+                                return {meme:state.meme}
+                            });
+                            this.memeLink.refresh();
+                        }}
+                    />{this.state.meme.title}</React.Fragment>}
                     disableTypography={true}
                 />
                 <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
@@ -173,7 +186,12 @@ class MemeFullDisplay extends Component<{
                         }
                     </div>}
                 </CardContent>
-            </Card></div>
+            </Card>}
+
+            {this.state.meme.flag &&
+                <div>This content is being moderated!</div>
+            }
+        </div>
     }
 
 }

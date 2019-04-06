@@ -68,7 +68,8 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                     uid: userUID,
                     created: new Date().getTime(),
                     value:0,
-                    hot:0
+                    hot:0,
+                    flag:false,
                 };
                 memeDatabase.postMeme(value.fileId,meme).then(() => {
                     audit.track("user/post/meme",{

@@ -9,6 +9,7 @@ import {MemeDBEntry} from "../../database/shared/DBDefinition";
 import {firebaseBetService} from "../FirebaseBetService";
 import {authService} from "../../generic/AuthService";
 import {imageService} from "../../ImageService";
+import {report} from "../../log/Report";
 
 export function loadMeme(meme:MemeDBEntry):Promise<Meme>{
     return new Promise<Meme>((resolve, reject) => {
@@ -83,6 +84,18 @@ export function loadMeme(meme:MemeDBEntry):Promise<Meme>{
             });
         }));
 
+        //(8) check if meme has been flagged localy
+        let flag = false;
+        promiseArray.push(new Promise<boolean>((resolve2) => {
+            let hash = meme.memeIpfsHash;
+            let localReportContent:boolean = !!report.getReportedContent("meme")[hash]
+            let localReportUser:boolean = !!report.getReportedContent("user")[meme.uid];
+            let distantReportContent = meme.flag;
+            //TODO distant reported user
+            flag = localReportContent || distantReportContent || localReportUser;
+            resolve2(true);
+        }));
+
         //resolve the meme
         Promise.all(promiseArray).then(value => {
             resolve({
@@ -98,7 +111,8 @@ export function loadMeme(meme:MemeDBEntry):Promise<Meme>{
                 currentUserBet:currentUserBet,
                 hot:meme.hot!=0,
                 hotDate:new Date(meme.hot),
-                bettable:bettable
+                bettable:bettable,
+                flag:flag,
             });
         })
     });

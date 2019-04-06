@@ -19,6 +19,7 @@ export interface MemeDBEntry {
     hot: number,
     created: number,
     value: number,
+    flag:boolean,
 }
 
 export interface MemeDBStruct {
@@ -58,6 +59,7 @@ export interface UserDBEntry {
     email: string,
     displayName: string,
     avatarIid: string,//ipfs hash
+    flag:boolean,
     wallet: {
         balance: number,
         lastUpdate: number
@@ -94,7 +96,8 @@ export const DATABASE_CACHE_COMMENTS = "cache/comments";
 export interface CommentDBEntry {
     date: number,
     message: string,
-    uid: string
+    uid: string,
+    flag:boolean,
 }
 
 export interface CommentDBStruct {

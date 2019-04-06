@@ -24,6 +24,7 @@
     "mdi-material-ui": "^5.5.0",
     "microlinkjs": "^2.2.5",
     "mobile-detect": "^1.4.3",
+    "mobx": "^5.9.4",
     "moment": "^2.22.2",
     "notifyjs": "^3.0.0",
     "promise-pool-executor": "^1.1.1",

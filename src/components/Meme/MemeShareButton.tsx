@@ -108,7 +108,7 @@ class MemeShareButton extends Component<{ url: string }, { anchorEl: any }> {
                     horizontal: 'center',
                 }}
             >
-                <div style={{overflow: "hidden", padding: "5px", margin: "5px"}}>
+                <div style={{overflow: "hidden", padding: "5px", margin: "5px",display: "flex",flexDirection: "row"}}>
                     <ExternalLink href={facebookLink(this.props.url, {quote: '', hashtag: ''})}>
                         <FacebookIcon size={32} round={true}/></ExternalLink>
                     <ExternalLink href={twitterLink(this.props.url, {title: "", via: "https://funnychain.co"})}>

@@ -17,6 +17,7 @@ import {ionicMobileAppService} from "../service/mobile/IonicMobileAppService";
 import {userNotificationService} from "../service/notification/UserNotificationService";
 import {deviceDetector} from "../service/mobile/DeviceDetector";
 import {backService} from "../service/BackService";
+import {report} from "../service/log/Report";
 
 
 class App extends React.Component<any, any> {
@@ -30,6 +31,7 @@ class App extends React.Component<any, any> {
         ipfsFileUploadService.start();
         backService.start();
         deviceDetector.start();
+        report.start();
         audit.track("user/app/open",{
             target:deviceDetector.getDeviceString(),
             agent:window.navigator.userAgent,
