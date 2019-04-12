@@ -16,6 +16,7 @@ import {CommentTextOutline} from 'mdi-material-ui';//https://materialdesignicons
 import {TooltipImageOutline} from 'mdi-material-ui';//https://materialdesignicons.com/
 import {ThumbUpOutline} from 'mdi-material-ui';
 import moment from "moment";
+import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 
 //https://materialdesignicons.com/
 
@@ -94,7 +95,8 @@ export default class NotificationList extends Component<{
                 open={this.props.open}
                 onClose={this.handleClose}
             >
-                <DialogContent>
+                <DialogTitle>Notifications</DialogTitle>
+                <DialogContent style={{minWidth:"300px"}}>
                     <List component="nav" dense={false}>
                         {
                             this.state.notificationsOrder.map((notificationKey) => {
@@ -103,12 +105,16 @@ export default class NotificationList extends Component<{
                                     const link = (props) => <Link
                                         to={notification.action ? notification.action : "/"} {...props} />;
                                     let date = moment(notification.date).fromNow();
-                                    return <ListItem button key={notificationKey} component={link} >
+                                    //TODO remove this fix once a better notification system is in place
+                                    if(notification.text==="Someone a make comment on a post you have created"){
+                                        notification.text="Someone make a comment on a post you have created"
+                                    }
+                                    return <ListItem button key={notificationKey} component={notification.action ?link:undefined} >
                                         <ListItemIcon>
                                             {this.getIcon(notification.title)}
                                         </ListItemIcon>
                                         <ListItemText
-                                            primary={notification.seen?notification.text:<b>notification.text</b>}
+                                            primary={notification.seen?notification.text:<b>{notification.text}</b>}
                                             secondary={date}
                                         />
                                     </ListItem>

@@ -70,6 +70,7 @@ export class FirebaseActionService implements MemeServiceAction, CommentsAction 
                     value:0,
                     hot:0,
                     flag:false,
+                    flagMobile:false,
                 };
                 memeDatabase.postMeme(value.fileId,meme).then(() => {
                     audit.track("user/post/meme",{

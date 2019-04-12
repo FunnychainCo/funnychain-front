@@ -31,7 +31,7 @@ export default class Version extends Component {
                 fontSize: '0.5em',
                 left: 2,
                 position: 'fixed',
-            }}>{this.version}</span>
+            }}>  {this.version}</span>
         )
     }
 }

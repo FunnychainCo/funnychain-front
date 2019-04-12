@@ -10,6 +10,7 @@ import {firebaseBetService} from "../FirebaseBetService";
 import {authService} from "../../generic/AuthService";
 import {imageService} from "../../ImageService";
 import {report} from "../../log/Report";
+import {deviceDetector} from "../../mobile/DeviceDetector";
 
 export function loadMeme(meme:MemeDBEntry):Promise<Meme>{
     return new Promise<Meme>((resolve, reject) => {
@@ -91,6 +92,9 @@ export function loadMeme(meme:MemeDBEntry):Promise<Meme>{
             let localReportContent:boolean = !!report.getReportedContent("meme")[hash]
             let localReportUser:boolean = !!report.getReportedContent("user")[meme.uid];
             let distantReportContent = meme.flag;
+            if(deviceDetector.isMobile()){
+                distantReportContent = distantReportContent || meme.flagMobile;
+            }
             //TODO distant reported user
             flag = localReportContent || distantReportContent || localReportUser;
             resolve2(true);

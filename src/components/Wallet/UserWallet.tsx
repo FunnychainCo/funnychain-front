@@ -18,36 +18,14 @@ import BackButton from "../Header/BackButton";
 import Toolbar from "@material-ui/core/Toolbar";
 import UserWalletSend from "./UserWalletSend";
 import UserWalletTransaction from "./UserWalletTransaction";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import Paper from "@material-ui/core/Paper";
-import {userNotificationService} from "../../service/notification/UserNotificationService";
-import {lolTokenService} from "../../service/generic/LolTokenService";
 import MoneyCoinIcon from "../Icon/MoneyCoinIcon";
+import UserWalletPayout from "./UserWalletPayout";
 
 function TabContainer({children}) {
     return (
         <Typography component="div" style={{padding: 8 * 3}}>
             {children}
         </Typography>
-    );
-}
-
-function PaypalPayout(euroValue:number, lolValue:number, onclick:()=>void) {
-    return (
-        <Paper style={{marginTop:"16px"}} onClick={onclick}>
-            <ListItem>
-                <ListItemIcon>
-                    <img style={{maxHeight: "45px"}}
-                         src="https://ipfs.funnychain.co/ipfs/QmNkWP19Dt4yPU2cc7efZKddDraRukwWDiwwP7D3mdUiUA"/>
-                </ListItemIcon>
-                <ListItemText
-                    primary={euroValue+"$ Paypal Payout"}
-                    secondary={lolValue.toFixed(0)+" LOL token"}
-                />
-            </ListItem>
-        </Paper>
     );
 }
 
@@ -123,10 +101,6 @@ export default class UserWallet extends Component<{
         this.changePage(index);
     };
 
-    processPaypal(){
-        userNotificationService.sendNotificationToUser("Paypal Payout not yet available. Subscribe to the newsletter at https://funnychain.co to get notified when this service is available.")
-    }
-
     render() {
         return (
             <ModalPage
@@ -148,12 +122,7 @@ export default class UserWallet extends Component<{
                         onChangeIndex={this.handleChangeIndex}
                     >
                         <TabContainer>
-                            <List component="nav">
-                                {PaypalPayout(5,lolTokenService.convertEuroToLolValue(5),()=>{this.processPaypal()})}
-                                {PaypalPayout(10,lolTokenService.convertEuroToLolValue(10),()=>{this.processPaypal()})}
-                                {PaypalPayout(20,lolTokenService.convertEuroToLolValue(20),()=>{this.processPaypal()})}
-                                {PaypalPayout(50,lolTokenService.convertEuroToLolValue(50),()=>{this.processPaypal()})}
-                            </List>
+                            <UserWalletPayout userid={this.state.user.uid}/>
                         </TabContainer>
                         <TabContainer>
                             <UserWalletSend userid={this.state.user.uid}/>

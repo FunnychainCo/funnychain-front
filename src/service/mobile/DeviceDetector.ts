@@ -53,6 +53,9 @@ export class DeviceDetector {
         return this.os+"/"+this.type;
     }
 
+    /**
+     * Mobile app only
+     */
     isMobile():boolean{
         return this.type === "mobile";
     }

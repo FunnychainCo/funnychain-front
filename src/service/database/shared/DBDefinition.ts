@@ -20,6 +20,7 @@ export interface MemeDBEntry {
     created: number,
     value: number,
     flag:boolean,
+    flagMobile:boolean,
 }
 
 export interface MemeDBStruct {

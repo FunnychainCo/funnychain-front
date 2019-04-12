@@ -8,6 +8,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import {report} from "../../service/log/Report";
+import {userNotificationService} from "../../service/notification/UserNotificationService";
 
 const styles = theme => ({});
 
@@ -35,12 +36,14 @@ class ContentMenuButton extends Component<{
 
     reportContent() {
         report.reportContent(this.props.type,this.props.contentId);
+        userNotificationService.sendNotificationToUser("Thank you for reporting this content. This content will be moderated by our team.");
         this.props.onClick();
         this.handleClose();
     }
 
     reportUser() {
         report.reportUser(this.props.userId);
+        userNotificationService.sendNotificationToUser("Thank you for reporting this content. This content will be moderated by our team.");
         this.props.onClick();
         this.handleClose();
     }
