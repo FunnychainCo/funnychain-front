@@ -1,54 +1,63 @@
-import * as firebase from "firebase";
-import {DATABASE_CACHE_USERS, DATABASE_USERS, UserDBEntry} from "../database/shared/DBDefinition";
+import {UserDBEntry} from "../database/shared/DBDefinition";
+import axios from "axios";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
+import {audit} from "../log/Audit";
 
 export class UserDatabase {
 
     changeEmail(uid: string, newEmail: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            firebase.database().ref().child(DATABASE_USERS + '/' + uid + '/email')
-                .set(newEmail)
-                .then(() => {
-                    resolve(newEmail)
-                })
-                .catch((err) => {
-                    reject(err);
+            if(uid==="" || !uid || newEmail==="" ||!newEmail){
+                reject(false);
+            }else {
+                axios.post(GLOBAL_PROPERTIES.USER_SERVICE_CHANGE_EMAIL(),{uid:uid,mail:newEmail}).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    audit.reportError(error);
                 });
+            }
         });
     }
 
     changeDisplayName(uid: string, newDisplayName: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            firebase.database().ref().child(DATABASE_USERS + '/' + uid + '/displayName')
-                .set(newDisplayName)
-                .then(() => {
-                    resolve(newDisplayName);
-                })
-                .catch((err) => {
-                    reject(err);
+            if(uid==="" || !uid || newDisplayName==="" ||!newDisplayName){
+                reject(false);
+            }else {
+                axios.post(GLOBAL_PROPERTIES.USER_SERVICE_CHANGE_DISPLAY_NAME(),{uid:uid,name:newDisplayName}).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    audit.reportError(error);
                 });
+            }
         });
     }
 
     loadUserData(uid: string): Promise<UserDBEntry> {
         return new Promise<UserDBEntry>((resolve, reject) => {
-            firebase.database().ref(DATABASE_USERS + "/" + uid).once("value").then((user) => {
-                let fireBaseUser: UserDBEntry = user.val();
-                resolve(fireBaseUser);
-            }).catch((err) => {
-                reject(err);
-            });
+            if(uid==="" ||!uid){
+                reject(false);
+            }else {
+                axios.get(GLOBAL_PROPERTIES.USER_SERVICE_LOAD_USER_DATA() + uid).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    audit.reportError(error);
+                });
+            }
         });
     }
 
     getUserMemeKeys(uid: string): Promise<string[]> {
         return new Promise<string[]>((resolve, reject) => {
-            let ref = firebase.database().ref(DATABASE_CACHE_USERS + "/" + uid + "/memes");
-            ref.once("value", (memes) => {
-                let memesVal: string[] = memes.val() || {};
-                resolve(memesVal);
-            }).catch((err) => {
-                reject(err);
-            });
+            if(uid==="" ||!uid){
+                reject(false);
+            }else {
+                axios.get(GLOBAL_PROPERTIES.USER_SERVICE_USER_MEME_KEY() + uid).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    audit.reportError(error);
+                });
+            }
         });
     }
 

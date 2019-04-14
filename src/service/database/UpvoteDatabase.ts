@@ -1,40 +1,34 @@
-import * as firebase from "firebase";
-import {DATABASE_UPVOTES} from "../database/shared/DBDefinition";
 import {audit} from "../log/Audit";
+import axios from "axios";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 export class UpvoteDatabase {
-    dataBase = DATABASE_UPVOTES
 
     hasVotedOnPost(memeId: string, uid: string): Promise<boolean> {
         return new Promise<boolean>(resolve => {
-            firebase.database().ref(this.dataBase + "/" + memeId).once("value", (data) => {
-                let value: any[] = data.val();
-                let userHasVoted = false;
-                if(value!=null) {
-                    Object.keys(value).forEach(userid => {
-                        if (uid === userid) {
-                            userHasVoted = true;
-                        }
-                    });
-                }
-                resolve(userHasVoted);
-            });
+            if(uid==="" || !uid || memeId==="" ||!memeId){
+                resolve(false);
+            }else {
+                axios.get(GLOBAL_PROPERTIES.REWARD_SERVICE_HAS_VOTE_ON_POST() + uid + "/" + memeId).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    audit.reportError(error);
+                });
+            }
         });
     }
 
     countVote(memeId: string): Promise<number> {
         return new Promise<number>(resolve => {
-            firebase.database().ref(this.dataBase + "/" + memeId).once("value", (data) => {
-                let value: any[] = data.val();
-                if(value==null){
-                    resolve(0);
-                }else{
-                    resolve(Object.keys(value).length);
-                }
-            }).catch(reason => {
-                audit.reportError(reason);
+            if(memeId==="" ||!memeId){
                 resolve(0);
-            });
+            }else {
+                axios.get(GLOBAL_PROPERTIES.REWARD_SERVICE_COUNT_VOTE() + memeId).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    audit.reportError(error);
+                });
+            }
         });
     }
 

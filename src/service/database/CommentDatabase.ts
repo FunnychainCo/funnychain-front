@@ -1,47 +1,33 @@
-import {CommentDBEntry, DATABASE_CACHE_COMMENTS, DATABASE_COMMENTS} from "../database/shared/DBDefinition";
-import * as firebase from "firebase";
+import {CommentDBEntry} from "../database/shared/DBDefinition";
 import {audit} from "../log/Audit";
+import axios from "axios";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
+import {realTimeData} from "./RealTimeData";
 
-export class CommentDatabase{
+
+export class CommentDatabase {
 
     getCommentNumber(memeId: string): Promise<number> {
-        return new Promise<number>(resolve => {
-            firebase.database().ref(DATABASE_CACHE_COMMENTS + "/" + memeId + "/count").once("value", (data) => {
-                let value: number = data.val();
-                if(value==null){
-                    //no comment in the database so no count entry
-                    resolve(0);
-                }else {
-                    resolve(value);
-                }
-            }).catch(reason => {
-                audit.reportError(reason);
-                resolve(0);
+        return new Promise<number>((resolve, reject) => {
+            axios.get(GLOBAL_PROPERTIES.COMMENTS_SERVICE() + "/numbers/" + memeId).then(response => {
+                resolve(response.data);
+            }).catch(error => {
+                audit.reportError(error);
+                reject(error);
             });
         });
     }
 
-    on(memeId:string,callback: (comments: CommentDBEntry) => void): () => void {
-        let event = "child_added";
-        let toremove:any = firebase.database().ref(DATABASE_COMMENTS + '/' + memeId).on(event,(comments) => {
-            if (comments == null) {
-                audit.reportError(comments);
-                return;
-            }
-            //let commentsValue:{[id:string] : CommentDBEntry;} = comments.val();
-            if(comments.key==="count"){
-                return;
-            }
-            let commentsValue:CommentDBEntry = comments.val();
-            if (commentsValue == null) {
-                return;
-            }
-            callback(commentsValue);
-        });
+    on(memeId: string, callback: (comments: CommentDBEntry) => void): () => void {
+        // Listen to real time event to notify
+        let listener = (message) => {
+            callback(message);
+        };
+        realTimeData.getApp().service("/service/socket/comments").on('created', listener);
 
         //return remove listener function
         return () => {
-            firebase.database().ref(DATABASE_COMMENTS + '/' + memeId).off(event, toremove);
+            realTimeData.getApp().service("/service/socket/comments").off('created', listener);
         };
     }
 

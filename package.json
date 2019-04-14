@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@feathersjs/feathers": "^3.3.1",
+    "@feathersjs/socketio-client": "^1.2.1",
     "@material-ui/core": "^3.9.0",
     "@material-ui/icons": "^3.0.1",
     "@types/jest": "23.3.11",
@@ -50,6 +52,7 @@
     "react-tap-event-plugin": "^3.0.3",
     "react-virtualized": "^9.20.1",
     "react-waypoint": "^8.0.3",
+    "socket.io-client": "^2.2.0",
     "store": "^2.0.12",
     "suggest-username": "^0.1.2",
     "sw-precache": "^5.2.1",

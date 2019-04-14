@@ -18,6 +18,7 @@ import {userNotificationService} from "../service/notification/UserNotificationS
 import {deviceDetector} from "../service/mobile/DeviceDetector";
 import {backService} from "../service/BackService";
 import {report} from "../service/log/Report";
+import {realTimeData} from "../service/database/RealTimeData";
 
 
 class App extends React.Component<any, any> {
@@ -28,6 +29,7 @@ class App extends React.Component<any, any> {
         userNotificationService.start();//must be started before firebaseInitAuthService because it will register uid
         pwaService.start();
         authService.start();
+        realTimeData.connect();
         ipfsFileUploadService.start();
         backService.start();
         deviceDetector.start();
