@@ -13,6 +13,7 @@ export function isDev(): boolean {
 const devHostAPI = "http://127.0.0.1:8085";
 //const devHostAPI = "https://alpha.funnychain.co/backend";
 const hostAPI = ()=>isDev()?devHostAPI:getGlobalProperties().hostAPI;
+const host = ()=> hostAPI().replace("/backend","");
 const hostAPINotification = ()=>isDev()?"https://alpha.funnychain.co/backend":getGlobalProperties().hostAPI;
 const hostAPIIPFS = ()=>isDev()?"https://alpha.funnychain.co/backend":getGlobalProperties().hostAPI;
 const hostAPIMemeCreator = ()=>isDev()?"https://alpha.funnychain.co/backend":getGlobalProperties().hostAPI;
@@ -46,9 +47,13 @@ export const GLOBAL_PROPERTIES = {
     messagingSenderId:()=> getGlobalProperties().messagingSenderId,
 
     //Web service properties
-    FUNNYCHAIN_HOST:()=> hostAPI().replace("/backend",""),
+    FUNNYCHAIN_HOST:()=> host(),
     FUNNYCHAIN_SERVICE:()=> hostAPI(),
     FUNNYCHAIN_SERVICE_VERSION: () => hostAPI()+"/service/version",
+
+    //Real Time Service
+    REAL_TIME_SERVICE_HOST:()=> host(),
+    REAL_TIME_SERVICE_PATH:()=> host().startsWith("https://")?"/backend/socket.io":"/socket.io",
 
     //Meme Service
     MEME_SERVICE:()=> hostAPI()+serviceMemes,

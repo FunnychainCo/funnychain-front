@@ -20,15 +20,23 @@ export class CommentDatabase {
 
     on(memeId: string, callback: (comments: CommentDBEntry) => void): () => void {
         // Listen to real time event to notify
-        let listener = (message) => {
+
+        axios.get(GLOBAL_PROPERTIES.COMMENTS_SERVICE() + "/comments/" + memeId).then(response => {
+            let comments:{[id:string]:CommentDBEntry} = response.data;
+            Object.keys(comments).forEach(key => {
+                let comment = comments[key];
+                callback(comment);
+            })
+        }).catch(error => {
+            audit.reportError(error);
+        });
+
+        let remove = realTimeData.getResoureSubscriber().on("/service/comments/"+memeId,"created",(message) => {
             callback(message);
-        };
-        realTimeData.getApp().service("/service/socket/comments").on('created', listener);
+        });
 
         //return remove listener function
-        return () => {
-            realTimeData.getApp().service("/service/socket/comments").off('created', listener);
-        };
+        return remove;
     }
 
 }
