@@ -3,7 +3,6 @@ import {Component} from 'react'
 import {authService} from "../../service/generic/AuthService";
 import VpnKey from '@material-ui/icons/VpnKey';
 
-import "./Account.css";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import InstallAppAccount from "./InstallAppAccount";

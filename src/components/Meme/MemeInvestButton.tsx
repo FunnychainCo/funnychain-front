@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {Component} from 'react'
-import "./Meme.css"
 import Button from "@material-ui/core/Button/Button";
 import withStyles from "@material-ui/core/styles/withStyles";
 import {authService} from "../../service/generic/AuthService";

@@ -26,16 +26,20 @@ export class ImageService {
 
     preLoadImage(src: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            let image = new Image();
-            //src = forceUrlToHttps(src);
-            this.failIfNoHttps(src);
-            image.src = src;
-            image.onload = () => {
+            if (typeof Image !== 'undefined') {
+                let image = new Image();
+                //src = forceUrlToHttps(src);
+                this.failIfNoHttps(src);
+                image.src = src;
+                image.onload = () => {
+                    resolve(src);
+                };
+                image.onerror = (e) => {
+                    reject(e);
+                };
+            }else{
                 resolve(src);
-            };
-            image.onerror = (e) => {
-                reject(e);
-            };
+            }
         })
     }
 

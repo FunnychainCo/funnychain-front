@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {Component} from 'react'
-import "./Account.css";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";

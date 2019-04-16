@@ -14,6 +14,8 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
     ipfsApis: any[] = [];
 
     start(): void {
+        this.ipfsNodes=[];
+        this.ipfsApis=[];
         this.ipfsNodes.push({
             host: 'ipfs.funnychain.co',
             port: '5001',

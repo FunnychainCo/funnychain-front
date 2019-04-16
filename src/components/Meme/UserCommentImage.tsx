@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {Component} from 'react'
-import "./Meme.css"
 
 
 export default class UserCommentImage extends Component<{

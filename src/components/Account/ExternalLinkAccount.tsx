@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {Component} from 'react'
-import "./Account.css";
 import {Discord, Face, Facebook, HelpCircle, Medium, Twitter,CommentAccountOutline} from 'mdi-material-ui'; //https://materialdesignicons.com/
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";

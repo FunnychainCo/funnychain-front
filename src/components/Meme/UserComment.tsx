@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {Component} from 'react'
-import "./Meme.css"
 import {MemeComment} from "../../service/generic/MemeComment";
 //import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import Avatar from "@material-ui/core/Avatar/Avatar";

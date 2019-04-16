@@ -3,7 +3,6 @@ import {Component} from 'react'
 import {authService} from "../../service/generic/AuthService";
 import Edit from '@material-ui/icons/Edit';
 
-import "./Account.css";
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import Button from "@material-ui/core/Button/Button";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";

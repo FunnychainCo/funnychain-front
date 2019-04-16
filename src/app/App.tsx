@@ -1,13 +1,9 @@
 import * as React from 'react';
-import {BrowserRouter} from 'react-router-dom'
-
-import "./App.css"
+import {Switch} from 'react-router-dom'
 
 import Version from "../components/Version/Version";
 import {pwaService} from "../service/mobile/PWAService";
 import {ipfsFileUploadService} from "../service/uploader/IPFSFileUploadService";
-import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
-import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import {authService} from "../service/generic/AuthService";
 import HomePage from "../containers/HomePage";
 import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
@@ -19,57 +15,42 @@ import {deviceDetector} from "../service/mobile/DeviceDetector";
 import {backService} from "../service/BackService";
 import {report} from "../service/log/Report";
 import {realTimeData} from "../service/database/RealTimeData";
+import {isBrowserRenderMode} from "../service/ssr/windowHelper";
+import registerServiceWorker from "../registerServiceWorker";
 
 
 class App extends React.Component<any, any> {
     state = {};
 
     componentWillMount() {
-        ionicMobileAppService.start();//must be started before userNotificationService because it need to know what device we use
+        if (isBrowserRenderMode()) {
+            ionicMobileAppService.start();//must be started before userNotificationService because it need to know what device we use
+            backService.start();
+            registerServiceWorker();
+        }
         userNotificationService.start();//must be started before firebaseInitAuthService because it will register uid
         pwaService.start();
         authService.start();
         realTimeData.connect();
         ipfsFileUploadService.start();
-        backService.start();
         deviceDetector.start();
         report.start();
-        audit.track("user/app/open",{
-            target:deviceDetector.getDeviceString(),
-            agent:window.navigator.userAgent,
-            version:GLOBAL_PROPERTIES.VERSION()
+
+        audit.track("user/app/open", {
+            target: deviceDetector.getDeviceString(),
+            agent: deviceDetector.getUserAgent(),
+            version: GLOBAL_PROPERTIES.VERSION()
         });
-        console.log("running on: "+deviceDetector.getDeviceString());
+        console.log("running on: " + deviceDetector.getDeviceString());
     }
 
     render() {
-        const theme = createMuiTheme({
-            typography: {
-                useNextVariants: true,
-            },
-            palette: {
-                //type: 'dark'
-                //https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=212121&secondary.color=FF3D00
-                primary: {
-                    light: '#ffc046',
-                    main: '#ff8f00',
-                    dark: '#c56000',
-                },
-                secondary: {
-                    light: '#7843ff',
-                    main: '#1e00ff',
-                    dark: '#0000ca',
-                },
-            },
-        });
         return (
-            <BrowserRouter>
-                <MuiThemeProvider theme={theme}>
-                    <HomePage/>
-                    <Version/>
-                    <GlobalNotification/>
-                </MuiThemeProvider>
-            </BrowserRouter>
+            <Switch>
+                <HomePage/>
+                <Version/>
+                <GlobalNotification/>
+            </Switch>
         );
     }
 }

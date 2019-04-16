@@ -1,4 +1,3 @@
-import "./MemeList.css"
 import {memeService} from "../../service/generic/MemeService";
 import MemeComponent from '../Meme/MemeComponent';
 import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";

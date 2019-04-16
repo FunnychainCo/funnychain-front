@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {Component} from 'react'
 import {authService} from "../../service/generic/AuthService";
-import "./Account.css";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import {USER_ENTRY_NO_VALUE, UserEntry} from "../../service/generic/UserEntry";
 import AvatarAccountManagement from "./AvatarAccountManagement";

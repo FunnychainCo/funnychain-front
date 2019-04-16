@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {Component} from 'react';
-import "./Account.css";
 import Drawer from "@material-ui/core/Drawer/Drawer";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {authService} from "../../service/generic/AuthService";

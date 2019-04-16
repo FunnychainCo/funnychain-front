@@ -4,7 +4,6 @@ import {authService} from "../../service/generic/AuthService";
 import Edit from '@material-ui/icons/Edit';
 import VpnKey from '@material-ui/icons/VpnKey';
 
-import "./Account.css";
 import ModalPage from "../ModalPage/ModalPage";
 import {pwaService} from "../../service/mobile/PWAService";
 import Button from "@material-ui/core/Button/Button";

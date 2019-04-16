@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {Component} from 'react'
 import {authService} from "../../service/generic/AuthService";
-import "./Account.css";
 import ImageUploaderDropZone from "../ImageUploaderDropZone/ImageUploaderDropZone";
 import ModalPage from "../ModalPage/ModalPage";
 import {pwaService} from "../../service/mobile/PWAService";

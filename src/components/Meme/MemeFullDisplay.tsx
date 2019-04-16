@@ -1,6 +1,5 @@
 import * as React from 'react'
 import {Component} from 'react'
-import "./Meme.css"
 import {CommentsVisitor, MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
@@ -21,6 +20,14 @@ import {Helmet} from "react-helmet";
 import ContentMenuButton from "./ContentMenuButton";
 
 const styles = theme => ({
+    "fcDynamicWidth": {
+        "maxWidth": "100%"
+    },
+    "fcCenteredContainer": {
+        "overflow": "auto",
+        "display": "flex",
+        "justifyContent": "center"
+    },
     actions: {
         display: 'flex',
     },

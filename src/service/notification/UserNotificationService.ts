@@ -9,6 +9,7 @@ import EventEmitter from "eventemitter3";
 import {UiNotificationData} from "../generic/Notification";
 import {DBNotification} from "../database/shared/DBDefinition";
 import {RemoteSortedHashSet} from "../concurency/RemoteSortedHashSet";
+import {isBrowserRenderMode} from "../ssr/windowHelper";
 
 export interface Message {
     text: string,
@@ -30,16 +31,18 @@ export class UserNotificationService {
         let ANDROID_ID = GLOBAL_PROPERTIES.ONE_SIGNAL_ANDROID_NUMBER();
 
         this.uiNotification = new UiNotification();
-        if (ionicMobileAppService.mobileapp) {
-            this.oneSignalNotification = new OneSignalNotificationMobileSDK(API_KEY, ANDROID_ID);
-            this.oneSignalNotification.start();
-        } else {
-            this.oneSignalNotification = new OneSignalNotificationWebSDK(API_KEY);
-            this.oneSignalNotification.start();
+        if(isBrowserRenderMode()) {
+            if (ionicMobileAppService.mobileapp) {
+                this.oneSignalNotification = new OneSignalNotificationMobileSDK(API_KEY, ANDROID_ID);
+                this.oneSignalNotification.start();
+            } else {
+                this.oneSignalNotification = new OneSignalNotificationWebSDK(API_KEY);
+                this.oneSignalNotification.start();
+            }
+            this.oneSignalNotification.onNewNotificationFromServiceWorker(data => {
+                this.sendNotificationToUser(data.message);
+            });
         }
-        this.oneSignalNotification.onNewNotificationFromServiceWorker(data => {
-            this.sendNotificationToUser(data.message);
-        });
     }
 
     updateUnseenNumber() {
@@ -131,7 +134,9 @@ export class UserNotificationService {
             });
             this.updateUnseenNumber();
         }
-        this.oneSignalNotification.updateNotification(uid);
+        if(this.oneSignalNotification) {
+            this.oneSignalNotification.updateNotification(uid);
+        }
     }
 
     onNotificationState(callback: (granted: boolean) => void): () => void {

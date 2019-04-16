@@ -16,7 +16,13 @@ export class FirebaseInitAuthService {
             storageBucket: GLOBAL_PROPERTIES.storageBucket(),
             messagingSenderId: GLOBAL_PROPERTIES.messagingSenderId()
         };
-        firebase.initializeApp(config);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+        }else{
+            firebase.app().delete().then(()=> {
+                firebase.initializeApp(config);
+            });
+        }
         this.fetchRate();
     }
 

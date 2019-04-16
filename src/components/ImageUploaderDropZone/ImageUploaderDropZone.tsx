@@ -3,7 +3,6 @@ import {Component} from 'react'
 import ImagesLoaded from 'react-images-loaded';
 import Dropzone from 'react-dropzone'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import './ImageUploaderDropZone.css';
 import MobileDetect from 'mobile-detect'
 import {authService} from "../../service/generic/AuthService";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";

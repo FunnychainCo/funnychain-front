@@ -1,8 +1,7 @@
 import {LogstashAudit} from "./LogstashAudit";
 import {GLOBAL_PROPERTIES, isDev} from "../../properties/properties";
 import {authService} from "../generic/AuthService";
-
-declare let window: any;
+import {getWindow, isBrowserRenderMode} from "../ssr/windowHelper";
 
 export class Audit {
     additionalData: any = {};
@@ -16,10 +15,12 @@ export class Audit {
         if (this.isDev()) {
             console.log("Audit in dev mode");
         }else {
-            window.addEventListener("unhandledrejection", (promiseRejectionEvent) => {
-                // handle error here, for example log
-                this.error("unhandledrejection", promiseRejectionEvent);
-            });
+            if(isBrowserRenderMode()) {
+                getWindow().addEventListener("unhandledrejection", (promiseRejectionEvent) => {
+                    // handle error here, for example log
+                    this.error("unhandledrejection", promiseRejectionEvent);
+                });
+            }
         }
     }
 
@@ -53,8 +54,10 @@ export class Audit {
     private _track(event: string, data: any): void {
         try {
             this.logstashAudit.track(event, data);
-            if (window.mixpanel && GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED() === "true") {
-                window.mixpanel.track(event, data);
+            if(isBrowserRenderMode()) {
+                if (getWindow().mixpanel && GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED() === "true") {
+                    getWindow().mixpanel.track(event, data);
+                }
             }
         }catch (err){
             console.error(err);
