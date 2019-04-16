@@ -85,25 +85,5 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "jest": {
-    "transform": {
-      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
-      "\\.css$": "<rootDir>/node_modules/razzle/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|css|json)$)": "<rootDir>/node_modules/razzle/config/jest/fileTransform.js"
-    },
-    "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.(ts|js)?(x)",
-      "<rootDir>/src/**/?(*.)(spec|test).(ts|js)?(x)"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}"
-    ]
-  }
+  ]
 }
