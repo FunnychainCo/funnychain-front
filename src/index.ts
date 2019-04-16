@@ -27,4 +27,5 @@ export default express()
             return;
         }
         console.log(`> Started on port ${port}`);
+        console.info("MODE: ",process.env.NODE_ENV);
     });
