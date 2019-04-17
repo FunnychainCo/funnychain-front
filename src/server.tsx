@@ -443,6 +443,46 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
                                 -ms-flex-wrap: wrap;
                                 flex-wrap: wrap;
                             }
+                            /**
+                            Account.css
+                             */
+                             .accountPaperWidth{
+                                max-width:100%;
+                            }
+                            
+                            .accountPaper{
+                                margin: 20px;
+                            }
+                            
+                            .fcCenteredContainer{
+                                overflow: auto;
+                                display: flex;
+                                justify-content: center;
+                            }
+                            
+                            .fcLeftAlignContainer{
+                                overflow: auto;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: left;
+                            }
+                            
+                            
+                            .fcAvatarContent{
+                                margin: 20px;
+                                width: 150px !important;
+                                height: 150px !important;
+                            }
+                            
+                            .fcContent{
+                                flex: 0 1 auto;
+                                overflow: hidden;
+                            }
+                            
+                            .fcEditButton{
+                                width: auto !important;
+                                height: auto !important;
+                            }
                         </style>
                     </head>
                     <body>

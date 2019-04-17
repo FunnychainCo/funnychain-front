@@ -7,7 +7,7 @@ module.exports = {
                 useEslint: false, // ignored if `useBabel` is false
                 tsLoader: {
                     transpileOnly: true,
-                    experimentalWatchApi: true,
+                    experimentalWatchApi: false,
                 },
                 forkTsChecker: {
                     tsconfig: './tsconfig.json',
