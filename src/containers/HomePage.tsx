@@ -12,7 +12,7 @@ import NotificationListPage from "./NotificationListPage";
 export default class HomePage extends React.Component<{}, {}> {
     render() {
         return (
-            <div>
+            <React.Fragment>
                 <Route path='/' component={BackListener} />
                 <Route path='/' component={InstallSkipDialog}/>
                 <Route path='/' component={MemeListPage} />
@@ -24,7 +24,7 @@ export default class HomePage extends React.Component<{}, {}> {
                 <Route exact path='/install' component={InstallPage} />
                 <Route exact path='/user/current/wallet' component={WalletPage} />
 
-            </div>
+            </React.Fragment>
         )
     }
 }

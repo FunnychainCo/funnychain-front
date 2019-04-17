@@ -54,11 +54,11 @@ export class Audit {
     private _track(event: string, data: any): void {
         try {
             this.logstashAudit.track(event, data);
-            if(isBrowserRenderMode()) {
+            /*if(isBrowserRenderMode()) {
                 if (getWindow().mixpanel && GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED() === "true") {
                     getWindow().mixpanel.track(event, data);
                 }
-            }
+            }*/
         }catch (err){
             console.error(err);
             //do nothing

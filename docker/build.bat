@@ -2,11 +2,12 @@ cd ..
 
 call npm install
 call npm outdated
-call npm run testonce
+rem call npm run test
 call npm run build
 
 RMDIR /s /q .\docker\build\
 xcopy .\build .\docker\build\ /s /e
+copy .\package.json .\docker\build\
 
 cd docker
 

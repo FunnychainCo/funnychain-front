@@ -20,11 +20,11 @@ export function isDev(): boolean {
 
 //const devHostAPI = "http://127.0.0.1:8085";
 const devHostAPI = "https://alpha.funnychain.co/backend";
-const hostAPI = () => isDev() ? devHostAPI : getGlobalProperties().hostAPI;
+const hostAPI = () => isDev() ? devHostAPI : getGlobalProperties().HOST_API;
 const host = () => hostAPI().replace("/backend", "");
-const hostAPINotification = () => isDev() ? "https://alpha.funnychain.co/backend" : getGlobalProperties().hostAPI;
-const hostAPIIPFS = () => isDev() ? "https://alpha.funnychain.co/backend" : getGlobalProperties().hostAPI;
-const hostAPIMemeCreator = () => isDev() ? "https://alpha.funnychain.co/backend" : getGlobalProperties().hostAPI;
+const hostAPINotification = () => isDev() ? "https://alpha.funnychain.co/backend" : getGlobalProperties().HOST_API;
+const hostAPIIPFS = () => isDev() ? "https://alpha.funnychain.co/backend" : getGlobalProperties().HOST_API;
+const hostAPIMemeCreator = () => isDev() ? "https://alpha.funnychain.co/backend" : getGlobalProperties().HOST_API;
 
 const serviceUser = '/service/user';
 const serviceVote = '/service/vote';
@@ -40,19 +40,18 @@ const serviceMemes = '/service/meme';
 export const GLOBAL_PROPERTIES = {
     VERSION: () => "1.6.0",
 
-    MIXPANEL_ACTIVATED: () => getGlobalProperties().mixpanelActivated,
+    //One signal
 
-
-    ONE_SIGNAL_API_KEY: () => getGlobalProperties().oneSignalApiKey,
-    ONE_SIGNAL_ANDROID_NUMBER: () => getGlobalProperties().oneSignalAndroidNumber,
+    ONE_SIGNAL_API_KEY: () => getGlobalProperties().ONE_SIGNAL_API_KEY,
+    ONE_SIGNAL_ANDROID_NUMBER: () => getGlobalProperties().ONE_SIGNAL_ANDROID_NUMBER,
 
     //FIREBASE properties
-    apiKey: () => getGlobalProperties().apiKey,
-    authDomain: () => getGlobalProperties().authDomain,
-    databaseURL: () => getGlobalProperties().databaseURL,
-    projectId: () => getGlobalProperties().projectId,
-    storageBucket: () => getGlobalProperties().storageBucket,
-    messagingSenderId: () => getGlobalProperties().messagingSenderId,
+    apiKey: () => getGlobalProperties().FIREBASE_APIKEY,
+    authDomain: () => getGlobalProperties().FIREBASE_AUTH,
+    databaseURL: () => getGlobalProperties().FIREBASE_DATABASE_URL,
+    projectId: () => getGlobalProperties().FIREBASE_PROJECT_ID,
+    storageBucket: () => getGlobalProperties().FIRABSE_STORAGE_BUCKET,
+    messagingSenderId: () => getGlobalProperties().FIREBASE_MESSAGING_ID,
 
     //Web service properties
     FUNNYCHAIN_HOST: () => host(),

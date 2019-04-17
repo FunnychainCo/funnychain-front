@@ -3,14 +3,13 @@ import React from 'react';
 import {renderToString} from 'react-dom/server';
 import {StaticRouter} from 'react-router-dom';
 
-import App from './app/App';
+import App, {getTheme} from './app/App';
 import {setProperties} from "./properties/properties";
 
 import {SheetsRegistry} from 'jss';
 import JssProvider from 'react-jss/lib/JssProvider';
 import {
     MuiThemeProvider,
-    createMuiTheme,
     createGenerateClassName,
 } from '@material-ui/core/styles';
 
@@ -23,30 +22,28 @@ syncLoadAssets();
 
 let PROPERTIES = {
     /* funnychain */
-    hostAPI: "https://alpha.funnychain.co/backend",
-
-    /* mixpanel id */
-    mixpanelActivated: 'false',
-    mixpanelId: "",
+    HOST: process.env.HOST?process.env.HOST:"https://alpha.funnychain.co/backend",
+    HOST_API: process.env.HOST_API?process.env.HOST_API:"https://alpha.funnychain.co/backend",
 
     /* one-signal api-key */
-    oneSignalApiKey: "dc7c1d29-5ea3-4967-baac-a64f0be10c95",
-    oneSignalAndroidNumber: "818676897965",
+    ONE_SIGNAL_API_KEY: process.env.ONE_SIGNAL_API_KEY?process.env.ONE_SIGNAL_API_KEY:"dc7c1d29-5ea3-4967-baac-a64f0be10c95",
+    ONE_SIGNAL_ANDROID_NUMBER: process.env.ONE_SIGNAL_ANDROID_NUMBER?process.env.ONE_SIGNAL_ANDROID_NUMBER:"818676897965",
 
     /* google analytics id */
-    googleAnalyticsActivated: 'false',
-    googleAnalyticsId: 'UA-115386396-2',
-    googleAnalyticsUrl: "https://www.googletagmanager.com/gtag/js?id=UA-115386396-2",
+    GOOGLE_ANALYTICS_ACTIVATED: process.env.GOOGLE_ANALYTICS_ACTIVATED?process.env.GOOGLE_ANALYTICS_ACTIVATED:'false',
+    GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID?process.env.GOOGLE_ANALYTICS_ID:'UA-115386396-2',
+    GOOGLE_ANALYTICS_URL: process.env.GOOGLE_ANALYTICS_URL?process.env.GOOGLE_ANALYTICS_URL:"https://www.googletagmanager.com/gtag/js?id=UA-115386396-2",
 
     /* firebase api */
-    apiKey: "AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",
-    authDomain: "funnychain-dev.firebaseapp.com",
-    databaseURL: "https://funnychain-dev.firebaseio.com",
-    messagingSenderId: "818676897965",
-    projectId: "funnychain-dev",
-    storageBucket: "funnychain-dev.appspot.com"
+    FIREBASE_APIKEY: process.env.FIREBASE_APIKEY?process.env.FIREBASE_APIKEY:"AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",
+    FIREBASE_AUTH: process.env.FIREBASE_AUTH?process.env.FIREBASE_AUTH:"funnychain-dev.firebaseapp.com",
+    FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL?process.env.FIREBASE_DATABASE_URL:"https://funnychain-dev.firebaseio.com",
+    FIREBASE_MESSAGING_ID: process.env.FIREBASE_MESSAGING_ID?process.env.FIREBASE_MESSAGING_ID:"818676897965",
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID?process.env.FIREBASE_PROJECT_ID:"funnychain-dev",
+    FIRABSE_STORAGE_BUCKET: process.env.FIRABSE_STORAGE_BUCKET?process.env.FIRABSE_STORAGE_BUCKET:"funnychain-dev.appspot.com"
 };
 
+console.log("using properties:",PROPERTIES);
 setProperties(PROPERTIES);
 
 // Create a sheetsRegistry instance.
@@ -55,48 +52,24 @@ const sheetsRegistry = new SheetsRegistry();
 // Create a sheetsManager instance.
 const sheetsManager = new Map();
 
-// Create a theme instance.
-const theme = createMuiTheme({
-    typography: {
-        useNextVariants: true,
-    },
-    palette: {
-        //type: 'dark'
-        //https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=212121&secondary.color=FF3D00
-        primary: {
-            light: '#ffc046',
-            main: '#ff8f00',
-            dark: '#c56000',
-        },
-        secondary: {
-            light: '#7843ff',
-            main: '#1e00ff',
-            dark: '#0000ca',
-        },
-    },
-});
-
 // Create a new class name generator.
 const generateClassName = createGenerateClassName();
 
-const server = express()
-    .disable('x-powered-by')
-    .use(express.static(process.env.RAZZLE_PUBLIC_DIR!))
-    .get('/*', (req: express.Request, res: express.Response) => {
-            const context = {};
-            const markup = renderToString(
-                <JssProvider registry={sheetsRegistry} generateClassName={generateClassName}>
-                    <MuiThemeProvider theme={theme} sheetsManager={sheetsManager}>
-                        <StaticRouter context={context} location={req.url}>
-                            <App/>
-                        </StaticRouter>
-                    </MuiThemeProvider>
-                </JssProvider>
-            );
-            // Grab the CSS from our sheetsRegistry.
-            const css = sheetsRegistry.toString();
-            res.send(
-                `<!DOCTYPE html>
+function singlePageApplicationRenderer(req: express.Request, res: express.Response) {
+    const context = {};
+    const markup = renderToString(
+        <JssProvider registry={sheetsRegistry} generateClassName={generateClassName}>
+            <MuiThemeProvider theme={getTheme()} sheetsManager={sheetsManager}>
+                <StaticRouter context={context} location={req.url}>
+                    <App/>
+                </StaticRouter>
+            </MuiThemeProvider>
+        </JssProvider>
+    );
+    // Grab the CSS from our sheetsRegistry.
+    const css = sheetsRegistry.toString();
+    res.send(
+        `<!DOCTYPE html>
                 <html lang="en">
                     <head>
                         <!-- start PWA script -->
@@ -125,6 +98,32 @@ const server = express()
                         <!-- start One Signal -->
                         <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" no-cors async=""></script>
                         <!-- end One Signal -->
+                                            
+                        <!-- Global site tag (gtag.js) - Google Analytics -->
+                        <script type="text/javascript">
+                            //<![CDATA[
+                            if (GLOBAL_PROPERTIES_JS.GOOGLE_ANALYTICS_ACTIVATED === 'true') {
+                                document.write('\x3Cscript async src="' + GLOBAL_PROPERTIES_JS.GOOGLE_ANALYTICS_URL + '">\x3C/scr'+'ipt>');
+                                window.dataLayer = window.dataLayer || [];
+                        
+                                function gtag() {
+                                    dataLayer.push(arguments);
+                                }
+                        
+                                gtag('js', new Date());
+                                gtag('config', GLOBAL_PROPERTIES_JS.GOOGLE_ANALYTICS_ID);
+                            }
+                            //]]>
+                        </script>
+                        <!-- end Google Analytics -->
+                        
+                        <!-- Google Tag Manager -->
+                        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                        })(window,document,'script','dataLayer','GTM-KPTK763');</script>
+                        <!-- End Google Tag Manager -->
                         
                         <base href="/">
                         
@@ -189,9 +188,9 @@ const server = express()
                         ${assets.client.css ? `<link rel="stylesheet" href="${assets.client.css}">` : ''}
                         <style id="jss-server-side">${css}</style>
                         ${process.env.NODE_ENV === 'production' ?
-                    `<script src="${assets.client.js}" defer></script>` :
-                    `<script src="${assets.client.js}" defer crossorigin></script>`
-                    }
+                        `<script src="${assets.client.js}" defer></script>` :
+                        `<script src="${assets.client.js}" defer crossorigin></script>`
+                        }
                         <style type="text/css">
                             /* 
                             main 
@@ -450,8 +449,15 @@ const server = express()
                         <div id="root">${markup}</div>
                     </body>
                 </html>`
-            );
-        }
     );
+}
+
+const server = express()
+    .disable('x-powered-by')
+    .use(express.static(process.env.RAZZLE_PUBLIC_DIR!));
+
+console.log("static files: ",process.env.RAZZLE_PUBLIC_DIR);
+
+server.get('/*', (req: express.Request, res: express.Response) => singlePageApplicationRenderer(req, res));
 
 export default server;

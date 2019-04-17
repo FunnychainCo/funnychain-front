@@ -17,7 +17,32 @@ import {report} from "../service/log/Report";
 import {realTimeData} from "../service/database/RealTimeData";
 import {isBrowserRenderMode} from "../service/ssr/windowHelper";
 import registerServiceWorker from "../registerServiceWorker";
+import {createMuiTheme} from "@material-ui/core";
 
+// Create a theme instance.
+const theme = createMuiTheme({
+    typography: {
+        useNextVariants: true,
+    },
+    palette: {
+        //type: 'dark'
+        //https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=212121&secondary.color=FF3D00
+        primary: {
+            light: '#ffc046',
+            main: '#ff8f00',
+            dark: '#c56000',
+        },
+        secondary: {
+            light: '#7843ff',
+            main: '#1e00ff',
+            dark: '#0000ca',
+        },
+    },
+});
+
+export function getTheme() {
+    return theme;
+}
 
 class App extends React.Component<any, any> {
     state = {};
@@ -46,11 +71,13 @@ class App extends React.Component<any, any> {
 
     render() {
         return (
-            <Switch>
-                <HomePage/>
+            <React.Fragment>
+                <Switch>
+                    <HomePage/>
+                </Switch>
                 <Version/>
                 <GlobalNotification/>
-            </Switch>
+            </React.Fragment>
         );
     }
 }
