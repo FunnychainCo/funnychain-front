@@ -5,7 +5,7 @@ import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import Button from "@material-ui/core/Button/Button";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import {MemeLinkInterface, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
-import Waypoint from "react-waypoint";
+import {Waypoint} from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {memeService} from "../../service/generic/MemeService";
 import MemeComponent from '../Meme/MemeComponent';

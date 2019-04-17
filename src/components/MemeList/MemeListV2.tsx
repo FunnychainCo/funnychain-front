@@ -4,7 +4,7 @@ import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import * as React from "react";
 import {Component} from "react";
 import {MemeLinkInterface, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
-import Waypoint from "react-waypoint";
+import {Waypoint} from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {authService} from "../../service/generic/AuthService";
 

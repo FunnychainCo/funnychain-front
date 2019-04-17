@@ -13,7 +13,9 @@ COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./default.conf /etc/nginx/conf.d/default.conf
 COPY ./build/public /usr/share/nginx/html
 
-COPY ./build/ /node
+COPY ./build/package.json /node/package.json
 RUN cd /node/ && npm install
- 
+
+COPY ./build/ /node
+
 CMD ["sh", "-c", "/start_script.sh"]

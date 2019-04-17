@@ -11,7 +11,7 @@ import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import UserComment from "./UserComment";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
-import Waypoint from "react-waypoint";
+import {Waypoint} from "react-waypoint";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeAvatarInfo from "./MemeAvatarInfo";
