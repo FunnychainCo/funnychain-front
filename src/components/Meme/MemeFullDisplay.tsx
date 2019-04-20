@@ -18,6 +18,7 @@ import MemeAvatarInfo from "./MemeAvatarInfo";
 import MemeActionButton from "./MemeActionButton";
 import {Helmet} from "react-helmet";
 import ContentMenuButton from "./ContentMenuButton";
+import {ssrCache} from "../../service/ssr/SSRCache";
 
 const styles = theme => ({
     "fcDynamicWidth": {
@@ -69,6 +70,15 @@ class MemeFullDisplay extends Component<{
     private memeLink: MemeLinkInterface;
     private removeListenerMemeLink: () => void;
     private removeListenerCommentVisitor: () => void;
+
+    componentWillMount() {
+        let cache = ssrCache.getCache("memelink/"+this.props.meme.id);
+        if(cache){
+            this.setState({
+                meme: cache
+            });
+        }
+    }
 
     componentDidMount() {
         this.memeLink = this.props.meme;

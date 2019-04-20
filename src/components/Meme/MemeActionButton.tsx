@@ -7,6 +7,7 @@ import MemeUpvoteButton from "./MemeUpvoteButton";
 import {MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import MemeShareButton from "./MemeShareButton";
 import MoneyCoinIcon from "../Icon/MoneyCoinIcon";
+import {GLOBAL_PROPERTIES} from "../../properties/properties";
 
 const styles = theme => ({});
 
@@ -19,7 +20,7 @@ class MemeActionButton extends Component<{
     render() {
         //const {classes} = this.props;
         return <div className="memeElementStyleDivContainer">
-            <MemeShareButton url={"https://" + window.location.host + "/meme/" + this.props.meme.id}/>
+            <MemeShareButton url={GLOBAL_PROPERTIES.FUNNYCHAIN_HOST()+ "/meme/" + this.props.meme.id}/>
             {this.props.meme.hot === true &&
             <MemeUpvoteButton meme={this.props.meme} logged={this.props.logged} onUpvoteConfirmed={() => {
                 this.props.memeLink.refresh();

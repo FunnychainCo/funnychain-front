@@ -12,6 +12,11 @@ import {
     MuiThemeProvider,
     createGenerateClassName,
 } from '@material-ui/core/styles';
+import {generateCache} from "./components/MemeList/MemeListV2";
+import {authService} from "./service/generic/AuthService";
+import {realTimeData} from "./service/database/RealTimeData";
+import {ipfsFileUploadService} from "./service/uploader/IPFSFileUploadService";
+import {generateMemeComponentCache} from "./components/Meme/MemeComponent";
 
 let assets: any;
 
@@ -22,7 +27,7 @@ syncLoadAssets();
 
 let PROPERTIES = {
     /* funnychain */
-    HOST: process.env.HOST?process.env.HOST:"https://alpha.funnychain.co/backend",
+    HOST: process.env.APP_HOST?process.env.APP_HOST:"https://alpha.funnychain.co",
     HOST_API: process.env.HOST_API?process.env.HOST_API:"https://alpha.funnychain.co/backend",
 
     /* one-signal api-key */
@@ -55,21 +60,39 @@ const sheetsManager = new Map();
 // Create a new class name generator.
 const generateClassName = createGenerateClassName();
 
+//start some service
+authService.start();
+realTimeData.connect();
+ipfsFileUploadService.start();
+
 function singlePageApplicationRenderer(req: express.Request, res: express.Response) {
-    const context = {};
-    const markup = renderToString(
-        <JssProvider registry={sheetsRegistry} generateClassName={generateClassName}>
-            <MuiThemeProvider theme={getTheme()} sheetsManager={sheetsManager}>
-                <StaticRouter context={context} location={req.url}>
-                    <App/>
-                </StaticRouter>
-            </MuiThemeProvider>
-        </JssProvider>
-    );
-    // Grab the CSS from our sheetsRegistry.
-    const css = sheetsRegistry.toString();
-    res.send(
-        `<!DOCTYPE html>
+    console.log(req.url);
+    /*
+    Compute server data
+    * */
+    let dataPromise = Promise.resolve({});
+    if(req.url==="/"){
+        dataPromise = generateCache();
+    }else if(req.url.startsWith("/meme/")){
+        dataPromise = generateMemeComponentCache(req.url);
+    }
+
+    dataPromise.then(() => {
+
+        const context = {};
+        const markup = renderToString(
+            <JssProvider registry={sheetsRegistry} generateClassName={generateClassName}>
+                <MuiThemeProvider theme={getTheme()} sheetsManager={sheetsManager}>
+                    <StaticRouter context={context} location={req.url}>
+                        <App/>
+                    </StaticRouter>
+                </MuiThemeProvider>
+            </JssProvider>
+        );
+        // Grab the CSS from our sheetsRegistry.
+        const css = sheetsRegistry.toString();
+        res.send(
+            `<!DOCTYPE html>
                 <html lang="en">
                     <head>
                         <!-- start PWA script -->
@@ -188,9 +211,9 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
                         ${assets.client.css ? `<link rel="stylesheet" href="${assets.client.css}">` : ''}
                         <style id="jss-server-side">${css}</style>
                         ${process.env.NODE_ENV === 'production' ?
-                        `<script src="${assets.client.js}" defer></script>` :
-                        `<script src="${assets.client.js}" defer crossorigin></script>`
-                        }
+                `<script src="${assets.client.js}" defer></script>` :
+                `<script src="${assets.client.js}" defer crossorigin></script>`
+                }
                         <style type="text/css">
                             /* 
                             main 
@@ -489,7 +512,8 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
                         <div id="root">${markup}</div>
                     </body>
                 </html>`
-    );
+        );
+    });
 }
 
 const server = express()

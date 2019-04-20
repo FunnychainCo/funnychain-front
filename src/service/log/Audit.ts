@@ -80,17 +80,33 @@ export class Audit {
     };
 
     private report(event: string, ...data: any[]) {
-        let stack: any = new Error().stack;
         let finalData: any = {
             error: {},
-            additionalData: JSON.stringify(this.additionalData),
-            stack: JSON.stringify(stack),
+            additionalData: "stringify error",
+            stack: "stringify error",
             version: GLOBAL_PROPERTIES.VERSION()
         };
 
-        data.forEach((value, index) => {
-            finalData.error["" + index] = JSON.stringify(value, this.replaceErrors);
-        });
+        try {
+            let stack: any = new Error().stack;
+            finalData.stack=JSON.stringify(stack);
+        }catch (e) {
+            // do nothing
+        }
+
+        try {
+            finalData.additionalData = JSON.stringify(this.additionalData);
+        }catch (e) {
+            // do nothing
+        }
+
+        try {
+            data.forEach((value, index) => {
+                finalData.error["" + index] = JSON.stringify(value, this.replaceErrors);
+            });
+        }catch (e) {
+            // do nothing
+        }
 
         if (!this.isDev()) {
             this._track(event, finalData);

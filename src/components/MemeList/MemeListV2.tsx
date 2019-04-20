@@ -7,12 +7,65 @@ import {MemeLinkInterface, MemeLoaderInterface} from "../../service/generic/Appl
 import {Waypoint} from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {authService} from "../../service/generic/AuthService";
+import {ssrCache} from "../../service/ssr/SSRCache";
+import {isBrowserRenderMode} from "../../service/ssr/windowHelper";
 
 
 interface State {
     memes: { [id: string]: MemeLinkInterface },
     memesOrder: string[];
     displayWaypoint: boolean
+}
+
+export function generateCache(): Promise<any> {
+    let promise = new Promise<any>((resolve, reject) => {
+        setTimeout(() => {
+            resolve({});
+        }, 10000);
+        let loadNumber = 5;
+        let state: {
+            memes: { [id: string]: MemeLinkInterface },
+            memesOrder: string[],
+            memeLinksLoaded: string[],
+        } = {
+            memeLinksLoaded: [],
+            memes: {},
+            memesOrder: []
+        };
+        let tryFinishLoad = () => {
+            if (
+                state.memesOrder.length >= loadNumber &&
+                Object.keys(state.memes).length >= loadNumber &&
+                state.memeLinksLoaded.length>=loadNumber) {
+                removeCallbackOnMemeData();
+                removeCallbackOnMemeOrder();
+                resolve(state);
+            }
+        };
+        let memeLoader = memeService.getMemeLoader("hot", []);
+        let removeCallbackOnMemeData = memeLoader.onMemeData((meme: MemeLinkInterface) => {
+            console.log(meme);
+            let tmpState = {};
+            tmpState[meme.id] = meme;
+            state.memes = {...tmpState, ...state.memes};
+            meme.on(meme => {
+                state.memeLinksLoaded.push(meme.id);
+                ssrCache.setCache("memelink/"+meme.id, meme);
+                tryFinishLoad();
+            });
+            tryFinishLoad();
+        });
+        let removeCallbackOnMemeOrder = memeLoader.onMemeOrder((memesKey: string[]) => {
+            console.log(memesKey);
+            state.memesOrder = state.memesOrder.concat(memesKey.reverse());
+            tryFinishLoad();
+        });
+        memeLoader.loadMore(loadNumber);
+    });
+    promise.then(data => {
+        ssrCache.setCache("memelist-hot", data);
+    });
+    return promise;
 }
 
 export default class MemeListV2 extends Component<{
@@ -30,15 +83,27 @@ export default class MemeListV2 extends Component<{
     };
 
     private memeLoader: MemeLoaderInterface;
-    private removeListener: () => void = ()=>{};
+    private removeListener: () => void = () => {
+    };
 
 
     componentWillMount() {
-        this.restartMemeLoader(this.props.type, memeService.getTags());
+
+        let cache = ssrCache.getCache("memelist-hot");
+        if (cache) {
+            this.setState((state) => {
+                return ({
+                    memes: {...cache.memes, ...state.memes},
+                    memesOrder: cache.memesOrder
+                })
+            })
+        }else {
+            this.restartMemeLoader(this.props.type, memeService.getTags());
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(prevProps.type!=this.props.type) {
+        if (prevProps.type != this.props.type) {
             this.restartMemeLoader(this.props.type, memeService.getTags());
         }
     }
@@ -73,18 +138,18 @@ export default class MemeListV2 extends Component<{
 
     renderWaypoint = (key) => {
         //console.log("create waypoint "+key + " => "+this.state.memes[key].title);
-        if (this.state.displayWaypoint) {
+        if (this.state.displayWaypoint && isBrowserRenderMode()) {
             return (
                 /*<div style={{minHeight: "100px", width: "100%", backgroundColor: "red"}}>*/
-                    <Waypoint
-                        key={"waypoint" + key}
-                        scrollableAncestor={window}
-                        onEnter={() => {
-                            console.log("waypoint triggered => load more");
-                            this.memeLoader.loadMore(4);
-                        }}
-                    >
-                    </Waypoint>
+                <Waypoint
+                    key={"waypoint" + key}
+                    scrollableAncestor={window}
+                    onEnter={() => {
+                        console.log("waypoint triggered => load more");
+                        this.memeLoader.loadMore(4);
+                    }}
+                >
+                </Waypoint>
                 /*</div>*/
             );
         } else {
@@ -105,7 +170,7 @@ export default class MemeListV2 extends Component<{
                                                                     src="/static/image/placeholder-image.png"
                                                                     alt=""/>}
                                 {this.state.memes[memeKey] && <MemeComponent meme={this.state.memes[memeKey]}/>}
-                                {(this.state.memes[memeKey] && ((index == array.length - waypointDistanceFromTheEnd) || (index == array.length-1))) &&
+                                {(this.state.memes[memeKey] && ((index == array.length - waypointDistanceFromTheEnd) || (index == array.length - 1))) &&
                                 this.renderWaypoint(mapKey)
                                 }
                             </div>

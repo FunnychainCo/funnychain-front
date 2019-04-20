@@ -33,7 +33,7 @@ export default class MemeDisplayPage extends Component<{
     }
 
     render() {
-        return <MemeFullDisplayModal meme={this.memeLink} open={true} onRequestClose={()=>{this.goBack()}}/>
+        return <React.Fragment><MemeFullDisplayModal meme={this.memeLink} open={true} onRequestClose={()=>{this.goBack()}}/></React.Fragment>;
         //return (<MemeFullDisplay meme={this.memeLink}/>)
     }
 }

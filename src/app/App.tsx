@@ -16,7 +16,6 @@ import {backService} from "../service/BackService";
 import {report} from "../service/log/Report";
 import {realTimeData} from "../service/database/RealTimeData";
 import {isBrowserRenderMode} from "../service/ssr/windowHelper";
-import registerServiceWorker from "../registerServiceWorker";
 import {createMuiTheme} from "@material-ui/core";
 
 // Create a theme instance.
@@ -51,7 +50,7 @@ class App extends React.Component<any, any> {
         if (isBrowserRenderMode()) {
             ionicMobileAppService.start();//must be started before userNotificationService because it need to know what device we use
             backService.start();
-            registerServiceWorker();
+            //registerServiceWorker();
         }
         userNotificationService.start();//must be started before firebaseInitAuthService because it will register uid
         pwaService.start();

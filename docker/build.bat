@@ -8,6 +8,7 @@ call npm run build
 RMDIR /s /q .\docker\build\
 xcopy .\build .\docker\build\ /s /e
 copy .\package.json .\docker\build\
+copy .\package-lock.json .\docker\build\
 
 cd docker
 

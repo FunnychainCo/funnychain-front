@@ -21,6 +21,8 @@ import CommentPoster from "./CommentPoster";
 import MemeAvatarInfo from "./MemeAvatarInfo";
 import MemeActionButton from "./MemeActionButton";
 import ContentMenuButton from "./ContentMenuButton";
+import {ssrCache} from "../../service/ssr/SSRCache";
+import {memeService} from "../../service/generic/MemeService";
 
 
 const styles = theme => ({
@@ -49,6 +51,27 @@ interface State {
     fullDisplay: boolean,
 }
 
+
+export function generateMemeComponentCache(url:string): Promise<any> {
+    let split = url.split("/");
+    let memeid = split[split.length-1];
+    let listenOff = ()=>{};
+    let promise = new Promise<any>((resolve, reject) => {
+        setTimeout(() => {
+            resolve({});
+        }, 10000);
+        let memeLink = memeService.getMemeLink(memeid);
+        listenOff = memeLink.on(meme => {
+            resolve(meme);
+        });
+    });
+    promise.then(data => {
+        listenOff();
+        ssrCache.setCache("memelink/"+memeid, data);
+    });
+    return promise;
+}
+
 class MemeComponent extends Component<{
     meme: MemeLinkInterface,
     classes: any
@@ -70,6 +93,16 @@ class MemeComponent extends Component<{
     private memeLink: MemeLinkInterface;
     private removeListenerMemeLink: () => void;
     private removeListenerCommentVisitor: () => void;
+
+    componentWillMount() {
+        let cache = ssrCache.getCache("memelink/"+this.props.meme.id);
+        if(cache){
+            this.setState({
+                commentNumber: cache.commentNumber,
+                meme: cache
+            });
+        }
+    }
 
     componentDidMount() {
         this.memeLink = this.props.meme;
