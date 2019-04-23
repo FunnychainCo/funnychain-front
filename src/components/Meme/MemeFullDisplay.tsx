@@ -16,7 +16,6 @@ import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeAvatarInfo from "./MemeAvatarInfo";
 import MemeActionButton from "./MemeActionButton";
-import {Helmet} from "react-helmet";
 import ContentMenuButton from "./ContentMenuButton";
 import {ssrCache} from "../../service/ssr/SSRCache";
 
@@ -131,29 +130,6 @@ class MemeFullDisplay extends Component<{
     render() {
         //const {classes} = this.props;
         return <div className="fcCenteredContainer fcFullWidth">
-            <Helmet>
-                <meta charSet="utf-8" />
-                <title>{this.state.meme.title}</title>
-                {/* Meta description */}
-                <meta name="Description" content="Be Funny, Make Money!" />
-                <meta name="Keywords" content="Meme Blockchain Funnychain" />
-
-                {/* OG Meta description */}
-                <meta property="og:title" content={this.state.meme.title} />
-                <meta property="og:site_name" content="FunnyChain" />
-                <meta property="og:url" content="https://beta.funnychain.co" />
-                <meta property="og:description" content="Be Funny, Make Money!"/>
-                <meta property="og:type" content="website"/>
-                <meta property="og:image" content={this.state.meme.imageUrl}/>
-
-                {/* Twitter Meta description */}
-                <meta name="twitter:card" content="Funnychain"/>
-                <meta name="twitter:description" content="Be Funny, Make Money!"/>
-                <meta name="twitter:title" content={this.state.meme.title}/>
-                <meta name="twitter:site" content="@funnychain_lol"/>
-                <meta name="twitter:image" content={this.state.meme.imageUrl} />
-                <meta name="twitter:creator" content="@funnychain_lol"/>
-            </Helmet>
             {!this.state.meme.flag &&
             <Card className="fcCenteredContent fcDynamicWidth">
                 <CardHeader

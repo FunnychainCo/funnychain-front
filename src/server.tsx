@@ -17,6 +17,7 @@ import {authService} from "./service/generic/AuthService";
 import {realTimeData} from "./service/database/RealTimeData";
 import {ipfsFileUploadService} from "./service/uploader/IPFSFileUploadService";
 import {generateMemeComponentCache} from "./components/Meme/MemeComponent";
+import Helmet from 'react-helmet';
 
 let assets: any;
 
@@ -26,9 +27,13 @@ const syncLoadAssets = () => {
 syncLoadAssets();
 
 let PROPERTIES = {
+
+    PROD: process.env.PROD?process.env.PROD:"false",
+
     /* funnychain */
     HOST: process.env.APP_HOST?process.env.APP_HOST:"https://alpha.funnychain.co",
     HOST_API: process.env.HOST_API?process.env.HOST_API:"https://alpha.funnychain.co/backend",
+    REAL_TIME_DATA_HOST: process.env.REAL_TIME_DATA_HOST?process.env.REAL_TIME_DATA_HOST:"https://alpha.funnychain.co#/backend/socket.io",
 
     /* one-signal api-key */
     ONE_SIGNAL_API_KEY: process.env.ONE_SIGNAL_API_KEY?process.env.ONE_SIGNAL_API_KEY:"dc7c1d29-5ea3-4967-baac-a64f0be10c95",
@@ -91,9 +96,11 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
         );
         // Grab the CSS from our sheetsRegistry.
         const css = sheetsRegistry.toString();
+        const helmet = Helmet.renderStatic();
+
         res.send(
             `<!DOCTYPE html>
-                <html lang="en">
+                <html lang="en" ${helmet.htmlAttributes.toString()}>
                     <head>
                         <!-- start PWA script -->
                         <script type="text/javascript">
@@ -139,15 +146,7 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
                             //]]>
                         </script>
                         <!-- end Google Analytics -->
-                        
-                        <!-- Google Tag Manager -->
-                        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                        })(window,document,'script','dataLayer','GTM-KPTK763');</script>
-                        <!-- End Google Tag Manager -->
-                        
+                                                
                         <base href="/">
                         
                         <!-- ionic mobil compliance meta tags -->
@@ -159,61 +158,39 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
                         <meta name="apple-mobile-web-app-status-bar-style" content="black"/><!-- add to homescreen for ios -->
                         
                         <!-- Start Meta -->
-                        <meta charset="utf-8">
-                        <meta name="theme-color" content="#000000">
+                        <meta charset="utf-8" />
+                        <meta name="theme-color" content="#ffffff" />
+                        <meta name="msapplication-TileColor" content="#00aba9" />
+                               
+                        <!-- Customisable helmet tag -->                 
+                        ${helmet.title.toString()}
+                        ${helmet.meta.toString()}
+                        ${helmet.link.toString()}
                         
-                        <!-- Meta description -->
-                        <meta name="Description" content="Funny Chain: Incentivized memes on the blockchain : Be Funny, Make Money !">
-                        <meta name="Keywords" content="Meme Blockchain Funnychain Funny Chain Money">
-                        
-                        <!-- OG Meta description -->
-                        <meta property="og:title" content="Be Funny, Make Money!">
-                        <meta property="og:site_name" content="FunnyChain: A Funny chain of redistribution!">
-                        <meta property="og:url" content="https://beta.funnychain.co">
-                        <meta property="og:description"
-                              content="Be Funny, Make Money! What's that? What if you could earn money by posting or even liking memes? Well it’s going to be possible now with FunnyChain.">
-                        <meta property="og:type" content="website">
-                        <meta property="og:image" content="https://ipfs.funnychain.co/ipfs/QmVA3ZSL6k2q7X9xJyT42gAuJj7sCs9aYnFnUpWsi8styf">
-                        
-                        <!-- Twitter Meta description -->
-                        <meta name="twitter:card" content="summary_large_image">
-                        <meta name="twitter:description"
-                              content="Be Funny, Make Money! What's that? What if you could earn money by posting or even liking memes? Well it’s going to be possible now with FunnyChain.&nbsp;FunnyChain is going to create a new meme economy based on token incentives using the Blockchain technology. ✌✌♋♋">
-                        <meta name="twitter:title" content="Be Funny, Make Money! - FunnyChain is creating a new meme economy.">
-                        <meta name="twitter:site" content="@funnychain_lol">
-                        <meta name="twitter:image" content="https://ipfs.funnychain.co/ipfs/QmVA3ZSL6k2q7X9xJyT42gAuJj7sCs9aYnFnUpWsi8styf">
-                        <meta name="twitter:creator" content="@funnychain_lol">
-                        
+                        <!-- APP LINK -->
                         <!--
                           manifest.json provides metadata used when your web app is added to the
                           homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
                         -->
                         <link rel="manifest" href="/manifest.json">
-                        <link rel="shortcut icon" href="/favicon.ico">
-                        <!--
-                          Notice the use of  in the tags above.
-                          It will be replaced with the URL of the \`public\` folder during the build.
-                          Only files inside the \`public\` folder can be referenced from the HTML.
                         
-                          Unlike "/favicon.ico" or "favicon.ico", "/favicon.ico" will
-                          work correctly both with client-side routing and a non-root public URL.
-                          Learn how to configure a non-root public URL by running \`npm run build\`.
-                          
-                        -->
                         <!-- favicon stuff https://realfavicongenerator.net -->
+                        <link rel="shortcut icon" href="/favicon.ico">
                         <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
                         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
                         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
                         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-                        <meta name="msapplication-TileColor" content="#00aba9">
-                        <meta name="theme-color" content="#ffffff">
-                        <title>FunnyChain: A Funny chain of redistribution!</title>
+                        
+                        
+                        <!-- APP CODE -->
+                        ${process.env.NODE_ENV === 'production' ?
+                        `<script src="${assets.client.js}" defer></script>` :
+                        `<script src="${assets.client.js}" defer crossorigin></script>`
+                        }
+                        
+                        <!-- APP CSS -->
                         ${assets.client.css ? `<link rel="stylesheet" href="${assets.client.css}">` : ''}
                         <style id="jss-server-side">${css}</style>
-                        ${process.env.NODE_ENV === 'production' ?
-                `<script src="${assets.client.js}" defer></script>` :
-                `<script src="${assets.client.js}" defer crossorigin></script>`
-                }
                         <style type="text/css">
                             /* 
                             main 

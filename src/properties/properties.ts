@@ -15,7 +15,7 @@ export function setProperties(properties:any){
 }
 
 export function isDev(): boolean {
-    return false;
+    return !getGlobalProperties().PROD;
 }
 
 //const devHostAPI = "http://127.0.0.1:8085";
@@ -59,8 +59,7 @@ export const GLOBAL_PROPERTIES = {
     FUNNYCHAIN_SERVICE_VERSION: () => hostAPI() + "/service/version",
 
     //Real Time Service
-    REAL_TIME_SERVICE_HOST: () => host(),
-    REAL_TIME_SERVICE_PATH: () => host().startsWith("https://") ? "/backend/socket.io" : "/socket.io",
+    REAL_TIME_SERVICE_HOST: () => getGlobalProperties().REAL_TIME_DATA_HOST,
 
     //Meme Service
     MEME_SERVICE: () => hostAPI() + serviceMemes,

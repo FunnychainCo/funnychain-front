@@ -13,8 +13,9 @@ export class RealTimeData{
     }
 
     connect(){
-        this.socket = io(GLOBAL_PROPERTIES.REAL_TIME_SERVICE_HOST(),{
-            path: GLOBAL_PROPERTIES.REAL_TIME_SERVICE_PATH()
+        let split = GLOBAL_PROPERTIES.REAL_TIME_SERVICE_HOST().split("#");
+        this.socket = io(split[0],{
+            path: split[1]
         });
         console.log("Realtime service connected to: "+ this.socket.io.opts.hostname+"/"+this.socket.io.opts.path);
         this.app = feathers();

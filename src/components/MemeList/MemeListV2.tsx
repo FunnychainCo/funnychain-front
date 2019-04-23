@@ -9,9 +9,12 @@ import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {authService} from "../../service/generic/AuthService";
 import {ssrCache} from "../../service/ssr/SSRCache";
 import {isBrowserRenderMode} from "../../service/ssr/windowHelper";
+import {Helmet} from "react-helmet";
+import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
 
 
 interface State {
+    promotedMeme: Meme,
     memes: { [id: string]: MemeLinkInterface },
     memesOrder: string[];
     displayWaypoint: boolean
@@ -24,10 +27,12 @@ export function generateCache(): Promise<any> {
         }, 10000);
         let loadNumber = 5;
         let state: {
+            loadedMemes: Meme[],
             memes: { [id: string]: MemeLinkInterface },
             memesOrder: string[],
             memeLinksLoaded: string[],
         } = {
+            loadedMemes: [],
             memeLinksLoaded: [],
             memes: {},
             memesOrder: []
@@ -49,6 +54,7 @@ export function generateCache(): Promise<any> {
             tmpState[meme.id] = meme;
             state.memes = {...tmpState, ...state.memes};
             meme.on(meme => {
+                state.loadedMemes.push(meme);
                 state.memeLinksLoaded.push(meme.id);
                 ssrCache.setCache("memelink/"+meme.id, meme);
                 tryFinishLoad();
@@ -72,6 +78,7 @@ export default class MemeListV2 extends Component<{
     type: string
 }, State> {
     state: State = {
+        promotedMeme:MEME_ENTRY_NO_VALUE,
         memes: {},
         memesOrder: [],
         displayWaypoint: true
@@ -93,6 +100,7 @@ export default class MemeListV2 extends Component<{
         if (cache) {
             this.setState((state) => {
                 return ({
+                    promotedMeme:cache.loadedMemes[0]?cache.loadedMemes[0]:MEME_ENTRY_NO_VALUE,
                     memes: {...cache.memes, ...state.memes},
                     memesOrder: cache.memesOrder
                 })
@@ -160,6 +168,14 @@ export default class MemeListV2 extends Component<{
     render() {
         return (
             <div className="fcContainerScroll scrollbar">
+                {this.state.promotedMeme !== MEME_ENTRY_NO_VALUE && <Helmet>
+                    {/* OG Meta description */}
+                    <meta property="og:image" content={this.state.promotedMeme.imageUrl}/>
+
+                    {/* Twitter Meta description */}
+                    <meta name="twitter:image" content={this.state.promotedMeme.imageUrl}/>
+                </Helmet>
+                }
                 <div className="memes fcContentScroll">
                     {
                         this.state.memesOrder.map((memeKey, index, array) => {
