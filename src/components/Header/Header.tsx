@@ -4,11 +4,12 @@ import AppBar from "@material-ui/core/AppBar/AppBar";
 import Typography from "@material-ui/core/Typography/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Toolbar from "@material-ui/core/Toolbar/Toolbar";
-import Tabs from "@material-ui/core/Tabs/Tabs";
-import Tab from "@material-ui/core/Tab/Tab";
 import BackButton from "./BackButton";
 import HeaderRightIcon from "./HeaderRightIcon";
 import {deviceDetector} from "../../service/mobile/DeviceDetector";
+import Button from "@material-ui/core/Button/Button";
+import {createMuiTheme} from "@material-ui/core";
+import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
 const styles = theme => ({
     root: {
@@ -43,7 +44,7 @@ class Header extends Component<{
     extendedHeaderHeight:boolean
 }> {
     state = {
-        currentSelected: false,
+        currentSelected: 0,
         betPoolBalance: 0,
         compact: true,
         extendedHeaderHeight:false,
@@ -85,6 +86,26 @@ class Header extends Component<{
     }
 
     render() {
+        let theme = createMuiTheme({
+
+            typography: {
+                useNextVariants: true,
+            },
+            palette: {
+                type: 'dark',
+                //https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=212121&secondary.color=FF3D00
+                primary: {
+                    light: '#000000',
+                    main: '#000000',
+                    dark: '#000000',
+                },
+                secondary: {
+                    light: '#7843ff',
+                    main: '#1e00ff',
+                    dark: '#0000ca',
+                },
+            },
+        });
         const {classes} = this.props;
         //const HotTabLinkLink = (props) => <Link to={"/hot"} {...props} />;
         //const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
@@ -95,20 +116,20 @@ class Header extends Component<{
                     <BackButton>
                         <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png" alt="logo"/>
                     </BackButton>
-                    <Typography variant="h6" color="inherit" className={classes.flex}>
-                        <Tabs
-                            value={this.state.currentSelected}
-                            onChange={(event, value) => {
-                                this.handleFeedButton(value);
-                            }}
-                            indicatorColor="primary"
-                        >
-                            {/*<Tab label="Hot" style={{minWidth: '30px'}} component={HotTabLinkLink}/>
-                            <Tab label="Fresh" style={{minWidth: '30px'}} component={FreshTabLink}/>*/}
-                            <Tab label="Hot" style={{minWidth: '30px'}}/>
-                            <Tab label="Fresh" style={{minWidth: '30px'}}/>
-                        </Tabs>
+
+                    <MuiThemeProvider theme={theme}>
+                    <Typography variant="h6" className={classes.flex}>
+                        <Button color={"primary"} onClick={(event) => {
+                            this.handleFeedButton(0);
+                        }} variant={this.state.currentSelected==0?"contained":"outlined"}
+                                style={{margin:this.state.compact?"2px":"5px",padding: '5px'}}
+                        >Hot</Button>
+                        <Button color={"primary"} onClick={(event) => {
+                            this.handleFeedButton(1);
+                        }} variant={this.state.currentSelected==1?"contained":"outlined"}
+                                style={{margin:this.state.compact?"2px":"5px",padding: '5px'}}>Fresh</Button>
                     </Typography>
+                    </MuiThemeProvider>
 
                     <HeaderRightIcon />
                 </Toolbar>

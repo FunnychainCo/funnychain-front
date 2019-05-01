@@ -105,25 +105,29 @@ export default class MemeListV2 extends Component<{
                     memesOrder: cache.memesOrder
                 })
             })
-        }else {
-            this.restartMemeLoader(this.props.type, memeService.getTags());
+        }
+        if(isBrowserRenderMode()){
+            this.restartMemeLoader(this.props.type, memeService.getTags(),true);
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.type != this.props.type) {
-            this.restartMemeLoader(this.props.type, memeService.getTags());
+            this.restartMemeLoader(this.props.type, memeService.getTags(),false);
         }
     }
 
-    restartMemeLoader(type: string, tags: string[]) {
+    restartMemeLoader(type: string, tags: string[],delayedRestart:boolean) {
+        let resetOrder = true;
         this.removeListener = authService.onAuthStateChanged((user) => {
             Object.keys(this.state.memes).forEach(id => {
                 this.state.memes[id].refresh();//refresh meme personalized data eg like and invest
             })
         });
+        if(!delayedRestart){
+            this.setState({memesOrder: []});//reset meme order
+        }
         this.memeLoader = memeService.getMemeLoader(type, tags);
-        this.setState({memesOrder: []});//reset meme order
         this.removeCallbackOnMemeData();
         this.removeCallbackOnMemeData = this.memeLoader.onMemeData((meme: MemeLinkInterface) => {
             let tmpState = {};
@@ -132,6 +136,10 @@ export default class MemeListV2 extends Component<{
         });
         this.removeCallbackOnMemeOrder();
         this.removeCallbackOnMemeOrder = this.memeLoader.onMemeOrder((memesKey: string[]) => {
+            if(resetOrder && delayedRestart){
+                resetOrder = false;
+                this.setState({memesOrder: []});//reset meme order
+            }
             this.state.memesOrder = this.state.memesOrder.concat(memesKey.reverse());
             this.setState({memesOrder: this.state.memesOrder});//update view
         });
@@ -193,8 +201,8 @@ export default class MemeListV2 extends Component<{
                         })
                     }
                     <LoadingBlock/>
-                    <CreateMemeDialogFab/>
                 </div>
+                <CreateMemeDialogFab/>
             </div>
         )
     }

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {Component} from 'react';
-import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 
 import withStyles from "@material-ui/core/styles/withStyles";
+import {CircularProgress} from "@material-ui/core";
 
 const styles = (theme) => ({
     main: {
@@ -17,12 +17,12 @@ export class LoadingBlock extends Component<{ classes: any }, {}> {
     render() {
         const {classes} = this.props;
         return (
-            <React.Fragment>
+            <div>
                 <div className={classes.main} style={{flexDirection: "column"}}>
-                    <CircularProgress/>
+                    <CircularProgress />
                     <div>Loading data</div>
                 </div>
-            </React.Fragment>
+            </div>
         )
     }
 }

@@ -3,7 +3,7 @@ import React from 'react';
 import {renderToString} from 'react-dom/server';
 import {StaticRouter} from 'react-router-dom';
 
-import App, {getTheme} from './app/App';
+import App, {getTheme, precacheData} from './app/App';
 import {setProperties} from "./properties/properties";
 
 import {SheetsRegistry} from 'jss';
@@ -12,11 +12,9 @@ import {
     MuiThemeProvider,
     createGenerateClassName,
 } from '@material-ui/core/styles';
-import {generateCache} from "./components/MemeList/MemeListV2";
 import {authService} from "./service/generic/AuthService";
 import {realTimeData} from "./service/database/RealTimeData";
 import {ipfsFileUploadService} from "./service/uploader/IPFSFileUploadService";
-import {generateMemeComponentCache} from "./components/Meme/MemeComponent";
 import Helmet from 'react-helmet';
 
 let assets: any;
@@ -28,42 +26,33 @@ syncLoadAssets();
 
 let PROPERTIES = {
 
-    PROD: process.env.PROD?process.env.PROD:"false",
+    PROD: process.env.PROD ? process.env.PROD : "false",
 
     /* funnychain */
-    HOST: process.env.APP_HOST?process.env.APP_HOST:"https://alpha.funnychain.co",
-    HOST_API: process.env.HOST_API?process.env.HOST_API:"https://alpha.funnychain.co/backend",
-    REAL_TIME_DATA_HOST: process.env.REAL_TIME_DATA_HOST?process.env.REAL_TIME_DATA_HOST:"https://alpha.funnychain.co#/backend/socket.io",
+    HOST: process.env.APP_HOST ? process.env.APP_HOST : "https://alpha.funnychain.co",
+    HOST_API: process.env.HOST_API ? process.env.HOST_API : "https://alpha.funnychain.co/backend",
+    REAL_TIME_DATA_HOST: process.env.REAL_TIME_DATA_HOST ? process.env.REAL_TIME_DATA_HOST : "https://alpha.funnychain.co#/backend/socket.io",
 
     /* one-signal api-key */
-    ONE_SIGNAL_API_KEY: process.env.ONE_SIGNAL_API_KEY?process.env.ONE_SIGNAL_API_KEY:"dc7c1d29-5ea3-4967-baac-a64f0be10c95",
-    ONE_SIGNAL_ANDROID_NUMBER: process.env.ONE_SIGNAL_ANDROID_NUMBER?process.env.ONE_SIGNAL_ANDROID_NUMBER:"818676897965",
+    ONE_SIGNAL_API_KEY: process.env.ONE_SIGNAL_API_KEY ? process.env.ONE_SIGNAL_API_KEY : "dc7c1d29-5ea3-4967-baac-a64f0be10c95",
+    ONE_SIGNAL_ANDROID_NUMBER: process.env.ONE_SIGNAL_ANDROID_NUMBER ? process.env.ONE_SIGNAL_ANDROID_NUMBER : "818676897965",
 
     /* google analytics id */
-    GOOGLE_ANALYTICS_ACTIVATED: process.env.GOOGLE_ANALYTICS_ACTIVATED?process.env.GOOGLE_ANALYTICS_ACTIVATED:'false',
-    GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID?process.env.GOOGLE_ANALYTICS_ID:'UA-115386396-2',
-    GOOGLE_ANALYTICS_URL: process.env.GOOGLE_ANALYTICS_URL?process.env.GOOGLE_ANALYTICS_URL:"https://www.googletagmanager.com/gtag/js?id=UA-115386396-2",
+    GOOGLE_ANALYTICS_ACTIVATED: process.env.GOOGLE_ANALYTICS_ACTIVATED ? process.env.GOOGLE_ANALYTICS_ACTIVATED : 'false',
+    GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID ? process.env.GOOGLE_ANALYTICS_ID : 'UA-115386396-2',
+    GOOGLE_ANALYTICS_URL: process.env.GOOGLE_ANALYTICS_URL ? process.env.GOOGLE_ANALYTICS_URL : "https://www.googletagmanager.com/gtag/js?id=UA-115386396-2",
 
     /* firebase api */
-    FIREBASE_APIKEY: process.env.FIREBASE_APIKEY?process.env.FIREBASE_APIKEY:"AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",
-    FIREBASE_AUTH: process.env.FIREBASE_AUTH?process.env.FIREBASE_AUTH:"funnychain-dev.firebaseapp.com",
-    FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL?process.env.FIREBASE_DATABASE_URL:"https://funnychain-dev.firebaseio.com",
-    FIREBASE_MESSAGING_ID: process.env.FIREBASE_MESSAGING_ID?process.env.FIREBASE_MESSAGING_ID:"818676897965",
-    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID?process.env.FIREBASE_PROJECT_ID:"funnychain-dev",
-    FIRABSE_STORAGE_BUCKET: process.env.FIRABSE_STORAGE_BUCKET?process.env.FIRABSE_STORAGE_BUCKET:"funnychain-dev.appspot.com"
+    FIREBASE_APIKEY: process.env.FIREBASE_APIKEY ? process.env.FIREBASE_APIKEY : "AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",
+    FIREBASE_AUTH: process.env.FIREBASE_AUTH ? process.env.FIREBASE_AUTH : "funnychain-dev.firebaseapp.com",
+    FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL ? process.env.FIREBASE_DATABASE_URL : "https://funnychain-dev.firebaseio.com",
+    FIREBASE_MESSAGING_ID: process.env.FIREBASE_MESSAGING_ID ? process.env.FIREBASE_MESSAGING_ID : "818676897965",
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID ? process.env.FIREBASE_PROJECT_ID : "funnychain-dev",
+    FIRABSE_STORAGE_BUCKET: process.env.FIRABSE_STORAGE_BUCKET ? process.env.FIRABSE_STORAGE_BUCKET : "funnychain-dev.appspot.com"
 };
 
-console.log("using properties:",PROPERTIES);
+console.log("using properties:", PROPERTIES);
 setProperties(PROPERTIES);
-
-// Create a sheetsRegistry instance.
-const sheetsRegistry = new SheetsRegistry();
-
-// Create a sheetsManager instance.
-const sheetsManager = new Map();
-
-// Create a new class name generator.
-const generateClassName = createGenerateClassName();
 
 //start some service
 authService.start();
@@ -75,31 +64,45 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
     /*
     Compute server data
     * */
-    let dataPromise = Promise.resolve({});
-    if(req.url==="/"){
-        dataPromise = generateCache();
-    }else if(req.url.startsWith("/meme/")){
-        dataPromise = generateMemeComponentCache(req.url);
-    }
+    let dataPromise = precacheData(req.url);
 
     dataPromise.then(() => {
 
         const context = {};
+
+        // Create a sheetsRegistry instance.
+        const sheetsRegistry = new SheetsRegistry();
+
+        // Create a sheetsManager instance.
+        const sheetsManager = new Map();
+
+        // Create a theme instance.
+        const theme = getTheme();
+
+        // Create a new class name generator.
+        const generateClassName = createGenerateClassName();
+
+
         const markup = renderToString(
             <JssProvider registry={sheetsRegistry} generateClassName={generateClassName}>
-                <MuiThemeProvider theme={getTheme()} sheetsManager={sheetsManager}>
+                <MuiThemeProvider theme={theme} sheetsManager={sheetsManager}>
                     <StaticRouter context={context} location={req.url}>
                         <App/>
                     </StaticRouter>
                 </MuiThemeProvider>
             </JssProvider>
         );
+
         // Grab the CSS from our sheetsRegistry.
         const css = sheetsRegistry.toString();
         const helmet = Helmet.renderStatic();
 
-        res.send(
-            `<!DOCTYPE html>
+        res.send(renderFullPage(markup, css, helmet));
+    });
+}
+
+function renderFullPage(markup, css, helmet) {
+    return `<!DOCTYPE html>
                 <html lang="en" ${helmet.htmlAttributes.toString()}>
                     <head>
                         <!-- start PWA script -->
@@ -146,6 +149,16 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
                             //]]>
                         </script>
                         <!-- end Google Analytics -->
+                        
+                        <!-- start Google ads -->
+                        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                        <script>
+                          (adsbygoogle = window.adsbygoogle || []).push({
+                            google_ad_client: "ca-pub-2015196854926270",
+                            enable_page_level_ads: true
+                          });
+                        </script>
+                        <!-- end Google ads -->
                                                 
                         <base href="/">
                         
@@ -184,12 +197,11 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
                         
                         <!-- APP CODE -->
                         ${process.env.NODE_ENV === 'production' ?
-                        `<script src="${assets.client.js}" defer></script>` :
-                        `<script src="${assets.client.js}" defer crossorigin></script>`
-                        }
+        `<script src="${assets.client.js}" defer></script>` :
+        `<script src="${assets.client.js}" defer crossorigin></script>`
+        }
                         
                         <!-- APP CSS -->
-                        ${assets.client.css ? `<link rel="stylesheet" href="${assets.client.css}">` : ''}
                         <style id="jss-server-side">${css}</style>
                         <style type="text/css">
                             /* 
@@ -488,16 +500,14 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
                     <body>
                         <div id="root">${markup}</div>
                     </body>
-                </html>`
-        );
-    });
+                </html>`;
 }
 
 const server = express()
     .disable('x-powered-by')
     .use(express.static(process.env.RAZZLE_PUBLIC_DIR!));
 
-console.log("static files: ",process.env.RAZZLE_PUBLIC_DIR);
+console.log("static files: ", process.env.RAZZLE_PUBLIC_DIR);
 
 server.get('/*', (req: express.Request, res: express.Response) => singlePageApplicationRenderer(req, res));
 

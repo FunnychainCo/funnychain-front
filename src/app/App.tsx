@@ -16,33 +16,45 @@ import {backService} from "../service/BackService";
 import {report} from "../service/log/Report";
 import {realTimeData} from "../service/database/RealTimeData";
 import {isBrowserRenderMode} from "../service/ssr/windowHelper";
-import {createMuiTheme} from "@material-ui/core";
+import {createMuiTheme, CssBaseline} from "@material-ui/core";
 import Helmet from 'react-helmet';
 import register from "../registerServiceWorker";
-
-// Create a theme instance.
-const theme = createMuiTheme({
-    typography: {
-        useNextVariants: true,
-    },
-    palette: {
-        //type: 'dark'
-        //https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=212121&secondary.color=FF3D00
-        primary: {
-            light: '#ffc046',
-            main: '#ff8f00',
-            dark: '#c56000',
-        },
-        secondary: {
-            light: '#7843ff',
-            main: '#1e00ff',
-            dark: '#0000ca',
-        },
-    },
-});
+import {generateCache} from "../components/MemeList/MemeListV2";
+import {generateMemeComponentCache} from "../components/Meme/MemeComponent";
 
 export function getTheme() {
-    return theme;
+    return createMuiTheme({
+        typography: {
+            useNextVariants: true,
+        },
+        palette: {
+            //type: 'dark'
+            //https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=212121&secondary.color=FF3D00
+            primary: {
+                light: '#ffc046',
+                main: '#ff8f00',
+                dark: '#c56000',
+            },
+            secondary: {
+                light: '#7843ff',
+                main: '#1e00ff',
+                dark: '#0000ca',
+            },
+        },
+    });
+}
+
+export function precacheData(url:string):Promise<any>{
+    let dataPromise:Promise<any>[] = [];
+    dataPromise.push(Promise.resolve({}));
+    if (url.startsWith("/")) {
+        dataPromise.push(generateCache());
+    }
+
+    if (url.startsWith("/meme/")) {
+        dataPromise.push(generateMemeComponentCache(url));
+    }
+    return Promise.all(dataPromise);
 }
 
 class App extends React.Component<any, any> {
@@ -73,6 +85,7 @@ class App extends React.Component<any, any> {
     render() {
         return (
             <React.Fragment>
+                <CssBaseline />
                 <Helmet>
                     <title>FunnyChain: A Funny chain of redistribution!</title>
                     {/* Meta description */}

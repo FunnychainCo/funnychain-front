@@ -5,7 +5,7 @@ import {
     MuiThemeProvider,
     createGenerateClassName,
 } from '@material-ui/core/styles';
-import App, {getTheme} from './app/App';
+import App, {getTheme, precacheData} from './app/App';
 import {BrowserRouter} from "react-router-dom";
 
 class Main extends React.Component {
@@ -18,21 +18,26 @@ class Main extends React.Component {
     }
 
     render() {
-        return <BrowserRouter><App/></BrowserRouter>
+        return <App/>
     }
 }
 
 // Create a new class name generator.
 const generateClassName = createGenerateClassName();
 
-ReactDOM.hydrate(
-    <JssProvider generateClassName={generateClassName}>
-        <MuiThemeProvider theme={getTheme()}>
-            <Main/>
-        </MuiThemeProvider>
-    </JssProvider>,
-    document.querySelector('#root'),
-);
+let dataPromise = precacheData(window.location.pathname);
+dataPromise.then(() => {
+    ReactDOM.hydrate(
+        <JssProvider generateClassName={generateClassName}>
+            <MuiThemeProvider theme={getTheme()}>
+                <BrowserRouter>
+                    <Main/>
+                </BrowserRouter>
+            </MuiThemeProvider>
+        </JssProvider>,
+        document.querySelector('#root'),
+    );
+});
 
 if (module.hot) {
     module.hot.accept();

@@ -2,7 +2,6 @@ import * as React from 'react'
 import {Component} from 'react'
 import withStyles from "@material-ui/core/styles/withStyles";
 import {Meme} from "../../service/generic/Meme";
-import MemeBetButton from "./MemeInvestButton";
 import MemeUpvoteButton from "./MemeUpvoteButton";
 import {MemeLinkInterface} from "../../service/generic/ApplicationInterface";
 import MemeShareButton from "./MemeShareButton";
@@ -31,10 +30,6 @@ class MemeActionButton extends Component<{
                 this.props.memeLink.refresh();
             }}/>
             }
-            {this.props.meme.hot === false &&
-            <MemeBetButton meme={this.props.meme} logged={this.props.logged} onBetConfirmed={() => {
-                this.props.memeLink.refresh();
-            }}/>}
             {this.props.meme.hot === true &&
             <div className="memeElementStyleDiv" style={{marginLeft: "5px", marginRight: "5px"}}>
                 <MoneyCoinIcon/> &nbsp;{this.props.meme.dolarValue.toFixed(2)}
