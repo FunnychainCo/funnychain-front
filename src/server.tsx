@@ -30,17 +30,17 @@ let PROPERTIES = {
 
     /* funnychain */
     HOST: process.env.APP_HOST ? process.env.APP_HOST : "https://alpha.funnychain.co",//"http:127.0.0.1:8085", //"https://alpha.funnychain.co",
-    HOST_API: process.env.HOST_API ? process.env.HOST_API :"https://alpha.funnychain.co/backend",//"http:127.0.0.1:8085", //"https://alpha.funnychain.co/backend",
+    HOST_API: process.env.HOST_API ? process.env.HOST_API : "https://alpha.funnychain.co/backend",//"http:127.0.0.1:8085", //"https://alpha.funnychain.co/backend",
     REAL_TIME_DATA_HOST: process.env.REAL_TIME_DATA_HOST ? process.env.REAL_TIME_DATA_HOST : "https://alpha.funnychain.co#/backend/socket.io",//"http:127.0.0.1:8085#/socket.io", //"https://alpha.funnychain.co#/backend/socket.io",
 
     /* one-signal api-key */
     ONE_SIGNAL_API_KEY: process.env.ONE_SIGNAL_API_KEY ? process.env.ONE_SIGNAL_API_KEY : "dc7c1d29-5ea3-4967-baac-a64f0be10c95",
     ONE_SIGNAL_ANDROID_NUMBER: process.env.ONE_SIGNAL_ANDROID_NUMBER ? process.env.ONE_SIGNAL_ANDROID_NUMBER : "818676897965",
 
-    /* google analytics id */
-    GOOGLE_ANALYTICS_ACTIVATED: process.env.GOOGLE_ANALYTICS_ACTIVATED ? process.env.GOOGLE_ANALYTICS_ACTIVATED : 'false',
-    GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID ? process.env.GOOGLE_ANALYTICS_ID : 'UA-115386396-2',
-    GOOGLE_ANALYTICS_URL: process.env.GOOGLE_ANALYTICS_URL ? process.env.GOOGLE_ANALYTICS_URL : "https://www.googletagmanager.com/gtag/js?id=UA-115386396-2",
+    /* google tags id */
+    GOOGLE_TAGS_ACTIVATED: process.env.GOOGLE_TAGS_ACTIVATED ? process.env.GOOGLE_TAGS_ACTIVATED : 'false',
+    GOOGLE_TAGS_ID: process.env.GOOGLE_TAGS_ID ? process.env.GOOGLE_TAGS_ID : "",
+    GOOGLE_TAGS_URL: process.env.GOOGLE_TAGS_URL ? process.env.GOOGLE_TAGS_URL : "",
 
     /* firebase api */
     FIREBASE_APIKEY: process.env.FIREBASE_APIKEY ? process.env.FIREBASE_APIKEY : "AIzaSyAJC1BLZBe64zPsZHBIVBzGmPvH4FPSunY",
@@ -102,16 +102,13 @@ function singlePageApplicationRenderer(req: express.Request, res: express.Respon
 }
 
 function renderFullPage(markup, css, helmet) {
+    let googletagid = PROPERTIES.GOOGLE_TAGS_ID;
+    let googletagurl = PROPERTIES.GOOGLE_TAGS_URL;
     return `<!DOCTYPE html>
                 <html lang="en" ${helmet.htmlAttributes.toString()}>
                     <head>
                         <!-- start PWA script -->
                         <script type="text/javascript">
-                            if(typeof(window) !== 'undefined') {
-                                console.log("render start on browser");
-                            }else{
-                                console.log("render start on server (creating stub window)");
-                            }
                             window._promptEventForPWA = null;
                             window.addEventListener("beforeinstallprompt", function (ev) {
                                 console.log("early beforeinstallprompt received");
@@ -131,35 +128,19 @@ function renderFullPage(markup, css, helmet) {
                         <!-- start One Signal -->
                         <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" no-cors async=""></script>
                         <!-- end One Signal -->
-                                            
-                        <!-- Global site tag (gtag.js) - Google Analytics -->
-                        <script type="text/javascript">
-                            //<![CDATA[
-                            if (GLOBAL_PROPERTIES_JS.GOOGLE_ANALYTICS_ACTIVATED === 'true') {
-                                document.write('\x3Cscript async src="' + GLOBAL_PROPERTIES_JS.GOOGLE_ANALYTICS_URL + '">\x3C/scr'+'ipt>');
-                                window.dataLayer = window.dataLayer || [];
-                        
-                                function gtag() {
-                                    dataLayer.push(arguments);
-                                }
-                        
-                                gtag('js', new Date());
-                                gtag('config', GLOBAL_PROPERTIES_JS.GOOGLE_ANALYTICS_ID);
-                            }
-                            //]]>
-                        </script>
-                        <!-- end Google Analytics -->
-                        
-                        <!-- start Google ads -->
-                        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                                                                    
+                        <!-- Google Tag Manager -->
                         <script>
-                          (adsbygoogle = window.adsbygoogle || []).push({
-                            google_ad_client: "ca-pub-2015196854926270",
-                            enable_page_level_ads: true
-                          });
+                            if (window.GLOBAL_PROPERTIES_JS.GOOGLE_TAGS_ACTIVATED === 'true') {
+                                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                                })(window,document,'script','dataLayer',"${googletagid}");
+                            }
                         </script>
-                        <!-- end Google ads -->
-                                                
+                        <!-- End Google Tag Manager -->
+                                                                                                                    
                         <base href="/">
                         
                         <!-- ionic mobil compliance meta tags -->
@@ -197,9 +178,9 @@ function renderFullPage(markup, css, helmet) {
                         
                         <!-- APP CODE -->
                         ${process.env.NODE_ENV === 'production' ?
-        `<script src="${assets.client.js}" defer></script>` :
-        `<script src="${assets.client.js}" defer crossorigin></script>`
-        }
+                            `<script src="${assets.client.js}" defer></script>` :
+                            `<script src="${assets.client.js}" defer crossorigin></script>`
+                        }
                         
                         <!-- APP CSS -->
                         <style id="jss-server-side">${css}</style>
@@ -498,6 +479,10 @@ function renderFullPage(markup, css, helmet) {
                         </style>
                     </head>
                     <body>
+                        <!-- Google Tag Manager (noscript) -->
+                        <noscript><iframe src="${googletagurl}"
+                        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+                        <!-- End Google Tag Manager (noscript) -->
                         <div id="root">${markup}</div>
                     </body>
                 </html>`;

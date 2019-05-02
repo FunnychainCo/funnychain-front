@@ -23,7 +23,6 @@ import MemeActionButton from "./MemeActionButton";
 import ContentMenuButton from "./ContentMenuButton";
 import {ssrCache} from "../../service/ssr/SSRCache";
 import {memeService} from "../../service/generic/MemeService";
-import Swipeable from "react-swipy"
 
 
 const styles = theme => ({
@@ -172,13 +171,6 @@ class MemeComponent extends Component<{
         //const {classes} = this.props;
         const MemeDisplayLink = (props) => <Link to={"/meme/" + encodeURIComponent(this.state.meme.id)} {...props} />
         return <React.Fragment>
-
-            <Swipeable
-                onAfterSwipe={()=>{this.setState((state)=>{
-                    state.meme.flag = true;
-                    return {meme:state.meme}
-                })}}
-            >
             {!this.state.meme.flag && <Card
                 elevation={5}
                 style={{"marginBottom": "15px"}}>
@@ -246,7 +238,6 @@ class MemeComponent extends Component<{
                     </CardContent>
                 </Collapse>
             </Card>}
-            </Swipeable>
         </React.Fragment>
     }
 
