@@ -6,7 +6,7 @@ import {GLOBAL_PROPERTIES} from "../../properties/properties";
 export class MemeDatabase {
 
     fetchMemes(callback: (memes: MemeDBStruct) => void, type: string, userid: string, limit: number, lastPostDate: number): void {
-        console.log(GLOBAL_PROPERTIES.MEME_SERVICE() + "/fetch/memes",{type:type,userid:userid,limit:limit,lastPostDate:lastPostDate});
+        //console.log(GLOBAL_PROPERTIES.MEME_SERVICE() + "/fetch/memes",{type:type,userid:userid,limit:limit,lastPostDate:lastPostDate});
         axios.post(GLOBAL_PROPERTIES.MEME_SERVICE() + "/fetch/memes",{type:type,userid:userid,limit:limit,lastPostDate:lastPostDate}).then(response => {
             callback(response.data);
         }).catch(error => {

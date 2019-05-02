@@ -41,7 +41,7 @@ export function generateCache(): Promise<any> {
             if (
                 state.memesOrder.length >= loadNumber &&
                 Object.keys(state.memes).length >= loadNumber &&
-                state.memeLinksLoaded.length>=loadNumber) {
+                state.memeLinksLoaded.length >= loadNumber) {
                 removeCallbackOnMemeData();
                 removeCallbackOnMemeOrder();
                 resolve(state);
@@ -49,20 +49,20 @@ export function generateCache(): Promise<any> {
         };
         let memeLoader = memeService.getMemeLoader("hot", []);
         let removeCallbackOnMemeData = memeLoader.onMemeData((meme: MemeLinkInterface) => {
-            console.log(meme);
+            //console.log(meme);
             let tmpState = {};
             tmpState[meme.id] = meme;
             state.memes = {...tmpState, ...state.memes};
             meme.on(meme => {
                 state.loadedMemes.push(meme);
                 state.memeLinksLoaded.push(meme.id);
-                ssrCache.setCache("memelink/"+meme.id, meme);
+                ssrCache.setCache("memelink/" + meme.id, meme);
                 tryFinishLoad();
             });
             tryFinishLoad();
         });
         let removeCallbackOnMemeOrder = memeLoader.onMemeOrder((memesKey: string[]) => {
-            console.log(memesKey);
+            //console.log(memesKey);
             state.memesOrder = state.memesOrder.concat(memesKey.reverse());
             tryFinishLoad();
         });
@@ -78,7 +78,7 @@ export default class MemeListV2 extends Component<{
     type: string
 }, State> {
     state: State = {
-        promotedMeme:MEME_ENTRY_NO_VALUE,
+        promotedMeme: MEME_ENTRY_NO_VALUE,
         memes: {},
         memesOrder: [],
         displayWaypoint: true
@@ -98,33 +98,35 @@ export default class MemeListV2 extends Component<{
 
         let cache = ssrCache.getCache("memelist-hot");
         if (cache) {
-            this.setState((state) => {
-                return ({
-                    promotedMeme:cache.loadedMemes[0]?cache.loadedMemes[0]:MEME_ENTRY_NO_VALUE,
-                    memes: {...cache.memes, ...state.memes},
-                    memesOrder: cache.memesOrder
+            if (cache.loadedMemes) {
+                this.setState((state) => {
+                    return ({
+                        promotedMeme: cache.loadedMemes[0] ? cache.loadedMemes[0] : MEME_ENTRY_NO_VALUE,
+                        memes: {...cache.memes, ...state.memes},
+                        memesOrder: cache.memesOrder
+                    })
                 })
-            })
+            }
         }
-        if(isBrowserRenderMode()){
-            this.restartMemeLoader(this.props.type, memeService.getTags(),true);
+        if (isBrowserRenderMode()) {
+            this.restartMemeLoader(this.props.type, memeService.getTags(), true);
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.type != this.props.type) {
-            this.restartMemeLoader(this.props.type, memeService.getTags(),false);
+            this.restartMemeLoader(this.props.type, memeService.getTags(), false);
         }
     }
 
-    restartMemeLoader(type: string, tags: string[],delayedRestart:boolean) {
+    restartMemeLoader(type: string, tags: string[], delayedRestart: boolean) {
         let resetOrder = true;
         this.removeListener = authService.onAuthStateChanged((user) => {
             Object.keys(this.state.memes).forEach(id => {
                 this.state.memes[id].refresh();//refresh meme personalized data eg like and invest
             })
         });
-        if(!delayedRestart){
+        if (!delayedRestart) {
             this.setState({memesOrder: []});//reset meme order
         }
         this.memeLoader = memeService.getMemeLoader(type, tags);
@@ -136,7 +138,7 @@ export default class MemeListV2 extends Component<{
         });
         this.removeCallbackOnMemeOrder();
         this.removeCallbackOnMemeOrder = this.memeLoader.onMemeOrder((memesKey: string[]) => {
-            if(resetOrder && delayedRestart){
+            if (resetOrder && delayedRestart) {
                 resetOrder = false;
                 this.setState({memesOrder: []});//reset meme order
             }

@@ -214,7 +214,7 @@ export class FirebaseAuthService {
             axios.get(GLOBAL_PROPERTIES.USER_SERVICE_GET() + "/" + uid).then((receivedUserA) => {
                 let receivedUser: any = receivedUserA.data;
                 let userData: UserEntry = {
-                    avatarUrl: ipfsFileUploadService.convertIPFSLinkToHttpsLink(receivedUser.avatarIid),
+                    avatarUrl: ipfsFileUploadService.convertIPFSLinkToHttpsLink(receivedUser.avatarIid),//TODO undefined
                     email: receivedUser.email,
                     provider: PROVIDER_FIREBASE_MAIL,
                     displayName: receivedUser.displayName,
@@ -269,11 +269,12 @@ export class FirebaseAuthService {
         return new Promise((resolve, reject) => {
             //configure default HTTP timeout
             const httpClient = axios.create();
-            httpClient.defaults.timeout = 20000;//ms
+            httpClient.defaults.timeout = 60000;//ms
             httpClient.get(GLOBAL_PROPERTIES.USER_SERVICE_INIT() + "/" + user.uid).then(() => {
                 resolve("ok");
             }).catch(error => {
-                audit.reportError("fail to init user");
+                audit.reportError("fail to init user",error);
+                reject(error);
             });
         });
     }

@@ -29,9 +29,9 @@ let PROPERTIES = {
     PROD: process.env.PROD ? process.env.PROD : "false",
 
     /* funnychain */
-    HOST: process.env.APP_HOST ? process.env.APP_HOST : "https://alpha.funnychain.co",
-    HOST_API: process.env.HOST_API ? process.env.HOST_API : "https://alpha.funnychain.co/backend",
-    REAL_TIME_DATA_HOST: process.env.REAL_TIME_DATA_HOST ? process.env.REAL_TIME_DATA_HOST : "https://alpha.funnychain.co#/backend/socket.io",
+    HOST: process.env.APP_HOST ? process.env.APP_HOST : "https://alpha.funnychain.co",//"http:127.0.0.1:8085", //"https://alpha.funnychain.co",
+    HOST_API: process.env.HOST_API ? process.env.HOST_API :"https://alpha.funnychain.co/backend",//"http:127.0.0.1:8085", //"https://alpha.funnychain.co/backend",
+    REAL_TIME_DATA_HOST: process.env.REAL_TIME_DATA_HOST ? process.env.REAL_TIME_DATA_HOST : "https://alpha.funnychain.co#/backend/socket.io",//"http:127.0.0.1:8085#/socket.io", //"https://alpha.funnychain.co#/backend/socket.io",
 
     /* one-signal api-key */
     ONE_SIGNAL_API_KEY: process.env.ONE_SIGNAL_API_KEY ? process.env.ONE_SIGNAL_API_KEY : "dc7c1d29-5ea3-4967-baac-a64f0be10c95",

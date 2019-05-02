@@ -15,11 +15,11 @@ export function setProperties(properties:any){
 }
 
 export function isDev(): boolean {
-    return !getGlobalProperties().PROD;
+    return !(getGlobalProperties().PROD? (getGlobalProperties().PROD!="false" && getGlobalProperties().PROD!=false):false);
 }
 
-//const devHostAPI = "http://127.0.0.1:8085";
-const devHostAPI = "https://alpha.funnychain.co/backend";
+const devHostAPI = "http://127.0.0.1:8085";
+//const devHostAPI = "https://alpha.funnychain.co/backend";
 const hostAPI = () => isDev() ? devHostAPI : getGlobalProperties().HOST_API;
 const host = () => hostAPI().replace("/backend", "");
 const hostAPINotification = () => isDev() ? "https://alpha.funnychain.co/backend" : getGlobalProperties().HOST_API;
@@ -38,7 +38,7 @@ const serviceComments = '/service/comments';
 const serviceMemes = '/service/meme';
 
 export const GLOBAL_PROPERTIES = {
-    VERSION: () => "1.6.6",
+    VERSION: () => "1.6.8",
 
     //One signal
 
