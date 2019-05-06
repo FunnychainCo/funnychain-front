@@ -1,0 +1,1 @@
+copy /b/v/y .\ios-icon.png .\icon.png
