@@ -2,7 +2,7 @@ declare let window: any;
 import EventEmitter from "eventemitter3/index";
 
 export class OneSignalNotificationWebSDK {
-    private oneSignal: any;
+    private oneSignal: any = null;
     eventEmitter = new EventEmitter();
     currentUser:string = "";
 
@@ -14,21 +14,25 @@ export class OneSignalNotificationWebSDK {
     }
 
     start() {
-        this.oneSignal = window.OneSignal || [];
-        this.oneSignal.push(() => {
-            this.oneSignal.init({
-                appId: this.API_KEY,
-                autoRegister: false,
-                notifyButton: {
-                    enable: false,
-                },
+        if(!this.oneSignal) {
+            this.oneSignal = window.OneSignal || [];
+            if(!this.oneSignal._initCalled) {
+                this.oneSignal.push(() => {
+                    this.oneSignal.init({
+                        appId: this.API_KEY,
+                        autoRegister: false,
+                        notifyButton: {
+                            enable: false,
+                        },
+                    });
+                });
+            }
+            this.oneSignal.push(() => {
+                this.onNotificationState(isSubscribed => {
+                    console.log("subscription status changed");
+                })
             });
-        });
-        this.oneSignal.push(() => {
-            this.onNotificationState(isSubscribed => {
-                console.log("subscription status changed");
-            })
-        });
+        }
     }
 
     //service worker server part

@@ -101,7 +101,7 @@ export default class MemeListV2 extends Component<{
             if (cache.loadedMemes) {
                 this.setState((state) => {
                     return ({
-                        promotedMeme: cache.loadedMemes[0] ? cache.loadedMemes[0] : MEME_ENTRY_NO_VALUE,
+                        //promotedMeme: cache.loadedMemes[0] ? cache.loadedMemes[0] : MEME_ENTRY_NO_VALUE,
                         memes: {...cache.memes, ...state.memes},
                         memesOrder: cache.memesOrder
                     })

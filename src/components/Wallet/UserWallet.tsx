@@ -20,6 +20,7 @@ import UserWalletSend from "./UserWalletSend";
 import UserWalletTransaction from "./UserWalletTransaction";
 import MoneyCoinIcon from "../Icon/MoneyCoinIcon";
 import UserWalletPayout from "./UserWalletPayout";
+import UserPaypalMeLink from "./UserPaypalMeLink";
 
 function TabContainer({children}) {
     return (
@@ -54,7 +55,7 @@ export default class UserWallet extends Component<{
 
     private removeListener: () => void = () => {
     };
-    private removeListenerWallet: () => void= () => {
+    private removeListenerWallet: () => void = () => {
     };
 
     componentWillMount() {
@@ -69,7 +70,7 @@ export default class UserWallet extends Component<{
                     loading: false
                 });
                 this.removeListenerWallet = userService.getWalletLink().onChange(balance => {
-                    this.setState((state)=>{
+                    this.setState((state) => {
                         state.user.wallet = balance;
                         return {user: state.user}
                     });
@@ -108,13 +109,15 @@ export default class UserWallet extends Component<{
                 onRequestClose={this.handleClose}
             >
                 <DialogTitle>
-                        <Toolbar>
-                            <BackButton/>
-                            <Typography color="inherit" variant="h6"
-                                        style={{flex: "1", textAlign: "center"}}>Wallet</Typography>
-                            <Button style={{pointerEvents:"none"}} color="inherit" variant={"outlined"}><MoneyCoinIcon/><ListItemText
-                                primary={<React.Fragment>{(this.state.user.wallet).toFixed(2) + ""}</React.Fragment>}/></Button>
-                        </Toolbar>
+                    <Toolbar>
+                        <BackButton/>
+                        <Typography color="inherit" variant="h6"
+                                    style={{flex: "1", textAlign: "center"}}>Wallet</Typography>
+                        <Button style={{pointerEvents: "none"}} color="inherit"
+                                variant={"outlined"}><MoneyCoinIcon/><ListItemText
+                            primary={
+                                <React.Fragment>{(this.state.user.wallet).toFixed(2) + ""}</React.Fragment>}/></Button>
+                    </Toolbar>
                 </DialogTitle>
                 <DialogContent>
                     <SwipeableViews
@@ -122,7 +125,28 @@ export default class UserWallet extends Component<{
                         onChangeIndex={this.handleChangeIndex}
                     >
                         <TabContainer>
-                            <UserWalletPayout userid={this.state.user.uid}/>
+                            {(this.state.user.metadata && this.state.user.metadata['paypalmelink']) &&
+                            <UserWalletPayout
+                                userid={this.state.user.uid}
+                                paypallink={this.state.user.metadata['paypalmelink']}
+                                balance={this.state.user.wallet}
+                                clearPaypalmeLink={() => {
+                                    this.setState((state) => {
+                                        delete state.user.metadata['paypalmelink'];
+                                        return {
+                                            user: state.user
+                                        }
+                                    });
+                                }
+                                }
+                                onUpdateBalance={() => {
+                                    userService.getWalletLink().refresh()
+                                }}
+                            />
+                            }
+                            {(!this.state.user.metadata || !this.state.user.metadata['paypalmelink']) &&
+                            <UserPaypalMeLink userid={this.state.user.uid}/>
+                            }
                         </TabContainer>
                         <TabContainer>
                             <UserWalletSend userid={this.state.user.uid}/>

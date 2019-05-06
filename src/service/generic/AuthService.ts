@@ -145,6 +145,10 @@ export class AuthService implements AuthServiceInterface {
         return firebaseAuthService.changeAvatar(newAvatarUrl);
     }
 
+    setUserMetadata(key:string,value:string): Promise<string> {
+        return firebaseAuthService.setUserMetadata(key,value);
+    }
+
     getUserAction():UserActionInterface{
         switch (this.mode) {
             case this.MODE_EMAIL:

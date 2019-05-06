@@ -74,7 +74,7 @@ export class FirebaseAuthService {
             let user: any = firebase.auth().currentUser;
             if (user == null) {
                 reject("user is null");
-                return;
+                return "";
             }
             return firebase.auth().signInWithEmailAndPassword(user.email, currentPassword).then((user) => {
                 user.updatePassword(newTextValue).then(function () {
@@ -107,6 +107,25 @@ export class FirebaseAuthService {
             newAvatarUrl = encodeURIComponent(newAvatarUrl);
             httpClient.get(
                 GLOBAL_PROPERTIES.USER_SERVICE_CHANGE_AVATAR() + user.uid + "/" + newAvatarUrl)
+                .then(response => {
+                    delete this.userCache[user.uid];//invalidate cache
+                    this.eventEmitter.emit('AuthStateChanged', user.uid);
+                    resolve("ok");
+                });
+        });
+    }
+
+    setUserMetadata(key:string,value:string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            let user: any = firebase.auth().currentUser;
+            const httpClient = axios.create();
+            httpClient.defaults.timeout = 1000;//ms
+            httpClient.post(
+                GLOBAL_PROPERTIES.USER_SERVICE_META(),{
+                    uid:user.uid,
+                    key:key,
+                    value:value,
+                })
                 .then(response => {
                     delete this.userCache[user.uid];//invalidate cache
                     this.eventEmitter.emit('AuthStateChanged', user.uid);
@@ -178,7 +197,7 @@ export class FirebaseAuthService {
         return new Promise<number>((resolve, reject) => {
             userDatabase.loadUserData(uid).then((fireBaseUser) => {
                 const httpClient = axios.create();
-                httpClient.defaults.timeout = 1000;//ms
+                httpClient.defaults.timeout = 20000;//ms
                 httpClient.get(GLOBAL_PROPERTIES.WALLET_SERVICE_COMPUTE_WALLET() + uid).then(response => {
                     resolve(response.data.balance);
                 }).catch(reason => {
@@ -220,6 +239,7 @@ export class FirebaseAuthService {
                     displayName: receivedUser.displayName,
                     uid: receivedUser.uid,
                     wallet: receivedUser["wallet"] ? receivedUser.wallet.balance : 0,
+                    metadata:receivedUser.metadata || {},
                     flag:false,
                 };
                 this.userCacheTime[uid] = new Date().getTime();

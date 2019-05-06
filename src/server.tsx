@@ -143,6 +143,9 @@ function renderFullPage(markup, css, helmet) {
                                                                                                                     
                         <base href="/">
                         
+                        <!-- propeller meta tag -->
+                        <meta name="propeller" content="35e484e8c2156c93678b440f0538a521">
+                        
                         <!-- ionic mobil compliance meta tags -->
                         <meta name="viewport"
                               content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>

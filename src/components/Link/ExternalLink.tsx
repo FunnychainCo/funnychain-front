@@ -3,7 +3,7 @@ import {Component} from 'react';
 import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
 /**
- *
+ * Use props href to set the link.
  */
 export default class ExternalLink extends Component<any, {}> {
 

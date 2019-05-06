@@ -6,6 +6,7 @@ export interface UserEntry {
     avatarUrl: string,
     wallet:number,
     flag:boolean,
+    metadata:{[id:string]: string},
 }
 
 export const PROVIDER_STEEM_CONNECT:string = "Steem/Connect";
@@ -20,6 +21,7 @@ class ImmutableUserEntry implements UserEntry{
     readonly displayName = "";
     readonly avatarUrl = "";
     readonly flag = false;
+    readonly metadata:{};
 }
 
 export const USER_ENTRY_NO_VALUE: ImmutableUserEntry = Object.freeze(new ImmutableUserEntry());

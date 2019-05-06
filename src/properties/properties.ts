@@ -38,7 +38,7 @@ const serviceComments = '/service/comments';
 const serviceMemes = '/service/meme';
 
 export const GLOBAL_PROPERTIES = {
-    VERSION: () => "1.6.11",
+    VERSION: () => "1.6.16",
 
     //One signal
 
@@ -76,6 +76,7 @@ export const GLOBAL_PROPERTIES = {
     REWARD_SERVICE_COUNT_VOTE: () => hostAPI() + serviceVote + "/countVote/",//'/countVote/:memeid
 
     //Wallet service
+    WALLET_SERVICE: () => hostAPI() + serviceWallet,
     WALLET_SERVICE_COMPUTE_WALLET: () => hostAPI() + serviceWallet + "/compute_wallet/",// '/compute_wallet/:uid'
     WALLET_SERVICE_TRANSFER: () => hostAPI() + serviceWallet + "/transfer",// /transfer/:from/:to/:amount
     WALLET_SERVICE_USER_TRANSACTION: () => hostAPI() + serviceWallet + "/user/transaction",// /user/transfer/:userid
@@ -88,6 +89,7 @@ export const GLOBAL_PROPERTIES = {
     USER_SERVICE_CHANGE_DISPLAY_NAME: () => hostAPI() + serviceUser + "/changeDisplayName",// '/get/:uid'
     USER_SERVICE_LOAD_USER_DATA: () => hostAPI() + serviceUser + "/loadUserData/",// '/loadUserData/:uid'
     USER_SERVICE_USER_MEME_KEY: () => hostAPI() + serviceUser + "/getUserMemeKeys/",// '/getUserMemeKeys/:uid'
+    USER_SERVICE_META: () => hostAPI() + serviceUser + "/meta/",// '/meta/
 
     //comments
     COMMENTS_SERVICE: () => hostAPI() + serviceComments,
