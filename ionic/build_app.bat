@@ -1,4 +1,5 @@
 del .\funnychain-signed.apk
+copy /b/v/y .\resources\android-icon.png .\resources\icon.png
 call ionic cordova platform add android
 call ionic cordova platform add ios
 call ionic cordova plugin add onesignal-cordova-plugin

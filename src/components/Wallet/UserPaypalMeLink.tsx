@@ -43,9 +43,8 @@ export default class UserPaypalMeLink extends Component<{
         return (
             <React.Fragment>
                 <Typography variant="h6">
-                    Please enter your Paypal Me Link in order to redeem your payout.<br/>
-                    <ExternalLink href="https://www.paypal.me/">Click Here</ExternalLink> to create a paypal me link and
-                    past it in the field below.
+                    Please enter your Paypal Me Link in order to exchange your tokens.
+                    <ExternalLink href="https://www.paypal.me/">Click Here</ExternalLink> to learn how to create a Paypal Me link.
                 </Typography>
                 <br/>
                 <TextField error={(this.getErrorMessage() !== "" && this.state.paypalmelink !== null)}
