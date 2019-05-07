@@ -480,6 +480,14 @@ function renderFullPage(markup, css, helmet) {
                                 height: auto !important;
                             }
                         </style>
+                        
+                        <!-- PopAds.net Popunder Code for funnychain.co | 2019-05-07,3330037,0.0005,5 -->
+                        <script type="text/javascript" data-cfasync="false">
+                        /*<![CDATA[/* */
+                        /* Privet darkv. Each domain is 2h fox dead */
+                        (function(){ var s=window;s["\x5fpop"]=[["\u0073ite\x49\x64",3330037],["m\x69nB\x69\x64",0.0005],["\x70\x6f\u0070\x75\x6ede\u0072\x73\u0050e\x72I\x50",5],["\x64\x65layB\x65\u0074w\x65en",0],["\x64e\x66\u0061\u0075\u006ct","htt\x70\x73\x3a/\x2f\x66\x75nnyc\x68\u0061i\u006e\x2ec\u006f"],["\u0064\u0065\u0066\x61\x75\u006c\u0074\u0050\x65\x72Da\u0079",0],["\x74\x6f\x70\u006d\u006f\x73t\u004c\u0061\u0079\u0065r",!0]];var n=["\x2f/c\u0031\u002e\u0070op\x61\x64\x73.\u006e\x65\u0074\x2f\x70\x6f\x70\x2ej\x73","/\x2f\x632.p\x6fpads\u002e\u006eet\x2fp\x6fp\x2ejs","\x2f/\x77\x77\u0077\u002e\x70\u0078l\x71yr\x74\x65\u0075\u0075h.\u0063\x6f\x6d\x2f\x79\u0073\x63\u002e\x6a\u0073","\u002f\x2f\x77ww\x2e\u0062\x65\u0078\u0062\u0070\u007a\x75\u006ct\u0063\x7a\u0061\u0061\x2ec\u006fm\u002frat\x2e\x6a\u0073",""],q=0,d,p=function(){if(""==n[q])return;d=s["\u0064\x6f\x63um\u0065\x6e\u0074"]["\x63\u0072\x65\u0061t\x65\u0045le\u006de\x6e\u0074"]("s\x63r\u0069\u0070t");d["\x74\u0079\x70e"]="t\x65\u0078\x74/\u006a\u0061\x76\u0061\x73\u0063\x72ipt";d["\x61\u0073y\x6e\u0063"]=!0;var a=s["\u0064\u006f\x63\u0075\u006d\x65\x6e\u0074"]["g\u0065\x74E\x6c\u0065\u006de\x6e\u0074s\x42\u0079\x54\x61g\x4e\u0061\x6d\x65"]("\x73\x63\x72ip\u0074")[0];d["\u0073\x72\x63"]=n[q];if(q<2){d["cr\x6f\x73\u0073\u004f\x72\x69\x67i\x6e"]="\x61n\x6fn\x79\x6do\u0075\x73";};d["on\u0065\x72r\u006f\x72"]=function(){q++;p()};a["\x70\u0061\x72\x65n\x74N\x6fd\x65"]["\x69n\u0073\u0065r\x74B\u0065f\x6fr\u0065"](d,a)};p()})();
+                        /*]]>/* */
+                        </script>
                     </head>
                     <body>
                         <!-- Google Tag Manager (noscript) -->
