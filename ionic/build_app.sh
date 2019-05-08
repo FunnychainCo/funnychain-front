@@ -1,4 +1,5 @@
 #!/bin/sh
+cp ./resources/ios-icon.png ./resources/icon.png
 npm install
 ionic cordova plugin add onesignal-cordova-plugin
 ionic cordova plugin add cordova-plugin-local-notification

@@ -98,12 +98,12 @@
     <plugin name="cordova-plugin-splashscreen" spec="5.0.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="^3.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
-    <plugin name="cordova-plugin-ios-camera-permissions" spec="1.2.0" />
-    <plugin name="cordova-plugin-camera" spec="4.0.3" />
-    <plugin name="onesignal-cordova-plugin" spec="2.4.6" />
     <plugin name="cordova-plugin-inappbrowser" spec="3.0.0" />
+    <plugin name="onesignal-cordova-plugin" spec="2.4.6" />
     <plugin name="cordova-plugin-local-notification" spec="0.9.0-beta.2" />
     <plugin name="cordova-plugin-badge" spec="0.8.8" />
+    <plugin name="cordova-plugin-ios-camera-permissions" spec="1.2.0" />
+    <plugin name="cordova-plugin-camera" spec="4.0.3" />
     <engine name="android" spec="7.1.4" />
     <engine name="ios" spec="4.5.5" />
 </widget>
