@@ -38,7 +38,7 @@ const serviceComments = '/service/comments';
 const serviceMemes = '/service/meme';
 
 export const GLOBAL_PROPERTIES = {
-    VERSION: () => "1.6.18",
+    VERSION: () => "1.6.19",
 
     //One signal
 
