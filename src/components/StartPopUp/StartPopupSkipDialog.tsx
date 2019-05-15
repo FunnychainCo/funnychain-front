@@ -62,12 +62,12 @@ class StartPopupSkipDialog extends Component<{
                     <Typography>
                         By clicking the "Continue" button you agree with our&nbsp;
                         <ExternalLink style={{textDecoration: "underline", color: "#0000ee"}}
-                                      href={"http://funnychain.co/terms"}>
+                                      href={"http://start.funnychain.co/terms"}>
                             Terms of Use
                         </ExternalLink>
                         &nbsp;and&nbsp;
                         <ExternalLink style={{textDecoration: "underline", color: "#0000ee"}}
-                                      href={"http://funnychain.co/privacy"}>
+                                      href={"http://start.funnychain.co/privacy"}>
                             Privacy Policy
                         </ExternalLink>.
                         <br/>

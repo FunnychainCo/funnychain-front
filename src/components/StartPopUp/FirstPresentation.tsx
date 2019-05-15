@@ -69,7 +69,7 @@ class FirstPresentation extends Component<{
                         margin: "10%"
                     }}>
                         <div style={{textAlign: "center", fontSize: "1.0em"}}>
-                            <img style={{flexGrow: 1,maxWidth:"100%",maxHeight:"100%"}} src="https://ipfs.funnychain.co/ipfs/QmeZsE4XDAe6SdXwHrmj2XXx4Ce7xD7d3pxkwbQGFRLmFA" alt="install" />
+                            <img style={{flexGrow: 1,maxWidth:"100%",maxHeight:"100%"}} src="/static/image/start/1.png" alt="install" />
                             <h2>
                                 Welcome to Funnychain!
                             </h2>
@@ -88,7 +88,7 @@ class FirstPresentation extends Component<{
                         margin: "10%"
                     }}>
                         <div style={{textAlign: "center", fontSize: "1.0em"}}>
-                            <img style={{flexGrow: 1,maxWidth:"100%",maxHeight:"100%"}} src="https://ipfs.funnychain.co/ipfs/QmTkiEYEmy4kWraMD8tKChrvbhZe4HJa2vixjRLPWXw9gR" alt="install" />
+                            <img style={{flexGrow: 1,maxWidth:"100%",maxHeight:"100%"}} src="/static/image/start/2.png" alt="install" />
                         </div>
                     </div>
                     <div key={"3"} style={{
