@@ -14,6 +14,7 @@
     "eventemitter3": "^3.1.0",
     "express": "4.16.4",
     "firebase": "^4.13.1",
+    "hammerjs": "^2.0.8",
     "ipfs-http-client": "^30.1.3",
     "jquery": "^3.4.0",
     "jss": "^8.0.0",

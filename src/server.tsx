@@ -238,6 +238,16 @@ function renderFullPage(markup, css, helmet) {
                                 }
                             }
                             
+                            .fcDynamicHeight{
+                                max-height:100%;
+                            }
+                            
+                            @media (orientation: landscape) and (min-width:961px){
+                                .fcDynamicHeight{
+                                    max-height:66%;
+                                }
+                            }
+                            
                             .fcCenteredContainer{
                                 overflow: auto;
                                 display: flex;

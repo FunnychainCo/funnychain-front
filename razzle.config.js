@@ -1,4 +1,16 @@
+//Webpack config
 module.exports = {
+    module: {
+        rules: [
+            {
+                test: /hammerjs/,
+                loader: "bundle-loader",
+                options: {
+                    lazy: true
+                }
+            }
+        ]
+    },
     plugins: [
         {
             name: 'typescript',

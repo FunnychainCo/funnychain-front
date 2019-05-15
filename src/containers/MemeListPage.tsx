@@ -1,8 +1,8 @@
 import * as React from 'react'
 import {Component} from 'react'
-import MemeListV2 from "../components/MemeList/MemeListV2";
 import Header from "../components/Header/Header";
 import DialogPage from "./DialogPage/DialogPage";
+import MemeListSwipe from "../components/MemeList/MemeListSwipe";
 
 export default class MemeListPage extends Component<{
     match: any,
@@ -32,11 +32,12 @@ export default class MemeListPage extends Component<{
 
     render() {
         return (
-            <div>
+            <React.Fragment>
                 <DialogPage match={this.props.match} history={this.props.history}/>
                 <Header type={this.state.type} onTypeChange={(type) => this.setState({type:type})}/>
-                <MemeListV2 type={this.state.type}/>
-            </div>
+                {/*<MemeListV2 type={this.state.type}/>*/}
+                <MemeListSwipe type={this.state.type}/>
+            </React.Fragment>
         )
     }
 }
