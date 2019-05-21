@@ -6,12 +6,12 @@ import * as Q from 'q';
 import {Meme, MEME_TYPE_FRESH, MEME_TYPE_HOT} from "../../generic/Meme";
 import EventEmitter from "eventemitter3";
 import {MemeDBEntry, MemeDBStruct} from "../../database/shared/DBDefinition";
-import {PromisePoolExecutor} from "promise-pool-executor";
 import {audit} from "../../log/Audit";
 import {firebaseMemeService} from "./FirebaseMemeService";
 import {MemeLink} from "./MemeLink";
 import {loadMeme} from "./MemeLoaderFunction";
 import {memeDatabase} from "../../database/MemeDatabase";
+import {TaskPoolExecutor} from "../../concurency/TaskPoolExecutor";
 
 export class MemeLoader implements MemeLoaderInterface {
 
@@ -21,84 +21,81 @@ export class MemeLoader implements MemeLoaderInterface {
     readonly EVENT_ON_INITIAL_LOADING_FINISHED = "onInitialLoadingFinished";
     eventEmitter = new EventEmitter();
     lastPostDate: number = new Date().getTime();
-    private pool: PromisePoolExecutor;
+    private pool: TaskPoolExecutor;
 
 
     constructor(public type: string, public tags: string[], public userid: string) {
-        this.pool = new PromisePoolExecutor(1);//concurrency limit of 1
+        this.pool = new TaskPoolExecutor();
+        this.pool.start();
     }
 
     loadMore(limit: number): void {
-        this.pool.addSingleTask({
-            generator: () => {
-                return new Promise(resolve => {
-                    if (limit < 0) {
-                        resolve(true);
-                        audit.reportError("negative limit");
-                    }
-                    if (limit <= 0) {
-                        resolve(true);
-                        return;
-                    }
-
-                    memeDatabase.fetchMemes(memes => {
-                        let memesVal: MemeDBStruct = memes;
-                        let firebaseMemes: MemeDBEntry[] = [];
-                        Object.keys(memesVal).forEach(key => {
-                            let memeVal: MemeDBEntry = memesVal[key];
-                            if (this.lastPostDate > memeVal.created) {
-                                this.lastPostDate = memeVal.created;
-                            }
-                            if (this.type !== "") {
-                                if (this.type == MEME_TYPE_HOT && memeVal.hot) {
-                                    firebaseMemes.push(memeVal);
-                                }
-                                if (this.type == MEME_TYPE_FRESH && !memeVal.hot) {
-                                    firebaseMemes.push(memeVal);
-                                }
-                            }
-                            if (this.userid !== "") {
-                                if (this.userid === memeVal.uid) {
-                                    firebaseMemes.push(memeVal);
-                                }
-                            }
-                        });
-                        //sort meme by creation time and filter them
-                        firebaseMemes.sort((a, b) => {
-                            return a.created - b.created;
-                        });
-                        let orderedMemeKeys: string[] = [];
-                        firebaseMemes.forEach(fireBaseMeme => {
-                            let hash = fireBaseMeme.memeIpfsHash;
-                            orderedMemeKeys.push(hash);
-                        });
-                        //notify memes
-                        firebaseMemes = firebaseMemes.filter(meme => {
-                            return orderedMemeKeys.indexOf(meme.memeIpfsHash)>=0;
-                        });
-                        if (orderedMemeKeys.length > 0) {
-                            //notify memes
-                            this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeKeys);
-                            this.convertor(firebaseMemes).then(memeLinkData => {
-                                this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
-                                resolve(true);
-                                //check if more memes needs to be loaded
-                                if (Object.keys(memesVal).length != 0) {
-                                    this.loadMore(limit - orderedMemeKeys.length);//TODO find a better system to load type fresh and hot
-                                }
-                            });
-                        }else{
-                            //check if more memes needs to be loaded
-                            if (Object.keys(memesVal).length != 0) {
-                                this.loadMore(limit - orderedMemeKeys.length);//TODO find a better system to load type fresh and hot
-                            }
-                            resolve(true);
-                            return;
-                        }
-
-                    }, this.type, this.userid, limit, this.lastPostDate);
-                })
+        this.pool.addResolvableTask((resolve, reject) => {
+            if (limit < 0) {
+                resolve(true);
+                audit.reportError("negative limit");
             }
+            if (limit <= 0) {
+                resolve(true);
+                return;
+            }
+
+            memeDatabase.fetchMemes(memes => {
+                let memesVal: MemeDBStruct = memes;
+                let firebaseMemes: MemeDBEntry[] = [];
+                Object.keys(memesVal).forEach(key => {
+                    let memeVal: MemeDBEntry = memesVal[key];
+                    if (this.lastPostDate > memeVal.created) {
+                        this.lastPostDate = memeVal.created;
+                    }
+                    if (this.type !== "") {
+                        if (this.type == MEME_TYPE_HOT && memeVal.hot) {
+                            firebaseMemes.push(memeVal);
+                        }
+                        if (this.type == MEME_TYPE_FRESH && !memeVal.hot) {
+                            firebaseMemes.push(memeVal);
+                        }
+                    }
+                    if (this.userid !== "") {
+                        if (this.userid === memeVal.uid) {
+                            firebaseMemes.push(memeVal);
+                        }
+                    }
+                });
+                //sort meme by creation time and filter them
+                firebaseMemes.sort((a, b) => {
+                    return a.created - b.created;
+                });
+                let orderedMemeKeys: string[] = [];
+                firebaseMemes.forEach(fireBaseMeme => {
+                    let hash = fireBaseMeme.memeIpfsHash;
+                    orderedMemeKeys.push(hash);
+                });
+                //notify memes
+                firebaseMemes = firebaseMemes.filter(meme => {
+                    return orderedMemeKeys.indexOf(meme.memeIpfsHash)>=0;
+                });
+                if (orderedMemeKeys.length > 0) {
+                    //notify memes
+                    this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeKeys);
+                    this.convertor(firebaseMemes).then(memeLinkData => {
+                        this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
+                        resolve(true);
+                        //check if more memes needs to be loaded
+                        if (Object.keys(memesVal).length != 0) {
+                            this.loadMore(limit - orderedMemeKeys.length);//TODO find a better system to load type fresh and hot
+                        }
+                    });
+                }else{
+                    //check if more memes needs to be loaded
+                    if (Object.keys(memesVal).length != 0) {
+                        this.loadMore(limit - orderedMemeKeys.length);//TODO find a better system to load type fresh and hot
+                    }
+                    resolve(true);
+                    return;
+                }
+
+            }, this.type, this.userid, limit, this.lastPostDate);
         });
     }
 

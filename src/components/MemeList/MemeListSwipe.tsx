@@ -6,10 +6,10 @@ import {MemeLinkInterface, MemeLoaderInterface} from "../../service/generic/Appl
 import {authService} from "../../service/generic/AuthService";
 import {ssrCache} from "../../service/ssr/SSRCache";
 import {isBrowserRenderMode} from "../../service/ssr/windowHelper";
-import {Helmet} from "react-helmet";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
 import SwipeCards from "../Swipe/SwipeCards";
 import FullHeightMemeComponent from "../Meme/FullHeightMemeComponent";
+import SwipeCardsTouchController from "../Swipe/SwipeCardsTouchController";
 
 
 interface State {
@@ -17,15 +17,17 @@ interface State {
     memes: { [id: string]: MemeLinkInterface },
     memesOrder: string[],
     displayWaypoint: boolean,
-    currentMeme: number,
+    currentMemeFromEnd: number,
 }
+
+let initialLoadNumber = 5;
 
 export function generateCache(): Promise<any> {
     let promise = new Promise<any>((resolve, reject) => {
         setTimeout(() => {
             resolve({});
         }, 10000);
-        let loadNumber = 5;
+        let loadNumber = initialLoadNumber;
         let state: {
             loadedMemes: Meme[],
             memes: { [id: string]: MemeLinkInterface },
@@ -82,7 +84,7 @@ export default class MemeListSwipe extends Component<{
         memes: {},
         memesOrder: [],
         displayWaypoint: true,
-        currentMeme: 0,
+        currentMemeFromEnd: 0,
     };
 
     private removeCallbackOnMemeData: (() => void) = () => {
@@ -94,7 +96,7 @@ export default class MemeListSwipe extends Component<{
     private removeListener: () => void = () => {
     };
 
-    memeCacheNumber = 3;
+    memeCacheNumber = 10;
 
 
     componentWillMount() {
@@ -106,7 +108,7 @@ export default class MemeListSwipe extends Component<{
                     return ({
                         //promotedMeme: cache.loadedMemes[0] ? cache.loadedMemes[0] : MEME_ENTRY_NO_VALUE,
                         memes: {...cache.memes, ...state.memes},
-                        memesOrder: cache.memesOrder
+                        memesOrder: cache.memesOrder.reverse()
                     })
                 })
             }
@@ -143,12 +145,12 @@ export default class MemeListSwipe extends Component<{
         this.removeCallbackOnMemeOrder = this.memeLoader.onMemeOrder((memesKey: string[]) => {
             if (resetOrder && delayedRestart) {
                 resetOrder = false;
-                this.setState({memesOrder: [], currentMeme: 0});//reset meme order
+                this.setState({memesOrder: [], currentMemeFromEnd: 0});//reset meme order
             }
-            this.state.memesOrder = this.state.memesOrder.concat(memesKey.reverse());
+            this.state.memesOrder = memesKey.concat(this.state.memesOrder);
             this.setState({memesOrder: this.state.memesOrder});//update view
         });
-        this.memeLoader.loadMore(10);
+        this.memeLoader.loadMore(initialLoadNumber);
     }
 
     componentWillUnmount() {
@@ -160,64 +162,142 @@ export default class MemeListSwipe extends Component<{
     nextMeme() {
         this.setState((state) => {
             let newState = {...state};
-            newState.currentMeme++;
+            newState.currentMemeFromEnd++;
             return newState;
         });
-        //let remainingMemeToView = (this.state.memesOrder.length-this.state.currentMeme);
-        //let numberToLoad = this.memeCacheNumber-remainingMemeToView;
-        let numberToLoad = 1;
-        console.log(numberToLoad);
-        if(numberToLoad>0) {
+        let remainingMemeToView = (this.state.memesOrder.length - this.state.currentMemeFromEnd);
+        let numberToLoad = Math.max(this.memeCacheNumber - remainingMemeToView, 0);
+        if (numberToLoad > 0) {
             this.memeLoader.loadMore(numberToLoad);
         }
     }
 
-    render() {
-        return (
-            <div style={{height:"100%",width:"100%",overflow: "hidden",display: "flex",justifyContent: "center"}}>
-                {this.state.promotedMeme !== MEME_ENTRY_NO_VALUE && <Helmet>
-                    {/* OG Meta description */}
-                    <meta property="og:image" content={this.state.promotedMeme.imageUrl}/>
+    /* delta +1 = next -1 previous */
+    getCurrentMemeKey(delta: number) {
+        let memeKey = this.state.memesOrder[(this.state.memesOrder.length - 1) - (this.state.currentMemeFromEnd + delta)];
+        return memeKey;
+    }
 
-                    {/* Twitter Meta description */}
-                    <meta name="twitter:image" content={this.state.promotedMeme.imageUrl}/>
-                </Helmet>
+    memeControllers = {};
+
+    render() {
+        const handleSwipeLeft = () => {
+            console.log("left");
+            this.nextMeme();
+        };
+        const handleSwipeRight = () => {
+            console.log("right");
+            this.nextMeme();
+        };
+        const handleSwipeTop = () => {
+            console.log("top");
+            this.nextMeme();
+        };
+        const handleSwipeBottom = () => {
+            console.log("bottom");
+            this.nextMeme();
+        };
+        const gestureStart = (ev: any) => {
+            let memeKey = this.getCurrentMemeKey(0);
+            if (this.memeControllers[memeKey]) {
+                this.memeControllers[memeKey].gestureStart(ev);
+            }
+        };
+        const gestureMove = (ev: any) => {
+            {
+                let memeKey = this.getCurrentMemeKey(0);
+                if (this.memeControllers[memeKey]) {
+                    this.memeControllers[memeKey].gestureMove(ev);
                 }
-                <div className="fcDynamicWidth fcDynamicHeight">
-                    <SwipeCards
-                        srcLeft={"https://image.ibb.co/heTxf7/20_status_close_3x.png"}
-                        srcRight={"https://image.ibb.co/dCuESn/Path_3x.png"}
-                        srcTop={"https://image.ibb.co/m1ykYS/rank_army_star_2_3x.png"}
-                        onController={controller => {
-                        }}
-                        onSwipeLeft={() => {
-                            console.log("left");
-                            this.nextMeme();
-                        }}
-                        onSwipeRight={() => {
-                            console.log("right");
-                            this.nextMeme();
-                        }}
-                        onSwipeTop={() => {
-                            console.log("top");
-                            this.nextMeme();
-                        }}
-                    >
+            }
+            {
+                let memeKey = this.getCurrentMemeKey(-1);
+                if (this.memeControllers[memeKey]) {
+                    this.memeControllers[memeKey].gestureMove(ev);
+                }
+            }
+        };
+        const tap = (ev: any) => {
+            let memeKey = this.getCurrentMemeKey(0);
+            if (this.memeControllers[memeKey]) {
+                this.memeControllers[memeKey].tap(ev);
+            }
+        };
+        const gestureEnd = (ev: any) => {
+            {
+                let memeKey = this.getCurrentMemeKey(0);
+                if (this.memeControllers[memeKey]) {
+                    this.memeControllers[memeKey].gestureEnd(ev);
+                }
+            }
+            {
+                let memeKey = this.getCurrentMemeKey(-1);
+                if (this.memeControllers[memeKey]) {
+                    this.memeControllers[memeKey].gestureEnd(ev);
+                }
+            }
+        };
+        return (
+            <React.Fragment>
+                <div style={{
+                    position: "relative",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    overflow: "hidden",
+                }}>
+                    <SwipeCardsTouchController gestureStart={gestureStart} gestureMove={gestureMove} tap={tap}
+                                               gestureEnd={gestureEnd}>
                         {
                             this.state.memesOrder.map((memeKey, index, array) => {
                                 let mapKey = memeKey;
-                                return <div key={mapKey}>
-                                    {!this.state.memes[memeKey] && <img key={mapKey} className="memeImage"
-                                                                        src="/static/image/placeholder-image.png"
-                                                                        alt=""/>}
-                                    {this.state.memes[memeKey] && <FullHeightMemeComponent key={mapKey} meme={this.state.memes[memeKey]}/>}
-                                </div>
+                                //let zindex = index;
+                                let currentMemeKey = this.getCurrentMemeKey(0);
+                                let previousMemeKey = this.getCurrentMemeKey(-1);
+                                let nextMemeKey = this.getCurrentMemeKey(+1);
+                                let hidden = memeKey !== currentMemeKey && memeKey !== nextMemeKey;
+                                let removed = memeKey !== currentMemeKey && memeKey !== previousMemeKey && memeKey !== nextMemeKey;
+                                let removedDiv = removed;
+                                return <React.Fragment key={mapKey}>{(!removedDiv) &&
+                                <div key={mapKey}
+                                     className="fcDynamicWidth"
+                                     style={{
+                                         //zIndex:zindex,
+                                         position: "absolute",
+                                         top: "50%",  /* position the top  edge of the element at the middle of the parent */
+                                         left: "50%", /* position the left edge of the element at the middle of the parent */
+                                         transform: "translate(-50%, -50%)", /* This is a shorthand oftranslateX(-50%) and translateY(-50%) */
+                                         visibility: hidden ? "hidden" : "visible",
+                                         width: "100%",
+                                         height: "100%",
+                                         opacity: hidden ? 0 : 1
+                                     }}>
+                                    {(this.state.memes[memeKey] && !removed) &&
+                                    <SwipeCards
+                                        key={mapKey}
+                                        srcLeft={"https://image.ibb.co/heTxf7/20_status_close_3x.png"}
+                                        srcRight={"https://image.ibb.co/dCuESn/Path_3x.png"}
+                                        srcTop={"https://image.ibb.co/m1ykYS/rank_army_star_2_3x.png"}
+                                        onController={controller => {
+                                            this.memeControllers[memeKey] = controller;
+                                        }}
+                                        onSwipeLeft={handleSwipeLeft}
+                                        onSwipeDown={handleSwipeBottom}
+                                        onSwipeRight={handleSwipeRight}
+                                        onSwipeTop={handleSwipeTop}
+                                    >
+                                        <FullHeightMemeComponent key={mapKey} meme={this.state.memes[memeKey]}/>
+                                    </SwipeCards>
+                                    }
+                                </div>}
+                                </React.Fragment>
                             })
                         }
-                    </SwipeCards>
+                    </SwipeCardsTouchController>
                 </div>
                 <CreateMemeDialogFab/>
-            </div>
+            </React.Fragment>
         )
     }
 

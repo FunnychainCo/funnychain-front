@@ -23,6 +23,7 @@ import MemeActionButton from "./MemeActionButton";
 import ContentMenuButton from "./ContentMenuButton";
 import {ssrCache} from "../../service/ssr/SSRCache";
 import {memeService} from "../../service/generic/MemeService";
+import {ImageFit} from "./ImageFit";
 
 
 const styles = theme => ({
@@ -170,13 +171,14 @@ class FullHeightMemeComponent extends Component<{
 
     render() {
         //const {classes} = this.props;
-        const MemeDisplayLink = (props) => <Link draggable={false} to={"/meme/" + encodeURIComponent(this.state.meme.id)} {...props} />
+        const MemeDisplayLink = (props) => <Link draggable={false}
+                                                 to={"/meme/" + encodeURIComponent(this.state.meme.id)} {...props} />
         return <React.Fragment>
             {!this.state.meme.flag && <Card
                 elevation={5}
-                style={{"marginBottom": "15px", height: "90%"}}>
+                style={{"marginBottom": "15px", maxHeight: "100%", display: "flex", flexDirection: "column"}}>
                 <CardHeader
-                    style={{"fontSize": "1.5em", "fontWeight": "bold", justifyContent: "left"}}
+                    style={{"fontSize": "1.5em", "fontWeight": "bold", justifyContent: "left", width: "100%"}}
                     title={<React.Fragment>
                         <ContentMenuButton contentId={this.state.meme.id}
                                            type={"meme"}
@@ -192,12 +194,11 @@ class FullHeightMemeComponent extends Component<{
                         </ButtonBase></React.Fragment>}
                     disableTypography={true}
                 />
-                <ButtonBase className="memeImage" component={MemeDisplayLink}><img
-                    draggable={false}
-                    className="memeImage"
-                    src={this.state.meme.imageUrl}
-                    alt=""/></ButtonBase>
-                <CardActions className="memeElementStyleDivContainer">
+                <ButtonBase style={{flexGrow: 1}} component={MemeDisplayLink}>
+                    <ImageFit src={this.state.meme.imageUrl}>
+                    </ImageFit>
+                </ButtonBase>
+                <CardActions className="memeElementStyleDivContainer" style={{width: "100%"}}>
                     <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
                     <div style={{marginLeft: 'auto'}}>
                         <Button variant="outlined"
@@ -211,7 +212,7 @@ class FullHeightMemeComponent extends Component<{
                         </Button>
                     </div>
                 </CardActions>
-                <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+                <Collapse in={this.state.expanded} timeout="auto" unmountOnExit style={{width: "100%"}}>
                     <CardContent style={{marginTop: 0, paddingTop: 0}}>
                         <MemeAvatarInfo meme={this.state.meme}/>
                         {this.state.loadingComment && <LoadingBlock/>}
@@ -227,16 +228,16 @@ class FullHeightMemeComponent extends Component<{
                                                this.state.meme.commentNumber++;
                                                this.setState({meme: this.state.meme});//update ui
                                            }}/>
-                            {
-                                this.getComments().map((comment: MemeComment, index) => {
-                                    return <UserComment key={index} comment={comment}/>
-                                })
-                            }
                             {this.state.commentNumber > this.commentPerPage &&
                             <Button variant="contained" color="primary" fullWidth size="large"
                                     component={MemeDisplayLink}>
                                 Show more comment
                             </Button>}
+                            {
+                                this.getComments().map((comment: MemeComment, index) => {
+                                    return <UserComment key={index} comment={comment}/>
+                                })
+                            }
                         </div>}
                     </CardContent>
                 </Collapse>
@@ -247,3 +248,6 @@ class FullHeightMemeComponent extends Component<{
 }
 
 export default withStyles(styles)(FullHeightMemeComponent);
+/*
+
+ */

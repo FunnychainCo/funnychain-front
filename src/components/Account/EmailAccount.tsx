@@ -10,6 +10,7 @@ import Divider from "@material-ui/core/Divider";
 import ExternalLinkAccount from "./ExternalLinkAccount";
 import WalletAccount from "./WalletAccount";
 import NotificationListButton from "./NotificationListButton";
+import PostMemeButton from "./PostMemeButton";
 
 export default class EmailAccount extends Component<{}, {
     user: UserEntry,
@@ -50,6 +51,8 @@ export default class EmailAccount extends Component<{}, {
                     </div>
                     <div className="fcLeftAlignContainer">
                         <div className="fcContent">
+                            <Divider />
+                            <PostMemeButton />
                             <Divider />
                             <WalletAccount/>
                             <NotificationListButton/>

@@ -8,6 +8,7 @@ import InstallSkipDialog from "../components/StartPopUp/StartPopupSkipDialog";
 import UserMemeListPage from "./UserMemeListPage";
 import WalletPage from "./WalletPage";
 import NotificationListPage from "./NotificationListPage";
+import PostPage from "./DialogPage/PostPage";
 
 export default class HomePage extends React.Component<{}, {}> {
     render() {
@@ -23,6 +24,7 @@ export default class HomePage extends React.Component<{}, {}> {
                 <Route exact path='/user/:userid/notification/list' component={NotificationListPage} />
                 <Route exact path='/install' component={InstallPage} />
                 <Route exact path='/user/current/wallet' component={WalletPage} />
+                <Route exact path='/post' component={PostPage} />
 
             </React.Fragment>
         )

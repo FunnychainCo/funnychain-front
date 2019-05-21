@@ -4,7 +4,6 @@ import ContentAdd from '@material-ui/icons/Add';
 import {authService} from "../../service/generic/AuthService";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Link} from 'react-router-dom';
-import CreateMemeDialog from "./CreateMemeDialog";
 import {backService} from "../../service/BackService";
 import Fab from "@material-ui/core/Fab";
 
@@ -56,9 +55,6 @@ export default class CreateMemeDialogFab extends Component<{},{
                 >
                     <ContentAdd/>
                 </Fab>
-                }
-                {this.state.logged &&
-                <CreateMemeDialog open={this.state.open} handleClose={()=>{backService.goBack()}}/>
                 }
             </div>
         )

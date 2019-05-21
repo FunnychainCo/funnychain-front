@@ -181,9 +181,9 @@ function renderFullPage(markup, css, helmet) {
                         
                         <!-- APP CODE -->
                         ${process.env.NODE_ENV === 'production' ?
-                            `<script src="${assets.client.js}" defer></script>` :
-                            `<script src="${assets.client.js}" defer crossorigin></script>`
-                        }
+        `<script src="${assets.client.js}" defer></script>` :
+        `<script src="${assets.client.js}" defer crossorigin></script>`
+        }
                         
                         <!-- APP CSS -->
                         <style id="jss-server-side">${css}</style>
@@ -489,6 +489,125 @@ function renderFullPage(markup, css, helmet) {
                                 width: auto !important;
                                 height: auto !important;
                             }
+                            /*----- Stacked Cards component css START -----*/
+
+                            .no-transition {
+                              -webkit-transition: none ! important;
+                              transition: none ! important;
+                            }
+                            
+                            .stackedcards-overflow {
+                              overflow-y: hidden !important;
+                            }
+                            
+                            .stackedcards.init {
+                              opacity: 0;/* set the opacity to 0 if you want a fade-in effect to stacked cards on page load */
+                            }
+                            
+                            .stackedcards {
+                              position: relative;
+                            }
+                            
+                            .stackedcards * {
+                              -webkit-user-select: none;
+                              -moz-user-select: none;
+                              -ms-user-select: none;
+                              user-select: none;
+                            }
+                            
+                            .stackedcards--animatable {
+                              -webkit-transition: all 400ms ease;
+                              -o-transition: all 400ms ease;
+                              transition: all 400ms ease;
+                            }
+                            
+                            .stackedcards .stackedcards-container > *,
+                            .stackedcards-overlay {
+                              position: absolute;
+                              width: 100%; /* set 100% */
+                              height: 100%; /* set 100% */
+                              will-change: transform, opacity;
+                              top: 0;
+                              border-radius: 10px;
+                              min-width: 265px;
+                            }
+                            
+                            .stackedcards-overlay.left > div,
+                            .stackedcards-overlay.right > div,
+                            .stackedcards-overlay.top > div {
+                              width: 100%;
+                              height: 100%;
+                              -webkit-box-align: center;
+                              -ms-flex-align: center;
+                              align-items: center;
+                              display: -webkit-box;
+                              display: -ms-flexbox;
+                              display: flex;
+                              -webkit-box-pack: center;
+                              -ms-flex-pack: center;
+                              justify-content: center;
+                            }
+                            
+                            .stackedcards-overlay.left,
+                            .stackedcards-overlay.right,
+                            .stackedcards-overlay.top {
+                              -webkit-box-align: center;
+                              -ms-flex-align: center;
+                              align-items: center;
+                              display: -webkit-box;
+                              display: -ms-flexbox;
+                              display: flex;
+                              -webkit-box-pack: center;
+                              -ms-flex-pack: center;
+                              justify-content: center;
+                              left: 0;
+                              opacity: 0;
+                              top: 0;
+                              height: 100%;
+                            }
+                            
+                            .stackedcards-overlay.top,
+                            .stackedcards-overlay.right,
+                            .stackedcards-overlay.left {
+                              background: #fff;
+                            }
+                            
+                            .stackedcards-overlay.left:empty,
+                            .stackedcards-overlay.right:empty,
+                            .stackedcards-overlay.top:empty {
+                              display: none !important;
+                            }
+                            
+                            .stackedcards-overlay-hidden {
+                              display: none;
+                            }
+                            
+                            .stackedcards-origin-bottom {
+                              -webkit-transform-origin: bottom;
+                              -ms-transform-origin: bottom;
+                              transform-origin: bottom;
+                            }
+                            
+                            .stackedcards-origin-top {
+                              -webkit-transform-origin: top;
+                              -ms-transform-origin: top;
+                              transform-origin: top;
+                            }
+                            
+                            .stackedcards-bottom,
+                            .stackedcards-top,
+                            .stackedcards-none {
+                              background: #fff; /* set card background background */
+                              box-shadow: 0 6px 12px 0 rgba(0,0,0,0.30);
+                              height: 100%;
+                            }
+                            
+                            .stackedcards .stackedcards-container > :nth-child(1) {
+                              position: relative;
+                              display: block;
+                            }
+                            
+                            /*----- Stacked Cards component css END -----*/
                         </style>
                         
                     </head>
