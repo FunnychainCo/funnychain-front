@@ -16,7 +16,7 @@ class ContentMenuButton extends Component<{
     contentId: string,
     userId: string,
     type:string,
-    onClick:()=>void,
+    onClick:(ev:any)=>void,
 }, {}> {
     state = {
         anchorEl: null,
@@ -34,17 +34,17 @@ class ContentMenuButton extends Component<{
         });
     };
 
-    reportContent() {
+    reportContent(ev:any) {
         report.reportContent(this.props.type,this.props.contentId);
         userNotificationService.sendNotificationToUser("Thank you for reporting this content. This content will be moderated by our team.");
-        this.props.onClick();
+        this.props.onClick(ev);
         this.handleClose();
     }
 
-    reportUser() {
+    reportUser(ev:any) {
         report.reportUser(this.props.userId);
         userNotificationService.sendNotificationToUser("Thank you for reporting this content. This content will be moderated by our team.");
-        this.props.onClick();
+        this.props.onClick(ev);
         this.handleClose();
     }
 
@@ -81,11 +81,11 @@ class ContentMenuButton extends Component<{
                     justifyContent: "flex-start"
                 }}>
                     <List component="nav">
-                        <ListItem button onClick={() => this.reportContent()}>
+                        <ListItem button onClick={(ev) => this.reportContent(ev)}>
                             <Flag/>
                             <ListItemText primary="Report content"/>
                         </ListItem>
-                        <ListItem button onClick={() => this.reportUser()}>
+                        <ListItem button onClick={(ev) => this.reportUser(ev)}>
                             <Flag/>
                             <ListItemText primary="Report user"/>
                         </ListItem>

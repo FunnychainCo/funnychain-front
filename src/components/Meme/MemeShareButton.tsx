@@ -66,7 +66,8 @@ class MemeShareButton extends Component<{ url: string }, { anchorEl: any }> {
         anchorEl: null,
     };
 
-    handleClick = event => {
+    handleClick = (event) => {
+        event.stopPropagation();
         this.setState({
             anchorEl: event.currentTarget,
         });

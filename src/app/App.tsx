@@ -19,8 +19,6 @@ import {isBrowserRenderMode} from "../service/ssr/windowHelper";
 import {createMuiTheme, CssBaseline} from "@material-ui/core";
 import Helmet from 'react-helmet';
 import register from "../registerServiceWorker";
-import {generateCache as generateCacheMemeList} from "../components/MemeList/MemeListV2";
-import {generateCache as generateCacheMemeSwipe} from "../components/MemeList/MemeListSwipe";
 import {generateMemeComponentCache} from "../components/Meme/MemeComponent";
 
 export function getTheme() {
@@ -48,10 +46,9 @@ export function getTheme() {
 export function precacheData(url:string):Promise<any>{
     let dataPromise:Promise<any>[] = [];
     dataPromise.push(Promise.resolve({}));
-    if (url.startsWith("/")) {
+    /*if (url.startsWith("/")) {
         dataPromise.push(generateCacheMemeSwipe());
-        dataPromise.push(generateCacheMemeList());
-    }
+    }*/
 
     if (url.startsWith("/meme/")) {
         dataPromise.push(generateMemeComponentCache(url));

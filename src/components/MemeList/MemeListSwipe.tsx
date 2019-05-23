@@ -1,90 +1,36 @@
 import {memeService} from "../../service/generic/MemeService";
-import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import * as React from "react";
 import {Component} from "react";
 import {MemeLinkInterface, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
 import {authService} from "../../service/generic/AuthService";
-import {ssrCache} from "../../service/ssr/SSRCache";
 import {isBrowserRenderMode} from "../../service/ssr/windowHelper";
-import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
 import SwipeCards from "../Swipe/SwipeCards";
 import FullHeightMemeComponent from "../Meme/FullHeightMemeComponent";
 import SwipeCardsTouchController from "../Swipe/SwipeCardsTouchController";
+import LoadingBlock from "../LoadingBlock/LoadingBlock";
 
+
+let initialLoadNumber = 5;
 
 interface State {
-    promotedMeme: Meme,
     memes: { [id: string]: MemeLinkInterface },
     memesOrder: string[],
     displayWaypoint: boolean,
     currentMemeFromEnd: number,
-}
-
-let initialLoadNumber = 5;
-
-export function generateCache(): Promise<any> {
-    let promise = new Promise<any>((resolve, reject) => {
-        setTimeout(() => {
-            resolve({});
-        }, 10000);
-        let loadNumber = initialLoadNumber;
-        let state: {
-            loadedMemes: Meme[],
-            memes: { [id: string]: MemeLinkInterface },
-            memesOrder: string[],
-            memeLinksLoaded: string[],
-        } = {
-            loadedMemes: [],
-            memeLinksLoaded: [],
-            memes: {},
-            memesOrder: []
-        };
-        let tryFinishLoad = () => {
-            if (
-                state.memesOrder.length >= loadNumber &&
-                Object.keys(state.memes).length >= loadNumber &&
-                state.memeLinksLoaded.length >= loadNumber) {
-                removeCallbackOnMemeData();
-                removeCallbackOnMemeOrder();
-                resolve(state);
-            }
-        };
-        let memeLoader = memeService.getMemeLoader("hot", []);
-        let removeCallbackOnMemeData = memeLoader.onMemeData((meme: MemeLinkInterface) => {
-            //console.log(meme);
-            let tmpState = {};
-            tmpState[meme.id] = meme;
-            state.memes = {...tmpState, ...state.memes};
-            meme.on(meme => {
-                state.loadedMemes.push(meme);
-                state.memeLinksLoaded.push(meme.id);
-                ssrCache.setCache("memelink/" + meme.id, meme);
-                tryFinishLoad();
-            });
-            tryFinishLoad();
-        });
-        let removeCallbackOnMemeOrder = memeLoader.onMemeOrder((memesKey: string[]) => {
-            //console.log(memesKey);
-            state.memesOrder = state.memesOrder.concat(memesKey.reverse());
-            tryFinishLoad();
-        });
-        memeLoader.loadMore(loadNumber);
-    });
-    promise.then(data => {
-        ssrCache.setCache("memelist-hot", data);
-    });
-    return promise;
+    jsLoadedReady: boolean,
+    currentMemeReady: boolean,
 }
 
 export default class MemeListSwipe extends Component<{
     type: string
 }, State> {
     state: State = {
-        promotedMeme: MEME_ENTRY_NO_VALUE,
         memes: {},
         memesOrder: [],
         displayWaypoint: true,
         currentMemeFromEnd: 0,
+        jsLoadedReady: false,
+        currentMemeReady: false,
     };
 
     private removeCallbackOnMemeData: (() => void) = () => {
@@ -97,25 +43,25 @@ export default class MemeListSwipe extends Component<{
     };
 
     memeCacheNumber = 10;
+    //private removeListenerClick: () => void = ()=>{};
 
 
     componentWillMount() {
-
-        let cache = ssrCache.getCache("memelist-hot");
-        if (cache) {
-            if (cache.loadedMemes) {
-                this.setState((state) => {
-                    return ({
-                        //promotedMeme: cache.loadedMemes[0] ? cache.loadedMemes[0] : MEME_ENTRY_NO_VALUE,
-                        memes: {...cache.memes, ...state.memes},
-                        memesOrder: cache.memesOrder.reverse()
-                    })
-                })
-            }
-        }
         if (isBrowserRenderMode()) {
             this.restartMemeLoader(this.props.type, memeService.getTags(), true);
         }
+    }
+
+    componentDidMount(): void {
+        /*let defaultClick = (ev)=>{
+            if(!ev.defaultPrevented) {
+                console.log("bubble")
+            }
+        };
+        window.addEventListener('click',defaultClick,false);
+        this.removeListenerClick = ()=>{
+            window.removeEventListener('click',defaultClick,false);
+        }*/
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -157,6 +103,7 @@ export default class MemeListSwipe extends Component<{
         this.removeListener();
         this.removeCallbackOnMemeData();
         this.removeCallbackOnMemeOrder();
+        //this.removeListenerClick();
     }
 
     nextMeme() {
@@ -182,19 +129,15 @@ export default class MemeListSwipe extends Component<{
 
     render() {
         const handleSwipeLeft = () => {
-            console.log("left");
             this.nextMeme();
         };
         const handleSwipeRight = () => {
-            console.log("right");
             this.nextMeme();
         };
         const handleSwipeTop = () => {
-            console.log("top");
             this.nextMeme();
         };
         const handleSwipeBottom = () => {
-            console.log("bottom");
             this.nextMeme();
         };
         const gestureStart = (ev: any) => {
@@ -237,18 +180,37 @@ export default class MemeListSwipe extends Component<{
                 }
             }
         };
+        const nextMeme = () =>{
+            console.log("next");
+            let memeKey = this.getCurrentMemeKey(0);
+            if (this.memeControllers[memeKey]) {
+                this.memeControllers[memeKey].triggerTop();
+            }
+        };
         return (
             <React.Fragment>
                 <div style={{
+                    pointerEvents:"none",
                     position: "relative",
                     top: 0,
                     left: 0,
                     width: "100%",
                     height: "100%",
                     overflow: "hidden",
-                }}>
-                    <SwipeCardsTouchController gestureStart={gestureStart} gestureMove={gestureMove} tap={tap}
-                                               gestureEnd={gestureEnd}>
+                }}
+                >
+                    {(!this.state.jsLoadedReady || !this.state.memes[this.getCurrentMemeKey(0)]) &&
+                    //JS is not ready of current meme is not loaded yet
+                    <LoadingBlock/>
+                    }
+                    <SwipeCardsTouchController
+                        style={{
+                            pointerEvents:"auto",}}
+                        gestureStart={gestureStart}
+                        gestureMove={gestureMove}
+                        tap={tap}
+                        onNext={nextMeme}
+                        gestureEnd={gestureEnd}>
                         {
                             this.state.memesOrder.map((memeKey, index, array) => {
                                 let mapKey = memeKey;
@@ -256,7 +218,8 @@ export default class MemeListSwipe extends Component<{
                                 let currentMemeKey = this.getCurrentMemeKey(0);
                                 let previousMemeKey = this.getCurrentMemeKey(-1);
                                 let nextMemeKey = this.getCurrentMemeKey(+1);
-                                let hidden = memeKey !== currentMemeKey && memeKey !== nextMemeKey;
+                                let noEvent = memeKey !== currentMemeKey && memeKey !== nextMemeKey;
+                                let hidden = memeKey !== currentMemeKey && memeKey !== previousMemeKey  && memeKey !== nextMemeKey;
                                 let removed = memeKey !== currentMemeKey && memeKey !== previousMemeKey && memeKey !== nextMemeKey;
                                 let removedDiv = removed;
                                 return <React.Fragment key={mapKey}>{(!removedDiv) &&
@@ -264,6 +227,7 @@ export default class MemeListSwipe extends Component<{
                                      className="fcDynamicWidth"
                                      style={{
                                          //zIndex:zindex,
+                                         pointerEvents:noEvent?"none":"auto",
                                          position: "absolute",
                                          top: "50%",  /* position the top  edge of the element at the middle of the parent */
                                          left: "50%", /* position the left edge of the element at the middle of the parent */
@@ -280,6 +244,10 @@ export default class MemeListSwipe extends Component<{
                                         srcRight={"https://image.ibb.co/dCuESn/Path_3x.png"}
                                         srcTop={"https://image.ibb.co/m1ykYS/rank_army_star_2_3x.png"}
                                         onController={controller => {
+                                            if (!this.state.jsLoadedReady) {
+                                                //first controler received means that the card system is ready
+                                                this.setState({jsLoadedReady: true});
+                                            }
                                             this.memeControllers[memeKey] = controller;
                                         }}
                                         onSwipeLeft={handleSwipeLeft}
@@ -287,7 +255,8 @@ export default class MemeListSwipe extends Component<{
                                         onSwipeRight={handleSwipeRight}
                                         onSwipeTop={handleSwipeTop}
                                     >
-                                        <FullHeightMemeComponent key={mapKey} meme={this.state.memes[memeKey]}/>
+                                        <FullHeightMemeComponent
+                                            onMemeClick={nextMeme} key={mapKey} meme={this.state.memes[memeKey]}/>
                                     </SwipeCards>
                                     }
                                 </div>}
@@ -296,7 +265,6 @@ export default class MemeListSwipe extends Component<{
                         }
                     </SwipeCardsTouchController>
                 </div>
-                <CreateMemeDialogFab/>
             </React.Fragment>
         )
     }

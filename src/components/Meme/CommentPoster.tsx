@@ -47,14 +47,14 @@ export default class CommentPoster extends Component<{
             });
         }).catch(reason => {
             //cancel previous operation
-            audit.reportError("post canceled",reason);
+            audit.reportError("post canceled", reason);
             this.props.onPostCanceled();
         });
         this.setState({commentToPost: ""});//errase old comment value
     };
 
     render() {
-        return <div>
+        return <React.Fragment>
             <TextField
                 disabled={!this.state.logged}
                 id="multiline-flexible"
@@ -77,7 +77,7 @@ export default class CommentPoster extends Component<{
             >
                 <Send/>&nbsp;POST
             </Button>
-        </div>
+        </React.Fragment>
     }
 
 }

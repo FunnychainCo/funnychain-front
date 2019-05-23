@@ -1,6 +1,5 @@
 import {memeService} from "../../service/generic/MemeService";
 import MemeComponent from '../Meme/MemeComponent';
-import CreateMemeDialogFab from "../CreateMemeDialogFab/CreateMemeDialogFab";
 import * as React from "react";
 import {Component} from "react";
 import {MemeLinkInterface, MemeLoaderInterface} from "../../service/generic/ApplicationInterface";
@@ -204,7 +203,6 @@ export default class MemeListV2 extends Component<{
                     }
                     <LoadingBlock/>
                 </div>
-                <CreateMemeDialogFab/>
             </div>
         )
     }

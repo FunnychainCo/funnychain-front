@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Component} from 'react'
-import {Discord, Face, Facebook, HelpCircle, Medium, Twitter,CommentAccountOutline} from 'mdi-material-ui'; //https://materialdesignicons.com/
+import {Discord, Facebook, HelpCircle, Medium, Twitter,CommentAccountOutline} from 'mdi-material-ui'; //https://materialdesignicons.com/
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ExternalLink from "../Link/ExternalLink";
@@ -22,10 +22,6 @@ export default class ExternalLinkAccount extends Component<{}, {}> {
 
                 <ListItem button component={(props) => <ExternalLink href="https://discordapp.com/invite/5G2ECV6" {...props} />}>
                     <Discord/><ListItemText primary="Discord community"/>
-                </ListItem>
-
-                <ListItem button component={(props) => <ExternalLink href="https://funnychain.co" {...props} />}>
-                    <Face/><ListItemText primary="Funnychain"/>
                 </ListItem>
 
                 <ListItem button

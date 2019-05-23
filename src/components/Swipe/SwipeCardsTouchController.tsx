@@ -10,6 +10,8 @@ class SwipeCardsTouchController extends React.Component<{
     gestureMove: (ev: any) => void,
     tap: (ev: any) => void,
     gestureEnd: (ev: any) => void,
+    style: any,
+    onNext: () => void,
 }, {}> {
 
     private hammertime: any;
@@ -126,8 +128,31 @@ class SwipeCardsTouchController extends React.Component<{
                     this.stackedCards(el)
                 }
             }}
-                 style={{zIndex:0,position:"absolute",top:0,left:0,height: "100%", width: "100%"}}>
-                {this.props.children}
+                 style={{
+                     ...{
+                         zIndex: 0,
+                         position: "absolute",
+                         top: 0,
+                         left: 0,
+                         height: "100%",
+                         width: "100%"
+                     }, ...this.props.style
+                 }}>
+                <div style={{zIndex: 1, position: "absolute", top: 0, left: 0, height: "100%", width: "100%"}} onClick={
+                    (ev) => {
+                        ev.stopPropagation();
+                        ev.preventDefault();
+                        this.props.onNext();
+                    }}>
+                    <div
+                        style={{zIndex: 2}}
+                        onClick={
+                            (ev) => {
+                                ev.stopPropagation();
+                            }}>
+                        {this.props.children}
+                    </div>
+                </div>
             </div>
         );
     }

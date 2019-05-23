@@ -16,7 +16,8 @@ class MemeUpvoteButton extends Component<{
 }, {}> {
 
 
-    upvote = () => {
+    upvote = (ev:any) => {
+        ev.stopPropagation();
         if (this.props.meme.currentUserVoted !== true) {
             this.props.meme.currentUserVoted = true;
             this.props.meme.voteNumber++;

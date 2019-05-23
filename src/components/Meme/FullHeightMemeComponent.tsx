@@ -15,7 +15,6 @@ import UserComment from "./UserComment";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {Meme, MEME_ENTRY_NO_VALUE} from "../../service/generic/Meme";
 import {Link} from 'react-router-dom';
-import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
 import {MemeComment} from "../../service/generic/MemeComment";
 import CommentPoster from "./CommentPoster";
 import MemeAvatarInfo from "./MemeAvatarInfo";
@@ -23,7 +22,6 @@ import MemeActionButton from "./MemeActionButton";
 import ContentMenuButton from "./ContentMenuButton";
 import {ssrCache} from "../../service/ssr/SSRCache";
 import {memeService} from "../../service/generic/MemeService";
-import {ImageFit} from "./ImageFit";
 
 
 const styles = theme => ({
@@ -77,6 +75,7 @@ export function generateMemeComponentCache(url: string): Promise<any> {
 class FullHeightMemeComponent extends Component<{
     meme: MemeLinkInterface,
     classes: any
+    onMemeClick:()=>void
 }, State> {
     state: State = {
         meme: MEME_ENTRY_NO_VALUE,
@@ -154,7 +153,8 @@ class FullHeightMemeComponent extends Component<{
         }
     };
 
-    handleExpandClick = () => {
+    handleExpandClick = (ev:any) => {
+        ev.stopPropagation();
         if (!this.state.expanded) {
             this.commentVisitor.loadMore(this.commentPerPage);
         }
@@ -176,28 +176,29 @@ class FullHeightMemeComponent extends Component<{
         return <React.Fragment>
             {!this.state.meme.flag && <Card
                 elevation={5}
-                style={{"marginBottom": "15px", maxHeight: "100%", display: "flex", flexDirection: "column"}}>
+                style={{
+                    marginBottom: "15px",
+                    maxHeight: "100%",
+                    display: "flex",
+                    flexDirection: "column"}}>
                 <CardHeader
                     style={{"fontSize": "1.5em", "fontWeight": "bold", justifyContent: "left", width: "100%"}}
                     title={<React.Fragment>
                         <ContentMenuButton contentId={this.state.meme.id}
                                            type={"meme"}
                                            userId={this.state.meme.user.uid}
-                                           onClick={() => {
+                                           onClick={(ev:any) => {
+                                               ev.stopPropagation();
                                                this.setState((state) => {
                                                    state.meme.flag = true;
                                                    return {meme: state.meme}
                                                });
                                                this.memeLink.refresh();
                                            }}/>
-                        <ButtonBase component={MemeDisplayLink}>{this.state.meme.title}
-                        </ButtonBase></React.Fragment>}
+                        {this.state.meme.title}</React.Fragment>}
                     disableTypography={true}
                 />
-                <ButtonBase style={{flexGrow: 1}} component={MemeDisplayLink}>
-                    <ImageFit src={this.state.meme.imageUrl}>
-                    </ImageFit>
-                </ButtonBase>
+                <ImageFit onClick={this.props.onMemeClick} style={{flexGrow: 1}} src={this.state.meme.imageUrl} />
                 <CardActions className="memeElementStyleDivContainer" style={{width: "100%"}}>
                     <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
                     <div style={{marginLeft: 'auto'}}>
@@ -245,6 +246,25 @@ class FullHeightMemeComponent extends Component<{
         </React.Fragment>
     }
 
+}
+
+class ImageFit extends React.Component<{ src: string,style:any,onClick:()=>void }, {}> {
+
+    public render() {
+        return (
+            <div
+                onClick={this.props.onClick}
+                style={{...{
+                    minWidth: "100%",
+                    /*minHeight: "100%",*/
+                    backgroundImage: `url(${this.props.src})`,
+                    backgroundSize: "contain",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "50% 50%",
+                    backgroundColor:"#000000"
+                },...this.props.style}} />
+        );
+    }
 }
 
 export default withStyles(styles)(FullHeightMemeComponent);
