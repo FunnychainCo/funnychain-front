@@ -82,6 +82,18 @@ export class DeviceDetector {
         return this.os === "iOS";
     }
 
+    isSafari():boolean{
+        var ua = this.getUserAgent();
+        if (ua.indexOf('safari') != -1 || ua.indexOf('Safari') != -1) {
+            if (ua.indexOf('chrome') > -1 || ua.indexOf('Chrome') > -1) {
+                return false; // Chrome
+            } else {
+                return true; // Safari
+            }
+        }
+        return false;
+    }
+
     isAndroidAndMobileApp():boolean{
         return this.isMobile()&&this.isAndroid();
     }

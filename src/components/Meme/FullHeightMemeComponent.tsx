@@ -22,6 +22,7 @@ import MemeActionButton from "./MemeActionButton";
 import ContentMenuButton from "./ContentMenuButton";
 import {ssrCache} from "../../service/ssr/SSRCache";
 import {memeService} from "../../service/generic/MemeService";
+import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
 
 const styles = theme => ({
@@ -75,7 +76,7 @@ export function generateMemeComponentCache(url: string): Promise<any> {
 class FullHeightMemeComponent extends Component<{
     meme: MemeLinkInterface,
     classes: any
-    onMemeClick:()=>void
+    onMemeClick: () => void
 }, State> {
     state: State = {
         meme: MEME_ENTRY_NO_VALUE,
@@ -89,11 +90,16 @@ class FullHeightMemeComponent extends Component<{
     };
 
     private commentVisitor: CommentsVisitor;
-    private removeListener: () => void;
     private commentPerPage = 5;
     private memeLink: MemeLinkInterface;
-    private removeListenerMemeLink: () => void;
-    private removeListenerCommentVisitor: () => void;
+    private removeListener: () => void = () => {
+    };
+    private removeListenerMemeLink: () => void = () => {
+    };
+    private removeListenerCommentVisitor: () => void = () => {
+    };
+
+    safari = true;
 
     componentWillMount() {
         let cache = ssrCache.getCache("memelink/" + this.props.meme.id);
@@ -103,17 +109,19 @@ class FullHeightMemeComponent extends Component<{
                 meme: cache
             });
         }
+        this.safari = deviceDetector.isSafari();
     }
 
     componentDidMount() {
         this.memeLink = this.props.meme;
+        this.removeListener();
         this.removeListener = authService.onAuthStateChanged((user) => {
             this.setState({
                 logged: user != USER_ENTRY_NO_VALUE ? true : false
             });
             this.memeLink.refresh();
         });
-
+        this.removeListenerMemeLink();
         this.removeListenerMemeLink = this.memeLink.on(meme => {
             this.setState({
                 commentNumber: meme.commentNumber,
@@ -121,6 +129,7 @@ class FullHeightMemeComponent extends Component<{
             });
         });
         this.commentVisitor = this.memeLink.getCommentVisitor();
+        this.removeListenerCommentVisitor();
         this.removeListenerCommentVisitor = this.commentVisitor.on((comments: MemeComment[]) => {
             let concat = comments.concat(this.state.comments);
             concat.sort((a: MemeComment, b: MemeComment) => {
@@ -153,7 +162,7 @@ class FullHeightMemeComponent extends Component<{
         }
     };
 
-    handleExpandClick = (ev:any) => {
+    handleExpandClick = (ev: any) => {
         ev.stopPropagation();
         if (!this.state.expanded) {
             this.commentVisitor.loadMore(this.commentPerPage);
@@ -177,17 +186,19 @@ class FullHeightMemeComponent extends Component<{
             {!this.state.meme.flag && <Card
                 elevation={5}
                 style={{
+                    userSelect: "auto",
                     marginBottom: "15px",
                     maxHeight: "100%",
                     display: "flex",
-                    flexDirection: "column"}}>
+                    flexDirection: "column"
+                }}>
                 <CardHeader
                     style={{"fontSize": "1.5em", "fontWeight": "bold", justifyContent: "left", width: "100%"}}
                     title={<React.Fragment>
                         <ContentMenuButton contentId={this.state.meme.id}
                                            type={"meme"}
                                            userId={this.state.meme.user.uid}
-                                           onClick={(ev:any) => {
+                                           onClick={(ev: any) => {
                                                ev.stopPropagation();
                                                this.setState((state) => {
                                                    state.meme.flag = true;
@@ -198,7 +209,7 @@ class FullHeightMemeComponent extends Component<{
                         {this.state.meme.title}</React.Fragment>}
                     disableTypography={true}
                 />
-                <ImageFit onClick={this.props.onMemeClick} style={{flexGrow: 1}} src={this.state.meme.imageUrl} />
+                <ImageFit onClick={this.props.onMemeClick} style={{flexGrow: 1}} src={this.state.meme.imageUrl}/>
                 <CardActions className="memeElementStyleDivContainer" style={{width: "100%"}}>
                     <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
                     <div style={{marginLeft: 'auto'}}>
@@ -217,23 +228,35 @@ class FullHeightMemeComponent extends Component<{
                     <CardContent style={{marginTop: 0, paddingTop: 0}}>
                         <MemeAvatarInfo meme={this.state.meme}/>
                         {this.state.loadingComment && <LoadingBlock/>}
+                        {this.safari &&
+                        <Button variant="contained" color="primary" fullWidth size="large"
+                                component={MemeDisplayLink}>
+                            Write a comment
+                        </Button>
+                        }
                         {!this.state.loadingComment && <div>
-                            <CommentPoster memeLink={this.props.meme}
-                                           onPost={() => {
-                                               this.state.meme.commentNumber++;
-                                               this.setState({meme: this.state.meme});//update ui
-                                           }}
-                                           onPostValidated={() => {
-                                           }}
-                                           onPostCanceled={() => {
-                                               this.state.meme.commentNumber++;
-                                               this.setState({meme: this.state.meme});//update ui
-                                           }}/>
-                            {this.state.commentNumber > this.commentPerPage &&
-                            <Button variant="contained" color="primary" fullWidth size="large"
-                                    component={MemeDisplayLink}>
-                                Show more comment
-                            </Button>}
+                            {!this.safari &&
+                            <React.Fragment>
+                                <CommentPoster memeLink={this.props.meme}
+                                               onPost={() => {
+                                                   this.state.meme.commentNumber++;
+                                                   this.setState({meme: this.state.meme});//update ui
+                                               }}
+                                               onPostValidated={() => {
+                                               }}
+                                               onPostCanceled={() => {
+                                                   this.state.meme.commentNumber++;
+                                                   this.setState({meme: this.state.meme});//update ui
+                                               }}/>
+                                {this.state.commentNumber > this.commentPerPage &&
+                                <Button variant="contained" color="primary" fullWidth size="large"
+                                        component={MemeDisplayLink}>
+                                    Show more comment
+                                </Button>
+                                }
+                            </React.Fragment>
+                            }
+
                             {
                                 this.getComments().map((comment: MemeComment, index) => {
                                     return <UserComment key={index} comment={comment}/>
@@ -248,21 +271,23 @@ class FullHeightMemeComponent extends Component<{
 
 }
 
-class ImageFit extends React.Component<{ src: string,style:any,onClick:()=>void }, {}> {
+class ImageFit extends React.Component<{ src: string, style: any, onClick: () => void }, {}> {
 
     public render() {
         return (
             <div
                 onClick={this.props.onClick}
-                style={{...{
-                    minWidth: "100%",
-                    /*minHeight: "100%",*/
-                    backgroundImage: `url(${this.props.src})`,
-                    backgroundSize: "contain",
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "50% 50%",
-                    backgroundColor:"#000000"
-                },...this.props.style}} />
+                style={{
+                    ...{
+                        minWidth: "100%",
+                        /*minHeight: "100%",*/
+                        backgroundImage: `url(${this.props.src})`,
+                        backgroundSize: "contain",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "50% 50%",
+                        backgroundColor: "#000000"
+                    }, ...this.props.style
+                }}/>
         );
     }
 }

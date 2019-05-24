@@ -78,7 +78,7 @@ export default class MemeListSwipe extends Component<{
             })
         });
         if (!delayedRestart) {
-            this.setState({memesOrder: []});//reset meme order
+            this.setState({memesOrder: [], currentMemeFromEnd: 0});//reset meme order
         }
         this.memeLoader = memeService.getMemeLoader(type, tags);
         this.removeCallbackOnMemeData();
@@ -126,6 +126,7 @@ export default class MemeListSwipe extends Component<{
     }
 
     memeControllers = {};
+    moving = false;
 
     render() {
         const handleSwipeLeft = () => {
@@ -141,6 +142,7 @@ export default class MemeListSwipe extends Component<{
             this.nextMeme();
         };
         const gestureStart = (ev: any) => {
+            this.moving = true;
             let memeKey = this.getCurrentMemeKey(0);
             if (this.memeControllers[memeKey]) {
                 this.memeControllers[memeKey].gestureStart(ev);
@@ -179,12 +181,17 @@ export default class MemeListSwipe extends Component<{
                     this.memeControllers[memeKey].gestureEnd(ev);
                 }
             }
+            setTimeout(()=>{
+                this.moving = false;
+            },0);
         };
         const nextMeme = () =>{
-            console.log("next");
-            let memeKey = this.getCurrentMemeKey(0);
-            if (this.memeControllers[memeKey]) {
-                this.memeControllers[memeKey].triggerTop();
+            if(!this.moving) {
+                console.log("next");
+                let memeKey = this.getCurrentMemeKey(0);
+                if (this.memeControllers[memeKey]) {
+                    this.memeControllers[memeKey].triggerTop();
+                }
             }
         };
         return (
@@ -219,10 +226,8 @@ export default class MemeListSwipe extends Component<{
                                 let previousMemeKey = this.getCurrentMemeKey(-1);
                                 let nextMemeKey = this.getCurrentMemeKey(+1);
                                 let noEvent = memeKey !== currentMemeKey && memeKey !== nextMemeKey;
-                                let hidden = memeKey !== currentMemeKey && memeKey !== previousMemeKey  && memeKey !== nextMemeKey;
                                 let removed = memeKey !== currentMemeKey && memeKey !== previousMemeKey && memeKey !== nextMemeKey;
-                                let removedDiv = removed;
-                                return <React.Fragment key={mapKey}>{(!removedDiv) &&
+                                return <React.Fragment key={mapKey}>{(!removed) &&
                                 <div key={mapKey}
                                      className="fcDynamicWidth"
                                      style={{
@@ -232,10 +237,8 @@ export default class MemeListSwipe extends Component<{
                                          top: "50%",  /* position the top  edge of the element at the middle of the parent */
                                          left: "50%", /* position the left edge of the element at the middle of the parent */
                                          transform: "translate(-50%, -50%)", /* This is a shorthand oftranslateX(-50%) and translateY(-50%) */
-                                         visibility: hidden ? "hidden" : "visible",
                                          width: "100%",
                                          height: "100%",
-                                         opacity: hidden ? 0 : 1
                                      }}>
                                     {(this.state.memes[memeKey] && !removed) &&
                                     <SwipeCards
@@ -247,6 +250,7 @@ export default class MemeListSwipe extends Component<{
                                             if (!this.state.jsLoadedReady) {
                                                 //first controler received means that the card system is ready
                                                 this.setState({jsLoadedReady: true});
+                                                console.log("js ready");
                                             }
                                             this.memeControllers[memeKey] = controller;
                                         }}

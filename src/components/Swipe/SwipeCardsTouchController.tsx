@@ -19,7 +19,6 @@ class SwipeCardsTouchController extends React.Component<{
     };
     private element: any;
 
-
     initHammer() {
         if (!Hammer) {
             Hammer = require('hammerjs');
@@ -31,10 +30,8 @@ class SwipeCardsTouchController extends React.Component<{
         let hammertime = this.hammertime;
         hammertime.add(new Hammer.Pan({direction: Hammer.DIRECTION_ALL, threshold: 2}));
         hammertime.add(new Hammer.Tap({}));
-        //let moving = false;
         let panstart = (ev) => {
             if (!ev.isFinal) {
-                //moving=true;
                 ev.preventDefault();
                 this.props.gestureStart(ev);
             }
@@ -53,7 +50,6 @@ class SwipeCardsTouchController extends React.Component<{
         let panend = (ev) => {
             ev.preventDefault();
             this.props.gestureEnd(ev);
-            //moving=false;
         };
         hammertime.on("panend", panend);
 

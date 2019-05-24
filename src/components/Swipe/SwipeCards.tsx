@@ -592,16 +592,16 @@ class SwipeCards extends React.Component<{
     }
 
     shouldComponentUpdate() {
-        return false;
+        return true;
     }
 
     render() {
         return (
             <div id={"stacked-cards-block"} ref={el => {
-                if (el) {
-                    this.stackedCards(el)
-                }
-            }}
+                    if (el) {
+                        this.stackedCards(el)
+                    }
+                }}
                  className="stackedcards stackedcards--animatable init"
                  style={{height: "100%"}}>
                 <div className="stackedcards-container" style={{height: "100%"}}>
