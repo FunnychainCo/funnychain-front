@@ -8,6 +8,7 @@ import SwipeCards from "../Swipe/SwipeCards";
 import FullHeightMemeComponent from "../Meme/FullHeightMemeComponent";
 import SwipeCardsTouchController from "../Swipe/SwipeCardsTouchController";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
+import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
 
 let initialLoadNumber = 5;
@@ -43,6 +44,7 @@ export default class MemeListSwipe extends Component<{
     };
 
     memeCacheNumber = 10;
+    private mobile: boolean;
     //private removeListenerClick: () => void = ()=>{};
 
 
@@ -50,6 +52,7 @@ export default class MemeListSwipe extends Component<{
         if (isBrowserRenderMode()) {
             this.restartMemeLoader(this.props.type, memeService.getTags(), true);
         }
+        this.mobile = deviceDetector.isMobileRender();
     }
 
     componentDidMount(): void {
@@ -260,6 +263,7 @@ export default class MemeListSwipe extends Component<{
                                         onSwipeTop={handleSwipeTop}
                                     >
                                         <FullHeightMemeComponent
+                                            activelink={this.mobile}
                                             onMemeClick={nextMeme} key={mapKey} meme={this.state.memes[memeKey]}/>
                                     </SwipeCards>
                                     }

@@ -28,7 +28,7 @@ class SwipeCardsTouchController extends React.Component<{
         }
         this.hammertime = new Hammer.Manager(this.element, {domEvents: false});
         let hammertime = this.hammertime;
-        hammertime.add(new Hammer.Pan({direction: Hammer.DIRECTION_ALL, threshold: 2}));
+        hammertime.add(new Hammer.Pan({direction: Hammer.DIRECTION_ALL, threshold: 3}));
         hammertime.add(new Hammer.Tap({}));
         let panstart = (ev) => {
             if (!ev.isFinal) {

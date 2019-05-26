@@ -488,7 +488,7 @@ class SwipeCards extends React.Component<{
         this.translateY = this.currentY - this.startY;
 
         //let velocity = evt.velocity;
-        //let distance = evt.distance;
+        let distance = evt.distance;
         let DIRECTION_LEFT = 2;
         let DIRECTION_RIGHT = 4;
         let DIRECTION_UP = 8;
@@ -496,25 +496,27 @@ class SwipeCards extends React.Component<{
         let action = false;
         //console.log(evt.direction);
         //http://hammerjs.github.io/api/#hammer-recognizer
-        if (evt.direction == DIRECTION_UP) {
-            this.beforeSwipe("top");
-            this.props.onSwipeTop();
-            action = true;
-        }
-        if (evt.direction == DIRECTION_DOWN) {
-            this.beforeSwipe("down");
-            this.props.onSwipeDown();
-            action = true;
-        }
-        if (evt.direction == DIRECTION_LEFT) {
-            this.beforeSwipe("left");
-            this.props.onSwipeLeft();
-            action = true;
-        }
-        if (evt.direction == DIRECTION_RIGHT) {
-            this.beforeSwipe("right");
-            this.props.onSwipeRight();
-            action = true;
+        if(distance>60) {
+            if (evt.direction == DIRECTION_UP) {
+                this.beforeSwipe("top");
+                this.props.onSwipeTop();
+                action = true;
+            }
+            if (evt.direction == DIRECTION_DOWN) {
+                this.beforeSwipe("down");
+                this.props.onSwipeDown();
+                action = true;
+            }
+            if (evt.direction == DIRECTION_LEFT) {
+                this.beforeSwipe("left");
+                this.props.onSwipeLeft();
+                action = true;
+            }
+            if (evt.direction == DIRECTION_RIGHT) {
+                this.beforeSwipe("right");
+                this.props.onSwipeRight();
+                action = true;
+            }
         }
 
         if (!action) {

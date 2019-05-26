@@ -23,6 +23,7 @@ import ContentMenuButton from "./ContentMenuButton";
 import {ssrCache} from "../../service/ssr/SSRCache";
 import {memeService} from "../../service/generic/MemeService";
 import {deviceDetector} from "../../service/mobile/DeviceDetector";
+import ButtonBase from "@material-ui/core/ButtonBase/ButtonBase";
 
 
 const styles = theme => ({
@@ -74,10 +75,12 @@ export function generateMemeComponentCache(url: string): Promise<any> {
 }
 
 class FullHeightMemeComponent extends Component<{
+    activelink: boolean
     meme: MemeLinkInterface,
     classes: any
     onMemeClick: () => void
 }, State> {
+
     state: State = {
         meme: MEME_ENTRY_NO_VALUE,
         expanded: false,
@@ -209,7 +212,8 @@ class FullHeightMemeComponent extends Component<{
                         {this.state.meme.title}</React.Fragment>}
                     disableTypography={true}
                 />
-                <ImageFit onClick={this.props.onMemeClick} style={{flexGrow: 1}} src={this.state.meme.imageUrl}/>
+                <MemeImage buttonMode={this.props.activelink} link={MemeDisplayLink} onClick={this.props.onMemeClick} style={{flexGrow: 1}}
+                           src={this.state.meme.imageUrl}/>
                 <CardActions className="memeElementStyleDivContainer" style={{width: "100%"}}>
                     <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
                     <div style={{marginLeft: 'auto'}}>
@@ -271,23 +275,42 @@ class FullHeightMemeComponent extends Component<{
 
 }
 
-class ImageFit extends React.Component<{ src: string, style: any, onClick: () => void }, {}> {
+class MemeImage extends React.Component<{
+    src: string,
+    style: any,
+    onClick: () => void,
+    buttonMode: boolean,
+    link:any,
+}, {}> {
+
+    public static defaultProps = {
+        style: {},
+        onClick: () => {
+        },
+    };
 
     public render() {
+        const style = {
+            ...{
+                minWidth: "100%",
+                /*minHeight: "100%",*/
+                backgroundImage: `url(${this.props.src})`,
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "50% 50%",
+                backgroundColor: "#000000"
+            }, ...this.props.style
+        };
         return (
-            <div
-                onClick={this.props.onClick}
-                style={{
-                    ...{
-                        minWidth: "100%",
-                        /*minHeight: "100%",*/
-                        backgroundImage: `url(${this.props.src})`,
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "50% 50%",
-                        backgroundColor: "#000000"
-                    }, ...this.props.style
-                }}/>
+            <React.Fragment>
+                {!this.props.buttonMode && <div
+                    onClick={this.props.onClick}
+                    style={style}/>}
+                {this.props.buttonMode &&
+                <ButtonBase
+                    component={this.props.link}
+                    style={style}/>}
+            </React.Fragment>
         );
     }
 }
