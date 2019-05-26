@@ -99,10 +99,10 @@ class FirstPresentation extends Component<{
                         margin: "10%"
                     }}>
                         <div style={{textAlign: "center", fontSize: "1.1em"}}>
-                            {!deviceDetector.isMobile() &&
+                            {!deviceDetector.isMobileAppRender() &&
                             <InstallButtons/>
                             }
-                            {deviceDetector.isMobile() &&
+                            {deviceDetector.isMobileAppRender() &&
                             <Typography>
                                 That's all enjoy the app!
                             </Typography>

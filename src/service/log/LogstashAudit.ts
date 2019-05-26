@@ -15,7 +15,6 @@ export class LogstashAudit {
     /** Timestamp of the session-start. */
     private sessionStart: number = +new Date();
 
-    /** A generated random id for this "installation", kind of like a user-id. */
     private _userId: string;
 
     constructor(private tracking_url: string, uid: string) {
@@ -23,7 +22,7 @@ export class LogstashAudit {
     }
 
     setUserId(uid: string) {
-        this._userId = uid==="" ? this.uuidv4():uid;
+        this._userId = uid === "" ? this.sessionId : uid;
     }
 
     /**
@@ -45,7 +44,7 @@ export class LogstashAudit {
                 console.error(reason);
                 //Do nothing otherwise will will notifi this error
             });
-        }catch (err){
+        } catch (err) {
             console.error(err);
             //Do nothing
         }

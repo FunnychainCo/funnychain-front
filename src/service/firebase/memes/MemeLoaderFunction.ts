@@ -92,7 +92,7 @@ export function loadMeme(meme:MemeDBEntry):Promise<Meme>{
             let localReportContent:boolean = !!report.getReportedContent("meme")[hash]
             let localReportUser:boolean = !!report.getReportedContent("user")[meme.uid];
             let distantReportContent = meme.flag;
-            if(deviceDetector.isMobile()){
+            if(deviceDetector.isMobileAppRender()){
                 distantReportContent = distantReportContent || meme.flagMobile;
             }
             //TODO distant reported user

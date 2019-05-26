@@ -7,9 +7,14 @@ import {
 } from '@material-ui/core/styles';
 import App, {getTheme, precacheData} from './app/App';
 import {BrowserRouter} from "react-router-dom";
+import {deviceDetector} from "./service/mobile/DeviceDetector";
 
 class Main extends React.Component {
     // Remove the server-side injected CSS.
+    componentWillMount(): void {
+        deviceDetector.start(window.navigator.userAgent);
+    }
+
     componentDidMount() {
         const jssStyles = document.getElementById('jss-server-side');
         if (jssStyles && jssStyles.parentNode) {

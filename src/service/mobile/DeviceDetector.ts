@@ -6,6 +6,8 @@ import {isBrowserRenderMode} from "../ssr/windowHelper";
 export class DeviceDetector {
     private type: string;
     private os: string;
+    private md: MobileDetect;
+    private useragent: string;
     //windows chrome
     //android chrome
     //android pwa
@@ -14,31 +16,40 @@ export class DeviceDetector {
     //OS: Windows/Mac/Linux/Ios/android
     //viewer PWA/browser/Mobile app
 
-    start(){
-        if(isBrowserRenderMode()) {
-            let md = new MobileDetect(window.navigator.userAgent);
-            this.os = md.os() ? md.os() : "desktop";//TODO add Windows/Mac/Linux differences? //TODO add android/ios differences?
-            this.type = "";
-            if (ionicMobileAppService.mobileapp) {
-                this.type = "mobile";
-            } else if (pwaService.runningFromPWA) {
-                this.type = "pwa"
-            } else {
-                this.type = "web";
-            }
-        }else{
-            this.os = "server";
-            this.type = "server";
+    start(ua:string){
+        this.useragent = ua;
+        this.md = new MobileDetect(this.useragent);
+        this.os = this.md.os() ? this.md.os() : "desktop";//TODO add Windows/Mac/Linux differences? //TODO add android/ios differences?
+        this.type = "";
+        if (ionicMobileAppService.mobileapp) {
+            this.type = "mobile";
+        } else if (pwaService.runningFromPWA) {
+            this.type = "pwa"
+        } else {
+            this.type = "web";
         }
+    }
+
+    setCustomUserAgent(ua:string){
+        this.md = new MobileDetect(ua);
+        this.os = this.md.os() ? this.md.os() : "desktop";//TODO add Windows/Mac/Linux differences? //TODO add android/ios differences?
+        this.type = "";
+        if (ionicMobileAppService.mobileapp) {
+            this.type = "mobile";
+        } else if (pwaService.runningFromPWA) {
+            this.type = "pwa"
+        } else {
+            this.type = "web";
+        }
+    }
+
+    isServerRender():boolean{
+        return !isBrowserRenderMode();
     }
 
 
     getUserAgent(){
-        if(isBrowserRenderMode()){
-            return window.navigator.userAgent;
-        }else{
-            return "server render user agent";
-        }
+        return  this.useragent;
     }
 
     isIphoneX(){
@@ -56,7 +67,7 @@ export class DeviceDetector {
          //https://developer.apple.com/library/archive/documentation/DeviceInformation/Reference/iOSDeviceCompatibility/Displays/Displays.html
          1125 x 2436         375 x 812         3.0         3.0
          * */
-        return this.isMobile() && this.isIPhone() && (
+        return this.isMobileAppRender() && this.isIPhone() && (
             (screen.width==375 && screen.height==812) || //Iphone X Iphone XS
             (screen.width==375 && (screen.height==597 || screen.height==598)) || //iPhone XR
             (screen.width==414 && screen.height==896)    //iPhone XS Max
@@ -64,14 +75,19 @@ export class DeviceDetector {
     }
 
     getDeviceString():string{
-        return this.os+"/"+this.type;
+        return this.os+"/"+this.type+(this.isServerRender()?"/server_render":"");
     }
 
     /**
      * Mobile app only
      */
-    isMobile():boolean{
+    isMobileAppRender():boolean{
         return this.type === "mobile";
+    }
+
+    isMobileRender():boolean{
+        //if mobile detector detect something it means that this is a mobile device (touch capable etc...)
+        return this.md.os()?true:false;
     }
 
     isAndroid():boolean{
@@ -83,7 +99,7 @@ export class DeviceDetector {
     }
 
     isSafari():boolean{
-        var ua = this.getUserAgent();
+        let ua = this.getUserAgent();
         if (ua.indexOf('safari') != -1 || ua.indexOf('Safari') != -1) {
             if (ua.indexOf('chrome') > -1 || ua.indexOf('Chrome') > -1) {
                 return false; // Chrome
@@ -95,7 +111,7 @@ export class DeviceDetector {
     }
 
     isAndroidAndMobileApp():boolean{
-        return this.isMobile()&&this.isAndroid();
+        return this.isMobileAppRender()&&this.isAndroid();
     }
 }
 

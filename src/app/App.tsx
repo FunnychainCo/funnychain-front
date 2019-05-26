@@ -20,6 +20,7 @@ import {createMuiTheme, CssBaseline} from "@material-ui/core";
 import Helmet from 'react-helmet';
 import register from "../registerServiceWorker";
 import {generateMemeComponentCache} from "../components/Meme/MemeComponent";
+import {USER_ENTRY_NO_VALUE} from "../service/generic/UserEntry";
 
 export function getTheme() {
     return createMuiTheme({
@@ -70,8 +71,18 @@ class App extends React.Component<any, any> {
         authService.start();
         realTimeData.connect();
         ipfsFileUploadService.start();
-        deviceDetector.start();
         report.start();
+
+        let onAuthStateChangedRemoveListener = authService.onAuthStateChanged(userData => {
+            if(userData!==USER_ENTRY_NO_VALUE){
+                onAuthStateChangedRemoveListener();
+                audit.track("user/app/open/logged", {
+                    target: deviceDetector.getDeviceString(),
+                    agent: deviceDetector.getUserAgent(),
+                    version: GLOBAL_PROPERTIES.VERSION()
+                });
+            }
+        });
 
         audit.track("user/app/open", {
             target: deviceDetector.getDeviceString(),

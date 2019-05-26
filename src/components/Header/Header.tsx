@@ -123,11 +123,11 @@ class Header extends Component<{
                             this.handleFeedButton(0);
                         }} variant={this.state.currentSelected==0?"contained":"outlined"}
                                 style={{margin:this.state.compact?"2px":"5px",padding: '5px'}}
-                        >Hot</Button>
+                        >Top</Button>
                         <Button color={"primary"} onClick={(event) => {
                             this.handleFeedButton(1);
                         }} variant={this.state.currentSelected==1?"contained":"outlined"}
-                                style={{margin:this.state.compact?"2px":"5px",padding: '5px'}}>Fresh</Button>
+                                style={{margin:this.state.compact?"2px":"5px",padding: '5px'}}>New</Button>
                     </Typography>
                     </MuiThemeProvider>
 

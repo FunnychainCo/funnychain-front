@@ -20,7 +20,7 @@ export default class CommonAccountManagement extends Component<{}, {
 
             <div className="fcContent">
                 <ViewMyPostButton/>
-                {!deviceDetector.isMobile() &&
+                {!deviceDetector.isMobileAppRender() &&
                     <InstallAppAccount/>
                 }
 

@@ -16,6 +16,7 @@ import {authService} from "./service/generic/AuthService";
 import {realTimeData} from "./service/database/RealTimeData";
 import {ipfsFileUploadService} from "./service/uploader/IPFSFileUploadService";
 import Helmet from 'react-helmet';
+import {deviceDetector} from "./service/mobile/DeviceDetector";
 
 let assets: any;
 
@@ -60,6 +61,7 @@ realTimeData.connect();
 ipfsFileUploadService.start();
 
 function singlePageApplicationRenderer(req: express.Request, res: express.Response) {
+    deviceDetector.start(req.headers['user-agent']);
     console.log(req.url);
     /*
     Compute server data
