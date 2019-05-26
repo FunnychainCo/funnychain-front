@@ -241,6 +241,10 @@ class FullHeightMemeComponent extends Component<{
                         {!this.state.loadingComment && <div>
                             {!this.safari &&
                             <React.Fragment>
+                                <Button variant="contained" color="primary" fullWidth size="large"
+                                        component={MemeDisplayLink}>
+                                    {this.state.commentNumber > this.commentPerPage ? "Show more comment":"Open"}
+                                </Button>
                                 <CommentPoster memeLink={this.props.meme}
                                                onPost={() => {
                                                    this.state.meme.commentNumber++;
@@ -252,12 +256,6 @@ class FullHeightMemeComponent extends Component<{
                                                    this.state.meme.commentNumber++;
                                                    this.setState({meme: this.state.meme});//update ui
                                                }}/>
-                                {this.state.commentNumber > this.commentPerPage &&
-                                <Button variant="contained" color="primary" fullWidth size="large"
-                                        component={MemeDisplayLink}>
-                                    Show more comment
-                                </Button>
-                                }
                             </React.Fragment>
                             }
 

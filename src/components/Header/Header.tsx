@@ -36,18 +36,21 @@ const styles = theme => ({
 class Header extends Component<{
     type: string,
     onTypeChange: (type: string) => void,
-    classes: any
+    classes: any,
+    disableSelection: boolean,
 }, {
     currentSelected: any,
     betPoolBalance: number,
     compact: boolean,
-    extendedHeaderHeight:boolean
+    extendedHeaderHeight: boolean
+    showMenu: boolean,
 }> {
     state = {
         currentSelected: 0,
         betPoolBalance: 0,
         compact: true,
-        extendedHeaderHeight:false,
+        extendedHeaderHeight: false,
+        showMenu: false,
     };
     itemOrder = {
         "hot": 0,
@@ -65,10 +68,11 @@ class Header extends Component<{
         /*firebaseBetService.getBetPool().then(balance => {
             this.setState({betPoolBalance: balance});
         });*/
-        if(deviceDetector.isIphoneX()){
+        if (deviceDetector.isIphoneX()) {
             console.log("iphoneX");
-            this.setState({extendedHeaderHeight:true});
+            this.setState({extendedHeaderHeight: true});
         }
+        this.setState({showMenu: true});
     }
 
 
@@ -111,27 +115,44 @@ class Header extends Component<{
         //const FreshTabLink = (props) => <Link to={"/fresh"} {...props} />;
         return (
             // overflow: "hidden" to ensure scroll-x is not activated on small device (looks ugly)
-            <AppBar style={{overflow: "hidden",paddingTop:this.state.extendedHeaderHeight?"25px":"0"}} position="sticky">
+            <AppBar style={{overflow: "hidden", paddingTop: this.state.extendedHeaderHeight ? "25px" : "0"}}
+                    position="sticky">
                 <Toolbar>
                     <BackButton>
-                        <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png" alt="logo"/>
+                        <img style={{maxHeight: "40px", paddingRight: "7px"}} src="/android-chrome-192x192.png"
+                             alt="logo"/>
                     </BackButton>
-
                     <MuiThemeProvider theme={theme}>
-                    <Typography variant="h6" className={classes.flex}>
-                        <Button color={"primary"} onClick={(event) => {
-                            this.handleFeedButton(0);
-                        }} variant={this.state.currentSelected==0?"contained":"outlined"}
-                                style={{margin:this.state.compact?"2px":"5px",padding: '5px'}}
-                        >Top</Button>
-                        <Button color={"primary"} onClick={(event) => {
-                            this.handleFeedButton(1);
-                        }} variant={this.state.currentSelected==1?"contained":"outlined"}
-                                style={{margin:this.state.compact?"2px":"5px",padding: '5px'}}>New</Button>
-                    </Typography>
+                        <Typography variant="h6" className={classes.flex}>
+                            {!this.props.disableSelection &&
+                            <React.Fragment>
+                                <Button
+                                    color={"primary"}
+                                    onClick={(event) => {
+                                        this.handleFeedButton(0);
+                                    }}
+                                    variant={this.state.currentSelected == 0 ? "contained" : "outlined"}
+                                    style={{
+                                        margin: this.state.compact ? "2px" : "5px",
+                                        padding: '5px'
+                                    }}>Top</Button>
+                                < Button
+                                    color={"primary"}
+                                    onClick={(event) => {
+                                        this.handleFeedButton(1);
+                                    }}
+                                    variant={this.state.currentSelected == 1 ? "contained" : "outlined"}
+                                    style={{
+                                        margin: this.state.compact ? "2px" : "5px",
+                                        padding: '5px'
+                                    }}>New</Button>
+                            </React.Fragment>
+                            }
+                        </Typography>
                     </MuiThemeProvider>
-
-                    <HeaderRightIcon />
+                    {this.state.showMenu &&
+                    <HeaderRightIcon/>
+                    }
                 </Toolbar>
             </AppBar>
         )

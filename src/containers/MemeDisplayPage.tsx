@@ -26,7 +26,7 @@ export default class MemeDisplayPage extends Component<{
         this.memeLink = memeService.getMemeLink(memeID);
         let cache = ssrCache.getCache("memelink/"+memeID);
         if(cache){
-            console.log("MEME CHACHE")
+            console.log("MEME CACHE")
             this.setState({
                 meme: cache
             });
@@ -62,7 +62,7 @@ export default class MemeDisplayPage extends Component<{
                 <meta name="twitter:title" content={this.state.meme.title}/>
                 <meta name="twitter:image" content={this.state.meme.imageUrl} />
             </Helmet>
-            <MemeFullDisplayModal meme={this.memeLink} open={true} onRequestClose={()=>{this.goBack()}}/>
+            <MemeFullDisplayModal meme={this.memeLink} />
         </React.Fragment>;
         //return (<MemeFullDisplay meme={this.memeLink}/>)
     }

@@ -190,6 +190,14 @@ function renderFullPage(markup, css, helmet) {
                         <!-- APP CSS -->
                         <style id="jss-server-side">${css}</style>
                         <style type="text/css">
+                            /*
+                            header css
+                            */
+                            @media (orientation: portrait) and (max-width:960px) {
+                                .hiddenOnSmallDevice {
+                                    max-width: 0px !important;
+                                }
+                            }
                             /* 
                             main 
                             */

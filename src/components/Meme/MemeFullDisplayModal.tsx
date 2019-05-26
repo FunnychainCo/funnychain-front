@@ -10,15 +10,11 @@ const styles = theme => ({});
 
 class MemeFullDisplayModal extends Component<{
     meme: MemeLinkInterface,
-    classes: any,
-    open: boolean,
-    onRequestClose: () => void,
 }, {}> {
 
     render() {
         //const {classes} = this.props;
-        return <FullPageWithHeader title={this.props.meme.id} open={this.props.open}
-                          onRequestClose={this.props.onRequestClose}>
+        return <FullPageWithHeader>
             <MemeFullDisplay meme={this.props.meme}/>
         </FullPageWithHeader>
     }

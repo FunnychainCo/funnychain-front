@@ -17,9 +17,20 @@ export class Audit {
         }else {
             if(isBrowserRenderMode()) {
                 getWindow().addEventListener("unhandledrejection", (promiseRejectionEvent) => {
-                    // handle error here, for example log
-                    this.error("unhandledrejection", promiseRejectionEvent);
+                    promiseRejectionEvent.promise.catch((err)=>{
+                        // handle error here, for example log
+                        this.error("unhandledrejection", {
+                            reason:promiseRejectionEvent.reason,
+                            err:err
+                        });
+                    }).catch((err)=>{
+                        console.error(err);
+                    });
                 });
+                /*//debug unhanded
+                new Promise((resolve, reject) => {
+                   reject("this error");
+                });*/
             }
         }
     }

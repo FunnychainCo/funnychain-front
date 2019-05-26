@@ -23,11 +23,14 @@ class BackButton extends Component<any, {
         backService.goBack();
     }
 
-    componentDidMount() {
-        window.addEventListener('resize', this.throttledHandleWindowResize);
+    componentWillMount() {
         this.onBackAvailableRemoveListener = backService.onBackAvailable((backAvailable) => {
             this.setState({backAvailableA: backAvailable});
         });
+    }
+
+    componentDidMount(): void {
+        window.addEventListener('resize', this.throttledHandleWindowResize);
         this.setState({compact: window.innerWidth < 480});
     }
 
