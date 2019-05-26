@@ -53,15 +53,21 @@ export class Audit {
 
     private _track(event: string, data: any): void {
         try {
-            this.logstashAudit.track(event, data);
-            /*if(isBrowserRenderMode()) {
-                if (getWindow().mixpanel && GLOBAL_PROPERTIES.MIXPANEL_ACTIVATED() === "true") {
-                    getWindow().mixpanel.track(event, data);
-                }
-            }*/
+            this.logstashAudit.track(event, data).catch(reason => {
+                //sometime big data in finalData value or strange stringification may cause the event to
+                //not be notified so we always double error event
+                this.logstashAudit.track(event, {}).catch(reason => {
+                    console.error(reason);
+                    //do nothing to prevent loop of error notification
+                });
+            });
         }catch (err){
-            console.error(err);
-            //do nothing
+            //sometime big data in finalData value or strange stringification may cause the event to
+            //not be notified so we always double error event
+            this.logstashAudit.track(event, {}).catch(reason => {
+                console.error(reason);
+                //do nothing to prevent loop of error notification
+            });
         }
     }
 
@@ -110,11 +116,6 @@ export class Audit {
 
         if (!this.isDev()) {
             this._track(event, finalData);
-            if(event==="user/error") {
-                //sometime big data in finalData value or strange stringification may cause the event to
-                //not be notified so we always double error event
-                this._track(event, {});
-            }
         }
 
         if (event === "user/error") {

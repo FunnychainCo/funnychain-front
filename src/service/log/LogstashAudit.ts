@@ -30,23 +30,23 @@ export class LogstashAudit {
      * @param event the info of the event. (e.g. "Application Start" or "Click Button Create Project")
      * @param value optional additional information (e.g. the msec it took to start the app)
      */
-    public track(event: string, data?: any): void {
-        try {
-            let finalvalue = {
-                event: event,
-                user: this._userId,
-                session: this.sessionId,
-                session_duration: (+new Date()) - this.sessionStart,
-                ...data,
-            };
-            axios.put(this.tracking_url, finalvalue).then(value => {
-            }).catch(reason => {
-                console.error(reason);
-                //Do nothing otherwise will will notifi this error
-            });
-        } catch (err) {
-            console.error(err);
-            //Do nothing
-        }
+    public track(event: string, data?: any): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            try {
+                let finalvalue = {
+                    event: event,
+                    user: this._userId,
+                    session: this.sessionId,
+                    session_duration: (+new Date()) - this.sessionStart,
+                    ...data,
+                };
+                axios.put(this.tracking_url, finalvalue).then(value => {
+                }).catch(reason => {
+                    reject(reason);
+                });
+            } catch (err) {
+                reject(err);
+            }
+        })
     }
 }
