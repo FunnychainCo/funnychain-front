@@ -190,7 +190,6 @@ export default class MemeListSwipe extends Component<{
         };
         const nextMeme = () =>{
             if(!this.moving) {
-                console.log("next");
                 let memeKey = this.getCurrentMemeKey(0);
                 if (this.memeControllers[memeKey]) {
                     this.memeControllers[memeKey].triggerTop();
@@ -253,7 +252,6 @@ export default class MemeListSwipe extends Component<{
                                             if (!this.state.jsLoadedReady) {
                                                 //first controler received means that the card system is ready
                                                 this.setState({jsLoadedReady: true});
-                                                console.log("js ready");
                                             }
                                             this.memeControllers[memeKey] = controller;
                                         }}

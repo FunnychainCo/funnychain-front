@@ -21,7 +21,7 @@ export default class AboutUsDialog extends Component<{onRequestClose:()=>void,op
         return (
             <ModalPage
                 open={this.props.open}
-                onClose={this.handleClose}
+                onRequestClose={this.handleClose}
             >
                 <DialogContent>
                     <h1>About us</h1>

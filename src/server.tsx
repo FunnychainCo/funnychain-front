@@ -17,6 +17,7 @@ import {realTimeData} from "./service/database/RealTimeData";
 import {ipfsFileUploadService} from "./service/uploader/IPFSFileUploadService";
 import Helmet from 'react-helmet';
 import {deviceDetector} from "./service/mobile/DeviceDetector";
+import {cookiesService} from "./service/ssr/CookiesService";
 
 let assets: any;
 
@@ -62,6 +63,7 @@ ipfsFileUploadService.start();
 
 function singlePageApplicationRenderer(req: express.Request, res: express.Response) {
     deviceDetector.start(req.headers['user-agent']);
+    cookiesService.start(req.headers.cookie);
     console.log(req.url);
     /*
     Compute server data
@@ -190,6 +192,17 @@ function renderFullPage(markup, css, helmet) {
                         <!-- APP CSS -->
                         <style id="jss-server-side">${css}</style>
                         <style type="text/css">
+                            /*
+                            Dialog
+                            */
+                            .staticDialog{
+                                opacity: 1 !important;
+                            }
+                        
+                            .staticDialog div{
+                                opacity: 1 !important;
+                            }
+                            
                             /*
                             header css
                             */

@@ -136,7 +136,7 @@ class MemeFullDisplay extends Component<{
                     style={{"fontSize": "1.5em", "fontWeight": "bold"}}
                     title={<React.Fragment><ContentMenuButton
                         contentId={this.state.meme.id}
-                        userId={this.state.meme.user.uid}
+                        userId={this.state.meme.user?this.state.meme.user.uid:""}
                         type={"meme"}
                         onClick={()=>{
                             this.setState((state)=>{

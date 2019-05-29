@@ -39,7 +39,7 @@ class InstallDialog extends Component<{
         return (
             <ModalPage
                 open={this.props.open}
-                onClose={this.props.handleClose}
+                onRequestClose={this.props.handleClose}
             >
                 <DialogTitle>Install</DialogTitle>
                 <DialogContent style={{display: "flex",flexDirection:"row",margin:0,padding:0}}>

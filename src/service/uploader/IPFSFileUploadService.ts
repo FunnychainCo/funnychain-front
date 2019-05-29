@@ -37,7 +37,11 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
 
         this.ipfsApis.forEach(ipfsApi => {
             ipfsApi.api.version((err, data) => {
-                console.log("ipfs service started / version :", data.version + " / gateway :" + this.ipfsMainGatway, ipfsApi.host);
+                if(err){
+                    audit.error(err);
+                }else {
+                    console.log("ipfs service started / version :", data.version + " / gateway :" + this.ipfsMainGatway, ipfsApi.host);
+                }
             });
         });
     }

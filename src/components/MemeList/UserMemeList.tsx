@@ -100,7 +100,7 @@ export default class UserMemeList extends Component<{
         return (
             <ModalPage
                 open={this.props.open}
-                onClose={this.handleClose}
+                onRequestClose={this.handleClose}
             >
                 <DialogContent>
                     {

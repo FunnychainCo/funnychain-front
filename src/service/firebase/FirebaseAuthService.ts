@@ -225,15 +225,21 @@ export class FirebaseAuthService {
                 }
                 //else continue to update user
             }
+            this.userCacheTime[uid] = new Date().getTime();//this is to prevent flood request get data while loading
             ////
             // END cache management
             ////
             //Load user
-            this.userCacheTime[uid] = new Date().getTime();//this is to prevent flood request get data while loading
             axios.get(GLOBAL_PROPERTIES.USER_SERVICE_GET() + "/" + uid).then((receivedUserA) => {
                 let receivedUser: any = receivedUserA.data;
+                let ipfsAvatar = "/static/image/placeholder-image.png";
+                if(receivedUser.avatarIid){
+                    ipfsAvatar = ipfsFileUploadService.convertIPFSLinkToHttpsLink(receivedUser.avatarIid)
+                }else{
+                    audit.reportError("receivedUser.avatarIid undefined");
+                }
                 let userData: UserEntry = {
-                    avatarUrl: ipfsFileUploadService.convertIPFSLinkToHttpsLink(receivedUser.avatarIid),//TODO undefined
+                    avatarUrl:ipfsAvatar,//TODO undefined
                     email: receivedUser.email,
                     provider: PROVIDER_FIREBASE_MAIL,
                     displayName: receivedUser.displayName,

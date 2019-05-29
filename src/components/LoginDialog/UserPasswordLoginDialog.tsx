@@ -60,7 +60,7 @@ export default class UserPasswordLoginDialog extends Component<{
         return (
             <ModalPage
                 open={this.props.open}
-                onClose={this.handleClose}
+                onRequestClose={this.handleClose}
             >
                 {!this.state.loading && <DialogContent>
                     <TextField

@@ -3,13 +3,14 @@ import {Component} from 'react'
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import {withStyles} from '@material-ui/core/styles';
-import store from 'store';
+//import store from 'store';
 import ModalPage from "../ModalPage/ModalPage";
 import {Check} from 'mdi-material-ui';
 import Typography from "@material-ui/core/Typography";
 import FirstPresentation from "./FirstPresentation";
 import Button from "@material-ui/core/Button";
-import ExternalLink from "../Link/ExternalLink"; //https://materialdesignicons.com/
+import ExternalLink from "../Link/ExternalLink";
+import {cookiesService} from "../../service/ssr/CookiesService"; //https://materialdesignicons.com/
 
 const styles: any = theme => ({});
 
@@ -26,7 +27,8 @@ class StartPopupSkipDialog extends Component<{
     skipPopupStoreKey = "fc.terms.privacy.agreed";
 
     componentWillMount() {
-        let skiped = store.get(this.skipPopupStoreKey, false);
+        //let skiped = store.get(this.skipPopupStoreKey, false);
+        let skiped = cookiesService.cookies.get(this.skipPopupStoreKey)?cookiesService.cookies.get(this.skipPopupStoreKey):false;
         let displayPopup = !skiped;
         this.setState({open: displayPopup});
     }
@@ -38,7 +40,8 @@ class StartPopupSkipDialog extends Component<{
     }
 
     doNotShowPopupAgain() {
-        store.set(this.skipPopupStoreKey, true);
+        //store.set(this.skipPopupStoreKey, true);
+        cookiesService.cookies.set(this.skipPopupStoreKey,true);
     }
 
     handleClose() {
@@ -49,9 +52,6 @@ class StartPopupSkipDialog extends Component<{
         return (
             <ModalPage
                 open={this.state.open}
-                onClose={() => {
-                    this.handleClose()
-                }}
             >
                 <DialogContent style={{display: "flex", flexDirection: "row", margin: 0, padding: 0}}>
                     <div style={{flexGrow: 1, display: "flex", flexDirection: "column"}}>

@@ -103,7 +103,7 @@ class CreateMemeDialog extends Component<{
         return (
             <ModalPage
                 open={this.props.open}
-                onClose={this.props.handleClose}
+                onRequestClose={this.props.handleClose}
             >
                 <DialogTitle>Post</DialogTitle>
                 <DialogContent>

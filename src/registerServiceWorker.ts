@@ -80,7 +80,10 @@ function registerValidSW(swUrl: string) {
             };
         })
         .catch(error => {
-            audit.reportError('Error during service worker registration:', error);
+            //ignore serviceworker registration issue for indexing bot
+            if(navigator.userAgent.indexOf("bot")===-1 && navigator.userAgent.indexOf("Bot")===-1) {
+                audit.reportError('Error during service worker registration:', error);
+            }
         });
 }
 

@@ -33,7 +33,6 @@ function TabContainer({children}) {
 interface State {
     user: UserEntry,
     loading: boolean,
-    displayTransaction: boolean,
     value: number,
 }
 
@@ -49,7 +48,6 @@ export default class UserWallet extends Component<{
     state: State = {
         user: USER_ENTRY_NO_VALUE,
         loading: true,
-        displayTransaction: false,
         value: 0,
     };
 
@@ -85,11 +83,6 @@ export default class UserWallet extends Component<{
     }
 
     changePage(index) {
-        if (index === 2) {
-            this.setState({displayTransaction: true});
-        } else {
-            this.setState({displayTransaction: false});
-        }
         this.setState({value: index});
 
     }
@@ -125,35 +118,42 @@ export default class UserWallet extends Component<{
                         onChangeIndex={this.handleChangeIndex}
                     >
                         <TabContainer>
-                            {(this.state.user.metadata && this.state.user.metadata['paypalmelink']) &&
-                            <UserWalletPayout
-                                userid={this.state.user.uid}
-                                paypallink={this.state.user.metadata['paypalmelink']}
-                                balance={this.state.user.wallet}
-                                clearPaypalmeLink={() => {
-                                    this.setState((state) => {
-                                        delete state.user.metadata['paypalmelink'];
-                                        return {
-                                            user: state.user
-                                        }
-                                    });
+                            {this.state.value == 0 &&
+                            <React.Fragment>
+                                {(this.state.user.metadata && this.state.user.metadata['paypalmelink']) &&
+                                <UserWalletPayout
+                                    userid={this.state.user.uid}
+                                    paypallink={this.state.user.metadata['paypalmelink']}
+                                    balance={this.state.user.wallet}
+                                    clearPaypalmeLink={() => {
+                                        this.setState((state) => {
+                                            delete state.user.metadata['paypalmelink'];
+                                            return {
+                                                user: state.user
+                                            }
+                                        });
+                                    }
+                                    }
+                                    onUpdateBalance={() => {
+                                        userService.getWalletLink().refresh()
+                                    }}
+                                />
                                 }
+                                {(!this.state.user.metadata || !this.state.user.metadata['paypalmelink']) &&
+                                <UserPaypalMeLink userid={this.state.user.uid}/>
                                 }
-                                onUpdateBalance={() => {
-                                    userService.getWalletLink().refresh()
-                                }}
-                            />
-                            }
-                            {(!this.state.user.metadata || !this.state.user.metadata['paypalmelink']) &&
-                            <UserPaypalMeLink userid={this.state.user.uid}/>
+                            </React.Fragment>
                             }
                         </TabContainer>
                         <TabContainer>
+                            {this.state.value == 1 &&
                             <UserWalletSend userid={this.state.user.uid}/>
+                            }
                         </TabContainer>
                         <TabContainer>
-                            {this.state.displayTransaction &&
-                            <UserWalletTransaction userid={this.state.user.uid}/>}
+                            {this.state.value == 2 &&
+                            <UserWalletTransaction userid={this.state.user.uid}/>
+                            }
                         </TabContainer>
                     </SwipeableViews>
                 </DialogContent>

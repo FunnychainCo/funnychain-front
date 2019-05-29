@@ -47,7 +47,6 @@ export default class NotificationList extends Component<{
     };
 
     componentWillMount() {
-        userNotificationService.markAllAsSeen();
         this.restartLoader(this.props.userid);
     }
 
@@ -70,6 +69,7 @@ export default class NotificationList extends Component<{
     }
 
     componentWillUnmount() {
+        userNotificationService.markAllAsSeen();
         this.removeCallbackOnIndex();
         this.removeCallbackOnDataUpdate();
     }
@@ -93,7 +93,7 @@ export default class NotificationList extends Component<{
         return (
             <ModalPage
                 open={this.props.open}
-                onClose={this.handleClose}
+                onRequestClose={this.handleClose}
             >
                 <DialogTitle>Notifications</DialogTitle>
                 <DialogContent style={{minWidth:"300px"}}>

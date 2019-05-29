@@ -4,7 +4,7 @@ import MemeDisplayPage from "./MemeDisplayPage";
 import MemeListPage from "./MemeListPage";
 import BackListener from "./BackListener";
 import InstallPage from "./DialogPage/InstallPage";
-import InstallSkipDialog from "../components/StartPopUp/StartPopupSkipDialog";
+import StartPopupSkipDialogV2 from "../components/StartPopUp/StartPopupSkipDialogV2";
 import UserMemeListPage from "./UserMemeListPage";
 import WalletPage from "./WalletPage";
 import NotificationListPage from "./NotificationListPage";
@@ -26,7 +26,7 @@ export default class HomePage extends React.Component<{
         return (
             <React.Fragment>
                 <Route path='/' component={BackListener} />
-                <Route path='/' component={InstallSkipDialog}/>
+                <Route path='/' component={StartPopupSkipDialogV2}/>
                 <Route path='/' component={MemeListPage} />
 
                 <Route exact path='/meme/:memeid' component={MemeDisplayPage} />

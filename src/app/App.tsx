@@ -93,35 +93,32 @@ class App extends React.Component<any, any> {
     }
 
     render() {
+        const title = "FunnyChain: A Funny chain of redistribution!";
+        const description = "Be Funny, Make Money! What's that? What if you could earn money by posting or even liking memes? Well it’s going to be possible now with FunnyChain."
+        const image = "https://ipfs.funnychain.co/ipfs/QmVA3ZSL6k2q7X9xJyT42gAuJj7sCs9aYnFnUpWsi8styf";
         return (
             <React.Fragment>
                 <CssBaseline />
                 <Helmet>
                     <title>FunnyChain: A Funny chain of redistribution!</title>
                     {/* Meta description */}
-                    <meta name="Description"
-                          content="Funny Chain: Incentivized memes on the blockchain : Be Funny, Make Money !"/>
+                    <meta name="Description" content={description}/>
                     <meta name="Keywords" content="Meme Blockchain Funnychain Funny Chain Money"/>
 
                     {/* OG Meta description */}
-                    <meta property="og:title" content="Be Funny, Make Money!"/>
-                    <meta property="og:site_name" content="FunnyChain: A Funny chain of redistribution!"/>
-                    <meta property="og:url" content="https://beta.funnychain.co"/>
-                    <meta property="og:description"
-                          content="Be Funny, Make Money! What's that? What if you could earn money by posting or even liking memes? Well it’s going to be possible now with FunnyChain."/>
+                    <meta property="og:title" content={title}/>
+                    <meta property="og:site_name" content={title}/>
+                    <meta property="og:url" content={GLOBAL_PROPERTIES.FUNNYCHAIN_HOST()}/>
+                    <meta property="og:description" content={description}/>
                     <meta property="og:type" content="website"/>
-                    <meta property="og:image"
-                          content="https://ipfs.funnychain.co/ipfs/QmVA3ZSL6k2q7X9xJyT42gAuJj7sCs9aYnFnUpWsi8styf"/>
+                    <meta property="og:image" content={image}/>
 
                     {/* Twitter Meta description */}
                     <meta name="twitter:card" content="summary_large_image"/>
-                    <meta name="twitter:description"
-                          content="Be Funny, Make Money! What's that? What if you could earn money by posting or even liking memes? Well it’s going to be possible now with FunnyChain.&nbsp;FunnyChain is going to create a new meme economy based on token incentives using the Blockchain technology. ✌✌♋♋"/>
-                    <meta name="twitter:title"
-                          content="Be Funny, Make Money! - FunnyChain is creating a new meme economy."/>
+                    <meta name="twitter:description" content={description}/>
+                    <meta name="twitter:title" content={title}/>
                     <meta name="twitter:site" content="@funnychain_lol"/>
-                    <meta name="twitter:image"
-                          content="https://ipfs.funnychain.co/ipfs/QmVA3ZSL6k2q7X9xJyT42gAuJj7sCs9aYnFnUpWsi8styf"/>
+                    <meta name="twitter:image" content={image}/>
                     <meta name="twitter:creator" content="@funnychain_lol"/>
 
                 </Helmet>

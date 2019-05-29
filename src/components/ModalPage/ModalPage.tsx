@@ -1,29 +1,27 @@
 import * as React from 'react';
 import {Component} from 'react';
-import Dialog from "@material-ui/core/Dialog/Dialog";
-import withMobileDialog from "@material-ui/core/withMobileDialog/withMobileDialog";
+import ModalPageSSR from "./ModalPageSSR";
 
 class ModalPage extends Component<{
     title: string,
     open: boolean,
-    onRequestClose: () => void
-}, any> {
+    onRequestClose: () => void,
+    children:any,
+}, {}> {
+    static defaultProps = {
+        title: "",
+        open: true,
+        onRequestClose: () => {
+        },
+        children:<React.Fragment></React.Fragment>
+    };
+
     render() {
-        const {fullScreen}: any = this.props;
         return (
-            <Dialog
-                fullScreen={fullScreen}
-                title={this.props.title}
-                open={this.props.open}
-                onClose={this.props.onRequestClose}
-            >
-                <div style={{minHeight:"100%",display:"flex",flexDirection: "column"}}>{/*add div to have the button right after the text field*/}
-                    {this.props.children}
-                </div>
-            </Dialog>
+            <ModalPageSSR title={this.props.title} open={this.props.open} onRequestClose={this.props.onRequestClose}>{this.props.children}</ModalPageSSR>
         )
     }
 }
 
 
-export default withMobileDialog<any>()(ModalPage);
+export default ModalPage;

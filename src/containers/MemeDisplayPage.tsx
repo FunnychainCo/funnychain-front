@@ -46,19 +46,20 @@ export default class MemeDisplayPage extends Component<{
     }
 
     render() {
+        const description = "Be Funny, Make Money!";
         return <React.Fragment>
             <Helmet>
                 <title>{this.state.meme.title}</title>
                 {/* Meta description */}
-                <meta name="Description" content="Be Funny, Make Money!" />
+                <meta name="Description" content={description} />
 
                 {/* OG Meta description */}
                 <meta property="og:title" content={this.state.meme.title} />
-                <meta property="og:description" content="Be Funny, Make Money!"/>
+                <meta property="og:description" content={description}/>
                 <meta property="og:image" content={this.state.meme.imageUrl}/>
 
                 {/* Twitter Meta description */}
-                <meta name="twitter:description" content="Be Funny, Make Money!"/>
+                <meta name="twitter:description" content={description}/>
                 <meta name="twitter:title" content={this.state.meme.title}/>
                 <meta name="twitter:image" content={this.state.meme.imageUrl} />
             </Helmet>

@@ -54,7 +54,7 @@ export default class LoginRegisterDialogV2 extends Component<{
         return (
             <ModalPage
                 open={this.props.open}
-                onClose={this.handleClose}
+                onRequestClose={this.handleClose}
             >
                 {!this.state.loading && <DialogContent>
                     <List>
