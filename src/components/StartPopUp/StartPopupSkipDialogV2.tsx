@@ -31,8 +31,12 @@ class StartPopupSkipDialogV2 extends Component<{
     skipPopupStoreKey = "fc.terms.privacy.agreed";
 
     componentWillMount() {
-        //let skiped = store.get(this.skipPopupStoreKey, false);
-        let skiped = cookiesService.cookies.get(this.skipPopupStoreKey) ? cookiesService.cookies.get(this.skipPopupStoreKey) : false;
+        let skiped;
+        if(deviceDetector.isMobileAppRender()) {
+            skiped = store.get(this.skipPopupStoreKey, false);
+        }else {
+            skiped = cookiesService.cookies.get(this.skipPopupStoreKey) ? cookiesService.cookies.get(this.skipPopupStoreKey) : false;
+        }
         let displayPopup = !skiped;
         this.setState({open: displayPopup});
     }
@@ -44,8 +48,11 @@ class StartPopupSkipDialogV2 extends Component<{
     }
 
     doNotShowPopupAgain() {
-        //store.set(this.skipPopupStoreKey, true);
-        cookiesService.cookies.set(this.skipPopupStoreKey, true);
+        if(deviceDetector.isMobileAppRender()){
+            store.set(this.skipPopupStoreKey, true);
+        }else {
+            cookiesService.cookies.set(this.skipPopupStoreKey, true);
+        }
     }
 
     handleClose() {
@@ -92,7 +99,22 @@ class StartPopupSkipDialogV2 extends Component<{
                             </Button>
                         </div>
                         <Typography style={{padding:"10px"}}>
-                            Decentralized redistribution algorithm focusing on data valuation for incentivized<br />platforms.<br /><br />The future of social and entertainment platforms will consist on fair platforms where<br />each<br />users&rsquo; data and contribution will be recognized by both the platform and its users.<br />Users<br />should be able to sell their anonymized data and take profit of them with rewards,<br />instead<br />of giving it to big companies such as Facebook and Google for free.<br /><br />Many platforms in the past year tried to build this next generation platform such as<br />Steemit<br />or Kik but algorithms were lacking.<br />Incentives in token economics are often based on its digital value coming from scarcity<br />and<br />usefulness. Our algorithm focus on a more practical approach linking advertisement<br />(sponsored posts and premium revenues) to the algorithm allowing a decentralized<br />redistribution model based on revenues instead of inflation lifting the volatility<br />problems<br />of these tokens.<br />The technology we&rsquo;re building will allow new platforms -like ours- to flourish with a<br />constant improving algorithm based on Artificial Intelligence (AI).<br />As incentives bring automatized bots and mischievous users trying to take advantage of<br />the<br />system, our algorithm focus on being robust and secure.<br />We focus on building the next generation Media&rsquo;s Data Redistribution Framework (MDRF):<br />- Incentivize any users providing data on any medias (Social Networks/Videos/Memes..)<br />- Circular Token Economy focusing on inside Ads instead of speculation reducing<br />volatility<br />- Providing a curated Quality Content page (Top), with Incentives on creating and<br />sorting<br />(New) content only<br />- Fair contribution algorithm processing how much each user&rsquo;s provided to the platform<br />with<br />our Aura system and upgraded with a custom feed using a combination of Tags and Neural<br />Network<br />- Transparency and fair Redistribution of each transaction thanks to the blockchain<br />- Robust Security with our IPFS based Audience system<br /><br />The entertainment world is the key to bring the cryptocurrency knowledge to the masses<br />and<br />this is what we want to achieve. We believe redistribution and incentives from<br />advertisements and platforms itself makes a fair platform possible.<br />We created our own meme platform in order to develop the funniest and easiest way to<br />understand cryptocurrencies, and with our Decentralized Popularity Sorting Algorithm<br />(DPSA),<br />aim to create the futuristic fair platform we all dream of.
+                            <b>Funnychain is building a decentralized redistribution algorithm.</b><br/><br/>
+
+                            The future of social and entertainment platforms will consist on fair platforms where each users&rsquo; data and contribution will be recognized by both the platform and its users. Users should be able to sell their anonymized data and take profit of them with rewards, instead of giving it to big companies such as Facebook and Google for free.<br/><br/>
+
+                            Incentives in token economics are often based on its digital value coming from scarcity and usefulness. Our algorithm focus on a more practical approach linking advertisement (sponsored posts and premium revenues) to the algorithm allowing a decentralized redistribution model based on revenues instead of inflation lifting the volatility problems of these tokens.<br />
+                                The technology we&rsquo;re building will allow new platforms -like ours- to flourish with a constant improving algorithm based on Artificial Intelligence (AI).<br />
+                                As incentives bring automatized bots and mischievous users trying to take advantage of the system, our algorithm focus on being robust and secure. We focus on building the next generation Media&rsquo;s Data Redistribution Framework (MDRF) consisting in:<br />
+                                - Incentivizing any users providing data on any medias (Social Networks/Videos/Memes..)<br />
+                                - Creating a Circular Token Economy focusing on inside Ads instead of speculation reducing volatility<br />
+                                - Providing a curated Quality Content page (Top), with Incentives on creating and sorting on (New) content only<br />
+                                - Fair contribution algorithm processing how much each user&rsquo;s provided to the platform with an Aura system (Reputation) and upgraded with a custom feed using a combination of Tags and Neural Network<br />
+                                - Transparency and fair Redistribution of each transaction thanks to the blockchain<br />
+                                - Robust Security with our IPFS based Audience system<br/><br/>
+
+                            The entertainment world is the key to bring the cryptocurrency knowledge to the masses and this is what we want to achieve.<br />
+                                We created our own meme platform in order to develop the funniest and easiest way to understand cryptocurrencies, and with our Decentralized Popularity Sorting Algorithm (DPSA), aim to create the futuristic fair platform we all dream of.<br/><br/>
                         </Typography>
                     </div>
                 </DialogContent>

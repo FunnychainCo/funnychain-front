@@ -68,8 +68,7 @@ class Header extends Component<{
         /*firebaseBetService.getBetPool().then(balance => {
             this.setState({betPoolBalance: balance});
         });*/
-        if (deviceDetector.isIphoneX()) {
-            console.log("iphoneX");
+        if (deviceDetector.hasNotch()) {
             this.setState({extendedHeaderHeight: true});
         }
         this.setState({showMenu: true});

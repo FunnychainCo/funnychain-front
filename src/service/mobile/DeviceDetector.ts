@@ -52,6 +52,10 @@ export class DeviceDetector {
         return  this.useragent;
     }
 
+    hasNotch(){
+        return this.isIphoneX();
+    }
+
     isIphoneX(){
         /**
          Screen Resolution: 375 x 812 (pixels)
@@ -67,7 +71,7 @@ export class DeviceDetector {
          //https://developer.apple.com/library/archive/documentation/DeviceInformation/Reference/iOSDeviceCompatibility/Displays/Displays.html
          1125 x 2436         375 x 812         3.0         3.0
          * */
-        return this.isMobileAppRender() && this.isIPhone() && (
+        return this.isIPhone() && (
             (screen.width==375 && screen.height==812) || //Iphone X Iphone XS
             (screen.width==375 && (screen.height==597 || screen.height==598)) || //iPhone XR
             (screen.width==414 && screen.height==896)    //iPhone XS Max

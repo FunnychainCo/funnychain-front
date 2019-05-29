@@ -12,6 +12,8 @@ import {MemeLink} from "./MemeLink";
 import {loadMeme} from "./MemeLoaderFunction";
 import {memeDatabase} from "../../database/MemeDatabase";
 import {TaskPoolExecutor} from "../../concurency/TaskPoolExecutor";
+import {report} from "../../log/Report";
+import {deviceDetector} from "../../mobile/DeviceDetector";
 
 export class MemeLoader implements MemeLoaderInterface {
 
@@ -62,10 +64,27 @@ export class MemeLoader implements MemeLoaderInterface {
                         }
                     }
                 });
+
                 //sort meme by creation time and filter them
                 firebaseMemes.sort((a, b) => {
                     return a.created - b.created;
                 });
+
+                // filter flaged content
+                firebaseMemes = firebaseMemes.filter(meme => {
+                    let hash = meme.memeIpfsHash;
+                    let localReportContent:boolean = !!report.getReportedContent("meme")[hash]
+                    let localReportUser:boolean = !!report.getReportedContent("user")[meme.uid];
+                    let distantReportContent = meme.flag;
+                    if(deviceDetector.isMobileAppRender()){
+                        distantReportContent = distantReportContent || meme.flagMobile;
+                    }
+                    //TODO distant reported user
+                    let flag = localReportContent || distantReportContent || localReportUser;
+                    return !flag;
+                });
+
+                //orderer meme keys
                 let orderedMemeKeys: string[] = [];
                 firebaseMemes.forEach(fireBaseMeme => {
                     let hash = fireBaseMeme.memeIpfsHash;
@@ -75,6 +94,7 @@ export class MemeLoader implements MemeLoaderInterface {
                 firebaseMemes = firebaseMemes.filter(meme => {
                     return orderedMemeKeys.indexOf(meme.memeIpfsHash)>=0;
                 });
+
                 if (orderedMemeKeys.length > 0) {
                     //notify memes
                     this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeKeys);

@@ -58,8 +58,11 @@ export class MemeByUserLoader implements MemeLoaderInterface {
                                 });
                             }));
                         });
-                        Promise.all(promiseList).then(value => {
-                            resolveMemes(value);
+                        Promise.all(promiseList).then(memeList => {
+                            memeList = memeList.filter(item => {
+                                return item!==null;
+                            });
+                            resolveMemes(memeList);
                         });
                     });
                 });

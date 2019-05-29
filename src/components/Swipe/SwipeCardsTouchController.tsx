@@ -28,7 +28,7 @@ class SwipeCardsTouchController extends React.Component<{
         }
         this.hammertime = new Hammer.Manager(this.element, {domEvents: false});
         let hammertime = this.hammertime;
-        hammertime.add(new Hammer.Pan({direction: Hammer.DIRECTION_ALL, threshold: 3}));
+        hammertime.add(new Hammer.Pan({direction: Hammer.DIRECTION_ALL, threshold: 2}));
         hammertime.add(new Hammer.Tap({}));
         let panstart = (ev) => {
             if (!ev.isFinal) {
@@ -53,13 +53,33 @@ class SwipeCardsTouchController extends React.Component<{
         };
         hammertime.on("panend", panend);
 
+        let pancancel = (ev) => {
+            ev.preventDefault();
+            this.props.gestureEnd(ev);
+        };
+        hammertime.on("pancancel", pancancel);
+
+
         this.hammerRemoveListener();
         this.hammerRemoveListener = () => {
             hammertime.off("panstart", panstart);
             hammertime.off("panmove", panmove);
             hammertime.off("tap", tap);
             hammertime.off("panend", panend);
-        }
+            hammertime.off("pancancel", pancancel);
+        };
+
+        /*this.element.addEventListener('mouseout', (ev) => {
+            this.props.gestureEnd(ev);
+        }, false);
+
+        this.element.addEventListener('mouseup', (ev) => {
+            this.props.gestureEnd(ev);
+        }, false);
+
+        this.element.addEventListener('touchend', (ev) => {
+            this.props.gestureEnd(ev);
+        }, false);*/
 
         /*this.element.addEventListener('mousedown', (ev) => {
             if(moving){
@@ -92,9 +112,6 @@ class SwipeCardsTouchController extends React.Component<{
             this.gestureMove(ev);
         }, false);
         this.element.addEventListener('mouseup', (ev) => {
-            this.gestureEnd(ev);
-        }, false);
-        this.element.addEventListener('mouseout', (ev) => {
             this.gestureEnd(ev);
         }, false);*/
     }

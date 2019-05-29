@@ -221,6 +221,8 @@ class FullHeightMemeComponent extends Component<{
                                 onClick={this.handleExpandClick}
                                 aria-expanded={this.state.expanded}
                                 aria-label="Show more"
+                                disableRipple={true}
+                                disableTouchRipple={true}
                         >
                             {this.state.meme.commentNumber}&nbsp;
                             <ChatBubbleOutline style={{height: "0.7em"}}/>
@@ -306,6 +308,8 @@ class MemeImage extends React.Component<{
                     style={style}/>}
                 {this.props.buttonMode &&
                 <ButtonBase
+                    disableRipple={true}
+                    disableTouchRipple={true}
                     component={this.props.link}
                     style={style}/>}
             </React.Fragment>

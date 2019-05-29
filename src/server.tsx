@@ -152,16 +152,23 @@ function renderFullPage(markup, css, helmet) {
                         
                         <!-- ionic mobil compliance meta tags -->
                         <meta name="viewport"
-                              content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-                        <meta name="format-detection" content="telephone=no"/>
+                              content="
+                              viewport-fit=cover,
+                              width=device-width, 
+                              initial-scale=1.0, 
+                              minimum-scale=1.0, 
+                              maximum-scale=1.0, 
+                              user-scalable=no
+                              "/>
+                        <meta name="format-detection" content="telephone=no"/><!--http://www.html-5.com/metatags/format-detection-meta-tag.html-->
                         <meta name="msapplication-tap-highlight" content="no"/>
                         <meta name="apple-mobile-web-app-capable" content="yes"/><!-- add to homescreen for ios -->
                         <meta name="apple-mobile-web-app-status-bar-style" content="black"/><!-- add to homescreen for ios -->
                         
                         <!-- Start Meta -->
                         <meta charset="utf-8" />
-                        <meta name="theme-color" content="#ffffff" />
-                        <meta name="msapplication-TileColor" content="#00aba9" />
+                        <meta name="theme-color" content="#ff8f00" />
+                        <meta name="msapplication-TileColor" content="#ff8f00" />
                                
                         <!-- Customisable helmet tag -->                 
                         ${helmet.title.toString()}
@@ -185,9 +192,9 @@ function renderFullPage(markup, css, helmet) {
                         
                         <!-- APP CODE -->
                         ${process.env.NODE_ENV === 'production' ?
-        `<script src="${assets.client.js}" defer></script>` :
-        `<script src="${assets.client.js}" defer crossorigin></script>`
-        }
+                        `<script src="${assets.client.js}" defer></script>` :
+                        `<script src="${assets.client.js}" defer crossorigin></script>`
+                        }
                         
                         <!-- APP CSS -->
                         <style id="jss-server-side">${css}</style>
