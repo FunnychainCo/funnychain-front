@@ -40,7 +40,10 @@ class MemeUpvoteButton extends Component<{
                        color={this.props.meme.currentUserVoted ? "secondary" : "default"}
                        aria-label="Upvote"
                        disabled={!this.props.logged}
-                       onClick={this.upvote}>
+                       onClick={this.upvote}
+                       disableRipple={true}
+                       disableTouchRipple={true}
+        >
             {this.props.meme.voteNumber}&nbsp;
             <ThumbUp style={{height: "0.7em"}}/>
         </Button>

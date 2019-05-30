@@ -17,6 +17,7 @@ import {TooltipImageOutline} from 'mdi-material-ui';//https://materialdesignicon
 import {ThumbUpOutline} from 'mdi-material-ui';
 import moment from "moment";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
+import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
 //https://materialdesignicons.com/
 
@@ -109,15 +110,20 @@ export default class NotificationList extends Component<{
                                     if(notification.text==="Someone a make comment on a post you have created"){
                                         notification.text="Someone make a comment on a post you have created"
                                     }
-                                    return <ListItem button key={notificationKey} component={notification.action ?link:undefined} >
-                                        <ListItemIcon>
-                                            {this.getIcon(notification.title)}
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={notification.seen?notification.text:<b>{notification.text}</b>}
-                                            secondary={date}
-                                        />
-                                    </ListItem>
+                                    //hack for iphone that does not allow remuneration on like
+                                    if(notification.text.startsWith("The meme you liked became hot!") && deviceDetector.isIphoneAndMobileApp()){
+                                        return <ListItem button key={notificationKey} component={notification.action ?link:undefined} >
+                                            <ListItemIcon>
+                                                {this.getIcon(notification.title)}
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={notification.seen?notification.text:<b>{notification.text}</b>}
+                                                secondary={date}
+                                            />
+                                        </ListItem>
+                                    }else{
+                                        return <div></div>
+                                    }
                                 }else{
                                     return <div></div>
                                 }

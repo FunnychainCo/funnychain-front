@@ -14,7 +14,7 @@ export default class ExternalLink extends Component<any, {}> {
     render() {
         return (
             <React.Fragment>
-                {!deviceDetector.isAndroid() &&
+                {!deviceDetector.isMobileAppRender() &&
                 <a href={this.props.href}
                    target="_system"
                    {...this.props}
@@ -22,7 +22,7 @@ export default class ExternalLink extends Component<any, {}> {
                     {this.props.children}
                 </a>
                 }
-                {deviceDetector.isAndroid() &&
+                {deviceDetector.isMobileAppRender() &&
                 <span
                     onClick={() => {
                         window.open(this.props.href, "_system");

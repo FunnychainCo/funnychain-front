@@ -1,6 +1,5 @@
 import MobileDetect from "mobile-detect";
 import {pwaService} from "./PWAService";
-import {ionicMobileAppService} from "./IonicMobileAppService";
 import {isBrowserRenderMode} from "../ssr/windowHelper";
 
 export class DeviceDetector {
@@ -19,22 +18,9 @@ export class DeviceDetector {
     start(ua:string){
         this.useragent = ua;
         this.md = new MobileDetect(this.useragent);
-        this.os = this.md.os() ? this.md.os() : "desktop";//TODO add Windows/Mac/Linux differences? //TODO add android/ios differences?
+        this.os = this.md.os() ? this.md.os() : "desktop";
         this.type = "";
-        if (ionicMobileAppService.mobileapp) {
-            this.type = "mobile";
-        } else if (pwaService.runningFromPWA) {
-            this.type = "pwa"
-        } else {
-            this.type = "web";
-        }
-    }
-
-    setCustomUserAgent(ua:string){
-        this.md = new MobileDetect(ua);
-        this.os = this.md.os() ? this.md.os() : "desktop";//TODO add Windows/Mac/Linux differences? //TODO add android/ios differences?
-        this.type = "";
-        if (ionicMobileAppService.mobileapp) {
+        if ((this.os === "iOS" && this.isIosMobileApp()) || (this.os === "AndroidOS" && this.isAndroidMobileApp())) {
             this.type = "mobile";
         } else if (pwaService.runningFromPWA) {
             this.type = "pwa"
@@ -54,6 +40,19 @@ export class DeviceDetector {
 
     hasNotch(){
         return this.isIphoneX();
+    }
+
+    isAndroidMobileApp(){
+        //wv == webview
+        return this.getUserAgent().indexOf('wv') > -1;//contains wv
+    }
+
+    isIosMobileApp(){
+        //let iOSApp = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+        let iOSApp = (/iPad|iPhone|iPod/.test(this.getUserAgent()));//contains iphone etc...
+        //let iOSApp = navigator.userAgent.indexOf('iPad') != -1 || navigator.userAgent.indexOf('iPhone') != -1 || navigator.userAgent.indexOf('iPod') != -1 ;
+        iOSApp = iOSApp && this.getUserAgent().indexOf('Safari') == -1;//do not contains Safari
+        return iOSApp;
     }
 
     isIphoneX(){
@@ -104,7 +103,7 @@ export class DeviceDetector {
 
     isSafari():boolean{
         let ua = this.getUserAgent();
-        if (ua.indexOf('safari') != -1 || ua.indexOf('Safari') != -1) {
+        if (ua.indexOf('Ios') != -1 || ua.indexOf('Safari') != -1) {
             if (ua.indexOf('chrome') > -1 || ua.indexOf('Chrome') > -1) {
                 return false; // Chrome
             } else {
@@ -112,6 +111,10 @@ export class DeviceDetector {
             }
         }
         return false;
+    }
+
+    isIphoneAndMobileApp():boolean{
+        return this.isMobileAppRender()&&this.isIPhone();
     }
 
     isAndroidAndMobileApp():boolean{

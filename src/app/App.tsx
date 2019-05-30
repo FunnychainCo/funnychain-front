@@ -9,16 +9,12 @@ import HomePage from "../containers/HomePage";
 import GlobalNotification from "../components/GlobalNotification/GlobalNotification";
 import {audit} from "../service/log/Audit";
 import {GLOBAL_PROPERTIES} from "../properties/properties";
-import {ionicMobileAppService} from "../service/mobile/IonicMobileAppService";
 import {userNotificationService} from "../service/notification/UserNotificationService";
 import {deviceDetector} from "../service/mobile/DeviceDetector";
-import {backService} from "../service/BackService";
 import {report} from "../service/log/Report";
 import {realTimeData} from "../service/database/RealTimeData";
-import {isBrowserRenderMode} from "../service/ssr/windowHelper";
 import {createMuiTheme, CssBaseline} from "@material-ui/core";
 import Helmet from 'react-helmet';
-import register from "../registerServiceWorker";
 import {generateMemeComponentCache} from "../components/Meme/MemeComponent";
 import {USER_ENTRY_NO_VALUE} from "../service/generic/UserEntry";
 
@@ -61,11 +57,6 @@ class App extends React.Component<any, any> {
     state = {};
 
     componentWillMount() {
-        if (isBrowserRenderMode()) {
-            ionicMobileAppService.start();//must be started before userNotificationService because it need to know what device we use
-            backService.start();
-            register();
-        }
         userNotificationService.start();//must be started before firebaseInitAuthService because it will register uid
         pwaService.start();
         authService.start();

@@ -9,11 +9,17 @@ import App, {getTheme, precacheData} from './app/App';
 import {BrowserRouter} from "react-router-dom";
 import {deviceDetector} from "./service/mobile/DeviceDetector";
 import {cookiesService} from "./service/ssr/CookiesService";
+import {ionicMobileAppService} from "./service/mobile/IonicMobileAppService";
+import {backService} from "./service/BackService";
+import register from "./registerServiceWorker";
 
 class Main extends React.Component {
     // Remove the server-side injected CSS.
     componentWillMount(): void {
+        backService.start();
+        register();//service worker
         deviceDetector.start(window.navigator.userAgent);
+        ionicMobileAppService.start();//must be started before userNotificationService because it need to know what device we use
         cookiesService.start("");
     }
 

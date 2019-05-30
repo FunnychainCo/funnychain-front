@@ -152,17 +152,9 @@ export default class MemeListSwipe extends Component<{
             }
         };
         const gestureMove = (ev: any) => {
-            {
-                let memeKey = this.getCurrentMemeKey(0);
-                if (this.memeControllers[memeKey]) {
-                    this.memeControllers[memeKey].gestureMove(ev);
-                }
-            }
-            {
-                let memeKey = this.getCurrentMemeKey(-1);
-                if (this.memeControllers[memeKey]) {
-                    this.memeControllers[memeKey].gestureMove(ev);
-                }
+            let memeKey = this.getCurrentMemeKey(0);
+            if (this.memeControllers[memeKey]) {
+                this.memeControllers[memeKey].gestureMove(ev);
             }
         };
         const tap = (ev: any) => {
@@ -172,17 +164,9 @@ export default class MemeListSwipe extends Component<{
             }
         };
         const gestureEnd = (ev: any) => {
-            {
-                let memeKey = this.getCurrentMemeKey(0);
-                if (this.memeControllers[memeKey]) {
-                    this.memeControllers[memeKey].gestureEnd(ev);
-                }
-            }
-            {
-                let memeKey = this.getCurrentMemeKey(-1);
-                if (this.memeControllers[memeKey]) {
-                    this.memeControllers[memeKey].gestureEnd(ev);
-                }
+            let memeKey = this.getCurrentMemeKey(0);
+            if (this.memeControllers[memeKey]) {
+                this.memeControllers[memeKey].gestureEnd(ev);
             }
             setTimeout(()=>{
                 this.moving = false;

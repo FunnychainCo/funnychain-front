@@ -16,7 +16,7 @@ export class ExternalButtons extends Component<{}, {}> {
                 </Button>
 
                 <Button component={(props) => <ExternalLink
-                    href="https://www.facebook.com/groups/funnychain/" {...props} />}>
+                    href="https://www.facebook.com/funnychain.co/" {...props} />}>
                     <Facebook/><ListItemText primary="Facebook"/>
                 </Button>
 
@@ -53,7 +53,7 @@ export class ExternalLinks extends Component<{}, {}> {
 
                 <ListItem button
                           component={(props) => <ExternalLink
-                              href="https://www.facebook.com/groups/funnychain/" {...props} />}>
+                              href="https://www.facebook.com/funnychain.co/" {...props} />}>
                     <Facebook/><ListItemText primary="Facebook"/>
                 </ListItem>
 

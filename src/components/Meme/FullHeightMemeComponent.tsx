@@ -102,7 +102,7 @@ class FullHeightMemeComponent extends Component<{
     private removeListenerCommentVisitor: () => void = () => {
     };
 
-    safari = true;
+    patchIOS = true;
 
     componentWillMount() {
         let cache = ssrCache.getCache("memelink/" + this.props.meme.id);
@@ -112,7 +112,7 @@ class FullHeightMemeComponent extends Component<{
                 meme: cache
             });
         }
-        this.safari = deviceDetector.isSafari();
+        this.patchIOS = deviceDetector.isSafari() || deviceDetector.isIphoneAndMobileApp();
     }
 
     componentDidMount() {
@@ -234,14 +234,14 @@ class FullHeightMemeComponent extends Component<{
                     <CardContent style={{marginTop: 0, paddingTop: 0}}>
                         <MemeAvatarInfo meme={this.state.meme}/>
                         {this.state.loadingComment && <LoadingBlock/>}
-                        {this.safari &&
+                        {this.patchIOS &&
                         <Button variant="contained" color="primary" fullWidth size="large"
                                 component={MemeDisplayLink}>
                             Write a comment
                         </Button>
                         }
                         {!this.state.loadingComment && <div>
-                            {!this.safari &&
+                            {!this.patchIOS &&
                             <React.Fragment>
                                 <Button variant="contained" color="primary" fullWidth size="large"
                                         component={MemeDisplayLink}>

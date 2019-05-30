@@ -6,6 +6,7 @@ import EventEmitter from "eventemitter3/index";
 import {audit} from "../log/Audit";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
 import {updateService} from "../UpdateService";
+import {deviceDetector} from "./DeviceDetector";
 
 let $: any = jquery;
 
@@ -43,7 +44,9 @@ export class IonicMobileAppService {
                 return;
             }
         });
-        if (window._cordovaNative || (navigator.userAgent.match(/(iPhone|iPod|iPad)/))) {
+
+        let androidApp = !!window._cordovaNative;
+        if (androidApp || deviceDetector.isIosMobileApp()) {
             //console.log("native scripts detected");
             this.mobileapp = true;
             if ($("#initialized").length == 0) {
