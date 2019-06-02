@@ -46,7 +46,9 @@ class StartPopupSkipDialogV2 extends Component<{
     }
 
     doNotShowPopupAgain() {
-        cookiesService.cookies.set(this.skipPopupStoreKey, true);
+        cookiesService.cookies.set(this.skipPopupStoreKey, true,{
+                maxAge: 2147483647 //forever
+        });
     }
 
     handleClose() {
@@ -66,33 +68,38 @@ class StartPopupSkipDialogV2 extends Component<{
                             <img style={{flexGrow: 1, maxWidth: "100%", maxHeight: "100%"}}
                                  src="/static/image/start/1.png" alt="install"/>
                             <br/>
-                            <b style={{fontSize: "1.0em"}}>
-                                Like, post or invest on the best memes to get paid!
-                            </b><br/>
-                            <img style={{flexGrow: 1, maxWidth: "100%", maxHeight: "100%"}}
-                                 src="/static/image/start/2.png" alt="install"/>
 
-                            <h1>Join the Community</h1>
-                            <List>
-                                <ExternalButtons/>
-                            </List>
-
-                            {!deviceDetector.isMobileAppRender() &&
+                            {!deviceDetector.isIosMobileApp() &&
                             <React.Fragment>
-                                <h1>Check the app App</h1>
-                                <div style={{textAlign: "center", fontSize: "1.1em"}}>
-                                    <InstallButtons/>
-                                </div>
-                            </React.Fragment>
-                            }
+                                <b style={{fontSize: "1.0em"}}>
+                                    Like, post or invest on the best memes to get paid!
+                                </b><br/>
+                                <img style={{flexGrow: 1, maxWidth: "100%", maxHeight: "100%"}}
+                                     src="/static/image/start/2.png" alt="install"/>
 
-                            <h1>What is Funnychain</h1>
-                            {/*TODO change this link*/}
-                            <Button variant={"contained"} color={"primary"} component={(props) => <ExternalLink
-                                href="https://www.funnychain.co/static/white_paper.pdf" {...props} />}>
-                                <ListItemText primary="Open the whitepaper"/>
-                            </Button>
+                                <h1>Join the Community</h1>
+                                <List>
+                                    <ExternalButtons/>
+                                </List>
+
+                                {!deviceDetector.isMobileAppRender() &&
+                                <React.Fragment>
+                                    <h1>Check the app App</h1>
+                                    <div style={{textAlign: "center", fontSize: "1.1em"}}>
+                                        <InstallButtons/>
+                                    </div>
+                                </React.Fragment>
+                                }
+
+                                <h1>What is Funnychain</h1>
+                                {/*TODO change this link*/}
+                                <Button variant={"contained"} color={"primary"} component={(props) => <ExternalLink
+                                    href="https://www.funnychain.co/static/white_paper.pdf" {...props} />}>
+                                    <ListItemText primary="Open the whitepaper"/>
+                                </Button>
+                            </React.Fragment>}
                         </div>
+                        {!deviceDetector.isIosMobileApp() &&
                         <Typography style={{padding: "10px"}}>
                             <b>Funnychain is building a decentralized redistribution algorithm.</b><br/><br/>
 
@@ -127,7 +134,7 @@ class StartPopupSkipDialogV2 extends Component<{
                             We created our own meme platform in order to develop the funniest and easiest way to
                             understand cryptocurrencies, and with our Decentralized Popularity Sorting Algorithm (DPSA),
                             aim to create the futuristic fair platform we all dream of.<br/><br/>
-                        </Typography>
+                        </Typography>}
                     </div>
                 </DialogContent>
                 <DialogActions style={{backgroundColor: "#f2f2f2"}}>

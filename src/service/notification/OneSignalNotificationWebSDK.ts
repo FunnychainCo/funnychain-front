@@ -84,9 +84,9 @@ export class OneSignalNotificationWebSDK {
             this.oneSignal.on('subscriptionChange', wrappedCallBack);
         });
         return () => {
-            if(this.oneSignal) {
+            this.oneSignal.push(() => {
                 this.oneSignal.off('subscriptionChange', wrappedCallBack);
-            }
+            });
         }
     }
 

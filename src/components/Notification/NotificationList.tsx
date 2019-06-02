@@ -18,12 +18,12 @@ import {ThumbUpOutline} from 'mdi-material-ui';
 import moment from "moment";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import {deviceDetector} from "../../service/mobile/DeviceDetector";
+import LoadMoreList from "../List/LoadMoreList";
+import {ItemLoader, PaginationCursor} from "../../service/concurency/PaginationInterface";
 
 //https://materialdesignicons.com/
 
 interface State {
-    notificationsOrder: string[],
-    notificationsData: { [id: string]: UiNotificationData },
 }
 
 export default class NotificationList extends Component<{
@@ -32,47 +32,26 @@ export default class NotificationList extends Component<{
     open: boolean,
 }, State> {
 
-    state: State = {
-        notificationsOrder: [],
-        notificationsData: {},
-    };
+    state: State = {};
 
     handleClose = () => {
         this.props.onRequestClose();
     };
 
-
-    private removeCallbackOnIndex: (() => void) = () => {
-    };
-    private removeCallbackOnDataUpdate: (() => void) = () => {
-    };
+    private cursor: PaginationCursor<string>;
+    private itemLoader: ItemLoader<UiNotificationData>;
 
     componentWillMount() {
+        this.cursor = userNotificationService.notificationPaginationCursorFactory.create();
+        this.itemLoader = userNotificationService.itemLoader;
         this.restartLoader(this.props.userid);
     }
 
     restartLoader(uid: string) {
-        this.removeCallbackOnIndex();
-        this.removeCallbackOnIndex = userNotificationService.notifications.onIndex(data => {
-            this.setState((state) => {
-                return {notificationsOrder: data}
-            });
-        });
-        this.removeCallbackOnDataUpdate();
-        this.removeCallbackOnDataUpdate = userNotificationService.notifications.onDataUpdate(data => {
-            this.setState((state) => {
-                state.notificationsData[data.hash] = data.data;
-                return {notificationsData: state.notificationsData}
-            });
-        });
-        userNotificationService.notifications.triggerHistory();
-        userNotificationService.notifications.refresh();
     }
 
     componentWillUnmount() {
-        userNotificationService.markAllAsSeen();
-        this.removeCallbackOnIndex();
-        this.removeCallbackOnDataUpdate();
+        //userNotificationService.markAllAsSeen();
     }
 
     getIcon(type: string): any {
@@ -84,8 +63,7 @@ export default class NotificationList extends Component<{
         }
         if (type === "Like" || type === "Likes") {
             return <ThumbUpOutline/>;
-        }
-        else {
+        } else {
             return <InboxIcon/>;
         }
     }
@@ -97,38 +75,48 @@ export default class NotificationList extends Component<{
                 onRequestClose={this.handleClose}
             >
                 <DialogTitle>Notifications</DialogTitle>
-                <DialogContent style={{minWidth:"300px"}}>
+                <DialogContent style={{minWidth: "300px"}}>
                     <List component="nav" dense={false}>
-                        {
-                            this.state.notificationsOrder.map((notificationKey) => {
-                                let notification = this.state.notificationsData[notificationKey];
-                                if(notification) {
+                        <LoadMoreList
+                            key = "loadlist"
+                            scrollableAncestor={undefined}
+                            paginationCursor={this.cursor}
+                            itemLoader={this.itemLoader}
+                            element={(notificationKey, notification) => {
+                                if (notification) {
                                     const link = (props) => <Link
                                         to={notification.action ? notification.action : "/"} {...props} />;
                                     let date = moment(notification.date).fromNow();
                                     //TODO remove this fix once a better notification system is in place
-                                    if(notification.text==="Someone a make comment on a post you have created"){
-                                        notification.text="Someone make a comment on a post you have created"
+                                    if (notification.text === "Someone a make comment on a post you have created") {
+                                        notification.text = "Someone write a comment on a post you have created"
                                     }
                                     //hack for iphone that does not allow remuneration on like
-                                    if(notification.text.startsWith("The meme you liked became hot!") && deviceDetector.isIphoneAndMobileApp()){
-                                        return <ListItem button key={notificationKey} component={notification.action ?link:undefined} >
+                                    if (!(notification.text.startsWith("The meme you liked became hot!") && deviceDetector.isIphoneAndMobileApp())) {
+                                        return <ListItem button key={notificationKey}
+                                                         component={notification.action ? link : undefined}>
                                             <ListItemIcon>
                                                 {this.getIcon(notification.title)}
                                             </ListItemIcon>
                                             <ListItemText
-                                                primary={notification.seen?notification.text:<b>{notification.text}</b>}
+                                                primary={notification.seen ? notification.text :
+                                                    <b>{notification.text}</b>}
                                                 secondary={date}
                                             />
                                         </ListItem>
-                                    }else{
-                                        return <div></div>
+                                    } else {
+                                        return <div key={notificationKey}></div>
                                     }
-                                }else{
-                                    return <div></div>
+                                } else {
+                                    return <div key={notificationKey}></div>
                                 }
-                            })
-                        }
+                            }}
+                            placeHolderElement={() => {
+                                <img className="memeImage"
+                                     src="/static/image/placeholder-image.png"
+                                     alt=""/>
+                            }}
+                        />
                     </List>
                 </DialogContent>
                 <DialogActions>
