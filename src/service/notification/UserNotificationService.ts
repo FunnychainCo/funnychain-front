@@ -3,7 +3,6 @@ import {OneSignalNotificationWebSDK} from "./OneSignalNotificationWebSDK";
 import {ionicMobileAppService} from "../mobile/IonicMobileAppService";
 import {OneSignalNotificationMobileSDK} from "./OneSignalNotificationMobileSDK";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
-import axios from 'axios'
 import {audit} from "../log/Audit";
 import EventEmitter from "eventemitter3";
 import {UiNotificationData} from "../generic/Notification";
@@ -11,6 +10,8 @@ import {DBNotification} from "../database/shared/DBDefinition";
 import {isBrowserRenderMode} from "../ssr/windowHelper";
 import {PaginationCursorFactory} from "../concurency/PaginationCursorFactory";
 import {ItemLoader} from "../concurency/PaginationInterface";
+import {notificationDatabase} from "../database/NotificationDatabase";
+import {idleTaskPoolExecutor} from "../generic/IdleTaskPoolExecutorService";
 
 export interface Message {
     text: string,
@@ -24,12 +25,29 @@ export class UserNotificationService {
     uid: string = "";
     unseenNotificationNumber: number = 0;
     private eventEmitter = new EventEmitter();
-    public notificationPaginationCursorFactory = new PaginationCursorFactory();
+    public notificationPaginationCursorFactory;
     itemLoader: ItemLoader<UiNotificationData>;
     data: { [id: string]: UiNotificationData } = {};
 
+    started = false;
     start() {
-
+        if(this.started){
+            return;
+        }
+        this.started = true;
+        ///
+        this.notificationPaginationCursorFactory = new PaginationCursorFactory();
+        this.notificationPaginationCursorFactory.onRequestMore((key:string,number: number,direction?:string)=>{
+            idleTaskPoolExecutor.addTask(()=>{
+                notificationDatabase.getNotificationorderByDate(this.uid, key, number).then(notifications => {
+                    notifications.forEach(notification => {
+                        this.data[notification.id] = this.convertDbNotificationToUiNotification(notification, notification.id);
+                        this.notificationPaginationCursorFactory.addKeyBottom(notification.id);
+                        this.eventEmitter.emit("new_item", notification.id, this.data[notification.id]);
+                    })
+                })
+            });
+        });
         let API_KEY = GLOBAL_PROPERTIES.ONE_SIGNAL_API_KEY();
         let ANDROID_ID = GLOBAL_PROPERTIES.ONE_SIGNAL_ANDROID_NUMBER();
 
@@ -79,21 +97,13 @@ export class UserNotificationService {
     }
 
     updateUnseenNumber() {
-        axios.get(GLOBAL_PROPERTIES.NOTIFICATION_SERVICE_UNSEEN_NUMBER() + this.uid, {}).then((response) => {
-            this.eventEmitter.emit("change", response.data);
-        }).catch(reason => {
-            audit.error(reason);
+        notificationDatabase.updateUnseenNumber(this.uid).then(value => {
+            this.eventEmitter.emit("change", value);
         });
     }
 
     markAllAsSeen(): void {
-        if (!this.uid || this.uid === "") {
-            return;
-        }
-        axios.get(GLOBAL_PROPERTIES.NOTIFICATION_SERVICE_MARK_SEEN() + this.uid + "/" + "all", {}).then((response) => {
-        }).catch(reason => {
-            audit.error(reason);
-        });
+        notificationDatabase.markAllAsSeen(this.uid);
     }
 
     onUnseenNumberChange(callback: (number: number) => void): () => void {
@@ -117,11 +127,11 @@ export class UserNotificationService {
         this.uiNotification.setUiCallBackForNotification(callback);
     }
 
+    //deprecated
     synchronize(uid: string) {
         this.uid = uid;
         if (uid && uid !== "") {
-            axios.get(GLOBAL_PROPERTIES.NOTIFICATION_SERVICE_GET_ALL() + uid, {}).then((response) => {
-                let map: { [id: string]: DBNotification } = response.data;
+            notificationDatabase.getAllNotifications(uid).then((map) => {
                 let data = {};//reset data
                 let order = [];
                 Object.keys(map).forEach(key => {
@@ -147,11 +157,9 @@ export class UserNotificationService {
         this.uid = uid;
         if (this.uid && this.uid !== "") {
             this.unseenNotificationNumber = 0;
-            this.synchronize(uid);
             this.oneSignalNotification.onNewNotificationFromServiceWorker(data => {
                 let hash = data.hash;
-                axios.get(GLOBAL_PROPERTIES.NOTIFICATION_SERVICE_GET() + this.uid + "/" + hash, {}).then((response) => {
-                    let notif: DBNotification = response.data;
+                notificationDatabase.getNotification(this.uid, hash).then(notif => {
                     let notifConverted = this.convertDbNotificationToUiNotification(notif, hash);
                     this.data[hash] = notifConverted;
                     this.notificationPaginationCursorFactory.addKeyTop(hash);

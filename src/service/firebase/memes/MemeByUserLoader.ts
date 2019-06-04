@@ -10,9 +10,10 @@ import {audit} from "../../log/Audit";
 import {firebaseMemeService} from "./FirebaseMemeService";
 import {MemeLink} from "./MemeLink";
 import {loadMeme} from "./MemeLoaderFunction";
-import {TaskPoolExecutor} from "../../concurency/TaskPoolExecutor";
 import {memeDatabase} from "../../database/MemeDatabase";
 import {userDatabase} from "../../database/UserDatabase";
+import {idleTaskPoolExecutor} from "../../generic/IdleTaskPoolExecutorService";
+import {IdleTaskPoolExecutor} from "../../concurency/IdleTaskPoolExecutor";
 
 export class MemeByUserLoader implements MemeLoaderInterface {
 
@@ -23,13 +24,12 @@ export class MemeByUserLoader implements MemeLoaderInterface {
     lastPostDate: number = new Date().getTime();
     alreadyProvided: number = 0;
     eventEmitter = new EventEmitter();
-    private pool: TaskPoolExecutor;
+    private pool: IdleTaskPoolExecutor;
     memes = [];
 
 
     constructor(public userid: string) {
-        this.pool = new TaskPoolExecutor();//concurrency limit of 1
-        this.pool.start();
+        this.pool = idleTaskPoolExecutor;//concurrency limit of 1
     }
 
     loadMore(limit: number): void {

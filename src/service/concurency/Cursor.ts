@@ -27,12 +27,20 @@ export class SplitCursor{
         return null;
     }
 
+    peekTop():string{
+        return this.data.container[this.cursorTop];
+    }
+
     hasNextTop():boolean{
         return this.cursorTop<this.data.lengthTop-1;
     }
 
     hasNextBottom():boolean{
         return this.cursorBottom<this.data.lengthBottom-1;
+    }
+
+    peekBottom():string{
+        return this.data.container[-this.cursorBottom];
     }
 
     nextBottom():string{

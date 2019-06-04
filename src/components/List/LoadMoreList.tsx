@@ -34,6 +34,7 @@ export default class LoadMoreList extends Component<{
     initialLoadNumber = 2;
     loadMoreNumber = 2;
     waypointDistanceFromTheEnd = 0;
+    requestedItem = 0;
 
     private removeCallback: (() => void) = () => {
     };
@@ -54,6 +55,7 @@ export default class LoadMoreList extends Component<{
         });
 
         let removeCallbackOnMemeOrder = this.props.paginationCursor.onData((memesKey: string,final:boolean,direction:string) => {
+            this.requestedItem--;
             this.props.itemLoader.requestItem(memesKey);
                 this.setState((state) => {
                     if(state.contentOrder.indexOf(memesKey)===-1) {
@@ -66,17 +68,22 @@ export default class LoadMoreList extends Component<{
                 });
         });
         let onNewDataAvailableOnNew = this.props.paginationCursor.onNewDataAvailable((number:number,direction:string) => {
-            if(this.state.contentOrder.length < this.initialLoadNumber) {
-                this.props.paginationCursor.loadMore(this.initialLoadNumber);
+            if(this.requestedItem>0) {
+                this.props.paginationCursor.loadMore(this.loadMoreNumber);
             }
             this.setState({finalBottom:false});
         });
-        this.props.paginationCursor.loadMore(this.initialLoadNumber);
+        this.requestMore(this.initialLoadNumber);
         this.removeCallback = () => {
             removeCallbackOnMemeData();
             removeCallbackOnMemeOrder();
             onNewDataAvailableOnNew();
         };
+    }
+
+    requestMore(number:number){
+        this.requestedItem += number;
+        this.props.paginationCursor.loadMore(number);
     }
 
     componentWillUnmount() {
@@ -93,7 +100,7 @@ export default class LoadMoreList extends Component<{
                         scrollableAncestor={this.props.scrollableAncestor}
                         onEnter={() => {
                             //console.log("waypoint triggered => load more");
-                            this.props.paginationCursor.loadMore(this.loadMoreNumber);
+                            this.requestMore(this.loadMoreNumber);
                         }}
                     >
                     </Waypoint>
