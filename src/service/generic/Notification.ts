@@ -1,10 +1,16 @@
+export interface UiNotificationVariableData {
+    title?:string,
+    icon?:string,
+    text?:string,
+    action?:string,
+    token?:number
+}
+
 export interface UiNotificationData {
-    hash:string,
-    title:string,
+    id:string,
     uid:string,
-    action:string,
-    icon:string,
-    text:string,
-    date:Date,
+    type:string,
+    data?:UiNotificationVariableData,
+    date:number,
     seen:boolean
 }

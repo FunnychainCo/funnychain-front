@@ -9,16 +9,24 @@ export class IdleTaskPoolExecutor {
         this.lastPromise = new Promise(resolve => {
             this.starter = resolve;
         });
-        window.requestIdleCallback(() => {
+        if(typeof (window) !== 'undefined') {
+            window.requestIdleCallback(() => {
+                this.starter();
+            });
+        }else{
             this.starter();
-        });
+        }
     }
 
     addTask(task: () => void): Promise<any> {
         this.lastPromise = this.lastPromise.then(() => {
-            window.requestIdleCallback(() => {
+            if(typeof (window) !== 'undefined') {
+                window.requestIdleCallback(() => {
+                    task();
+                });
+            }else{
                 task();
-            });
+            }
         });
         return this.lastPromise;
     }
@@ -26,9 +34,13 @@ export class IdleTaskPoolExecutor {
     addResolvableTask(task: (resolve: (data: any) => void, reject: (data: any) => void) => void): Promise<any> {
         this.lastPromise = this.lastPromise.then(() => {
             return new Promise((resolve, reject) => {
-                window.requestIdleCallback(() => {
+                if(typeof (window) !== 'undefined') {
+                    window.requestIdleCallback(() => {
+                        task(resolve, reject);
+                    });
+                }else{
                     task(resolve, reject);
-                });
+                }
             })
         });
         return this.lastPromise;

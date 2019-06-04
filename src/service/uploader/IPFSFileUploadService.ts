@@ -13,7 +13,13 @@ export class IPFSFileUploadService implements FileUploadServiceInterface {
     ipfsNodes: { host: string, port: string, protocol: string }[] = [];
     ipfsApis: any[] = [];
 
+
+    started = false;
     start(): void {
+        if(this.started){
+            return;
+        }
+        this.started = true;
         this.ipfsNodes=[];
         this.ipfsApis=[];
         this.ipfsNodes.push({

@@ -55,13 +55,13 @@ export default class NotificationList extends Component<{
     }
 
     getIcon(type: string): any {
-        if (type === "Comment" || type === "Comments") {
+        if (type === "Comments_Follow" || type === "Comments_Created") {
             return <CommentTextOutline/>;
         }
-        if (type === "Meme" || type === "Memes") {
+        if (type === "Meme_Create") {
             return <TooltipImageOutline/>;
         }
-        if (type === "Like" || type === "Likes") {
+        if (type === "Meme_Like") {
             return <ThumbUpOutline/>;
         } else {
             return <InboxIcon/>;
@@ -78,29 +78,41 @@ export default class NotificationList extends Component<{
                 <DialogContent style={{minWidth: "300px"}}>
                     <List component="nav" dense={false}>
                         <LoadMoreList
-                            key = "loadlist"
+                            key="loadlist"
                             scrollableAncestor={undefined}
                             paginationCursor={this.cursor}
                             itemLoader={this.itemLoader}
                             element={(notificationKey, notification) => {
                                 if (notification) {
-                                    const link = (props) => <Link
-                                        to={notification.action ? notification.action : "/"} {...props} />;
+                                    let action = notification.data ? notification.data.action ? notification.data.action : null : null;
+                                    const link = (props) => <Link to={action ? action : "/"} {...props} />;
                                     let date = moment(notification.date).fromNow();
-                                    //TODO remove this fix once a better notification system is in place
-                                    if (notification.text === "Someone a make comment on a post you have created") {
-                                        notification.text = "Someone write a comment on a post you have created"
+                                    let type = notification.type;
+                                    let message = "";
+                                    let token = notification.data.token === 0 ? "some" : notification.data.token.toFixed(2)
+                                    if (type === "Transaction") {
+                                        message = "You received " + token + " LOL";
+                                    } else if (type === "Meme_Like") {
+                                        message = "The meme you liked became hot! You earn " + token + " token like a boss.";
+                                    } else if (type === "Meme_Invest") {
+                                        message = "The meme you invested in became hot! You earn " + token + " token like a boss.";
+                                    } else if (type === "Meme_Create") {
+                                        message = "The meme you created became hot! You earn " + token + " token like a boss.";
+                                    } else if (type === "Comments_Follow") {
+                                        message = "Someone write a comment";
+                                    } else if (type === "Comments_Created") {
+                                        message = "Someone write a comment on a post you created";
                                     }
+
                                     //hack for iphone that does not allow remuneration on like
-                                    if (!(notification.text.startsWith("The meme you liked became hot!") && deviceDetector.isIphoneAndMobileApp())) {
+                                    if (!(notification.type === "Meme_Like" && deviceDetector.isIphoneAndMobileApp())) {
                                         return <ListItem button key={notificationKey}
-                                                         component={notification.action ? link : undefined}>
+                                                         component={action ? link : undefined}>
                                             <ListItemIcon>
-                                                {this.getIcon(notification.title)}
+                                                {this.getIcon(type)}
                                             </ListItemIcon>
                                             <ListItemText
-                                                primary={notification.seen ? notification.text :
-                                                    <b>{notification.text}</b>}
+                                                primary={notification.seen ? message : <b>{message}</b>}
                                                 secondary={date}
                                             />
                                         </ListItem>

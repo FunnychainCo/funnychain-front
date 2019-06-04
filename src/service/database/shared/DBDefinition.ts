@@ -31,13 +31,19 @@ export interface MemeDBStruct {
 // NOTIFICATION
 ///////////////////
 export const DATABASE_NOTIFICATIONS = "notifications";
+export interface DBNotificationData {
+    title?:string,
+    icon?:string,
+    text?:string,
+    action?:string,
+    token?:number
+}
+
 export interface DBNotification {
     id:string,
-    title:string,
     uid:string,
-    icon:string,
-    text:string,
-    action:string,
+    type:string,
+    data?:DBNotificationData,
     date:number,
     seen:boolean
 }

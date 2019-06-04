@@ -40,11 +40,13 @@ export class UserNotificationService {
         this.notificationPaginationCursorFactory.onRequestMore((key:string,number: number,direction?:string)=>{
             idleTaskPoolExecutor.addTask(()=>{
                 notificationDatabase.getNotificationorderByDate(this.uid, key, number).then(notifications => {
+                    let adds = [];
                     notifications.forEach(notification => {
                         this.data[notification.id] = this.convertDbNotificationToUiNotification(notification, notification.id);
-                        this.notificationPaginationCursorFactory.addKeyBottom(notification.id);
+                        adds.push(notification.id);
                         this.eventEmitter.emit("new_item", notification.id, this.data[notification.id]);
-                    })
+                    });
+                    this.notificationPaginationCursorFactory.addKeysBottom(adds);
                 })
             });
         });
@@ -84,16 +86,7 @@ export class UserNotificationService {
     }
 
     convertDbNotificationToUiNotification(value: DBNotification, hash: string): UiNotificationData {
-        return {
-            hash: hash,
-            title: value.title,
-            uid: value.uid,
-            action: value.action,
-            icon: value.icon,
-            text: value.text,
-            date: new Date(value.date),
-            seen: value.seen
-        }
+        return value;
     }
 
     updateUnseenNumber() {
@@ -125,31 +118,6 @@ export class UserNotificationService {
 
     setUiCallBackForNotification(callback: (message: Message) => void): void {
         this.uiNotification.setUiCallBackForNotification(callback);
-    }
-
-    //deprecated
-    synchronize(uid: string) {
-        this.uid = uid;
-        if (uid && uid !== "") {
-            notificationDatabase.getAllNotifications(uid).then((map) => {
-                let data = {};//reset data
-                let order = [];
-                Object.keys(map).forEach(key => {
-                    data[key] = this.convertDbNotificationToUiNotification(map[key], key), order.push(key);
-                    this.data[key] = data[key];
-                    this.eventEmitter.emit("new_item", key, this.data[key]);
-                });
-                //TODO sort on server
-                order.sort((a, b) => {
-                    return data[b].date.getTime() - data[a].date.getTime();
-                });
-                order.forEach(value => {
-                    this.notificationPaginationCursorFactory.addKeyBottom(value);
-                });
-            }).catch(reason => {
-                audit.error(reason);
-            });
-        }
     }
 
     //service worker server / app closed part

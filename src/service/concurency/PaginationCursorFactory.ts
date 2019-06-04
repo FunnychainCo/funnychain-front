@@ -12,20 +12,28 @@ export class PaginationCursorFactory implements PaginationCursorFactoryInterface
     private eventEmitter = new EventEmitter();
     refCursor: SplitCursorData = new SplitCursorData();
     lastkeyAsked = null;
+    requestInProgress = false;
 
-    addKeyBottom(id:string):void{
-        this.refCursor.addBottom(id);
-        this.eventEmitter.emit("new_keys_available", 1,DIRECTION_BOTTOM);
+    addKeysBottom(ids:string[]):void{
+        for (let i=0; i< ids.length;i++){
+            this.refCursor.addBottom(ids[i]);
+        }
+        this.eventEmitter.emit("new_keys_available", ids.length,DIRECTION_BOTTOM);
+        this.requestInProgress = false;
     }
 
-    addKeyTop(id:string):void{
-        this.refCursor.addTop(id);
-        this.eventEmitter.emit("new_keys_available", 1,DIRECTION_TOP);
+    addKeysTop(ids:string[]):void{
+        for (let i=0; i< ids.length;i++){
+            this.refCursor.addBottom(ids[i]);
+        }
+        this.eventEmitter.emit("new_keys_available", ids.length,DIRECTION_TOP);
+        this.requestInProgress = false;
     }
 
     onRequestMore(callback:(key:string,number: number,direction?:string)=>void): () => void {
         let wrapper = (key:string,number: number,direction?:string)=>{
-            if(this.lastkeyAsked!==key) {
+            if(this.lastkeyAsked!==key && !this.requestInProgress) {
+                this.requestInProgress = true;
                 this.lastkeyAsked = key;
                 callback(key,number,direction);
             }
@@ -52,7 +60,6 @@ export class PaginationCursorFactory implements PaginationCursorFactoryInterface
             }
 
             loadMore(number: number,direction?:string): void {
-                console.log("loadmoar")
                 direction = direction?direction:DIRECTION_BOTTOM;
                 let requestMore = false;
                 for(let i = 0;i<number;i++) {
