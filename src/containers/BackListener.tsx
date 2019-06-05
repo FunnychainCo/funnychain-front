@@ -4,17 +4,18 @@ import {backService} from "../service/BackService";
 
 export default class BackListener extends Component<{
     match: any,
-    location:any,
+    location: any,
     history: any
 }, {}> {
 
-    length: number=0;
+    length: number = 0;
+    backInProgress = false;
 
     private removeBackListener: () => void = () => {
     };
 
     componentDidMount() {
-        if(this.props.location.pathname!=="/"){
+        if (this.props.location.pathname !== "/") {
             //in this case that means the user has open an app page that is not the root so we replace the current by
             // the root and push the new page so the back button is coherent.
             this.props.history.replace("/");//replace by root
@@ -23,25 +24,34 @@ export default class BackListener extends Component<{
             backService.notifyBackAvailable(this.isBackAvailable());
         }
         this.removeBackListener = this.props.history.listen(location => {
+            console.log("listener " + this.props.history.action);
             if (this.props.history.action === "POP") {
                 this.length--;
+                this.backInProgress = false;
                 backService.notifyBackAvailable(this.isBackAvailable());
                 backService.notifyBack();
-            }else if (this.props.history.action === "PUSH") {
+            } else if (this.props.history.action === "PUSH") {
                 this.length++;
-                backService.notifyBackAvailable(this.isBackAvailable());
+                this.backInProgress = false;
+                if (this.length > 0) {
+                    backService.notifyBackAvailable(this.isBackAvailable());
+                }
             }
         });
         backService.setRequestBackCalback(() => {
-            this.props.history.goBack();
+            if (this.length > 0 && !this.backInProgress) {
+                this.backInProgress = true;
+                console.log("go back " + this.length);
+                this.props.history.goBack();
+            }
         })
     }
 
     isBackAvailable(): boolean {
-        if (this.length === 0) {
-            return false;
-        } else {
+        if (this.length > 0) {
             return true;
+        } else {
+            return false;
         }
     }
 

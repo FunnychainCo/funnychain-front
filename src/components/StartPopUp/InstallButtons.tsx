@@ -4,6 +4,7 @@ import ButtonBase from "@material-ui/core/ButtonBase";
 import {pwaService} from "../../service/mobile/PWAService";
 import {Link} from 'react-router-dom';
 import ExternalLink from "../Link/ExternalLink";
+import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
 export default class InstallButtons extends Component<{}, {
     displayAddToHomeButton: boolean,
@@ -29,7 +30,7 @@ export default class InstallButtons extends Component<{}, {
     }
 
     render() {
-        const installLink = (props) => <Link to={"/install"} {...props} />;
+        const installLink = (props) => <Link to={"/install/pwa"} {...props} />;
         const buttonStyle = {
             width: "160px",
             margin: "5px"
@@ -40,7 +41,8 @@ export default class InstallButtons extends Component<{}, {
         return (
             <React.Fragment>
                 <ButtonBase
-                    component={(props) => <ExternalLink href="https://play.google.com/store/apps/details?id=co.funnychain.mobile" {...props} />}
+                    component={(props) => <ExternalLink
+                        href="https://play.google.com/store/apps/details?id=co.funnychain.mobile" {...props} />}
                     focusRipple
                     style={buttonStyle}
                 >
@@ -62,31 +64,35 @@ export default class InstallButtons extends Component<{}, {
                 </ButtonBase>
                 }
                 <br/>
-                {this.state.displayAddToHomeButton &&
-                <ButtonBase
-                    focusRipple
-                    style={buttonStyle}
-                    onClick={() => {
-                        pwaService.triggerAddToHomeScreen();
-                    }}
-                >
-                    <img
-                        style={imageStyle}
-                        src="https://ipfs.funnychain.co/ipfs/QmcFu7AU2aZjkgzPaTYpbJ9BH3mJmQuy22u62oiGc57Kh3"
-                        alt="pwa"/>
-                </ButtonBase>
-                }
-                {!this.state.displayAddToHomeButton &&
-                <ButtonBase
-                    component={installLink}
-                    focusRipple
-                    style={buttonStyle}
-                >
-                    <img
-                        style={imageStyle}
-                        src="https://ipfs.funnychain.co/ipfs/QmcFu7AU2aZjkgzPaTYpbJ9BH3mJmQuy22u62oiGc57Kh3"
-                        alt="pwa"/>
-                </ButtonBase>
+                {deviceDetector.isMobileRender() &&
+                <React.Fragment>
+                    {this.state.displayAddToHomeButton &&
+                    <ButtonBase
+                        focusRipple
+                        style={buttonStyle}
+                        onClick={() => {
+                            pwaService.triggerAddToHomeScreen();
+                        }}
+                    >
+                        <img
+                            style={imageStyle}
+                            src="https://ipfs.funnychain.co/ipfs/QmcFu7AU2aZjkgzPaTYpbJ9BH3mJmQuy22u62oiGc57Kh3"
+                            alt="pwa"/>
+                    </ButtonBase>
+                    }
+                    {!this.state.displayAddToHomeButton &&
+                    <ButtonBase
+                        component={installLink}
+                        focusRipple
+                        style={buttonStyle}
+                    >
+                        <img
+                            style={imageStyle}
+                            src="https://ipfs.funnychain.co/ipfs/QmcFu7AU2aZjkgzPaTYpbJ9BH3mJmQuy22u62oiGc57Kh3"
+                            alt="pwa"/>
+                    </ButtonBase>
+                    }
+                </React.Fragment>
                 }
             </React.Fragment>
         )

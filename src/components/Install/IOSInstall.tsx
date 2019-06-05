@@ -54,25 +54,49 @@ class IOSInstall extends Component<{
                     onChangeIndex={this.handleStepChange}
                     enableMouseEvents
                 >
-                    <div key={"1"} style={{flexGrow: 1, display: "flex", justifyContent: "center", flexDirection: "column",margin:"10%"}}>
+                    <div key={"1"} style={{
+                        flexGrow: 1,
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        margin: "10%"
+                    }}>
                         <div style={{textAlign: "center", fontSize: "1.1em"}}>
-                            <img style={{flexGrow: 1,maxWidth:"100%",maxHeight:"100%"}} src="/static/image/install/ios-1.png" alt="install" />
+                            <img style={{flexGrow: 1, maxWidth: "100%", maxHeight: "100%"}}
+                                 src="/static/image/install/ios-1.png" alt="install"/>
                             <br/>
-                            <b style={{fontSize: "1.3em"}}>Tap the "share" button at the bottom of your browser's toolbar</b><br/>
+                            <b style={{fontSize: "1.3em"}}>Tap the "share" button at the bottom of your browser's
+                                toolbar</b><br/>
                         </div>
                     </div>
-                    <div key={"2"} style={{flexGrow: 1, display: "flex", justifyContent: "center", flexDirection: "column",margin:"10%"}}>
+                    <div key={"2"} style={{
+                        flexGrow: 1,
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        margin: "10%"
+                    }}>
                         <div style={{textAlign: "center", fontSize: "1.1em"}}>
-                            <img style={{flexGrow: 1,maxWidth:"100%",maxHeight:"100%"}} src="/static/image/install/ios-2.png" alt="install" />
+                            <img style={{flexGrow: 1, maxWidth: "100%", maxHeight: "100%"}}
+                                 src="/static/image/install/ios-2.png" alt="install"/>
                             <br/>
-                            <b style={{fontSize: "1.3em"}}>Tap the "Add to Home screen" icon in the "share" menu</b><br/>
+                            <b style={{fontSize: "1.3em"}}>Tap the "Add to Home screen" icon in the "share"
+                                menu</b><br/>
                         </div>
                     </div>
-                    <div key={"3"} style={{flexGrow: 1, display: "flex", justifyContent: "center", flexDirection: "column",margin:"10%"}}>
+                    <div key={"3"} style={{
+                        flexGrow: 1,
+                        display: "flex",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        margin: "10%"
+                    }}>
                         <div style={{textAlign: "center", fontSize: "1.1em"}}>
-                            <img style={{flexGrow: 1,maxWidth:"100%",maxHeight:"100%"}} src="/static/image/install/ios-3.png" alt="install" />
+                            <img style={{flexGrow: 1, maxWidth: "100%", maxHeight: "100%"}}
+                                 src="/static/image/install/ios-3.png" alt="install"/>
                             <br/>
-                            <b style={{fontSize: "1.3em"}}>Tap the "add" button, and you're ready to go! The app is now available on your home screen</b><br/>
+                            <b style={{fontSize: "1.3em"}}>Tap the "add" button, and you're ready to go! The app is now
+                                available on your home screen</b><br/>
                         </div>
                     </div>
                 </AutoPlaySwipeableViews>

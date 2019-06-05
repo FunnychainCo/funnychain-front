@@ -1,6 +1,6 @@
 export class LolTokenService {
 
-    rate:number = 5/500; //5euro == 500token
+    rate:number = 5/5000000; //5euro == 500token
 
     setRate(rate:number){
         this.rate = rate;

@@ -6,12 +6,16 @@ import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import {withStyles} from '@material-ui/core/styles';
-import AppInstallPopupForDesktop from "./AppInstallPopupForDesktop";
-import {deviceDetector} from "../../service/mobile/DeviceDetector";
+import AndroidInstall from "./AndroidInstall";
+import IOSInstall from "./IOSInstall";
+import MobileDetect from "mobile-detect";
+import BrowserNotCompatible from "./BrowserNotCompatible";
 
 const styles: any = theme => ({});
 
-class InstallDialog extends Component<{
+declare let window: any;
+
+class PWAInstallDialog extends Component<{
     classes: any
     open: boolean,
     handleClose: () => void
@@ -23,9 +27,9 @@ class InstallDialog extends Component<{
     android = false;
 
     componentWillMount() {
-
-        this.ios = deviceDetector.isIPhone();
-        this.android = deviceDetector.isAndroid();
+        let md = new MobileDetect(window.navigator.userAgent);
+        this.ios = md.is('iOS');
+        this.android = md.is('AndroidOS');
     }
 
     componentWillUnmount() {
@@ -40,7 +44,9 @@ class InstallDialog extends Component<{
                 <DialogTitle>Install</DialogTitle>
                 <DialogContent style={{display: "flex", flexDirection: "row", margin: 0, padding: 0}}>
                     <div style={{flexGrow: 1, display: "flex", flexDirection: "column", minWidth: "200px"}}>
-                        <AppInstallPopupForDesktop/>
+                        {(!this.ios && !this.android) && <BrowserNotCompatible/>}
+                        {this.android && <AndroidInstall/>}
+                        {this.ios && <IOSInstall/>}
                     </div>
                 </DialogContent>
                 <DialogActions>
@@ -51,4 +57,4 @@ class InstallDialog extends Component<{
     }
 }
 
-export default withStyles(styles)(InstallDialog);
+export default withStyles(styles)(PWAInstallDialog);

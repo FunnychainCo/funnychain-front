@@ -6,6 +6,7 @@ import MemeFullDisplayModal from "../components/Meme/MemeFullDisplayModal";
 import {Helmet} from "react-helmet";
 import {ssrCache} from "../service/ssr/SSRCache";
 import {MEME_ENTRY_NO_VALUE} from "../service/generic/Meme";
+import {backService} from "../service/BackService";
 
 export default class MemeDisplayPage extends Component<{
     match: any,
@@ -42,7 +43,8 @@ export default class MemeDisplayPage extends Component<{
 
     goBack() {
         //window.history.back();
-        this.props.history.goBack();
+        //this.props.history.goBack();
+        backService.goBack();
     }
 
     render() {

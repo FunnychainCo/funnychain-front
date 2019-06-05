@@ -9,6 +9,7 @@ import {Waypoint} from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {memeService} from "../../service/generic/MemeService";
 import MemeComponent from '../Meme/MemeComponent';
+import {EmoticonExcitedOutline} from "mdi-material-ui";
 
 interface State {
     memes: { [id: string]: MemeLinkInterface },
@@ -119,6 +120,20 @@ export default class UserMemeList extends Component<{
                         })
                     }
                     {this.state.loading && <LoadingBlock/>}
+                    {(!this.state.loading && this.state.memesOrder.length===0) &&
+                    <div>
+                        <div style={{
+                            display: "flex",
+                            justifyContent: "center ",
+                            alignItems: "center",
+                            height: "100px",
+                            flexDirection: "column"
+                        }}>
+                            <EmoticonExcitedOutline fontSize={"large"}/>
+                            <div style={{textAlign: "center",}}>I seems you do not have memes yet try posting some original content to earn some lol token!</div>
+                        </div>
+                    </div>
+                    }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose} color="primary">

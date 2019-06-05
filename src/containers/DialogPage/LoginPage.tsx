@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {Component} from 'react'
 import LoginRegisterDialogV2 from "../../components/LoginDialog/LoginRegisterDialogV2";
+import {backService} from "../../service/BackService";
 
 export default class LoginPage extends Component<{
     match: any,
@@ -9,7 +10,8 @@ export default class LoginPage extends Component<{
 
     goBack() {
         //window.history.back();
-        this.props.history.goBack();
+        //this.props.history.goBack();
+        backService.goBack();
     }
 
     render() {

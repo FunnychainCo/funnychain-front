@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {Component} from 'react'
 import NotificationList from "../components/Notification/NotificationList";
+import {backService} from "../service/BackService";
 
 export default class NotificationListPage extends Component<{
     match: any,
@@ -22,7 +23,8 @@ export default class NotificationListPage extends Component<{
     }
 
     goBack() {
-        this.props.history.goBack();
+        //this.props.history.goBack();
+        backService.goBack();
     }
 
 

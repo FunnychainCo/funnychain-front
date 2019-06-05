@@ -13,7 +13,8 @@ export interface PaginationCursor<U> {
 
     /** on new item available call loadMoreTop => direction is either "top" or "bottom" **/
     onNewDataAvailable(callback:(number:number,direction:string)=>void):()=>void;
-    onData(callback:(data:U,final:boolean,direction:string)=>void):()=>void;
+    onDataSetCompleted(callback:(direction:string)=>void):()=>void;
+    onData(callback:(data:U,direction:string)=>void):()=>void;
 }
 
 export interface ItemLoader<U>{

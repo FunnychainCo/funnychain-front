@@ -5,6 +5,7 @@ import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {isBrowserRenderMode} from "../../service/ssr/windowHelper";
 import {ItemLoader, PaginationCursor} from "../../service/concurency/PaginationInterface";
 import {idleTaskPoolExecutor} from "../../service/generic/IdleTaskPoolExecutorService";
+import {EmoticonExcitedOutline} from "mdi-material-ui";
 
 
 interface State {
@@ -46,41 +47,49 @@ export default class LoadMoreList extends Component<{
             contentOrder: [],
             displayWaypoint: {}
         });
+        let cancelid = "" + Math.random();
         this.props.paginationCursor.reset();
         this.removeCallback();
         let removeCallbackOnMemeData = this.props.itemLoader.onData((id: string, data: any) => {
-            idleTaskPoolExecutor.addTask(()=>{
+            idleTaskPoolExecutor.addTask(() => {
                 let tmpState = {};
                 tmpState[id] = data;
                 this.setState((state) => ({content: {...tmpState, ...state.content}}));//reset view
-            });
+            }, cancelid);
         });
 
-        let removeCallbackOnMemeOrder = this.props.paginationCursor.onData((memesKey: string, final: boolean, direction: string) => {
-            idleTaskPoolExecutor.addTask(()=>{
+        let removeCallbackOnMemeOrder = this.props.paginationCursor.onData((memesKey: string, direction: string) => {
+            idleTaskPoolExecutor.addTask(() => {
                 this.props.itemLoader.requestItem(memesKey);
                 this.requestedItem--;
-                this.setState( (state)=> {
+                this.setState((state) => {
                     state.contentOrder.push(memesKey)
                     return {
-                        contentOrder:state.contentOrder,
-                        finalBottom: final,
+                        contentOrder: state.contentOrder,
                     }
                 });
-            });
+            }, cancelid);
         });
         let onNewDataAvailableOnNew = this.props.paginationCursor.onNewDataAvailable((number: number, direction: string) => {
-            idleTaskPoolExecutor.addTask(()=> {
+            idleTaskPoolExecutor.addTask(() => {
                 if (this.requestedItem > 0) {
                     this.props.paginationCursor.loadMore(this.requestedItem);
                 }
-            });
+            }, cancelid);
+            this.setState({finalBottom: false});
         });
+
+        let onDataSetCompleted = this.props.paginationCursor.onDataSetCompleted((direction: string) => {
+            this.setState({finalBottom: true});
+        });
+
         this.requestMore(this.initialLoadNumber);
         this.removeCallback = () => {
             removeCallbackOnMemeData();
             removeCallbackOnMemeOrder();
             onNewDataAvailableOnNew();
+            onDataSetCompleted();
+            idleTaskPoolExecutor.cancelGroup(cancelid);
         };
     }
 
@@ -139,6 +148,20 @@ export default class LoadMoreList extends Component<{
                     })
                 }
                 {!this.state.finalBottom && <LoadingBlock key="loading-block-bottom"/>}
+                {(this.state.finalBottom && this.state.contentOrder.length === 0) &&
+                <div key="no-content-block-bottom">
+                    <div style={{
+                        display: "flex",
+                        justifyContent: "center ",
+                        alignItems: "center",
+                        height: "100px",
+                        flexDirection: "column"
+                    }}>
+                        <EmoticonExcitedOutline fontSize={"large"}/>
+                        <div style={{textAlign: "center",}}>I seems you do not have any notifications yet!</div>
+                    </div>
+                </div>
+                }
             </React.Fragment>
         )
     }

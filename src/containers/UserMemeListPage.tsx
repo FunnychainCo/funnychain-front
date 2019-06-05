@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {Component} from 'react'
 import UserMemeList from "../components/MemeList/UserMemeList";
+import {backService} from "../service/BackService";
 
 export default class UserMemeListPage extends Component<{
     match: any,
@@ -22,7 +23,8 @@ export default class UserMemeListPage extends Component<{
     }
 
     goBack() {
-        this.props.history.goBack();
+        //this.props.history.goBack();
+        backService.goBack();
     }
 
 

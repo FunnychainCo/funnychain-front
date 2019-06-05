@@ -9,9 +9,9 @@ import ListItem from "@material-ui/core/ListItem/ListItem";
 import {MailOutline} from "@material-ui/icons";
 import UserPasswordLoginDialog from "./UserPasswordLoginDialog";
 import UserPasswordRegisterDialog from "./UserPasswordRegisterDialog";
-import {EmoticonCool} from 'mdi-material-ui';
+//import {EmoticonCool} from 'mdi-material-ui';
 import ListItemText from "@material-ui/core/ListItemText";
-import AboutUsDialog from "../StartPopUp/AboutUsDialog";
+//import AboutUsDialog from "../StartPopUp/AboutUsDialog";
 import {backService} from "../../service/BackService";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 
@@ -58,7 +58,7 @@ export default class LoginRegisterDialogV2 extends Component<{
             >
                 {!this.state.loading && <DialogContent>
                     <List>
-                        <ListItem>
+                        {/*<ListItem>
                             <Button
                                 onClick={() => {
                                     this.setState({aboutUsOpen: true})
@@ -70,7 +70,7 @@ export default class LoginRegisterDialogV2 extends Component<{
                                 this.handleClose()
                             }} open={this.state.aboutUsOpen} />
                             </Button>
-                        </ListItem>
+                        </ListItem>*/}
                         <ListItem>
                             <Button
                                 onClick={() => {

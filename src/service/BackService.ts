@@ -9,16 +9,16 @@ export class BackService {
     };
     backAvailable: boolean;
 
-    start(){
+    start() {
         //event send by cordova in case of native integration
         ionicMobileAppService.onNativeEvent("native_back_button", () => {
             this.notifyBack();
-            if(this.backAvailable) {
+            if (this.backAvailable) {
                 this.goBack();
             }
         });
         //back pwa case
-        document.addEventListener("backbutton", ()=>{
+        document.addEventListener("backbutton", () => {
             this.notifyBack();
         }, false);
     }
@@ -39,7 +39,7 @@ export class BackService {
         this.eventEmitter.emit("back_available_event", this.backAvailable);
     }
 
-    onBackAvailable(callback: (state:boolean) => void): () => void {
+    onBackAvailable(callback: (state: boolean) => void): () => void {
         this.eventEmitter.on("back_available_event", callback);
         return () => {
             this.eventEmitter.off("back_available_event", callback);
@@ -51,7 +51,9 @@ export class BackService {
     }
 
     goBack() {
-        this.backCallBack();
+        if (this.backAvailable) {
+            this.backCallBack();
+        }
     }
 
     setRequestBackCalback(callback: () => void): void {

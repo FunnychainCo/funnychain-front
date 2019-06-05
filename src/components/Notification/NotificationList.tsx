@@ -44,14 +44,10 @@ export default class NotificationList extends Component<{
     componentWillMount() {
         this.cursor = userNotificationService.notificationPaginationCursorFactory.create();
         this.itemLoader = userNotificationService.itemLoader;
-        this.restartLoader(this.props.userid);
-    }
-
-    restartLoader(uid: string) {
     }
 
     componentWillUnmount() {
-        //userNotificationService.markAllAsSeen();
+        userNotificationService.markAllAsSeen();
     }
 
     getIcon(type: string): any {

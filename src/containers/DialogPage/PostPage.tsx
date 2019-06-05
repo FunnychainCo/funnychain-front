@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {Component} from 'react'
 import CreateMemeDialog from "../../components/CreateMemeDialogFab/CreateMemeDialog";
+import {backService} from "../../service/BackService";
 
 export default class PostPage extends Component<{
     match: any,
@@ -9,7 +10,8 @@ export default class PostPage extends Component<{
 
     goBack() {
         //window.history.back();
-        this.props.history.goBack();
+        //this.props.history.goBack();
+        backService.goBack();
     }
 
     render() {

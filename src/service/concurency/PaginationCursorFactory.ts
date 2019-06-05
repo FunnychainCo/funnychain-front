@@ -52,37 +52,34 @@ export class PaginationCursorFactory implements PaginationCursorFactoryInterface
 
             hasMore(direction?:string): boolean {
                 direction = direction?direction:DIRECTION_BOTTOM;
-                return false;
+                let hasNext = direction === DIRECTION_BOTTOM ? this.cursor.hasNextBottom() : this.cursor.hasNextTop();
+                return hasNext;
             }
 
             isLoading(): boolean {
-                return true;//TODO
+                return self.requestInProgress;
             }
 
             loadMore(number: number,direction?:string): void {
                 direction = direction?direction:DIRECTION_BOTTOM;
-                let requestMore = false;
                 for(let i = 0;i<number;i++) {
                     let key = direction===DIRECTION_BOTTOM?this.cursor.nextBottom():this.cursor.nextTop();
                     if(!key){
-                        requestMore= true;
                         break;
                     }else {
-                        let hasNext = direction === DIRECTION_BOTTOM ? this.cursor.hasNextBottom() : this.cursor.hasNextTop();
-                        if (!hasNext) {
-                            //anticipate the next request
-                            requestMore= true;
-                        }
-                        self.eventEmitter.emit("new_key", key, !hasNext, direction);
+                        self.eventEmitter.emit("new_key", key, direction);
                     }
                 }
-                if(requestMore){
+                let hasNext = direction === DIRECTION_BOTTOM ? this.cursor.hasNextBottom() : this.cursor.hasNextTop();
+                if(!hasNext){
                     let key = direction===DIRECTION_BOTTOM?this.cursor.peekBottom():this.cursor.peekTop();
                     self.eventEmitter.emit("request_more", key, number, direction);
+                    self.eventEmitter.emit("final_data",direction);//Note data set is considered final as long as requestmore does not answer whith data
+
                 }
             }
 
-            onData(callback: (key: string,final:boolean,direction:string) => void): () => void {
+            onData(callback: (key: string,direction:string) => void): () => void {
                 self.eventEmitter.on("new_key", callback);
                 return () => {
                     self.eventEmitter.off("new_key", callback);
@@ -93,6 +90,13 @@ export class PaginationCursorFactory implements PaginationCursorFactoryInterface
                 self.eventEmitter.on("new_keys_available", callback);
                 return () => {
                     self.eventEmitter.off("new_keys_available", callback);
+                };
+            }
+
+            onDataSetCompleted(callback:(direction:string)=>void):()=>void{
+                self.eventEmitter.on("final_data", callback);
+                return () => {
+                    self.eventEmitter.off("final_data", callback);
                 };
             }
 
