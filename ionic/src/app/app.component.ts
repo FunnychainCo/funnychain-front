@@ -165,7 +165,7 @@ export class AppComponent {
             this.sendEvent('native_code_ready', {});
             setTimeout(()=>{
                 this.splashScreen.hide();
-            },1000);//Note this is a work around for iphone
+            },20000);
             console.log('Mobile component loaded version:' + this.version);
         });
     }

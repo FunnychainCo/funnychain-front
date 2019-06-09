@@ -18,6 +18,7 @@ import MemeAvatarInfo from "./MemeAvatarInfo";
 import MemeActionButton from "./MemeActionButton";
 import ContentMenuButton from "./ContentMenuButton";
 import {ssrCache} from "../../service/ssr/SSRCache";
+import {AdAround} from '../Ads/AdAround';
 
 const styles = theme => ({
     "fcDynamicWidth": {
@@ -149,6 +150,7 @@ class MemeFullDisplay extends Component<{
                     disableTypography={true}
                 />
                 <img className="memeImage" src={this.state.meme.imageUrl} alt=""/>
+                <AdAround />
                 <CardActions>
                     <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
                 </CardActions>

@@ -41,7 +41,7 @@ const serviceComments = () =>hostAPI() + '/service/comments';
 const serviceMemes = () =>hostAPI() +  '/service/meme';
 
 export const GLOBAL_PROPERTIES = {
-    VERSION: () => "1.7.5",
+    VERSION: () => "1.7.6",
 
     //One signal
     ONE_SIGNAL_API_KEY: () => getGlobalProperties().ONE_SIGNAL_API_KEY,

@@ -174,6 +174,7 @@ export default class MemeListSwipe extends Component<{
         };
         const nextMeme = () =>{
             if(!this.moving) {
+                this.moving = false;
                 let memeKey = this.getCurrentMemeKey(0);
                 if (this.memeControllers[memeKey]) {
                     this.memeControllers[memeKey].triggerTop();

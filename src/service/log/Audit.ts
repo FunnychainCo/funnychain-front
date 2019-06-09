@@ -7,6 +7,8 @@ export class Audit {
     additionalData: any = {};
     logstashAudit: LogstashAudit;
 
+    prefix = "user";
+
     constructor() {
         this.logstashAudit = new LogstashAudit("https://api.funnychain.co/tracking", "");
         authService.onAuthStateChanged(user => {
@@ -16,6 +18,9 @@ export class Audit {
             console.log("Audit in dev mode");
         }else {
             if(isBrowserRenderMode()) {
+                if(navigator.userAgent.toLowerCase().indexOf("bot") !== -1){
+                    this.prefix = "bot";
+                }
                 getWindow().addEventListener("unhandledrejection", (promiseRejectionEvent) => {
                     promiseRejectionEvent.promise.catch((err)=>{
                         // handle error here, for example log
@@ -47,15 +52,15 @@ export class Audit {
     }
 
     error(...data: any[]) {
-        this.report("user/error", data);
+        this.report(this.prefix+"/error", data);
     }
 
     warn(...data: any[]) {
-        this.report("user/warn", data);
+        this.report(this.prefix+"/warn", data);
     }
 
     log(...data: any[]) {
-        this.track("user/log", data);
+        this.track(this.prefix+"/log", data);
     }
 
     private isDev(): boolean {
@@ -129,14 +134,14 @@ export class Audit {
             this._track(event, finalData);
         }
 
-        if (event === "user/error") {
+        if (event === this.prefix+"/error") {
             console.error(finalData);
             if (this.isDev()) {
                 throw new Error(finalData);
             }
-        } else if (event === "user/warn") {
+        } else if (event === this.prefix+"/warn") {
             console.warn(finalData);
-        } else if (event === "user/log") {
+        } else if (event === this.prefix+"/log") {
             console.log(finalData);
         }
     }
