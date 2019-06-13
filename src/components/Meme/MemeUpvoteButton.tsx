@@ -16,7 +16,7 @@ class MemeUpvoteButton extends Component<{
 }, {}> {
 
 
-    upvote = (ev:any) => {
+    upvote = (ev: any) => {
         ev.stopPropagation();
         if (this.props.meme.currentUserVoted !== true) {
             this.props.meme.currentUserVoted = true;
@@ -43,6 +43,7 @@ class MemeUpvoteButton extends Component<{
                        onClick={this.upvote}
                        disableRipple={true}
                        disableTouchRipple={true}
+                       style={{margin: "0 4px"}}
         >
             {this.props.meme.voteNumber}&nbsp;
             <ThumbUp style={{height: "0.7em"}}/>

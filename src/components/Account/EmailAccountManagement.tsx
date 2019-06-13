@@ -16,6 +16,7 @@ import {userService} from "../../service/generic/UserService";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import {audit} from "../../service/log/Audit";
+import {userNotificationService} from "../../service/notification/UserNotificationService";
 
 export default class EmailAccountManagement extends Component<{}, {
     user:UserEntry,
@@ -98,16 +99,22 @@ export default class EmailAccountManagement extends Component<{}, {
             case "email":
                 authService.changeEmail(newTextValue).then(() => {
                     this.updateUser();
+                }).catch(reason => {
+                    userNotificationService.sendNotificationToUser(reason.message);
                 });
                 break;
             case "name":
                 authService.changeDisplayName(newTextValue).then(() => {
                     this.updateUser();
+                }).catch(reason => {
+                    userNotificationService.sendNotificationToUser(reason.message);
                 });
                 break;
             case "password":
                 authService.changePassword(this.dialogValueCurrentPassword, newTextValue).then(() => {
                     this.updateUser();
+                }).catch(reason => {
+                    userNotificationService.sendNotificationToUser(reason.message);
                 });
                 this.dialogValueCurrentPassword = "";
                 break;

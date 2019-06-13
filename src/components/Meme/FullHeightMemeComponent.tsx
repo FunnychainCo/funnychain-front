@@ -5,6 +5,7 @@ import Card from "@material-ui/core/Card/Card";
 import CardHeader from "@material-ui/core/CardHeader/CardHeader";
 import CardActions from "@material-ui/core/CardActions/CardActions";
 import {ChatBubbleOutline} from "@material-ui/icons";
+import {ChevronLeft} from 'mdi-material-ui';//https://materialdesignicons.com/
 import Button from "@material-ui/core/Button/Button";
 import Collapse from "@material-ui/core/Collapse/Collapse";
 import CardContent from "@material-ui/core/CardContent/CardContent";
@@ -75,7 +76,8 @@ export function generateMemeComponentCache(url: string): Promise<any> {
 }
 
 class FullHeightMemeComponent extends Component<{
-    activelink: boolean
+    activelink: boolean,
+    onBack:()=>void,
     meme: MemeLinkInterface,
     classes: any
     onMemeClick: () => void
@@ -215,6 +217,13 @@ class FullHeightMemeComponent extends Component<{
                 <MemeImage buttonMode={this.props.activelink} link={MemeDisplayLink} onClick={this.props.onMemeClick} style={{flexGrow: 1}}
                            src={this.state.meme.imageUrl}/>
                 <CardActions className="memeElementStyleDivContainer" style={{width: "100%"}}>
+                    <Button variant="outlined"
+                            onClick={this.props.onBack}
+                            disableRipple={true}
+                            disableTouchRipple={true}
+                    >
+                        <ChevronLeft style={{height: "1em"}}/>
+                    </Button>
                     <MemeActionButton meme={this.state.meme} memeLink={this.memeLink} logged={this.state.logged}/>
                     <div style={{marginLeft: 'auto'}}>
                         <Button variant="outlined"

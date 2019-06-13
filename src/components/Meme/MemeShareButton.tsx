@@ -83,13 +83,14 @@ class MemeShareButton extends Component<{ url: string }, { anchorEl: any }> {
         const {anchorEl} = this.state;
         const open = Boolean(anchorEl);
         //const {classes} = this.props;
-        return <div className="memeElementStyleDivContainer">
+        return <React.Fragment>
 
             <Button
                 aria-owns={open ? 'simple-popper' : undefined}
                 aria-haspopup="true"
                 variant="outlined"
                 onClick={this.handleClick}
+                style={{margin: "0 4px"}}
             >
                 &nbsp;<ShareIcon style={{height: "0.9em"}}/>
             </Button>
@@ -121,7 +122,7 @@ class MemeShareButton extends Component<{ url: string }, { anchorEl: any }> {
                         <WhatsappIcon size={32} round={true}/></ExternalLink>
                 </div>
             </Popover>
-        </div>
+        </React.Fragment>
     }
 }
 

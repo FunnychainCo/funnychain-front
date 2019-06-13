@@ -300,21 +300,7 @@ function renderFullPage(markup, css, helmet) {
                             .memeExpandButton{
                                 margin-left: auto !important;
                             }
-                            
-                            .memeElementStyleDivContainer{
-                                display: flex;
-                                align-items:center;
-                            }
-                            
-                            .memeElementStyleDiv{
-                                flex: 0 1 auto;
-                                margin-top: auto !important;
-                                margin-bottom: auto !important;
-                                text-align: center;
-                            
-                                display: flex;
-                                align-items:center;
-                            }
+                                          
                             /*
                             ImageUploaderDropZone.css
                              */

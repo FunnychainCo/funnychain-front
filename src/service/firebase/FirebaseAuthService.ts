@@ -64,7 +64,7 @@ export class FirebaseAuthService {
                     reject(reason);
                 });
             }).catch((error) => {
-                audit.reportError(error);
+                reject(error);
             });
         });
     }

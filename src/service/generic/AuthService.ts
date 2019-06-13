@@ -71,11 +71,11 @@ export class AuthService implements AuthServiceInterface {
         return firebaseAuthService.changePassword(currentPassword, newTextValue);
     }
 
-    resetPassword(email: string): Promise<string> {
+    resetPassword(password: string): Promise<string> {
         if (this.mode != this.MODE_EMAIL) {
             throw new Error("invalid mode");
         }
-        return firebaseAuthService.resetPassword(email);
+        return firebaseAuthService.resetPassword(password);
     }
 
     register(email: string, pw: string): Promise<string> {

@@ -10,7 +10,6 @@ import SwipeCardsTouchController from "../Swipe/SwipeCardsTouchController";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {deviceDetector} from "../../service/mobile/DeviceDetector";
 
-
 let initialLoadNumber = 5;
 
 interface State {
@@ -122,6 +121,20 @@ export default class MemeListSwipe extends Component<{
         }
     }
 
+    previousMeme() {
+        if(this.state.currentMemeFromEnd>0) {
+            let memeKey = this.getCurrentMemeKey(-1);
+            if (this.memeControllers[memeKey]) {
+                this.memeControllers[memeKey].show();
+            }
+            this.setState((state) => {
+                let newState = {...state};
+                newState.currentMemeFromEnd--;
+                return newState;
+            });
+        }
+    }
+
     /* delta +1 = next -1 previous */
     getCurrentMemeKey(delta: number) {
         let memeKey = this.state.memesOrder[(this.state.memesOrder.length - 1) - (this.state.currentMemeFromEnd + delta)];
@@ -208,12 +221,13 @@ export default class MemeListSwipe extends Component<{
                         {
                             this.state.memesOrder.map((memeKey, index, array) => {
                                 let mapKey = memeKey;
-                                //let zindex = index;
+                                /*let zindex = index;*/
                                 let currentMemeKey = this.getCurrentMemeKey(0);
                                 let previousMemeKey = this.getCurrentMemeKey(-1);
                                 let nextMemeKey = this.getCurrentMemeKey(+1);
                                 let noEvent = memeKey !== currentMemeKey && memeKey !== nextMemeKey;
                                 let removed = memeKey !== currentMemeKey && memeKey !== previousMemeKey && memeKey !== nextMemeKey;
+                                let hideOnCreate = memeKey === previousMemeKey;
                                 return <React.Fragment key={mapKey}>{(!removed) &&
                                 <div key={mapKey}
                                      className="fcDynamicWidth"
@@ -229,6 +243,7 @@ export default class MemeListSwipe extends Component<{
                                      }}>
                                     {(this.state.memes[memeKey] && !removed) &&
                                     <SwipeCards
+                                        startHidden={hideOnCreate}
                                         key={mapKey}
                                         srcLeft={"https://image.ibb.co/heTxf7/20_status_close_3x.png"}
                                         srcRight={"https://image.ibb.co/dCuESn/Path_3x.png"}
@@ -247,6 +262,7 @@ export default class MemeListSwipe extends Component<{
                                     >
                                         <FullHeightMemeComponent
                                             activelink={this.mobile}
+                                            onBack = {()=>{this.previousMeme()}}
                                             onMemeClick={nextMeme} key={mapKey} meme={this.state.memes[memeKey]}/>
                                     </SwipeCards>
                                     }
@@ -256,6 +272,10 @@ export default class MemeListSwipe extends Component<{
                         }
                     </SwipeCardsTouchController>
                 </div>
+                {/*<Fab onClick={()=>{this.previousMeme()}} style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,}}>Back</Fab>*/}
             </React.Fragment>
         )
     }

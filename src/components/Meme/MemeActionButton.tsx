@@ -18,20 +18,25 @@ class MemeActionButton extends Component<{
 
     render() {
         //const {classes} = this.props;
-        return <div className="memeElementStyleDivContainer">
-            <MemeShareButton url={GLOBAL_PROPERTIES.FUNNYCHAIN_HOST()+ "/meme/" + this.props.meme.id}/>
-            {this.props.meme.hot === true &&
+        return <div style={{
+            display: "flex",
+            alignItems: "center",
+        }}>
+            <MemeShareButton url={GLOBAL_PROPERTIES.FUNNYCHAIN_HOST() + "/meme/" + this.props.meme.id}/>
             <MemeUpvoteButton meme={this.props.meme} logged={this.props.logged} onUpvoteConfirmed={() => {
                 this.props.memeLink.refresh();
             }}/>
-            }
-            {this.props.meme.hot === false &&
-            <MemeUpvoteButton meme={this.props.meme} logged={this.props.logged} onUpvoteConfirmed={() => {
-                this.props.memeLink.refresh();
-            }}/>
-            }
             {this.props.meme.hot === true &&
-            <div className="memeElementStyleDiv" style={{marginLeft: "5px", marginRight: "5px"}}>
+            <div style={{
+                flexShrink:0,
+                marginTop: "auto",
+                marginBottom: "auto",
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                marginLeft: "5px", marginRight: "5px",
+                textOverflow:" "
+            }}>
                 <MoneyCoinIcon/> &nbsp;{this.props.meme.dolarValue.toFixed(2)}
             </div>
             }

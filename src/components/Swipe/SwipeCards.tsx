@@ -6,12 +6,14 @@ const styles: any = (theme: any) => ({});
 class SwipeCards extends React.Component<{
     srcLeft: string,
     srcRight: string,
-    srcTop: string
+    srcTop: string,
+    startHidden:boolean,
     onSwipeLeft: () => void,
     onSwipeRight: () => void,
     onSwipeTop: () => void,
     onSwipeDown: () => void,
     onController: (controller: {
+        show: () => void,
         triggerTop: () => void,
         triggerDown: () => void,
         triggerLeft: () => void,
@@ -76,7 +78,7 @@ class SwipeCards extends React.Component<{
             }
             this.currentElementObj.removeEventListener('transitionend', fct);
         };
-        if (this.currentElementObj){
+        if (this.currentElementObj) {
             this.currentElementObj.addEventListener('transitionend', fct);
         }
     };
@@ -150,24 +152,24 @@ class SwipeCards extends React.Component<{
 
 
     //Swipe active card to left.
-    beforeSwipe(type:string) {
+    beforeSwipe(type: string) {
         this.removeNoTransition();
-        if(type==="top"){
+        if (type === "top") {
             this.transformUi(0, -1000, 0, this.currentElementObj);
         }
-        if(type==="down"){
+        if (type === "down") {
             this.transformUi(0, 1000, 0, this.currentElementObj);
         }
-        if(type==="left"){
+        if (type === "left") {
             this.transformUi(-1000, 0, 0, this.currentElementObj);
         }
-        if(type==="right"){
+        if (type === "right") {
             this.transformUi(1000, 0, 0, this.currentElementObj);
         }
         this.updateUi();
         this.changeStages();
-        this.setActiveHidden();
     };
+
 
     //Remove transitions from all this.elements to be moved in each swipe movement to improve perfomance of stacked cards.
     removeNoTransition() {
@@ -316,22 +318,12 @@ class SwipeCards extends React.Component<{
             let listElNodesobj = this.stackedCardsobj.children;
             this.currentElementObj = listElNodesobj[0];
             window.requestAnimationFrame(() => {
-                this.elTrans = 0;
-                let elZindex = 5;
-                let elScale = 1;
-                let elOpac = 1;
-
                 if (this.currentElementObj) {
                     this.currentElementObj.classList.add('stackedcards-none', 'stackedcards--animatable');
-                    this.elTrans = this.elTrans;
-
-                    this.currentElementObj.style.transform = 'scale(' + elScale + ') this.translateX(0) this.translateY(' + (this.elTrans) + 'px) translateZ(0)';
-                    this.currentElementObj.style.webkitTransform = 'scale(' + elScale + ') this.translateX(0) this.translateY(' + (this.elTrans) + 'px) translateZ(0)';
-                    this.currentElementObj.style.opacity = elOpac;
-                    this.currentElementObj.style.zIndex = elZindex;
-
-                    elScale = elScale - 0.04;
-                    elOpac = elOpac - (1);
+                    this.currentElementObj.style.transform = 'scale(1) this.translateX(0) this.translateY(0 px) translateZ(0)';
+                    this.currentElementObj.style.webkitTransform = 'scale(1) this.translateX(0) this.translateY(0 px) translateZ(0)';
+                    this.currentElementObj.style.opacity = this.props.startHidden?0:1;
+                    this.currentElementObj.style.zIndex = 5;
                 }
 
             });
@@ -343,14 +335,10 @@ class SwipeCards extends React.Component<{
         this.currentElementObj.classList.add('stackedcards-none', 'stackedcards--animatable');
 
         this.elTrans = 0;
-
-
         this.currentElementObj.style.zIndex = 0;
         this.currentElementObj.style.opacity = 0;
         this.currentElementObj.style.webkitTransform = 'scale(' + (1 - (0.04)) + ') this.translateX(0) this.translateY(' + this.elTrans + 'px) translateZ(0)';
         this.currentElementObj.style.transform = 'scale(' + (1 - (0.04)) + ') this.translateX(0) this.translateY(' + this.elTrans + 'px) translateZ(0)';
-
-        this.currentElementObj.classList.add('stackedcards-active');
 
         if (this.useOverlays) {
             this.leftobj.style.transform = 'this.translateX(0px) this.translateY(' + this.elTrans + 'px) translateZ(0px) rotate(0deg)';
@@ -406,7 +394,7 @@ class SwipeCards extends React.Component<{
     }
 
     gestureStart(evt: any) {
-        if(!this.firstActivation){
+        if (!this.firstActivation) {
             return;
         }
         this.touchingelement = true;
@@ -438,7 +426,7 @@ class SwipeCards extends React.Component<{
     };
 
     gestureMove(evt: any) {
-        if(!this.firstActivation){
+        if (!this.firstActivation) {
             return;
         }
         if (!this.touchingelement) {
@@ -474,7 +462,7 @@ class SwipeCards extends React.Component<{
     };
 
     gestureEnd(evt: any) {
-        if(!this.firstActivation){
+        if (!this.firstActivation) {
             return;
         }
         if (!this.touchingelement) {
@@ -488,7 +476,7 @@ class SwipeCards extends React.Component<{
         this.translateY = this.currentY - this.startY;
 
         let action = false;
-        if(evt.distance) {
+        if (evt.distance) {
             let distance = evt.distance;
             let DIRECTION_LEFT = 2;
             let DIRECTION_RIGHT = 4;
@@ -526,13 +514,6 @@ class SwipeCards extends React.Component<{
         }
     };
 
-    setActiveHidden() {
-        if(this.currentElementObj) {
-            this.currentElementObj.classList.remove('stackedcards-active');
-            this.currentElementObj.classList.add('stackedcards-hidden');
-        }
-    };
-
     stackedCards(domElement: any) {
         if (this.obj == domElement) {
             return;
@@ -541,6 +522,18 @@ class SwipeCards extends React.Component<{
         this.firstActivation = false;
         this.internalUpdate();
 
+    }
+
+    show(){
+
+        this.transformUi(0, 0, 1, this.currentElementObj);
+        /*window.requestAnimationFrame(() => {
+            if (this.currentElementObj) {
+                this.currentElementObj.classList.add('no-transition');
+                this.currentElementObj.style.opacity = 1;
+            }
+            this.setOverlayOpacity();
+        });*/
     }
 
     componentDidMount() {
@@ -560,6 +553,9 @@ class SwipeCards extends React.Component<{
             this.initStack();
 
             this.props.onController({
+                show: () => {
+                    this.show();
+                },
                 triggerLeft: () => {
                     this.onActionLeft();
                 },
@@ -601,21 +597,24 @@ class SwipeCards extends React.Component<{
     render() {
         return (
             <div id={"stacked-cards-block"} ref={el => {
-                    if (el) {
-                        this.stackedCards(el)
-                    }
-                }}
+                if (el) {
+                    this.stackedCards(el)
+                }
+            }}
                  className="stackedcards stackedcards--animatable init"
                  style={{height: "100%"}}>
                 <div className="stackedcards-container" style={{height: "100%"}}>
                     {this.props.children}
                 </div>
-                <div style={{zIndex: 7,pointerEvents: "none"}} className="stackedcards--animatable stackedcards-overlay top"><img
+                <div style={{zIndex: 7, pointerEvents: "none"}}
+                     className="stackedcards--animatable stackedcards-overlay top"><img
                     draggable={false} alt="alt" src={this.props.srcTop} width="auto" height="auto"/>
                 </div>
-                <div style={{zIndex: 8,pointerEvents: "none"}} className="stackedcards--animatable stackedcards-overlay right"><img
+                <div style={{zIndex: 8, pointerEvents: "none"}}
+                     className="stackedcards--animatable stackedcards-overlay right"><img
                     draggable={false} alt="alt" src={this.props.srcRight} width="auto" height="auto"/></div>
-                <div style={{zIndex: 8,pointerEvents: "none"}} className="stackedcards--animatable stackedcards-overlay left"><img
+                <div style={{zIndex: 8, pointerEvents: "none"}}
+                     className="stackedcards--animatable stackedcards-overlay left"><img
                     draggable={false} alt="alt" src={this.props.srcLeft} width="auto" height="auto"/>
                 </div>
             </div>
