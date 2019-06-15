@@ -2,8 +2,7 @@ import {
     MemeLinkInterface,
     MemeLoaderInterface,
 } from "../../generic/ApplicationInterface";
-import * as Q from 'q';
-import {Meme, MEME_TYPE_FRESH, MEME_TYPE_HOT} from "../../generic/Meme";
+import {MEME_TYPE_FRESH, MEME_TYPE_HOT} from "../../generic/Meme";
 import EventEmitter from "eventemitter3";
 import {MemeDBEntry, MemeDBStruct} from "../../database/shared/DBDefinition";
 import {audit} from "../../log/Audit";
@@ -13,26 +12,28 @@ import {loadMeme} from "./MemeLoaderFunction";
 import {memeDatabase} from "../../database/MemeDatabase";
 import {report} from "../../log/Report";
 import {deviceDetector} from "../../mobile/DeviceDetector";
-import {idleTaskPoolExecutor} from "../../generic/IdleTaskPoolExecutorService";
 import {IdleTaskPoolExecutor} from "../../concurency/IdleTaskPoolExecutor";
+import Bottleneck from "bottleneck";
 
 export class MemeLoader implements MemeLoaderInterface {
-
-    readonly EVENT_ON_MEME = "onMeme";
     readonly EVENT_ON_MEME_DATA = "onMemeData";
     readonly EVENT_ON_MEME_ORDER = "onMemeOrder";
     readonly EVENT_ON_INITIAL_LOADING_FINISHED = "onInitialLoadingFinished";
     eventEmitter = new EventEmitter();
     lastPostDate: number = new Date().getTime();
-    private pool: IdleTaskPoolExecutor;
+    private poolMemeLoaderOrder: IdleTaskPoolExecutor;
+    limiter = new Bottleneck({
+        maxConcurrent: 10,
+        minTime: 5,
+    });
 
 
     constructor(public type: string, public tags: string[], public userid: string) {
-        this.pool = idleTaskPoolExecutor;
+        this.poolMemeLoaderOrder = new IdleTaskPoolExecutor(true);
     }
 
     loadMore(limit: number): void {
-        this.pool.addResolvableTask((resolve, reject) => {
+        this.poolMemeLoaderOrder.addResolvableTask((resolve, reject) => {
             if (limit < 0) {
                 resolve(true);
                 audit.reportError("negative limit");
@@ -98,17 +99,22 @@ export class MemeLoader implements MemeLoaderInterface {
                 if (orderedMemeKeys.length > 0) {
                     //notify memes
                     this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeKeys);
-                    this.convertor(firebaseMemes).then(memeLinkData => {
-                        this.eventEmitter.emit(this.EVENT_ON_MEME, memeLinkData);
+
+                    //notify meme data
+                    this.convertorV2(firebaseMemes).then(memeLinks => {
+                        memeLinks.forEach(memeLink => {
+                            this.eventEmitter.emit(this.EVENT_ON_MEME_DATA, memeLink);
+                        });
                         resolve(true);
                         //check if more memes needs to be loaded
-                        if (Object.keys(memesVal).length != 0) {
+                        if (Object.keys(memesVal).length != 0 && (limit - orderedMemeKeys.length >0)) {
                             this.loadMore(limit - orderedMemeKeys.length);//TODO find a better system to load type fresh and hot
                         }
                     });
+
                 }else{
                     //check if more memes needs to be loaded
-                    if (Object.keys(memesVal).length != 0) {
+                    if (Object.keys(memesVal).length != 0 && (limit - orderedMemeKeys.length >0)) {
                         this.loadMore(limit - orderedMemeKeys.length);//TODO find a better system to load type fresh and hot
                     }
                     resolve(true);
@@ -119,42 +125,28 @@ export class MemeLoader implements MemeLoaderInterface {
         });
     }
 
-    private convertor(memes: MemeDBEntry[]): Promise<MemeLinkInterface[]> {
-        return new Promise<MemeLinkInterface[]>(resolve => {
-            let memesPromise: Promise<Meme>[] = [];
+    private convertorV2(memes: MemeDBEntry[]): Promise<MemeLinkInterface[]> {
+        return new Promise<MemeLinkInterface[]>((resolve,reject) => {
+            let memeLinkData: MemeLinkInterface[] = [];
             Object.keys(memes).forEach(memeID => {
                 let meme: MemeDBEntry = memes[memeID];
-                let promise = loadMeme(meme);
-                promise.then(convertedMeme => {
-                    let memeLink = firebaseMemeService.getMemeLink(convertedMeme.id);
-                    (memeLink as MemeLink).setMeme(convertedMeme);
-                    this.eventEmitter.emit(this.EVENT_ON_MEME_DATA, memeLink);
-                });
-                memesPromise.push(promise);
+                let memeLink = firebaseMemeService.getMemeLink(meme.memeIpfsHash);
+                memeLinkData.push(memeLink);
+                //lazy load meme
+                this.limiter.schedule(()=> new Promise((resolve, reject) => {
+                    let promise = loadMeme(meme);
+                    promise.then(convertedMeme => {
+                        let memeLink = firebaseMemeService.getMemeLink(convertedMeme.id);
+                        (memeLink as MemeLink).setMeme(convertedMeme);
+                        resolve("true");
+                    }).catch(reason => {
+                        reject(reason);
+                    });
+                }));
             });
-            Q.all(memesPromise).then(memes => {
-                let memeLinkData: MemeLinkInterface[] = [];
-                memes.forEach((value: Meme) => {
-                    let memeLink = firebaseMemeService.getMemeLink(value.id);
-                    (memeLink as MemeLink).setMeme(value);
-                    memeLinkData.push(memeLink);
-                });
-                resolve(memeLinkData);
-            });
+            resolve(memeLinkData);
         })
     };
-
-    /**
-     * Callback are sorted by meme creation time and in the callback the list is sorted by meme creation time (newest first)
-     * @param {(memes: MemeLinkInterface[]) => void} callback
-     * @returns {() => void}
-     */
-    on(callback: (memes: MemeLinkInterface[]) => void): () => void {
-        this.eventEmitter.on(this.EVENT_ON_MEME, callback);
-        return () => {
-            this.eventEmitter.off(this.EVENT_ON_MEME, callback);
-        };
-    }
 
     onInitialLoadingFinished(callback: () => void): () => void {
         this.eventEmitter.on(this.EVENT_ON_INITIAL_LOADING_FINISHED, callback);

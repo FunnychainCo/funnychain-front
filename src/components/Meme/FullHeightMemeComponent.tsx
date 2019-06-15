@@ -129,8 +129,7 @@ class FullHeightMemeComponent extends Component<{
         this.removeListenerMemeLink();
         this.removeListenerMemeLink = this.memeLink.on(meme => {
             this.setState({
-                commentNumber: meme.commentNumber,
-                meme: meme
+                meme: meme,
             });
         });
         this.commentVisitor = this.memeLink.getCommentVisitor();

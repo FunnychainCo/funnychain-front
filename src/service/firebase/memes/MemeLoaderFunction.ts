@@ -8,7 +8,6 @@ import {upvoteService} from "../../generic/UpvoteService";
 import {MemeDBEntry} from "../../database/shared/DBDefinition";
 import {firebaseBetService} from "../FirebaseBetService";
 import {authService} from "../../generic/AuthService";
-import {imageService} from "../../ImageService";
 
 export function loadMeme(meme: MemeDBEntry): Promise<Meme> {
     return new Promise<Meme>((resolve, reject) => {
@@ -21,10 +20,12 @@ export function loadMeme(meme: MemeDBEntry): Promise<Meme> {
         promiseArray.push(new Promise<boolean>((resolve2) => {
             axios.get(memeIPFSLink, {responseType: 'arraybuffer'}).then((response) => {
                 ipfsMeme = JSON.parse(new Buffer(response.data, 'binary').toString());
-                imageService.preLoadImage(ipfsFileUploadService.convertIPFSLinkToHttpsLink(ipfsMeme.imageIPFSHash)).then((imgUrlValue: string) => {
+                imgUrl = ipfsFileUploadService.convertIPFSLinkToHttpsLink(ipfsMeme.imageIPFSHash);
+                resolve2(true);
+                /*imageService.preLoadImage(ipfsFileUploadService.convertIPFSLinkToHttpsLink(ipfsMeme.imageIPFSHash)).then((imgUrlValue: string) => {
                     imgUrl = imgUrlValue;
                     resolve2(true);
-                });
+                });*/
             });
         }));
 

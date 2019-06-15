@@ -7,12 +7,20 @@ import {firebaseCommentService} from "../FirebaseCommentService";
 import EventEmitter from "eventemitter3";
 import {loadMeme} from "./MemeLoaderFunction";
 import {memeDatabase} from "../../database/MemeDatabase";
+import Bottleneck from "bottleneck";
 
 export class MemeLink implements MemeLinkInterface{
     id: string;
     private commentVisitor: CommentsVisitor;
     private lastValidMeme:Meme = MEME_ENTRY_NO_VALUE;
     private eventEmitter = new EventEmitter();
+
+    limiter = new Bottleneck({
+        highWater:2,
+        maxConcurrent: 1,
+        minTime: 1000,
+        strategy:Bottleneck.strategy.LEAK,
+    });
 
     constructor(id: string) {
         this.id = id;
@@ -32,15 +40,22 @@ export class MemeLink implements MemeLinkInterface{
         if(this.lastValidMeme!==MEME_ENTRY_NO_VALUE) {
             this.eventEmitter.emit("onSingleMeme", this.lastValidMeme);
         }
-        return new Promise<string>((resolve, reject) => {
-            memeDatabase.getMeme(this.id).then(meme => {
-                loadMeme(meme).then(meme => {
-                    this.lastValidMeme = meme;
-                    this.eventEmitter.emit("onSingleMeme", meme);
-                    resolve("ok");
+        //lazy update meme
+        return this.limiter.schedule(() => {
+            return new Promise((resolve, reject) => {
+                memeDatabase.getMeme(this.id).then(meme => {
+                    loadMeme(meme).then(meme => {
+                        this.lastValidMeme = meme;
+                        this.eventEmitter.emit("onSingleMeme", this.lastValidMeme);
+                        resolve("ok");
+                    }).catch(reason => {
+                        reject(reason);
+                    });
+                }).catch(reason => {
+                    reject(reason);
                 });
-            });
-        });
+            })
+        })
     }
 
     getCommentVisitor(): CommentsVisitor {
@@ -49,5 +64,6 @@ export class MemeLink implements MemeLinkInterface{
 
     setMeme(meme:Meme){
         this.lastValidMeme = meme;
+        this.eventEmitter.emit("onSingleMeme", this.lastValidMeme);
     }
 }

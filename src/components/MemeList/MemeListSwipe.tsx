@@ -18,7 +18,6 @@ interface State {
     displayWaypoint: boolean,
     currentMemeFromEnd: number,
     jsLoadedReady: boolean,
-    currentMemeReady: boolean,
 }
 
 export default class MemeListSwipe extends Component<{
@@ -30,67 +29,63 @@ export default class MemeListSwipe extends Component<{
         displayWaypoint: true,
         currentMemeFromEnd: 0,
         jsLoadedReady: false,
-        currentMemeReady: false,
     };
 
-    private removeCallbackOnMemeData: (() => void) = () => {
-    };
-    private removeCallbackOnMemeOrder: (() => void) = () => {
-    };
+    private memeLoaders: {[id:string]:MemeLoaderInterface} = {};
+    private memeLoader: MemeLoaderInterface;//current
 
-    private memeLoader: MemeLoaderInterface;
     private removeListener: () => void = () => {
     };
 
     memeCacheNumber = 10;
     private mobile: boolean;
-    //private removeListenerClick: () => void = ()=>{};
 
 
     componentWillMount() {
         if (isBrowserRenderMode()) {
-            this.restartMemeLoader(this.props.type, memeService.getTags(), true);
+            this.restartMemeLoader(this.props.type, memeService.getTags(), false);
         }
         this.mobile = deviceDetector.isMobileRender();
     }
 
     componentDidMount(): void {
-        /*let defaultClick = (ev)=>{
-            if(!ev.defaultPrevented) {
-                console.log("bubble")
-            }
-        };
-        window.addEventListener('click',defaultClick,false);
-        this.removeListenerClick = ()=>{
-            window.removeEventListener('click',defaultClick,false);
-        }*/
+        console.log("ready:"+new Date());
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.type != this.props.type) {
+        if (prevProps.type !== this.props.type) {
             this.restartMemeLoader(this.props.type, memeService.getTags(), false);
         }
     }
 
     restartMemeLoader(type: string, tags: string[], delayedRestart: boolean) {
-        let resetOrder = true;
-        this.removeListener = authService.onAuthStateChanged((user) => {
+        if (!delayedRestart) {
+            console.log("restart");
+            this.setState({memesOrder: [], currentMemeFromEnd: 0});//reset meme order
+        }
+        if(!this.memeLoaders[type]){
+            //create new meme loader
+            this.memeLoaders[type] = memeService.getMemeLoader(type, tags);
+        }
+        this.memeLoader = this.memeLoaders[type];
+        this.memeLoader.refresh();
+
+        /////////////////////////////////
+        //detach an atach listeners
+        /////////////////////////////////
+        this.removeListener();
+        let removeListenerData = authService.onAuthStateChanged((user) => {
             Object.keys(this.state.memes).forEach(id => {
                 this.state.memes[id].refresh();//refresh meme personalized data eg like and invest
             })
         });
-        if (!delayedRestart) {
-            this.setState({memesOrder: [], currentMemeFromEnd: 0});//reset meme order
-        }
-        this.memeLoader = memeService.getMemeLoader(type, tags);
-        this.removeCallbackOnMemeData();
-        this.removeCallbackOnMemeData = this.memeLoader.onMemeData((meme: MemeLinkInterface) => {
+        let removeCallbackOnMemeData = this.memeLoader.onMemeData((meme: MemeLinkInterface) => {
             let tmpState = {};
             tmpState[meme.id] = meme;
             this.setState((state) => ({memes: {...tmpState, ...state.memes}}));//reset view
         });
-        this.removeCallbackOnMemeOrder();
-        this.removeCallbackOnMemeOrder = this.memeLoader.onMemeOrder((memesKey: string[]) => {
+        let resetOrder = true;
+        let removeCallbackOnMemeOrder = this.memeLoader.onMemeOrder((memesKey: string[]) => {
             if (resetOrder && delayedRestart) {
                 resetOrder = false;
                 this.setState({memesOrder: [], currentMemeFromEnd: 0});//reset meme order
@@ -98,14 +93,20 @@ export default class MemeListSwipe extends Component<{
             this.state.memesOrder = memesKey.concat(this.state.memesOrder);
             this.setState({memesOrder: this.state.memesOrder});//update view
         });
+        this.removeListener = () =>{
+            removeListenerData();
+            removeCallbackOnMemeData();
+            removeCallbackOnMemeOrder();
+        };
+
+        //////////////////////////////////////////
+        //load initial
+        //////////////////////////////////////////
         this.memeLoader.loadMore(initialLoadNumber);
     }
 
     componentWillUnmount() {
         this.removeListener();
-        this.removeCallbackOnMemeData();
-        this.removeCallbackOnMemeOrder();
-        //this.removeListenerClick();
     }
 
     nextMeme() {

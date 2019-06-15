@@ -10,12 +10,6 @@ export interface MemeLinkInterface {
 }
 
 export interface MemeLoaderInterface {
-    /**
-     * Callback are sorted by meme creation time and in the callback the list is sorted by meme creation time (newest first)
-     * @param {(memes: MemeLinkInterface[]) => void} callback
-     * @returns {() => void}
-     */
-    on(callback: (memes: MemeLinkInterface[]) => void): () => void,
 
     /**
      * Called randomlly as meme data are loaded (no order guaranted)

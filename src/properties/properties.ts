@@ -33,12 +33,16 @@ const serviceMeme =() =>hostAPIMemeCreator() +  '/service/meme';
 const serviceReward =() =>hostAPI() +  '/service/reward';
 const serviceWallet =() => hostAPI() + '/service/wallet';
 const serviceIPFS =() => hostAPIIPFS() + '/service/ipfs';
+//
 const serviceNotificationWebpush = () =>hostAPINotification() + '/service/notification/webpush';
 //const serviceNotificationWebpush = () =>"http://127.0.0.1:8085/webpush";
 const serviceNotification =() =>hostAPINotification() +  '/service/notification';
 //const serviceNotification =() =>"http://127.0.0.1:8085";
+//
 const serviceComments = () =>hostAPI() + '/service/comments';
-const serviceMemes = () =>hostAPI() +  '/service/meme';
+//meme
+//const serviceMemes = () =>hostAPI() +  '/service/meme';
+const serviceMemes =() =>"http://127.0.0.1:8086/service/meme";
 
 export const GLOBAL_PROPERTIES = {
     VERSION: () => "1.7.6",

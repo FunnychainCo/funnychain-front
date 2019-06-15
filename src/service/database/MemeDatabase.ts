@@ -10,7 +10,7 @@ export class MemeDatabase {
         axios.post(GLOBAL_PROPERTIES.MEME_SERVICE() + "/fetch/memes",{type:type,userid:userid,limit:limit,lastPostDate:lastPostDate}).then(response => {
             callback(response.data);
         }).catch(error => {
-            audit.reportError(error);
+            audit.error(error);
         });
     }
 
@@ -19,7 +19,7 @@ export class MemeDatabase {
             axios.get(GLOBAL_PROPERTIES.MEME_SERVICE() + "/get/"+id).then(response => {
                 resolve(response.data);
             }).catch(error => {
-                audit.reportError(error);
+                audit.error(error);
                 reject(error);
             });
         });
@@ -30,7 +30,7 @@ export class MemeDatabase {
             axios.post(GLOBAL_PROPERTIES.MEME_SERVICE() + "/postV2", {memeId: memeId, meme: meme}).then(response => {
                 resolve(response.data);
             }).catch(error => {
-                audit.reportError(error);
+                audit.error(error);
                 reject(error);
             });
         });
