@@ -90,7 +90,7 @@ export default class MemeListSwipe extends Component<{
                 resetOrder = false;
                 this.setState({memesOrder: [], currentMemeFromEnd: 0});//reset meme order
             }
-            this.state.memesOrder = memesKey.concat(this.state.memesOrder);
+            this.state.memesOrder = memesKey.reverse().concat(this.state.memesOrder);
             this.setState({memesOrder: this.state.memesOrder});//update view
         });
         this.removeListener = () =>{

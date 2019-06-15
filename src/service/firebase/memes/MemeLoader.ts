@@ -2,9 +2,8 @@ import {
     MemeLinkInterface,
     MemeLoaderInterface,
 } from "../../generic/ApplicationInterface";
-import {MEME_TYPE_FRESH, MEME_TYPE_HOT} from "../../generic/Meme";
 import EventEmitter from "eventemitter3";
-import {MemeDBEntry, MemeDBStruct} from "../../database/shared/DBDefinition";
+import {MemeDBEntry} from "../../database/shared/DBDefinition";
 import {audit} from "../../log/Audit";
 import {firebaseMemeService} from "./FirebaseMemeService";
 import {MemeLink} from "./MemeLink";
@@ -14,6 +13,7 @@ import {report} from "../../log/Report";
 import {deviceDetector} from "../../mobile/DeviceDetector";
 import {IdleTaskPoolExecutor} from "../../concurency/IdleTaskPoolExecutor";
 import Bottleneck from "bottleneck";
+import {MEME_TYPE_HOT} from "../../generic/Meme";
 
 export class MemeLoader implements MemeLoaderInterface {
     readonly EVENT_ON_MEME_DATA = "onMemeData";
@@ -43,41 +43,14 @@ export class MemeLoader implements MemeLoaderInterface {
                 return;
             }
 
-            memeDatabase.fetchMemes(memes => {
-                let memesVal: MemeDBStruct = memes;
-                let firebaseMemes: MemeDBEntry[] = [];
-                Object.keys(memesVal).forEach(key => {
-                    let memeVal: MemeDBEntry = memesVal[key];
-                    if (this.lastPostDate > memeVal.created) {
-                        this.lastPostDate = memeVal.created;
-                    }
-                    if (this.type !== "") {
-                        if (this.type == MEME_TYPE_HOT && memeVal.hot) {
-                            firebaseMemes.push(memeVal);
-                        }
-                        if (this.type == MEME_TYPE_FRESH && !memeVal.hot) {
-                            firebaseMemes.push(memeVal);
-                        }
-                    }
-                    if (this.userid !== "") {
-                        if (this.userid === memeVal.uid) {
-                            firebaseMemes.push(memeVal);
-                        }
-                    }
-                });
-
-                //sort meme by creation time and filter them
-                firebaseMemes.sort((a, b) => {
-                    return a.created - b.created;
-                });
-
+            memeDatabase.fetchMemes((memes: MemeDBEntry[]) => {
                 // filter flaged content
-                firebaseMemes = firebaseMemes.filter(meme => {
+                memes = memes.filter(meme => {
                     let hash = meme.memeIpfsHash;
-                    let localReportContent:boolean = !!report.getReportedContent("meme")[hash]
-                    let localReportUser:boolean = !!report.getReportedContent("user")[meme.uid];
+                    let localReportContent: boolean = !!report.getReportedContent("meme")[hash]
+                    let localReportUser: boolean = !!report.getReportedContent("user")[meme.uid];
                     let distantReportContent = meme.flag;
-                    if(deviceDetector.isMobileAppRender()){
+                    if (deviceDetector.isMobileAppRender()) {
                         distantReportContent = distantReportContent || meme.flagMobile;
                     }
                     //TODO distant reported user
@@ -87,13 +60,18 @@ export class MemeLoader implements MemeLoaderInterface {
 
                 //orderer meme keys
                 let orderedMemeKeys: string[] = [];
-                firebaseMemes.forEach(fireBaseMeme => {
+                memes.forEach(fireBaseMeme => {
+                    if(this.type===MEME_TYPE_HOT){
+                        this.lastPostDate = fireBaseMeme.hot;
+                    }else{
+                        this.lastPostDate = fireBaseMeme.created;
+                    }
                     let hash = fireBaseMeme.memeIpfsHash;
                     orderedMemeKeys.push(hash);
                 });
                 //notify memes
-                firebaseMemes = firebaseMemes.filter(meme => {
-                    return orderedMemeKeys.indexOf(meme.memeIpfsHash)>=0;
+                memes = memes.filter(meme => {
+                    return orderedMemeKeys.indexOf(meme.memeIpfsHash) >= 0;
                 });
 
                 if (orderedMemeKeys.length > 0) {
@@ -101,22 +79,14 @@ export class MemeLoader implements MemeLoaderInterface {
                     this.eventEmitter.emit(this.EVENT_ON_MEME_ORDER, orderedMemeKeys);
 
                     //notify meme data
-                    this.convertorV2(firebaseMemes).then(memeLinks => {
+                    this.convertorV2(memes).then(memeLinks => {
                         memeLinks.forEach(memeLink => {
                             this.eventEmitter.emit(this.EVENT_ON_MEME_DATA, memeLink);
                         });
                         resolve(true);
-                        //check if more memes needs to be loaded
-                        if (Object.keys(memesVal).length != 0 && (limit - orderedMemeKeys.length >0)) {
-                            this.loadMore(limit - orderedMemeKeys.length);//TODO find a better system to load type fresh and hot
-                        }
                     });
 
-                }else{
-                    //check if more memes needs to be loaded
-                    if (Object.keys(memesVal).length != 0 && (limit - orderedMemeKeys.length >0)) {
-                        this.loadMore(limit - orderedMemeKeys.length);//TODO find a better system to load type fresh and hot
-                    }
+                } else {
                     resolve(true);
                     return;
                 }
@@ -126,14 +96,14 @@ export class MemeLoader implements MemeLoaderInterface {
     }
 
     private convertorV2(memes: MemeDBEntry[]): Promise<MemeLinkInterface[]> {
-        return new Promise<MemeLinkInterface[]>((resolve,reject) => {
+        return new Promise<MemeLinkInterface[]>((resolve, reject) => {
             let memeLinkData: MemeLinkInterface[] = [];
             Object.keys(memes).forEach(memeID => {
                 let meme: MemeDBEntry = memes[memeID];
                 let memeLink = firebaseMemeService.getMemeLink(meme.memeIpfsHash);
                 memeLinkData.push(memeLink);
                 //lazy load meme
-                this.limiter.schedule(()=> new Promise((resolve, reject) => {
+                this.limiter.schedule(() => new Promise((resolve, reject) => {
                     let promise = loadMeme(meme);
                     promise.then(convertedMeme => {
                         let memeLink = firebaseMemeService.getMemeLink(convertedMeme.id);
