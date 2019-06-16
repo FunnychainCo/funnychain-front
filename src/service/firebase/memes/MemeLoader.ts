@@ -43,7 +43,7 @@ export class MemeLoader implements MemeLoaderInterface {
                 return;
             }
 
-            memeDatabase.fetchMemes((memes: MemeDBEntry[]) => {
+            memeDatabase.fetchMemes(this.type, this.userid, limit, this.lastPostDate).then((memes: MemeDBEntry[]) => {
                 // filter flaged content
                 memes = memes.filter(meme => {
                     let hash = meme.memeIpfsHash;
@@ -91,7 +91,9 @@ export class MemeLoader implements MemeLoaderInterface {
                     return;
                 }
 
-            }, this.type, this.userid, limit, this.lastPostDate);
+            }).catch(reason => {
+                reject(reason);
+            });
         });
     }
 

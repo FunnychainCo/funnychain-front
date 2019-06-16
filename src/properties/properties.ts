@@ -41,8 +41,8 @@ const serviceNotification =() =>hostAPINotification() +  '/service/notification'
 //
 const serviceComments = () =>hostAPI() + '/service/comments';
 //meme
-//const serviceMemes = () =>hostAPI() +  '/service/meme';
-const serviceMemes =() =>"http://127.0.0.1:8086";
+const serviceMemes = () =>hostAPI() +  '/service/meme';
+//const serviceMemes =() =>"http://127.0.0.1:8086";
 
 export const GLOBAL_PROPERTIES = {
     VERSION: () => "1.7.6",

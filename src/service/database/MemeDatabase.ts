@@ -1,39 +1,28 @@
-import {audit} from "../log/Audit";
 import {MemeDBEntry} from "./shared/DBDefinition";
-import axios from "axios";
 import {GLOBAL_PROPERTIES} from "../../properties/properties";
+import {MemeApi} from "funnychain-lib-meme/dist";
 
 export class MemeDatabase {
+    private memes: MemeApi;
 
-    fetchMemes(callback: (memes: MemeDBEntry[]) => void, type: string, userid: string, limit: number, lastPostDate: number): void {
-        //console.log(GLOBAL_PROPERTIES.MEME_SERVICE() + "/fetch/memes",{type:type,userid:userid,limit:limit,lastPostDate:lastPostDate});
-        axios.post(GLOBAL_PROPERTIES.MEME_SERVICE() + "/fetch/memes",{type:type,userid:userid,limit:limit,lastPostDate:lastPostDate}).then(response => {
-            callback(response.data);
-        }).catch(error => {
-            audit.error(error);
-        });
+    constructor(){
+        this.memes = new MemeApi(GLOBAL_PROPERTIES.MEME_SERVICE());
+    }
+
+    fetchMemesById(type: string, userid: string, limit: number, lastPostDate: number): Promise<string[]> {
+        return this.memes.fetchMemesById(type,userid,limit,lastPostDate);
+    }
+
+    fetchMemes(type: string, userid: string, limit: number, lastPostDate: number): Promise<MemeDBEntry[]> {
+        return this.memes.fetchMemes(type,userid,limit,lastPostDate);
     }
 
     getMeme(id: string): Promise<MemeDBEntry> {
-        return new Promise<MemeDBEntry>((resolve, reject) => {
-            axios.get(GLOBAL_PROPERTIES.MEME_SERVICE() + "/get/"+id).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                audit.error(error);
-                reject(error);
-            });
-        });
+        return this.memes.getMeme(id);
     }
 
     postMeme(memeId: string, meme: MemeDBEntry): Promise<String> {
-        return new Promise<String>((resolve, reject) => {
-            axios.post(GLOBAL_PROPERTIES.MEME_SERVICE() + "/postV2", {memeId: memeId, meme: meme}).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                audit.error(error);
-                reject(error);
-            });
-        });
+        return this.memes.insertMeme(memeId,meme);
     }
 
 }
