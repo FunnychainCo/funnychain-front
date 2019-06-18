@@ -29,7 +29,7 @@ export class MemeLoader implements MemeLoaderInterface {
 
 
     constructor(public type: string, public tags: string[], public userid: string) {
-        this.poolMemeLoaderOrder = new IdleTaskPoolExecutor(true);
+        this.poolMemeLoaderOrder = new IdleTaskPoolExecutor();
     }
 
     loadMore(limit: number): void {

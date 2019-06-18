@@ -71,8 +71,8 @@ export default class NotificationList extends Component<{
                 onRequestClose={this.handleClose}
             >
                 <DialogTitle>Notifications</DialogTitle>
-                <DialogContent style={{minWidth: "300px"}}>
-                    <List component="nav" dense={false}>
+                <DialogContent>
+                    <List component="nav" dense={false}  style={{minWidth: "300px",minHeight: "100px"}}>
                         <LoadMoreList
                             key="loadlist"
                             scrollableAncestor={undefined}
@@ -102,7 +102,8 @@ export default class NotificationList extends Component<{
 
                                     //hack for iphone that does not allow remuneration on like
                                     if (!(notification.type === "Meme_Like" && deviceDetector.isIphoneAndMobileApp())) {
-                                        return <ListItem button key={notificationKey}
+                                        return <ListItem button
+                                                         key={notificationKey}
                                                          component={action ? link : undefined}>
                                             <ListItemIcon>
                                                 {this.getIcon(type)}

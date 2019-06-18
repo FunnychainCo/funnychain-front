@@ -6,26 +6,27 @@ import MemeListSwipe from "../components/MemeList/MemeListSwipe";
 export default class MemeListPage extends Component<{
     match: any,
     history: any,
-    location:any
+    location: any
 }, {
-    type:string,
-    disableSelection:boolean,
+    type: string,
+    disableSelection: boolean,
 }> {
 
-    state:{
-        type:"",
-        disableSelection:false,
+    state = {
+        type: "hot",
+        disableSelection: false,
     };
-    private currentPath: string = null;
+
+    //private currentPath: string = null;
 
     componentWillMount() {
         this.updateComponent();
     }
 
-    updateComponent(){
+    updateComponent() {
         //const match = this.props.match; // coming from React Router.
         /*{isExact:true,params:{memeid: "toto"},path:"/meme/:memeid",url:"/meme/toto"}*/
-        const location = this.props.location; // coming from React Router.
+        /*const location = this.props.location; // coming from React Router.
         let path = location.pathname;
         if(path!==this.currentPath) {
             this.currentPath = path;
@@ -38,17 +39,18 @@ export default class MemeListPage extends Component<{
             } else {
                 this.setState({type: "hot", disableSelection: true});
             }
-        }
+        }*/
     }
 
-    componentDidUpdate(prevProps: Readonly<{ match: any; history: any; location: any }>, prevState: Readonly<{ type: string; disableSelection: boolean }>, snapshot?: any): void {
+    /*componentDidUpdate(prevProps: Readonly<{ match: any; history: any; location: any }>, prevState: Readonly<{ type: string; disableSelection: boolean }>, snapshot?: any): void {
         this.updateComponent();
-    }
+    }*/
 
     render() {
         return (
             <React.Fragment>
-                <Header disableSelection={this.state.disableSelection} type={this.state.type} onTypeChange={(type) => this.setState({type:type})}/>
+                <Header disableSelection={this.state.disableSelection} type={this.state.type}
+                        onTypeChange={(type) => this.setState({type: type})}/>
                 {/*<MemeListV2 type={this.state.type}/>*/}
                 <MemeListSwipe type={this.state.type}/>
             </React.Fragment>

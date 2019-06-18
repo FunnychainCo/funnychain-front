@@ -4,8 +4,9 @@ import {Waypoint} from "react-waypoint";
 import LoadingBlock from "../LoadingBlock/LoadingBlock";
 import {isBrowserRenderMode} from "../../service/ssr/windowHelper";
 import {ItemLoader, PaginationCursor} from "../../service/concurency/PaginationInterface";
-import {idleTaskPoolExecutor} from "../../service/generic/IdleTaskPoolExecutorService";
 import {EmoticonExcitedOutline} from "mdi-material-ui";
+import {IdleTaskPoolExecutor} from "../../service/concurency/IdleTaskPoolExecutor";
+import Bottleneck from "bottleneck";
 
 
 interface State {
@@ -33,13 +34,23 @@ export default class LoadMoreList extends Component<{
         finalTop: true,
     };
 
-    initialLoadNumber = 10;
-    loadMoreNumber = 10;
+    initialLoadNumber = 5;
+    loadMoreNumber = 5;
     waypointDistanceFromTheEnd = 0;
     requestedItem = 0;
+
+    limiter = new Bottleneck({
+        highWater:1,
+        maxConcurrent: 1,
+        minTime: 500,
+        strategy:Bottleneck.strategy.LEAK,
+    });
+
     private removeCallback: (() => void) = () => {
     };
+    private idleTaskPoolExecutor: IdleTaskPoolExecutor = new IdleTaskPoolExecutor();
 
+    batchDataAcumulator = {};
 
     componentWillMount() {
         this.setState({
@@ -51,19 +62,22 @@ export default class LoadMoreList extends Component<{
         this.props.paginationCursor.reset();
         this.removeCallback();
         let removeCallbackOnMemeData = this.props.itemLoader.onData((id: string, data: any) => {
-            idleTaskPoolExecutor.addTask(() => {
-                let tmpState = {};
-                tmpState[id] = data;
-                this.setState((state) => ({content: {...tmpState, ...state.content}}));//reset view
+            this.idleTaskPoolExecutor.addTask(() => {
+                this.batchDataAcumulator[id] = data;
+                this.setState((state) =>{
+                    let ret =  ({content: {...this.batchDataAcumulator, ...state.content}});
+                    this.batchDataAcumulator = {};
+                    return ret;
+                });//update view
             }, cancelid);
         });
 
         let removeCallbackOnMemeOrder = this.props.paginationCursor.onData((memesKey: string, direction: string) => {
-            idleTaskPoolExecutor.addTask(() => {
+            this.idleTaskPoolExecutor.addTask(() => {
                 this.props.itemLoader.requestItem(memesKey);
                 this.requestedItem--;
                 this.setState((state) => {
-                    state.contentOrder.push(memesKey)
+                    state.contentOrder.push(memesKey);
                     return {
                         contentOrder: state.contentOrder,
                     }
@@ -71,7 +85,7 @@ export default class LoadMoreList extends Component<{
             }, cancelid);
         });
         let onNewDataAvailableOnNew = this.props.paginationCursor.onNewDataAvailable((number: number, direction: string) => {
-            idleTaskPoolExecutor.addTask(() => {
+            this.idleTaskPoolExecutor.addTask(() => {
                 if (this.requestedItem > 0) {
                     this.props.paginationCursor.loadMore(this.requestedItem);
                 }
@@ -89,13 +103,15 @@ export default class LoadMoreList extends Component<{
             removeCallbackOnMemeOrder();
             onNewDataAvailableOnNew();
             onDataSetCompleted();
-            idleTaskPoolExecutor.cancelGroup(cancelid);
+            this.idleTaskPoolExecutor.cancelGroup(cancelid);
         };
     }
-
-    requestMore(number: number) {
-        this.requestedItem += number;
-        this.props.paginationCursor.loadMore(number);
+    requestMore(number: number):Promise<any> {
+        return this.idleTaskPoolExecutor.addTask(()=>{
+            console.log("waypoint triggered => load more");
+            this.requestedItem += number;
+            this.props.paginationCursor.loadMore(number);
+        })
     }
 
     componentWillUnmount() {
@@ -111,8 +127,11 @@ export default class LoadMoreList extends Component<{
                     key={"waypoint" + key}
                     scrollableAncestor={this.props.scrollableAncestor}
                     onEnter={() => {
-                        //console.log("waypoint triggered => load more");
-                        this.requestMore(this.loadMoreNumber);
+                        this.limiter.schedule(()=> {
+                            return this.requestMore(this.loadMoreNumber);
+                        }).catch(reason => {
+                            /* LeakStrategie do nothing */
+                        });
                     }}
                 >
                 </Waypoint>
@@ -147,7 +166,7 @@ export default class LoadMoreList extends Component<{
                         </React.Fragment>
                     })
                 }
-                {!this.state.finalBottom && <LoadingBlock key="loading-block-bottom"/>}
+                {!this.state.finalBottom  && <LoadingBlock key="loading-block-bottom"/>}
                 {(this.state.finalBottom && this.state.contentOrder.length === 0) &&
                 <div key="no-content-block-bottom">
                     <div style={{

@@ -19,8 +19,8 @@ export interface MemeDBEntry {
     hot: number,
     created: number,
     value: number,
-    flag:boolean,
-    flagMobile:boolean,
+    flag?:boolean,
+    flagMobile?:boolean,
 }
 
 export interface MemeDBStruct {

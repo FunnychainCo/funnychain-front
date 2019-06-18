@@ -12,7 +12,6 @@ import {MemeLink} from "./MemeLink";
 import {loadMeme} from "./MemeLoaderFunction";
 import {memeDatabase} from "../../database/MemeDatabase";
 import {userDatabase} from "../../database/UserDatabase";
-import {idleTaskPoolExecutor} from "../../generic/IdleTaskPoolExecutorService";
 import {IdleTaskPoolExecutor} from "../../concurency/IdleTaskPoolExecutor";
 
 export class MemeByUserLoader implements MemeLoaderInterface {
@@ -29,7 +28,7 @@ export class MemeByUserLoader implements MemeLoaderInterface {
 
 
     constructor(public userid: string) {
-        this.pool = idleTaskPoolExecutor;//concurrency limit of 1
+        this.pool = new IdleTaskPoolExecutor();//concurrency limit of 1
     }
 
     loadMore(limit: number): void {

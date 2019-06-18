@@ -4,6 +4,7 @@ import Drawer from "@material-ui/core/Drawer/Drawer";
 import {USER_ENTRY_NO_VALUE} from "../../service/generic/UserEntry";
 import {authService} from "../../service/generic/AuthService";
 import EmailAccount from "./EmailAccount";
+import {backService} from "../../service/BackService";
 
 export default class AccountDrawer extends Component<{
     open: boolean,
@@ -26,6 +27,11 @@ export default class AccountDrawer extends Component<{
                 user: user
             });
         });
+
+        //back available means whe have changed view TODO could be beter on history change event
+        backService.onBackAvailable(() => {
+            this.props.onRequestChange(false);
+        })
     }
 
     componentWillUnmount() {

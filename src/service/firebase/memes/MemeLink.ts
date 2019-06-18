@@ -42,7 +42,7 @@ export class MemeLink implements MemeLinkInterface{
         }
         //lazy update meme
         return this.limiter.schedule(() => {
-            return new Promise((resolve, reject) => {
+            return new Promise<any>((resolve, reject) => {
                 memeDatabase.getMeme(this.id).then(meme => {
                     loadMeme(meme).then(meme => {
                         this.lastValidMeme = meme;
@@ -55,6 +55,8 @@ export class MemeLink implements MemeLinkInterface{
                     reject(reason);
                 });
             })
+        }).catch(reason => {
+            /* LeakStrategie do nothing */
         })
     }
 

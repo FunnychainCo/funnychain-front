@@ -11,7 +11,7 @@ import {isBrowserRenderMode} from "../ssr/windowHelper";
 import {PaginationCursorFactory} from "../concurency/PaginationCursorFactory";
 import {ItemLoader} from "../concurency/PaginationInterface";
 import {notificationDatabase} from "../database/NotificationDatabase";
-import {idleTaskPoolExecutor} from "../generic/IdleTaskPoolExecutorService";
+import {IdleTaskPoolExecutor} from "../concurency/IdleTaskPoolExecutor";
 
 export interface Message {
     text: string,
@@ -30,6 +30,8 @@ export class UserNotificationService {
     data: { [id: string]: UiNotificationData } = {};
 
     started = false;
+    private idleTaskPoolExecutor: any = new IdleTaskPoolExecutor();
+
     start() {
         if(this.started){
             return;
@@ -38,7 +40,7 @@ export class UserNotificationService {
         ///
         this.notificationPaginationCursorFactory = new PaginationCursorFactory();
         this.notificationPaginationCursorFactory.onRequestMore((key:string,number: number,direction?:string)=>{
-            idleTaskPoolExecutor.addTask(()=>{
+            this.idleTaskPoolExecutor.addTask(()=>{
                 notificationDatabase.getNotificationorderByDate(this.uid, key, number).then(notifications => {
                     let adds = [];
                     notifications.forEach(notification => {

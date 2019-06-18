@@ -18,34 +18,48 @@ export function isDev(): boolean {
     return !(getGlobalProperties().PROD? (getGlobalProperties().PROD!="false" && getGlobalProperties().PROD!=false):false);
 }
 
-//const devHostAPI = "http://127.0.0.1:8085";
-//const devHostAPI = "https://alpha.funnychain.co/backend";
+
 
 const host = () => getGlobalProperties().HOST;
+
+//////////////////////////////
+//// Backend
+////////////////////////////////
+//const hostAPI = () => "http://127.0.0.1:8085";
+//const hostAPI = () => "https://alpha.funnychain.co/backend";
 const hostAPI = () => getGlobalProperties().HOST_API;
-const hostAPINotification = () => getGlobalProperties().HOST_API;
-const hostAPIIPFS = () => getGlobalProperties().HOST_API;
-const hostAPIMemeCreator = () => getGlobalProperties().HOST_API;
 
 const serviceUser =() =>hostAPI() +  '/service/user';
 const serviceVote =() =>hostAPI() +  '/service/vote';
-const serviceMeme =() =>hostAPIMemeCreator() +  '/service/meme';
 const serviceReward =() =>hostAPI() +  '/service/reward';
 const serviceWallet =() => hostAPI() + '/service/wallet';
-const serviceIPFS =() => hostAPIIPFS() + '/service/ipfs';
-//
-const serviceNotificationWebpush = () =>hostAPINotification() + '/service/notification/webpush';
-//const serviceNotificationWebpush = () =>"http://127.0.0.1:8087/webpush";
-const serviceNotification =() =>hostAPINotification() +  '/service/notification';
-//const serviceNotification =() =>"http://127.0.0.1:8087";
-//
 const serviceComments = () =>hostAPI() + '/service/comments';
-//meme
-const serviceMemes = () =>hostAPI() +  '/service/meme';
+//////////////////////////////
+//// meme creator
+//////////////////////////////
+const serviceMemeCreator =() =>getGlobalProperties().HOST_API +  '/service/meme/creator';
+//////////////////////////////
+/// IPFS
+//////////////////////////////
+const serviceIPFS =() => getGlobalProperties().HOST_API + '/service/ipfs';
+//////////////////////////////
+//// Notifications
+//////////////////////////////
+const serviceNotificationWebpush = () => getGlobalProperties().HOST_API + '/service/notification/webpush';
+//const serviceNotificationWebpush = () =>"http://127.0.0.1:8087/webpush";
+const serviceNotification =() => getGlobalProperties().HOST_API +  '/service/notification';
+//const serviceNotification =() =>"http://127.0.0.1:8087";
+//////////////////////////////
+//meme Service
+//////////////////////////////
+const serviceMemes = () => getGlobalProperties().HOST_API +  '/service/meme';
 //const serviceMemes =() =>"http://127.0.0.1:8086";
+//////////////////////////////
+//////////////////////////////
+//////////////////////////////
 
 export const GLOBAL_PROPERTIES = {
-    VERSION: () => "1.7.6",
+    VERSION: () => "1.7.8",
 
     //One signal
     ONE_SIGNAL_API_KEY: () => getGlobalProperties().ONE_SIGNAL_API_KEY,
@@ -61,8 +75,7 @@ export const GLOBAL_PROPERTIES = {
 
     //Web service properties
     FUNNYCHAIN_HOST: () => host(),
-    FUNNYCHAIN_SERVICE: () => hostAPI(),
-    FUNNYCHAIN_SERVICE_VERSION: () => hostAPI() + "/service/version",
+    FUNNYCHAIN_SERVICE_VERSION: () => getGlobalProperties().HOST_API + "/service/version",
 
     //Real Time Service
     REAL_TIME_SERVICE_HOST: () => getGlobalProperties().REAL_TIME_DATA_HOST,
@@ -106,7 +119,7 @@ export const GLOBAL_PROPERTIES = {
     ///////////////////////////
 
     //meme service
-    MEME_SERVICE_GET_MAP: () => serviceMeme() + "/creator/get/map",// /creator/get/map
+    MEME_SERVICE_GET_MAP: () => serviceMemeCreator() + "/get/map",// /creator/get/map
 
     //Notification
     PUSH_NOTIFICATION_SERVICE: () => serviceNotificationWebpush(),

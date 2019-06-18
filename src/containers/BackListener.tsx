@@ -24,7 +24,6 @@ export default class BackListener extends Component<{
             backService.notifyBackAvailable(this.isBackAvailable());
         }
         this.removeBackListener = this.props.history.listen(location => {
-            console.log("listener " + this.props.history.action);
             if (this.props.history.action === "POP") {
                 this.length--;
                 this.backInProgress = false;
@@ -41,7 +40,6 @@ export default class BackListener extends Component<{
         backService.setRequestBackCalback(() => {
             if (this.length > 0 && !this.backInProgress) {
                 this.backInProgress = true;
-                console.log("go back " + this.length);
                 this.props.history.goBack();
             }
         })
