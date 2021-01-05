@@ -7,7 +7,7 @@
     "@material-ui/icons": "^3.0.1",
     "@types/q": "^1.5.1",
     "@types/storejs": "^2.0.3",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "bootstrap": "^4.1.3",
     "dsteem": "^0.9.0",
     "eventemitter3": "^3.1.0",
